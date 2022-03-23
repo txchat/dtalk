@@ -1,0 +1,34 @@
+Env= "debug"
+
+[log]
+Level="debug"
+Mode="console"
+Path=""
+Display="json"
+
+[GRPCServer]
+Network=                           "tcp"
+Addr=                              ":30003"
+Timeout=                           "1s"
+KeepAliveMaxConnectionIdle=        "60s"
+KeepAliveMaxConnectionAge=         "2h"
+KeepAliveMaxMaxConnectionAgeGrace= "20s"
+KeepAliveTime=                     "60s"
+KeepAliveTimeout=                  "20s"
+
+[reg]
+schema = "dtalk"
+srvName = "device"
+regAddrs = "127.0.0.1:2379"
+
+[Redis]
+network="tcp"
+addr="127.0.0.1:6379"
+auth=""
+active=60000
+idle=1024
+dialTimeout="200ms"
+readTimeout="500ms"
+writeTimeout="500ms"
+idleTimeout="120s"
+expire="30m"

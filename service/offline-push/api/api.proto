@@ -1,0 +1,22 @@
+// protoc -I=. -I=$GOPATH/src --go_out=plugins=grpc:. *.proto
+syntax = "proto3";
+
+package dtalk.offline_push;
+option go_package = "github.com/txchat/dtalk/service/offlinepush";
+
+enum Device {
+  Android = 0;
+  IOS = 1;
+}
+
+// record --> mq
+message OffPushMsg {
+  string appId = 1;
+  Device device = 2;
+  string title = 3;
+  string content = 4;
+  string token = 5;
+  int32 channelType = 6;
+  string target = 7;
+  int64 timeout = 8;
+}

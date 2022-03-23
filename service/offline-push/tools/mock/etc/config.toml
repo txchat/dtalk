@@ -1,0 +1,11 @@
+[client]
+AppId = ""
+FromId="test"
+Brokers=[""]
+
+[msg]
+AppId = ""
+DeviceType = 0
+Nickname = ""
+TargetId = ""
+DeviceToken = ""

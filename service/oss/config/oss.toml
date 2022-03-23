@@ -1,0 +1,29 @@
+Env = "debug"
+
+[server]
+addr="0.0.0.0:18005"
+
+[redis]
+network="tcp"
+addr="127.0.0.1:6379"
+auth=""
+active=60000
+idle=1024
+dialTimeout="200ms"
+readTimeout="500ms"
+writeTimeout="500ms"
+idleTimeout="120s"
+expire="30m"
+
+[[Oss]]
+AppId = "dtalk"
+OssType = "minio"
+RegionId = ""
+AccessKeyId = "XYI4T3QIT8YQQLRHA0YV"
+AccessKeySecret = "FqgvB3CzsBK5xwEphEC6i4Y6dTkWAjyfQ9TS1kLZ"
+Role = ""
+Policy = ""
+DurationSeconds = 3600
+Bucket = "dtalk-test"
+EndPoint = "127.0.0.1:9000"
+PublicUrl = "http://127.0.0.1:9000"

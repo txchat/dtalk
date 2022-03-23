@@ -1,0 +1,54 @@
+definitions:
+  model.GeneralResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        type: object
+      message:
+        type: integer
+    type: object
+  model.SignInResponse:
+    properties:
+      appId:
+        type: string
+      createTime:
+        type: integer
+      key:
+        type: string
+      updateTime:
+        type: integer
+    type: object
+host: 127.0.0.1:18103
+info:
+  contact: {}
+  title: auth服务接口
+  version: 0.0.1
+paths:
+  /auth/sign-in:
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: file
+        in: formData
+        name: file
+        required: true
+        type: file
+      - in: formData
+        name: appId
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.GeneralResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.SignInResponse'
+              type: object
+      summary: 注册一个新的 AppId
+      tags:
+      - backend
+swagger: "2.0"

@@ -1,0 +1,15 @@
+// protoc -I=. -I=$GOPATH/src --go_out=plugins=grpc:. *.proto
+syntax = "proto3";
+
+package dtalk.generator;
+option go_package = "github.com/txchat/dtalk/service/generator";
+
+message Empty{}
+
+message GetIDReply {
+    int64 id = 1;
+}
+
+service Generator {
+    rpc GetID(Empty) returns (GetIDReply);
+}

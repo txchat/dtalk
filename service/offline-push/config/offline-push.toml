@@ -1,0 +1,22 @@
+AppId=     "dtalk"
+
+[server]
+addr="0.0.0.0:18100"
+
+[MQSub]
+Brokers=["127.0.0.1:9092"]
+Number=16
+
+# 友盟离线推送物料
+[pushers]
+    [pushers.Android]
+    Env = "debug"
+    AppKey = ""
+    AppMasterSecret = ""
+    MiActivity = ""
+
+    [pushers.iOS]
+    Env = "debug"
+    AppKey = ""
+    AppMasterSecret = ""
+    MiActivity = ""

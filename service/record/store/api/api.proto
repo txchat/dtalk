@@ -1,0 +1,71 @@
+// protoc -I=. -I=$GOPATH/src --go_out=plugins=grpc:. *.proto
+syntax = "proto3";
+
+package dtalk.store;
+option go_package = "github.com/txchat/dtalk/service/record/store";
+
+import "github.com/txchat/imparse/proto/v1.proto";
+
+message DelRecordReq {
+    imparse.v1.Channel tp = 1;
+    int64 mid = 2;
+}
+
+message DelRecordReply {
+}
+
+message GetRecordReq {
+    imparse.v1.Channel tp = 1;
+    int64 mid = 2;
+}
+
+message GetRecordReply {
+    string mid = 1;
+    string seq = 2;
+    string senderId = 3;
+    string receiverId = 4;
+    uint32 msgType = 5;
+    string content = 6;
+    uint64 createTime = 7;
+    string source = 8;
+}
+
+message GetRecordsAfterMidReq {
+    imparse.v1.Channel tp = 1;
+    int64 mid = 2;
+    string from = 3;
+    string target = 4;
+    int64 count = 5;
+}
+
+message GetRecordsAfterMidReply {
+   repeated GetRecordReply records = 1;
+}
+
+message GetSyncRecordsAfterMidReq {
+    int64 mid = 1;
+    string uid = 2;
+    int64 count = 3;
+}
+
+message GetSyncRecordsAfterMidReply {
+   repeated bytes records = 1;
+}
+
+message AddRecordFocusReq {
+    string uid = 1;
+    int64  mid = 2;
+    uint64 time = 3;
+}
+
+message AddRecordFocusReply {
+    int32 currentNum = 1;
+}
+
+service Store {
+    rpc DelRecord(DelRecordReq) returns (DelRecordReply);
+    rpc GetRecord(GetRecordReq) returns (GetRecordReply);
+    rpc AddRecordFocus(AddRecordFocusReq) returns (AddRecordFocusReply);
+    rpc GetRecordsAfterMid(GetRecordsAfterMidReq) returns (GetRecordsAfterMidReply);
+    rpc GetSyncRecordsAfterMid(GetSyncRecordsAfterMidReq) returns (GetSyncRecordsAfterMidReply);
+}

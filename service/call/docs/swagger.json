@@ -1,0 +1,357 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "音视频信令服务接口",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "127.0.0.1:18013",
+    "paths": {
+        "/app/check-call": {
+            "post": {
+                "tags": [
+                    "call"
+                ],
+                "summary": "检查通话状态",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "MOCK",
+                        "name": "FZM-SIGNATURE",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "body",
+                        "name": "data",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/model.CheckCallRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.GeneralResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.CheckCallResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/app/handle-call": {
+            "post": {
+                "tags": [
+                    "call"
+                ],
+                "summary": "处理通话",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "MOCK",
+                        "name": "FZM-SIGNATURE",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "body",
+                        "name": "data",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/model.HandleCallRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.GeneralResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.HandleCallResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/app/reply-busy": {
+            "post": {
+                "tags": [
+                    "call"
+                ],
+                "summary": "返回忙碌",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "MOCK",
+                        "name": "FZM-SIGNATURE",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "body",
+                        "name": "data",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/model.ReplyBusyRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.GeneralResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.ReplyBusyResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/app/start-call": {
+            "post": {
+                "tags": [
+                    "call"
+                ],
+                "summary": "开始通话",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "MOCK",
+                        "name": "FZM-SIGNATURE",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "body",
+                        "name": "data",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/model.StartCallRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.GeneralResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.StartCallResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "model.CheckCallRequest": {
+            "type": "object",
+            "properties": {
+                "traceId": {
+                    "type": "integer"
+                },
+                "traceIdStr": {
+                    "description": "如果同时填了 tracedIdStr, 则优先选择 traceIdStr",
+                    "type": "string"
+                }
+            }
+        },
+        "model.CheckCallResponse": {
+            "type": "object",
+            "properties": {
+                "RTCType": {
+                    "type": "integer"
+                },
+                "caller": {
+                    "type": "string"
+                },
+                "createTime": {
+                    "type": "integer"
+                },
+                "deadline": {
+                    "type": "integer"
+                },
+                "groupId": {
+                    "type": "string"
+                },
+                "invitees": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "timeout": {
+                    "type": "integer"
+                },
+                "traceId": {
+                    "type": "integer"
+                },
+                "traceIdStr": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.GeneralResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "object"
+                },
+                "message": {
+                    "type": "integer"
+                },
+                "result": {
+                    "type": "integer"
+                }
+            }
+        },
+        "model.HandleCallRequest": {
+            "type": "object",
+            "properties": {
+                "answer": {
+                    "type": "boolean"
+                },
+                "traceId": {
+                    "type": "integer"
+                },
+                "traceIdStr": {
+                    "description": "如果同时填了 tracedIdStr, 则优先选择 traceIdStr",
+                    "type": "string"
+                }
+            }
+        },
+        "model.HandleCallResponse": {
+            "type": "object",
+            "properties": {
+                "privateMapKey": {
+                    "type": "string"
+                },
+                "roomId": {
+                    "type": "integer"
+                },
+                "sdkAppId": {
+                    "type": "integer"
+                },
+                "userSig": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.ReplyBusyRequest": {
+            "type": "object",
+            "properties": {
+                "traceId": {
+                    "type": "integer"
+                },
+                "traceIdStr": {
+                    "description": "如果同时填了 tracedIdStr, 则优先选择 traceIdStr",
+                    "type": "string"
+                }
+            }
+        },
+        "model.ReplyBusyResponse": {
+            "type": "object"
+        },
+        "model.StartCallRequest": {
+            "type": "object",
+            "required": [
+                "invitees"
+            ],
+            "properties": {
+                "RTCType": {
+                    "type": "integer"
+                },
+                "groupId": {
+                    "type": "string"
+                },
+                "invitees": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "model.StartCallResponse": {
+            "type": "object",
+            "properties": {
+                "RTCType": {
+                    "type": "integer"
+                },
+                "caller": {
+                    "type": "string"
+                },
+                "createTime": {
+                    "type": "integer"
+                },
+                "deadline": {
+                    "type": "integer"
+                },
+                "groupId": {
+                    "description": "0表示私聊, 其他表示群聊",
+                    "type": "string"
+                },
+                "invitees": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "timeout": {
+                    "type": "integer"
+                },
+                "traceId": {
+                    "type": "integer"
+                },
+                "traceIdStr": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

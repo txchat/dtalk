@@ -1,0 +1,1544 @@
+definitions:
+  types.AcceptGroupApplyReq:
+    properties:
+      applyId:
+        description: 审批 ID
+        type: string
+      id:
+        description: 群 ID
+        type: string
+    required:
+    - applyId
+    - id
+    type: object
+  types.AcceptGroupApplyResp:
+    type: object
+  types.ChangeOwnerRequest:
+    properties:
+      id:
+        description: 群 ID
+        type: integer
+      idStr:
+        description: 如果同时填了 idStr, 则优先选择 idStr
+        type: string
+      memberId:
+        description: 被转让为群主的群成员 ID
+        type: string
+    required:
+    - memberId
+    type: object
+  types.ChangeOwnerResponse:
+    type: object
+  types.CreateGroupApplyReq:
+    properties:
+      applyNote:
+        description: 申请备注
+        type: string
+      id:
+        description: 群 ID
+        type: string
+    required:
+    - id
+    type: object
+  types.CreateGroupApplyResp:
+    type: object
+  types.CreateGroupRequest:
+    properties:
+      avatar:
+        type: string
+      introduce:
+        type: string
+      memberIds:
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+    type: object
+  types.CreateGroupResponse:
+    properties:
+      adminNum:
+        description: 群内管理员数量
+        type: integer
+      avatar:
+        description: 头像 url
+        type: string
+      createTime:
+        description: 群创建时间
+        type: integer
+      friendType:
+        description: 加好友限制， 0=群内可加好友，1=群内禁止加好友
+        type: integer
+      groupType:
+        description: '群类型 (0: 普通群, 1: 全员群, 2: 部门群)'
+        type: integer
+      id:
+        description: 群 ID
+        type: integer
+      idStr:
+        type: string
+      introduce:
+        type: string
+      joinType:
+        description: 加群方式，0=无需审批（默认），1=禁止加群，群主和管理员邀请加群, 2=普通人邀请需要审批,群主和管理员直接加群
+        type: integer
+      key:
+        type: string
+      markId:
+        description: 群显示的 ID
+        type: string
+      maximum:
+        description: 群人数上限
+        type: integer
+      memberNum:
+        description: 群人数
+        type: integer
+      members:
+        description: 群成员
+        items:
+          $ref: '#/definitions/types.GroupMember'
+        type: array
+      muteNum:
+        description: 群内当前被禁言的人数
+        type: integer
+      muteType:
+        description: 禁言， 0=全员可发言， 1=全员禁言(除群主和管理员)
+        type: integer
+      name:
+        description: 群名称 加密的
+        type: string
+      owner:
+        $ref: '#/definitions/types.GroupMember'
+        description: 群主 信息
+      person:
+        $ref: '#/definitions/types.GroupMember'
+        description: 本人在群内的信息
+      publicName:
+        description: 公开的群名称 不加密的
+        type: string
+      status:
+        description: 群状态，0=正常 1=封禁 2=解散
+        type: integer
+    type: object
+  types.GeneralResponse:
+    properties:
+      data:
+        type: object
+      message:
+        type: integer
+      result:
+        type: integer
+    type: object
+  types.GetGroupApplyByIdReq:
+    properties:
+      applyId:
+        description: 审批 ID
+        type: string
+      id:
+        description: 群 ID
+        type: string
+    required:
+    - applyId
+    - id
+    type: object
+  types.GetGroupApplysReq:
+    properties:
+      count:
+        description: 每页记录数
+        type: integer
+      id:
+        description: 群 ID
+        type: string
+      offset:
+        description: 当前审批记录数量
+        type: integer
+    required:
+    - count
+    - id
+    type: object
+  types.GetGroupApplysResp:
+    properties:
+      applys:
+        items:
+          $ref: '#/definitions/types.GroupApplyInfo'
+        type: array
+    type: object
+  types.GetGroupInfoByConditionReq:
+    properties:
+      query:
+        type: string
+      tp:
+        description: 查询方法 0:groupMarkId, 1:groupId
+        type: integer
+    required:
+    - query
+    type: object
+  types.GetGroupInfoByConditionResp:
+    properties:
+      groups:
+        items:
+          $ref: '#/definitions/types.GroupInfo'
+        type: array
+    type: object
+  types.GetGroupInfoRequest:
+    properties:
+      id:
+        type: integer
+      idStr:
+        description: 如果同时填了 idStr, 则优先选择 idStr
+        type: string
+    type: object
+  types.GetGroupInfoResponse:
+    properties:
+      adminNum:
+        description: 群内管理员数量
+        type: integer
+      avatar:
+        description: 头像 url
+        type: string
+      createTime:
+        description: 群创建时间
+        type: integer
+      friendType:
+        description: 加好友限制， 0=群内可加好友，1=群内禁止加好友
+        type: integer
+      groupType:
+        description: '群类型 (0: 普通群, 1: 全员群, 2: 部门群)'
+        type: integer
+      id:
+        description: 群 ID
+        type: integer
+      idStr:
+        type: string
+      introduce:
+        type: string
+      joinType:
+        description: 加群方式，0=无需审批（默认），1=禁止加群，群主和管理员邀请加群, 2=普通人邀请需要审批,群主和管理员直接加群
+        type: integer
+      key:
+        type: string
+      markId:
+        description: 群显示的 ID
+        type: string
+      maximum:
+        description: 群人数上限
+        type: integer
+      memberNum:
+        description: 群人数
+        type: integer
+      members:
+        items:
+          $ref: '#/definitions/types.GroupMember'
+        type: array
+      muteNum:
+        description: 群内当前被禁言的人数
+        type: integer
+      muteType:
+        description: 禁言， 0=全员可发言， 1=全员禁言(除群主和管理员)
+        type: integer
+      name:
+        description: 群名称 加密的
+        type: string
+      owner:
+        $ref: '#/definitions/types.GroupMember'
+        description: 群主 信息
+      person:
+        $ref: '#/definitions/types.GroupMember'
+        description: 本人在群内的信息
+      publicName:
+        description: 公开的群名称 不加密的
+        type: string
+      status:
+        description: 群状态，0=正常 1=封禁 2=解散
+        type: integer
+    type: object
+  types.GetGroupListRequest:
+    type: object
+  types.GetGroupListResponse:
+    properties:
+      groups:
+        items:
+          $ref: '#/definitions/types.GroupInfo'
+        type: array
+    type: object
+  types.GetGroupMemberInfoRequest:
+    properties:
+      id:
+        type: integer
+      idStr:
+        description: 如果同时填了 idStr, 则优先选择 idStr
+        type: string
+      memberId:
+        type: string
+    required:
+    - memberId
+    type: object
+  types.GetGroupMemberInfoResponse:
+    properties:
+      memberId:
+        description: 用户 ID
+        type: string
+      memberMuteTime:
+        description: 该用户被禁言结束的时间 9223372036854775807=永久禁言
+        type: integer
+      memberName:
+        description: 用户群昵称
+        type: string
+      memberType:
+        description: 用户角色，2=群主，1=管理员，0=群员，10=退群
+        type: integer
+    type: object
+  types.GetGroupMemberListRequest:
+    properties:
+      id:
+        type: integer
+      idStr:
+        description: 如果同时填了 idStr, 则优先选择 idStr
+        type: string
+    type: object
+  types.GetGroupMemberListResponse:
+    properties:
+      id:
+        type: integer
+      idStr:
+        description: 如果同时填了 idStr, 则优先选择 idStr
+        type: string
+      members:
+        items:
+          $ref: '#/definitions/types.GroupMember'
+        type: array
+    type: object
+  types.GetGroupPubInfoRequest:
+    properties:
+      id:
+        description: 群 ID
+        type: integer
+      idStr:
+        description: 如果同时填了 idStr, 则优先选择 idStr
+        type: string
+    type: object
+  types.GetGroupPubInfoResponse:
+    properties:
+      adminNum:
+        description: 群内管理员数量
+        type: integer
+      avatar:
+        description: 头像 url
+        type: string
+      createTime:
+        description: 群创建时间
+        type: integer
+      friendType:
+        description: 加好友限制， 0=群内可加好友，1=群内禁止加好友
+        type: integer
+      groupType:
+        description: '群类型 (0: 普通群, 1: 全员群, 2: 部门群)'
+        type: integer
+      id:
+        description: 群 ID
+        type: integer
+      idStr:
+        type: string
+      introduce:
+        type: string
+      joinType:
+        description: 加群方式，0=无需审批（默认），1=禁止加群，群主和管理员邀请加群, 2=普通人邀请需要审批,群主和管理员直接加群
+        type: integer
+      key:
+        type: string
+      markId:
+        description: 群显示的 ID
+        type: string
+      maximum:
+        description: 群人数上限
+        type: integer
+      memberNum:
+        description: 群人数
+        type: integer
+      muteNum:
+        description: 群内当前被禁言的人数
+        type: integer
+      muteType:
+        description: 禁言， 0=全员可发言， 1=全员禁言(除群主和管理员)
+        type: integer
+      name:
+        description: 群名称 加密的
+        type: string
+      owner:
+        $ref: '#/definitions/types.GroupMember'
+        description: 群主 信息
+      person:
+        $ref: '#/definitions/types.GroupMember'
+        description: 本人在群内的信息
+      publicName:
+        description: 公开的群名称 不加密的
+        type: string
+      status:
+        description: 群状态，0=正常 1=封禁 2=解散
+        type: integer
+    type: object
+  types.GetMuteListRequest:
+    properties:
+      id:
+        description: 群 ID
+        type: integer
+      idStr:
+        description: 如果同时填了 idStr, 则优先选择 idStr
+        type: string
+    type: object
+  types.GetMuteListResponse:
+    properties:
+      members:
+        items:
+          $ref: '#/definitions/types.GroupMember'
+        type: array
+    type: object
+  types.GroupApplyInfo:
+    properties:
+      applyId:
+        description: 审批 ID
+        type: string
+      applyNote:
+        description: 申请备注
+        type: string
+      applyStatus:
+        description: 审批情况 0=待审批, 1=审批通过, 2=审批不通过, 10=审批忽略
+        type: integer
+      createTime:
+        description: 创建时间 ms
+        type: integer
+      id:
+        description: 群 ID
+        type: string
+      inviterId:
+        description: 邀请人 ID, 空表示是自己主动申请的
+        type: string
+      memberId:
+        description: 申请加入人 ID
+        type: string
+      operatorId:
+        description: 审批人 ID
+        type: string
+      rejectReason:
+        description: 拒绝原因
+        type: string
+      updateTime:
+        description: 修改时间 ms
+        type: integer
+    type: object
+  types.GroupDisbandRequest:
+    properties:
+      id:
+        type: integer
+      idStr:
+        description: 如果同时填了 idStr, 则优先选择 idStr
+        type: string
+    type: object
+  types.GroupDisbandResponse:
+    type: object
+  types.GroupExitRequest:
+    properties:
+      id:
+        type: integer
+      idStr:
+        description: 如果同时填了 idStr, 则优先选择 idStr
+        type: string
+    type: object
+  types.GroupExitResponse:
+    type: object
+  types.GroupInfo:
+    properties:
+      adminNum:
+        description: 群内管理员数量
+        type: integer
+      avatar:
+        description: 头像 url
+        type: string
+      createTime:
+        description: 群创建时间
+        type: integer
+      friendType:
+        description: 加好友限制， 0=群内可加好友，1=群内禁止加好友
+        type: integer
+      groupType:
+        description: '群类型 (0: 普通群, 1: 全员群, 2: 部门群)'
+        type: integer
+      id:
+        description: 群 ID
+        type: integer
+      idStr:
+        type: string
+      introduce:
+        type: string
+      joinType:
+        description: 加群方式，0=无需审批（默认），1=禁止加群，群主和管理员邀请加群, 2=普通人邀请需要审批,群主和管理员直接加群
+        type: integer
+      key:
+        type: string
+      markId:
+        description: 群显示的 ID
+        type: string
+      maximum:
+        description: 群人数上限
+        type: integer
+      memberNum:
+        description: 群人数
+        type: integer
+      muteNum:
+        description: 群内当前被禁言的人数
+        type: integer
+      muteType:
+        description: 禁言， 0=全员可发言， 1=全员禁言(除群主和管理员)
+        type: integer
+      name:
+        description: 群名称 加密的
+        type: string
+      owner:
+        $ref: '#/definitions/types.GroupMember'
+        description: 群主 信息
+      person:
+        $ref: '#/definitions/types.GroupMember'
+        description: 本人在群内的信息
+      publicName:
+        description: 公开的群名称 不加密的
+        type: string
+      status:
+        description: 群状态，0=正常 1=封禁 2=解散
+        type: integer
+    type: object
+  types.GroupMember:
+    properties:
+      memberId:
+        description: 用户 ID
+        type: string
+      memberMuteTime:
+        description: 该用户被禁言结束的时间 9223372036854775807=永久禁言
+        type: integer
+      memberName:
+        description: 用户群昵称
+        type: string
+      memberType:
+        description: 用户角色，2=群主，1=管理员，0=群员，10=退群
+        type: integer
+    type: object
+  types.GroupRemoveRequest:
+    properties:
+      id:
+        type: integer
+      idStr:
+        description: 如果同时填了 idStr, 则优先选择 idStr
+        type: string
+      memberIds:
+        items:
+          type: string
+        type: array
+    required:
+    - memberIds
+    type: object
+  types.GroupRemoveResponse:
+    properties:
+      memberIds:
+        description: 成功被踢的成员列表
+        items:
+          type: string
+        type: array
+      memberNum:
+        description: 群人数
+        type: integer
+    type: object
+  types.InviteGroupMembersRequest:
+    properties:
+      id:
+        type: integer
+      idStr:
+        description: 如果同时填了 idStr, 则优先选择 idStr
+        type: string
+      newMemberIds:
+        items:
+          type: string
+        type: array
+    required:
+    - newMemberIds
+    type: object
+  types.InviteGroupMembersResponse:
+    properties:
+      id:
+        example: 123821199217135616
+        type: integer
+      idStr:
+        type: string
+      memberNum:
+        example: 5
+        type: integer
+    type: object
+  types.JoinGroupReq:
+    properties:
+      id:
+        type: integer
+      idStr:
+        type: string
+      inviterId:
+        type: string
+    type: object
+  types.JoinGroupResp:
+    properties:
+      id:
+        type: integer
+      idStr:
+        type: string
+    type: object
+  types.RejectGroupApplyReq:
+    properties:
+      applyId:
+        description: 审批 ID
+        type: string
+      id:
+        description: 群 ID
+        type: string
+      rejectReason:
+        description: 拒绝原因
+        type: string
+    required:
+    - applyId
+    - id
+    type: object
+  types.RejectGroupApplyResp:
+    type: object
+  types.SetAdminRequest:
+    properties:
+      id:
+        description: 群 ID
+        type: integer
+      idStr:
+        description: 如果同时填了 idStr, 则优先选择 idStr
+        type: string
+      memberId:
+        description: 被设置的群成员 ID
+        type: string
+      memberType:
+        description: 用户角色 0=群员, 1=管理员
+        type: integer
+    required:
+    - memberId
+    type: object
+  types.SetAdminResponse:
+    type: object
+  types.UpdateGroupAvatarRequest:
+    properties:
+      avatar:
+        type: string
+      id:
+        type: integer
+      idStr:
+        description: 如果同时填了 idStr, 则优先选择 idStr
+        type: string
+    type: object
+  types.UpdateGroupAvatarResponse:
+    type: object
+  types.UpdateGroupFriendTypeRequest:
+    properties:
+      friendType:
+        description: 加好友限制， 0=群内可加好友，1=群内禁止加好友
+        type: integer
+      id:
+        description: 群 ID
+        type: integer
+      idStr:
+        description: 如果同时填了 idStr, 则优先选择 idStr
+        type: string
+    type: object
+  types.UpdateGroupFriendTypeResponse:
+    type: object
+  types.UpdateGroupJoinTypeRequest:
+    properties:
+      id:
+        description: 群 ID
+        type: integer
+      idStr:
+        description: 如果同时填了 idStr, 则优先选择 idStr
+        type: string
+      joinType:
+        description: 加群方式，0=无需审批（默认），1=禁止加群，群主和管理员邀请加群, 2=普通人邀请需要审批,群主和管理员直接加群
+        type: integer
+    type: object
+  types.UpdateGroupJoinTypeResponse:
+    type: object
+  types.UpdateGroupMemberMuteTimeRequest:
+    properties:
+      id:
+        description: 群 ID
+        type: integer
+      idStr:
+        description: 如果同时填了 idStr, 则优先选择 idStr
+        type: string
+      memberIds:
+        description: 被禁言的群员 ID
+        items:
+          type: string
+        type: array
+      muteTime:
+        description: 禁言持续时间, 传9223372036854775807=永久禁言, 0=解除禁言
+        type: integer
+    required:
+    - memberIds
+    type: object
+  types.UpdateGroupMemberMuteTimeResponse:
+    properties:
+      members:
+        items:
+          $ref: '#/definitions/types.GroupMember'
+        type: array
+    type: object
+  types.UpdateGroupMemberNameRequest:
+    properties:
+      id:
+        type: integer
+      idStr:
+        description: 如果同时填了 idStr, 则优先选择 idStr
+        type: string
+      memberName:
+        type: string
+    type: object
+  types.UpdateGroupMemberNameResponse:
+    type: object
+  types.UpdateGroupMuteTypeRequest:
+    properties:
+      id:
+        description: 群 ID
+        type: integer
+      idStr:
+        description: 如果同时填了 idStr, 则优先选择 idStr
+        type: string
+      muteType:
+        description: 禁言， 0=全员可发言， 1=全员禁言(除群主和管理员)
+        type: integer
+    type: object
+  types.UpdateGroupMuteTypeResponse:
+    type: object
+  types.UpdateGroupNameRequest:
+    properties:
+      id:
+        type: integer
+      idStr:
+        description: 如果同时填了 idStr, 则优先选择 idStr
+        type: string
+      name:
+        type: string
+      publicName:
+        type: string
+    type: object
+  types.UpdateGroupNameResponse:
+    type: object
+host: 127.0.0.1:18011
+info:
+  contact: {}
+  title: 群服务接口
+  version: "1.0"
+paths:
+  /app/accept-group-apply:
+    post:
+      parameters:
+      - description: MOCK
+        in: header
+        name: FZM-SIGNATURE
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: data
+        schema:
+          $ref: '#/definitions/types.AcceptGroupApplyReq'
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/types.GeneralResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/types.AcceptGroupApplyResp'
+              type: object
+      summary: 接受加群审批
+      tags:
+      - group 群审批
+  /app/avatar:
+    post:
+      parameters:
+      - description: MOCK
+        in: header
+        name: FZM-SIGNATURE
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: data
+        schema:
+          $ref: '#/definitions/types.UpdateGroupAvatarRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/types.GeneralResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/types.UpdateGroupAvatarResponse'
+              type: object
+      summary: 更新群头像
+      tags:
+      - group 群信息
+  /app/change-owner:
+    post:
+      parameters:
+      - description: MOCK
+        in: header
+        name: FZM-SIGNATURE
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: data
+        schema:
+          $ref: '#/definitions/types.ChangeOwnerRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/types.GeneralResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/types.ChangeOwnerResponse'
+              type: object
+      summary: 转让群
+      tags:
+      - group 群动作
+  /app/create-group:
+    post:
+      parameters:
+      - description: MOCK
+        in: header
+        name: FZM-SIGNATURE
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: data
+        schema:
+          $ref: '#/definitions/types.CreateGroupRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/types.GeneralResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/types.CreateGroupResponse'
+              type: object
+      summary: 创建群
+      tags:
+      - group 群动作
+  /app/create-group-apply:
+    post:
+      parameters:
+      - description: MOCK
+        in: header
+        name: FZM-SIGNATURE
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: data
+        schema:
+          $ref: '#/definitions/types.CreateGroupApplyReq'
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/types.GeneralResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/types.CreateGroupApplyResp'
+              type: object
+      summary: 创建加群审批
+      tags:
+      - group 群审批
+  /app/friendType:
+    post:
+      parameters:
+      - description: MOCK
+        in: header
+        name: FZM-SIGNATURE
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: data
+        schema:
+          $ref: '#/definitions/types.UpdateGroupFriendTypeRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/types.GeneralResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/types.UpdateGroupFriendTypeResponse'
+              type: object
+      summary: 更新群内加好友设置
+      tags:
+      - group 群信息
+  /app/get-group-apply:
+    post:
+      parameters:
+      - description: MOCK
+        in: header
+        name: FZM-SIGNATURE
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: data
+        schema:
+          $ref: '#/definitions/types.GetGroupApplyByIdReq'
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/types.GeneralResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/types.GetGroupApplysResp'
+              type: object
+      summary: 查询加群审批
+      tags:
+      - group 群审批
+  /app/get-group-applys:
+    post:
+      parameters:
+      - description: MOCK
+        in: header
+        name: FZM-SIGNATURE
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: data
+        schema:
+          $ref: '#/definitions/types.GetGroupApplysReq'
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/types.GeneralResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/types.GetGroupApplysResp'
+              type: object
+      summary: 查询加群审批列表
+      tags:
+      - group 群审批
+  /app/group-disband:
+    post:
+      parameters:
+      - description: MOCK
+        in: header
+        name: FZM-SIGNATURE
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: data
+        schema:
+          $ref: '#/definitions/types.GroupDisbandRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/types.GeneralResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/types.GroupDisbandResponse'
+              type: object
+      summary: 解散群
+      tags:
+      - group 群动作
+  /app/group-exit:
+    post:
+      parameters:
+      - description: MOCK
+        in: header
+        name: FZM-SIGNATURE
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: data
+        schema:
+          $ref: '#/definitions/types.GroupExitRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/types.GeneralResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/types.GroupExitResponse'
+              type: object
+      summary: 退群
+      tags:
+      - group 群动作
+  /app/group-info:
+    post:
+      parameters:
+      - description: MOCK
+        in: header
+        name: FZM-SIGNATURE
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: data
+        schema:
+          $ref: '#/definitions/types.GetGroupInfoRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/types.GeneralResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/types.GetGroupInfoResponse'
+              type: object
+      summary: 查询群信息
+      tags:
+      - group 群信息
+  /app/group-list:
+    post:
+      parameters:
+      - description: MOCK
+        in: header
+        name: FZM-SIGNATURE
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: data
+        schema:
+          $ref: '#/definitions/types.GetGroupListRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/types.GeneralResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/types.GetGroupListResponse'
+              type: object
+      summary: 查询群列表
+      tags:
+      - group 群信息
+  /app/group-member-info:
+    post:
+      parameters:
+      - description: MOCK
+        in: header
+        name: FZM-SIGNATURE
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: data
+        schema:
+          $ref: '#/definitions/types.GetGroupMemberInfoRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/types.GeneralResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/types.GetGroupMemberInfoResponse'
+              type: object
+      summary: 查询群成员信息
+      tags:
+      - group 群成员信息
+  /app/group-member-list:
+    post:
+      parameters:
+      - description: MOCK
+        in: header
+        name: FZM-SIGNATURE
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: data
+        schema:
+          $ref: '#/definitions/types.GetGroupMemberListRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/types.GeneralResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/types.GetGroupMemberListResponse'
+              type: object
+      summary: 查询群成员列表
+      tags:
+      - group 群成员信息
+  /app/group-pub-info:
+    post:
+      parameters:
+      - description: MOCK
+        in: header
+        name: FZM-SIGNATURE
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: data
+        schema:
+          $ref: '#/definitions/types.GetGroupPubInfoRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/types.GeneralResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/types.GetGroupPubInfoResponse'
+              type: object
+      summary: 查询群公开信息
+      tags:
+      - group 群信息
+  /app/group-remove:
+    post:
+      parameters:
+      - description: MOCK
+        in: header
+        name: FZM-SIGNATURE
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: data
+        schema:
+          $ref: '#/definitions/types.GroupRemoveRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/types.GeneralResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/types.GroupRemoveResponse'
+              type: object
+      summary: 踢人
+      tags:
+      - group 群动作
+  /app/group-search:
+    post:
+      parameters:
+      - description: MOCK
+        in: header
+        name: FZM-SIGNATURE
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: data
+        schema:
+          $ref: '#/definitions/types.GetGroupInfoByConditionReq'
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/types.GeneralResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/types.GetGroupInfoByConditionResp'
+              type: object
+      summary: 搜索群列表
+      tags:
+      - group 群信息
+  /app/group/{id}:
+    get:
+      parameters:
+      - description: MOCK
+        in: header
+        name: FZM-SIGNATURE
+        required: true
+        type: string
+      - description: 群id
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/types.GeneralResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/types.GetGroupInfoResponse'
+              type: object
+      summary: 查询群信息
+      tags:
+      - group 群信息
+  /app/group/{id}/member/{memberId}:
+    get:
+      parameters:
+      - description: MOCK
+        in: header
+        name: FZM-SIGNATURE
+        required: true
+        type: string
+      - description: 群id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 群成员id
+        in: path
+        name: memberId
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/types.GeneralResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/types.GetGroupMemberInfoResponse'
+              type: object
+      summary: 查询群成员信息
+      tags:
+      - group 群成员信息
+  /app/group/{id}/members:
+    get:
+      parameters:
+      - description: MOCK
+        in: header
+        name: FZM-SIGNATURE
+        required: true
+        type: string
+      - description: 群id
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/types.GeneralResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/types.GetGroupMemberListResponse'
+              type: object
+      summary: 查询群成员列表
+      tags:
+      - group 群成员信息
+  /app/groups:
+    get:
+      parameters:
+      - description: MOCK
+        in: header
+        name: FZM-SIGNATURE
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/types.GeneralResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/types.GetGroupListResponse'
+              type: object
+      summary: 查询群列表
+      tags:
+      - group 群信息
+  /app/invite-group-members:
+    post:
+      parameters:
+      - description: MOCK
+        in: header
+        name: FZM-SIGNATURE
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: data
+        schema:
+          $ref: '#/definitions/types.InviteGroupMembersRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/types.GeneralResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/types.InviteGroupMembersResponse'
+              type: object
+      summary: 邀请新群员
+      tags:
+      - group 群动作
+  /app/join-group:
+    post:
+      parameters:
+      - description: MOCK
+        in: header
+        name: FZM-SIGNATURE
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: data
+        schema:
+          $ref: '#/definitions/types.JoinGroupReq'
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/types.GeneralResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/types.JoinGroupResp'
+              type: object
+      summary: 直接进群
+      tags:
+      - group 群动作
+  /app/joinType:
+    post:
+      parameters:
+      - description: MOCK
+        in: header
+        name: FZM-SIGNATURE
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: data
+        schema:
+          $ref: '#/definitions/types.UpdateGroupJoinTypeRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/types.GeneralResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/types.UpdateGroupJoinTypeResponse'
+              type: object
+      summary: 更新加群设置
+      tags:
+      - group 群信息
+  /app/member/muteTime:
+    post:
+      parameters:
+      - description: MOCK
+        in: header
+        name: FZM-SIGNATURE
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: data
+        schema:
+          $ref: '#/definitions/types.UpdateGroupMemberMuteTimeRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/types.GeneralResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/types.UpdateGroupMemberMuteTimeResponse'
+              type: object
+      summary: 更新群成员禁言时间
+      tags:
+      - group 禁言
+  /app/member/name:
+    post:
+      parameters:
+      - description: MOCK
+        in: header
+        name: FZM-SIGNATURE
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: data
+        schema:
+          $ref: '#/definitions/types.UpdateGroupMemberNameRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/types.GeneralResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/types.UpdateGroupMemberNameResponse'
+              type: object
+      summary: 更新群成员昵称
+      tags:
+      - group 群成员信息
+  /app/member/type:
+    post:
+      parameters:
+      - description: MOCK
+        in: header
+        name: FZM-SIGNATURE
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: data
+        schema:
+          $ref: '#/definitions/types.SetAdminRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/types.GeneralResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/types.SetAdminResponse'
+              type: object
+      summary: 设置管理员
+      tags:
+      - group 群成员信息
+  /app/mute-list:
+    post:
+      parameters:
+      - description: MOCK
+        in: header
+        name: FZM-SIGNATURE
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: data
+        schema:
+          $ref: '#/definitions/types.GetMuteListRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/types.GeneralResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/types.GetMuteListResponse'
+              type: object
+      summary: 查询群内被禁言成员名单
+      tags:
+      - group 禁言
+  /app/muteType:
+    post:
+      parameters:
+      - description: MOCK
+        in: header
+        name: FZM-SIGNATURE
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: data
+        schema:
+          $ref: '#/definitions/types.UpdateGroupMuteTypeRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/types.GeneralResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/types.UpdateGroupMuteTypeResponse'
+              type: object
+      summary: 更新群禁言设置
+      tags:
+      - group 群信息
+  /app/name:
+    post:
+      parameters:
+      - description: MOCK
+        in: header
+        name: FZM-SIGNATURE
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: data
+        schema:
+          $ref: '#/definitions/types.UpdateGroupNameRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/types.GeneralResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/types.UpdateGroupNameResponse'
+              type: object
+      summary: 更新群名称
+      tags:
+      - group 群信息
+  /app/reject-group-apply:
+    post:
+      parameters:
+      - description: MOCK
+        in: header
+        name: FZM-SIGNATURE
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: data
+        schema:
+          $ref: '#/definitions/types.RejectGroupApplyReq'
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/types.GeneralResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/types.RejectGroupApplyResp'
+              type: object
+      summary: 拒绝加群审批
+      tags:
+      - group 群审批
+swagger: "2.0"

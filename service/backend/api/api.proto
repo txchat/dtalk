@@ -1,0 +1,67 @@
+// protoc -I=. -I=$GOPATH/src --go_out=plugins=grpc:. *.proto
+syntax = "proto3";
+
+package dtalk.backend;
+option go_package = "github.com/txchat/dtalk/service/backend";
+
+message CreateRequest{
+  string platform=1;
+  string description=2;
+  int32 force=3;
+  string url=4;
+  string version_code=5;
+  string version_name=6;
+  string device_type=7;
+}
+
+message UpdateRequest{
+  string description=1;
+  int32 force=2;
+  string url=3;
+  string version_code=4;
+  string version_name=5;
+  int64 id=6;
+}
+
+message ChangeStatusRequest{
+  int64 id=1;
+  int32 status=2;
+  string device_type=3;
+}
+
+message CheckAndUpdateRequest{
+  int64 id=1;
+  string device_type=2;
+}
+
+message CreateReply{
+  int64 id=1;
+
+}
+
+message UpdateReply{
+  int64 num=1;
+}
+
+message ChangeStatusReply{
+  int64 num=1;
+}
+
+message CheckAndUpdateReply{
+  int64 id=1;
+  string platform=2;
+  int32 status=3;
+  string device_type=4;
+  string version_code=5;
+  string url=6;
+  int32 force=7;
+  string description=8;
+  string ope_user=9;
+  int64 update_time=10;
+  int64 create_time=11;
+}
+
+service Generator {
+  rpc CreateVersion(CreateRequest) returns (CreateReply);
+}
+

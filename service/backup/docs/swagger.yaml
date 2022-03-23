@@ -1,0 +1,55 @@
+definitions:
+  model.GeneralResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        type: object
+      message:
+        type: integer
+    type: object
+  model.GetAddressRequest:
+    properties:
+      query:
+        type: string
+    required:
+    - query
+    type: object
+  model.GetAddressResponse:
+    properties:
+      address:
+        type: string
+    type: object
+host: 127.0.0.1:18004
+info:
+  contact: {}
+  title: backup
+  version: "1.0"
+paths:
+  /get-address:
+    post:
+      parameters:
+      - description: MOCK
+        in: header
+        name: FZM-SIGNATURE
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: data
+        schema:
+          $ref: '#/definitions/model.GetAddressRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.GeneralResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.GetAddressResponse'
+              type: object
+      summary: 通过手机或邮箱得到地址
+      tags:
+      - backup
+swagger: "2.0"

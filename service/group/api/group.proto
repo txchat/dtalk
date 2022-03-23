@@ -1,0 +1,519 @@
+// protoc -I=. -I=$GOPATH/src --go_out=plugins=grpc:. *.proto
+syntax = "proto3";
+
+package dtalk.group;
+option go_package = "github.com/txchat/dtalk/service/group";
+
+// 群状态
+enum GroupStatus {
+  GROUP_STATUS_NORMAL = 0; // 正常
+  GROUP_STATUS_BLOCK = 1; // 封禁
+  GROUP_STATUS_DISBAND = 2 ;// 解散
+}
+
+// 群类型
+enum GroupType {
+  GROUP_TYPE_NORMAL = 0; // 普通群
+  GROUP_TYPE_ENT = 1; // 全员群
+  GROUP_TYPE_DEP = 2; // 部门群
+}
+
+// 群内加群设置
+enum GroupJoinType {
+  GROUP_JOIN_TYPE_ANY = 0; // 无需审批（默认）
+  GROUP_JOIN_TYPE_ADMIN = 1; // 禁止加群，群主和管理员邀请加群
+  GROUP_JOIN_TYPE_APPLY = 2; // 普通人邀请需要审批,群主和管理员直接加群
+}
+
+// 群内发言设置
+enum GroupMuteType {
+  GROUP_MUTE_TYPE_ANY = 0; // 全员可发言
+  GROUP_MUTE_TYPE_ADMIN = 1; // 全员禁言(除群主和管理员)
+}
+
+// 群内加好友设置
+enum GroupFriendType {
+  GROUP_FRIEND_TYPE_ALLOW = 0; // 群内可加好友
+  GROUP_FRIEND_TYPE_DENY = 1; // 群内禁止加好友
+}
+
+// 群成员类型
+enum GroupMemberType {
+  GROUP_MEMBER_TYPE_NORMAL = 0;  // 群员
+  GROUP_MEMBER_TYPE_ADMIN = 1;  // 管理员
+  GROUP_MEMBER_TYPE_OWNER = 2;  // 群主
+  GROUP_MEMBER_TYPE_OTHER = 10; // 退群
+}
+
+message GroupInfo {
+  int64 id = 1;
+  string name = 2;
+  string avatar = 3;
+}
+
+message GroupMemberInfo {
+  // 成员 id
+  string id = 1;
+  // 成员在群里的名字
+  string name = 2;
+}
+
+message GetGroupIdsRequest{
+  string member_id = 1;
+}
+
+message GetGroupIdsReply {
+  repeated int64 group_ids = 1;
+}
+
+message CheckInGroupRequest{
+  string member_id = 1;
+  int64 group_id = 2;
+}
+
+message CheckInGroupReply {
+  bool is_ok = 1;
+}
+
+message GetMemberIdsRequest{
+  int64 group_id = 1;
+}
+
+message GetMemberIdsReply{
+  repeated string member_ids = 1;
+}
+
+message CheckMuteRequest {
+  string member_id = 1;
+  int64 group_id = 2;
+}
+
+message CheckMuteReply {
+  bool is_ok = 1;
+}
+
+// 得到加入的所有群
+message GetGroupsReq {
+  string id = 1;
+}
+
+message GetGroupsResp {
+  repeated GroupInfo groups = 1;
+}
+
+// ---------------- ----------------------
+
+message GroupBizInfo {
+  int64 id = 1;
+  string mark_id = 2;
+  string name = 3;
+  string avatar = 4;
+  int32 member_num = 5;
+  int32 member_maximum = 6;
+  string introduce = 7;
+  // 群状态，0=正常 1=封禁 2=解散
+  GroupStatus status = 8;
+  string owner_id = 9;
+  int64 create_time = 10;
+  int64 update_time = 11;
+  // 加群方式，0=无需审批（默认），1=禁止加群，群主和管理员邀请加群, 2=普通人邀请需要审批,群主和管理员直接加群
+  GroupJoinType join_type = 12;
+  // 禁言， 0=全员可发言， 1=全员禁言(除群主和管理员)
+  GroupMuteType mute_type = 13;
+  // 加好友限制， 0=群内可加好友，1=群内禁止加好友
+  GroupFriendType friend_type = 14;
+  // 群内当前被禁言的人数
+  int32 mute_num = 15;
+  // 群内管理员数量
+  int32 admin_num = 16;
+  string AES_key = 17;
+  string pub_name = 18;
+  // 群类型 (0: 普通群, 1: 全员群, 2: 部门群)
+  GroupType type = 19;
+  GroupMemberBizInfo owner = 20;
+  GroupMemberBizInfo person = 21;
+  repeated GroupMemberBizInfo members = 22;
+}
+
+message GroupMemberBizInfo {
+  int64 group_id = 1;
+  string id = 2;
+  string name = 3;
+  // 用户角色，0=群员,1=管理员, 2=群主，10=退群
+  GroupMemberType type = 4;
+  // 该用户被禁言结束的时间 9223372036854775807=永久禁言
+  int64 mute_time = 5;
+  int64 join_time = 6;
+}
+
+// 创建群聊
+message CreateGroupReq {
+  string name = 1;
+  GroupType group_type = 2;
+  GroupMemberInfo owner = 3;
+  repeated GroupMemberInfo members = 4;
+}
+
+message CreateGroupResp {
+  int64 group_id = 1;
+}
+
+message InviteGroupMembersReq {
+  int64 group_id = 1;
+  string inviter_id = 2;
+  repeated string member_ids = 3;
+}
+
+message InviteGroupMembersResp {
+}
+
+message GroupExitReq {
+  int64 group_id = 1;
+  string person_id = 2;
+}
+
+message GroupExitResp {
+}
+
+message GroupDisbandReq {
+  int64 group_id = 1;
+  string person_id = 2;
+}
+
+message GroupDisbandResp {
+}
+
+message GroupRemoveReq {
+  int64 group_id = 1;
+  string person_id = 2;
+  repeated string member_ids = 3;
+}
+
+message GroupRemoveResp {
+  // 群当前人数
+  int32 member_num = 1;
+  // 成功被踢的成员列表
+  repeated string member_ids = 2;
+}
+
+message ChangeOwnerReq {
+  int64 group_id = 1;
+  string person_id = 2;
+  // 被转让为群主的群成员 id
+  string member_id = 3;
+}
+
+message ChangeOwnerResp {
+}
+
+message UpdateGroupNameReq {
+  int64 group_id = 1;
+  string person_id = 2;
+  string name = 3;
+  string public_name = 4;
+}
+
+message UpdateGroupNameResp {
+}
+
+message UpdateGroupAvatarReq {
+  int64 group_id = 1;
+  string person_id = 2;
+  // 群头像 url
+  string avatar = 3;
+}
+
+message UpdateGroupAvatarResp {
+}
+
+message UpdateGroupJoinTypeReq {
+  int64 group_id = 1;
+  string person_id = 2;
+  GroupJoinType group_join_type = 3;
+}
+
+message UpdateGroupJoinTypeResp {
+}
+
+message UpdateGroupFriendTypeReq {
+  int64 group_id = 1;
+  string person_id = 2;
+  GroupFriendType group_friend_type = 3;
+}
+
+message UpdateGroupFriendTypeResp {
+}
+
+message UpdateGroupMuteTypeReq {
+  int64 group_id = 1;
+  string person_id = 2;
+  GroupMuteType group_mute_type = 3;
+}
+
+message UpdateGroupMuteTypeResp {
+}
+
+message UpdateGroupMemberNameReq {
+  int64 group_id = 1;
+  string person_id = 2;
+  string member_name = 3;
+}
+
+message UpdateGroupMemberNameResp {
+}
+
+message SetAdminReq {
+  int64 group_id = 1;
+  string person_id = 2;
+  string member_id = 3;
+  GroupMemberType group_member_type = 4;
+}
+
+message SetAdminResp {
+}
+
+message UpdateGroupMemberMuteTimeReq {
+  int64 group_id = 1;
+  string person_id = 2;
+  repeated string member_ids = 3;
+  int64 mute_time = 4;
+}
+
+message UpdateGroupMemberMuteTimeResp {
+  repeated GroupMemberBizInfo members = 1;
+}
+
+message GetPriGroupInfoReq {
+  int64 group_id = 1;
+  string person_id = 2;
+  int32 display_num = 3;
+}
+
+message GetPriGroupInfoResp {
+  GroupBizInfo group = 1;
+}
+
+message GetPubGroupInfoReq {
+  int64 group_id = 1;
+  string person_id = 2;
+}
+
+message GetPubGroupInfoResp {
+  GroupBizInfo group = 1;
+}
+
+message GetGroupListReq {
+  string person_id = 1;
+}
+
+message GetGroupListResp {
+  repeated GroupBizInfo groups = 1;
+}
+
+message GetGroupMemberListReq {
+  int64 group_id = 1;
+  string person_id = 2;
+}
+
+message GetGroupMemberListResp {
+  repeated GroupMemberBizInfo members = 1;
+}
+
+message GetGroupMemberInfoReq {
+  int64 group_id = 1;
+  string person_id = 2;
+  string member_id = 3;
+}
+
+message GetGroupMemberInfoResp {
+  GroupMemberBizInfo member = 1;
+}
+
+message GetMuteListReq {
+  int64 group_id = 1;
+  string person_id = 2;
+}
+
+message GetMuteListResp {
+  repeated GroupMemberBizInfo members = 1;
+}
+
+// -------------- oa 远程调用 ----------------
+
+message ForceAddMemberReq{
+  string member_id = 1;
+  int64 group_id = 2;
+}
+
+message ForceAddMemberResp{
+}
+
+message ForceAddMembersReq {
+  int64 group_id = 1;
+  repeated GroupMemberInfo members = 2;
+}
+
+message ForceAddMembersResp{
+}
+
+message ForceDeleteMemberReq{
+  string member_id = 1;
+  int64 group_id = 2;
+}
+
+message ForceDeleteMemberResp{
+}
+
+message ForceDeleteMembersReq{
+  int64 group_id = 1;
+  repeated string member_ids = 2;
+}
+
+message ForceDeleteMembersResp{
+}
+
+message GetMemberReq{
+  string member_id = 1;
+  int64 group_id = 2;
+}
+
+message GetMemberResp{
+  int64 groupId = 1;
+  string groupMemberId = 2;
+  string groupMemberName = 3;
+  int32 groupMemberType = 4;
+  int64 groupMemberJoinTime = 5;
+  int64 groupMemberUpdateTime = 6;
+}
+
+message GetGroupInfoReq {
+  int64 groupId = 1;
+}
+
+message GetGroupInfoResp {
+  int64 groupId = 1;
+  bool  group_exist = 2;
+  string group_name = 3;
+  string group_avatar = 4;
+  string group_owner_id = 5;
+}
+
+message ForceDisbandGroupReq {
+  int64 group_id = 1;
+  string ope_id = 2;
+}
+
+message ForceDisbandGroupResp {
+}
+
+message ForceUpdateGroupTypeReq {
+  int64 group_id = 1;
+  int32 group_type = 2;
+}
+
+message ForceUpdateGroupTypeResp {
+  int64 group_id = 1;
+  int32 group_type = 2;
+}
+
+message ForceJoinGroupsReq {
+  GroupMemberInfo member = 1;
+  repeated int64 group_ids = 2;
+}
+
+message ForceJoinGroupsResp {
+}
+
+message ForceExitGroupsReq {
+  GroupMemberInfo member = 1;
+  repeated int64 group_ids = 2;
+}
+
+message ForceExitGroupsResp {
+}
+
+message ForceChangeOwnerReq {
+  int64 group_id = 1;
+  GroupMemberInfo member = 2;
+}
+
+message ForceChangeOwnerResp {}
+
+service Group {
+  rpc GetGroupIds(GetGroupIdsRequest) returns (GetGroupIdsReply);
+  rpc CheckInGroup(CheckInGroupRequest) returns (CheckInGroupReply);
+  rpc GetMemberIds(GetMemberIdsRequest) returns (GetMemberIdsReply);
+  rpc CheckMute(CheckMuteRequest) returns (CheckMuteReply);
+
+  // 得到加入的所有群
+  rpc GetGroups(GetGroupsReq) returns (GetGroupsResp);
+  // 查询成员
+  rpc GetMember(GetMemberReq) returns (GetMemberResp);
+  // 查询群信息
+  rpc GetGroupInfo(GetGroupInfoReq) returns (GetGroupInfoResp);
+
+  // ------------- gateway -----------
+
+  // 创建群聊
+  rpc CreateGroup(CreateGroupReq) returns (CreateGroupResp);
+  // 邀请新成员
+  rpc InviteGroupMembers(InviteGroupMembersReq) returns (InviteGroupMembersResp);
+  // 退出群
+  rpc GroupExit(GroupExitReq) returns (GroupExitResp);
+  // 解散群
+  rpc GroupDisband(GroupDisbandReq) returns (GroupDisbandResp);
+  // 踢人
+  rpc GroupRemove(GroupRemoveReq) returns (GroupRemoveResp);
+  // 转让群主
+  rpc ChangeOwner(ChangeOwnerReq) returns (ChangeOwnerResp);
+  // 更新群名称
+  rpc UpdateGroupName(UpdateGroupNameReq) returns(UpdateGroupNameResp);
+  // 更新群头像
+  rpc UpdateGroupAvatar(UpdateGroupAvatarReq) returns (UpdateGroupAvatarResp);
+  // 更新加群设置
+  rpc UpdateGroupJoinType(UpdateGroupJoinTypeReq) returns (UpdateGroupJoinTypeResp);
+  // 更新群内加好友设置
+  rpc UpdateGroupFriendType(UpdateGroupFriendTypeReq) returns (UpdateGroupFriendTypeResp);
+  // 更新群内禁言设置
+  rpc UpdateGroupMuteType(UpdateGroupMuteTypeReq) returns (UpdateGroupMuteTypeResp);
+  // 更新群内昵称
+  rpc UpdateGroupMemberName(UpdateGroupMemberNameReq) returns (UpdateGroupMemberNameResp);
+  // 设置群管理员
+  rpc SetAdmin(SetAdminReq) returns(SetAdminResp);
+  // 设置群成员禁言时间
+  rpc UpdateGroupMemberMuteTime(UpdateGroupMemberMuteTimeReq) returns(UpdateGroupMemberMuteTimeResp);
+  // 查询完整群信息
+  rpc GetPriGroupInfo(GetPriGroupInfoReq) returns(GetPriGroupInfoResp);
+  // 查询群公开信息
+  rpc GetPubGroupInfo(GetPubGroupInfoReq) returns (GetPubGroupInfoResp);
+  // 查询加入的群列表
+  rpc GetGroupList(GetGroupListReq) returns (GetGroupListResp);
+  // 查询群成员列表
+  rpc GetGroupMemberList(GetGroupMemberListReq) returns (GetGroupMemberListResp);
+  // 查询群成员信息
+  rpc GetGroupMemberInfo(GetGroupMemberInfoReq) returns (GetGroupMemberInfoResp);
+  // 查询群内禁言列表
+  rpc GetMuteList(GetMuteListReq) returns (GetMuteListResp);
+
+
+  // ------------- Third Force --------------
+
+  // 更新群类型
+  rpc ForceUpdateGroupType(ForceUpdateGroupTypeReq) returns(ForceUpdateGroupTypeResp);
+  // 解散群, 强制解散
+  rpc ForceDisbandGroup(ForceDisbandGroupReq) returns (ForceDisbandGroupResp);
+  // 添加成员
+  rpc ForceAddMember(ForceAddMemberReq) returns (ForceAddMemberResp);
+  // 批量添加成员
+  rpc ForceAddMembers(ForceAddMembersReq) returns (ForceAddMembersResp);
+  // 删除成员
+  rpc ForceDeleteMember(ForceDeleteMemberReq) returns (ForceDeleteMemberResp);
+  // 批量删除成员
+  rpc ForceDeleteMembers(ForceDeleteMembersReq) returns (ForceDeleteMembersResp);
+  // 一个人加入多个群
+  rpc ForceJoinGroups(ForceJoinGroupsReq) returns(ForceJoinGroupsResp);
+  // 一个人退出多个群
+  rpc ForceExitGroups(ForceExitGroupsReq) returns(ForceExitGroupsResp);
+  // 成为群主
+  rpc ForceChangeOwner(ForceChangeOwnerReq) returns(ForceChangeOwnerResp);
+}
