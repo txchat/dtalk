@@ -4,10 +4,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/txchat/dtalk/pkg/api"
 	xerror "github.com/txchat/dtalk/pkg/error"
+	"github.com/txchat/dtalk/pkg/util"
 	logic "github.com/txchat/dtalk/service/group/logic/http"
 	"github.com/txchat/dtalk/service/group/model/biz"
 	"github.com/txchat/dtalk/service/group/model/types"
-	"github.com/txchat/dtalk/pkg/util"
 )
 
 // CreateGroup

@@ -4,9 +4,9 @@ import (
 	"context"
 
 	xerror "github.com/txchat/dtalk/pkg/error"
+	"github.com/txchat/dtalk/pkg/util"
 	"github.com/txchat/dtalk/service/group/model/biz"
 	"github.com/txchat/dtalk/service/group/model/types"
-	"github.com/txchat/dtalk/pkg/util"
 )
 
 func (s *Service) GetGroupApplyByIdSvc(ctx context.Context, req *types.GetGroupApplyByIdReq) (res *types.GetGroupApplysResp, err error) {

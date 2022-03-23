@@ -1,8 +1,8 @@
 package cdk
 
 import (
-	"github.com/txchat/dtalk/service/backend/model/types"
 	"github.com/txchat/dtalk/pkg/util"
+	"github.com/txchat/dtalk/service/backend/model/types"
 )
 
 func (s *ServiceContent) UpdateCdkTypeSvc(req *types.UpdateCdkTypeReq) (res *types.UpdateCdkTypeResp, err error) {

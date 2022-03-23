@@ -6,12 +6,12 @@ import (
 	"time"
 
 	"github.com/BurntSushi/toml"
-	"github.com/uber/jaeger-client-go"
-	traceConfig "github.com/uber/jaeger-client-go/config"
 	"github.com/txchat/dtalk/pkg/net/grpc"
 	xgrpc "github.com/txchat/dtalk/pkg/net/grpc"
 	xtime "github.com/txchat/dtalk/pkg/time"
 	xlog "github.com/txchat/im-pkg/log"
+	"github.com/uber/jaeger-client-go"
+	traceConfig "github.com/uber/jaeger-client-go/config"
 )
 
 var (

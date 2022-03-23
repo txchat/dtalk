@@ -5,9 +5,9 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/txchat/dtalk/pkg/mysql"
+	"github.com/txchat/dtalk/pkg/util"
 	"github.com/txchat/dtalk/service/group/model/biz"
 	"github.com/txchat/dtalk/service/group/model/db"
-	"github.com/txchat/dtalk/pkg/util"
 )
 
 // 数据读写层，数据库和缓存全部在这层统一处理，包括 cache miss 处理。

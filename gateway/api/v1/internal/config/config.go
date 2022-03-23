@@ -3,9 +3,9 @@ package config
 import (
 	"flag"
 	"github.com/BurntSushi/toml"
+	xtime "github.com/txchat/dtalk/pkg/time"
 	"github.com/uber/jaeger-client-go"
 	traceConfig "github.com/uber/jaeger-client-go/config"
-	xtime "github.com/txchat/dtalk/pkg/time"
 	"time"
 )
 

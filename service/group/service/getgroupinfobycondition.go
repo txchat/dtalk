@@ -4,10 +4,10 @@ import (
 	"context"
 	"errors"
 
+	"github.com/txchat/dtalk/pkg/util"
 	"github.com/txchat/dtalk/service/group/model"
 	"github.com/txchat/dtalk/service/group/model/biz"
 	"github.com/txchat/dtalk/service/group/model/types"
-	"github.com/txchat/dtalk/pkg/util"
 )
 
 // GetGroupInfoByConditionSvc 通过搜索得到群列表

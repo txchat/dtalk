@@ -16,7 +16,6 @@ import (
 	traceLog "github.com/opentracing/opentracing-go/log"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"github.com/uber/jaeger-client-go"
 	"github.com/txchat/dtalk/pkg/naming"
 	"github.com/txchat/dtalk/pkg/net/grpc"
 	"github.com/txchat/dtalk/pkg/util"
@@ -33,6 +32,7 @@ import (
 	"github.com/txchat/imparse"
 	"github.com/txchat/imparse/chat"
 	xproto "github.com/txchat/imparse/proto"
+	"github.com/uber/jaeger-client-go"
 	"google.golang.org/grpc/resolver"
 )
 

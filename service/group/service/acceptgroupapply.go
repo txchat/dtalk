@@ -4,10 +4,10 @@ import (
 	"context"
 
 	xerror "github.com/txchat/dtalk/pkg/error"
+	"github.com/txchat/dtalk/pkg/util"
 	"github.com/txchat/dtalk/service/group/model/biz"
 	"github.com/txchat/dtalk/service/group/model/db"
 	"github.com/txchat/dtalk/service/group/model/types"
-	"github.com/txchat/dtalk/pkg/util"
 )
 
 // AcceptGroupApplySvc 接受 申请加入团队 的审批

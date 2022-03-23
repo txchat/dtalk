@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"github.com/pkg/errors"
 	xerror "github.com/txchat/dtalk/pkg/error"
+	"github.com/txchat/dtalk/pkg/util"
 	"github.com/txchat/dtalk/service/backend/model/biz"
 	"github.com/txchat/dtalk/service/backend/model/types"
-	"github.com/txchat/dtalk/pkg/util"
 )
 
 // ListenOrder 监听创建订单消息队列

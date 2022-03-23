@@ -1,8 +1,8 @@
 package db
 
 import (
-	"github.com/txchat/dtalk/service/group/model/biz"
 	"github.com/txchat/dtalk/pkg/util"
+	"github.com/txchat/dtalk/service/group/model/biz"
 )
 
 type GroupInfo struct {

@@ -6,11 +6,11 @@ import (
 	"github.com/txchat/dtalk/pkg/contextx"
 	xerror "github.com/txchat/dtalk/pkg/error"
 	xrand "github.com/txchat/dtalk/pkg/rand"
+	"github.com/txchat/dtalk/pkg/util"
 	"github.com/txchat/dtalk/service/group/model"
 	"github.com/txchat/dtalk/service/group/model/biz"
 	"github.com/txchat/dtalk/service/group/model/db"
 	"github.com/txchat/dtalk/service/group/model/types"
-	"github.com/txchat/dtalk/pkg/util"
 )
 
 //CreateGroupSvc 创建群, 返回群信息

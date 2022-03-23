@@ -2,8 +2,8 @@ package logic
 
 import (
 	"github.com/txchat/dtalk/gateway/api/v1/internal/types"
-	pb "github.com/txchat/dtalk/service/group/api"
 	"github.com/txchat/dtalk/pkg/util"
+	pb "github.com/txchat/dtalk/service/group/api"
 )
 
 func (l *GroupLogic) InviteGroupMembers(req *types.InviteGroupMembersReq) (*types.InviteGroupMembersResp, error) {

@@ -3,8 +3,8 @@ package service
 import (
 	"context"
 
-	"github.com/txchat/dtalk/service/group/model/types"
 	"github.com/txchat/dtalk/pkg/util"
+	"github.com/txchat/dtalk/service/group/model/types"
 )
 
 // GetGroupMemberListSvc 查询群成员列表

@@ -3,10 +3,10 @@ package cdk
 import (
 	chainTypes "github.com/33cn/chain33/types"
 	xerror "github.com/txchat/dtalk/pkg/error"
+	"github.com/txchat/dtalk/pkg/util"
 	"github.com/txchat/dtalk/service/backend/model/biz"
 	"github.com/txchat/dtalk/service/backend/model/db"
 	"github.com/txchat/dtalk/service/backend/model/types"
-	"github.com/txchat/dtalk/pkg/util"
 	"time"
 )
 

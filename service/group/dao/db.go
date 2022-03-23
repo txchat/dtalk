@@ -2,10 +2,10 @@ package dao
 
 import (
 	"github.com/txchat/dtalk/pkg/mysql"
+	"github.com/txchat/dtalk/pkg/util"
 	"github.com/txchat/dtalk/service/group/model"
 	"github.com/txchat/dtalk/service/group/model/biz"
 	"github.com/txchat/dtalk/service/group/model/db"
-	"github.com/txchat/dtalk/pkg/util"
 	"strings"
 )
 

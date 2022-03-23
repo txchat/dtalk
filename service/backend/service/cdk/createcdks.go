@@ -1,9 +1,9 @@
 package cdk
 
 import (
+	"github.com/txchat/dtalk/pkg/util"
 	"github.com/txchat/dtalk/service/backend/model/db"
 	"github.com/txchat/dtalk/service/backend/model/types"
-	"github.com/txchat/dtalk/pkg/util"
 	"time"
 )
 

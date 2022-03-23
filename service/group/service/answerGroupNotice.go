@@ -4,9 +4,9 @@ import (
 	"context"
 
 	"github.com/golang/protobuf/proto"
+	"github.com/txchat/dtalk/pkg/util"
 	"github.com/txchat/dtalk/service/group/model"
 	xproto "github.com/txchat/imparse/proto"
-	"github.com/txchat/dtalk/pkg/util"
 )
 
 func (s *Service) PusherSignalJoin(ctx context.Context, groupId int64, groupMemberIds []string) error {

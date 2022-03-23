@@ -3,9 +3,9 @@ package service
 import (
 	"context"
 
+	"github.com/txchat/dtalk/pkg/util"
 	"github.com/txchat/dtalk/service/group/model/biz"
 	"github.com/txchat/dtalk/service/group/model/types"
-	"github.com/txchat/dtalk/pkg/util"
 )
 
 func (s *Service) RejectGroupApplySvc(ctx context.Context, req *types.RejectGroupApplyReq) (res *types.RejectGroupApplyResp, err error) {

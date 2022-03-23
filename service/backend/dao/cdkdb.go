@@ -3,7 +3,6 @@ package dao
 import (
 	"github.com/txchat/dtalk/pkg/util"
 	"github.com/txchat/dtalk/service/backend/model/db"
-	"github.com/txchat/dtalk/pkg/util"
 	"math"
 	"strings"
 	"time"

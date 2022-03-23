@@ -6,11 +6,11 @@ import (
 
 	"github.com/opentracing/opentracing-go"
 	"github.com/rs/zerolog"
-	"github.com/uber/jaeger-client-go"
 	xgrpc "github.com/txchat/dtalk/pkg/net/grpc"
 	pb "github.com/txchat/dtalk/service/record/pusher/api"
 	"github.com/txchat/dtalk/service/record/pusher/service"
 	"github.com/txchat/im-pkg/trace"
+	"github.com/uber/jaeger-client-go"
 	"google.golang.org/grpc"
 )
 

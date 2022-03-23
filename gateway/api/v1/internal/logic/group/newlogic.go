@@ -5,8 +5,8 @@ import (
 	"github.com/txchat/dtalk/gateway/api/v1/internal/svc"
 	"github.com/txchat/dtalk/gateway/api/v1/internal/types"
 	"github.com/txchat/dtalk/pkg/api"
-	pb "github.com/txchat/dtalk/service/group/api"
 	"github.com/txchat/dtalk/pkg/util"
+	pb "github.com/txchat/dtalk/service/group/api"
 )
 
 type GroupLogic struct {

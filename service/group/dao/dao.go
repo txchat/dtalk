@@ -10,9 +10,9 @@ import (
 	zlog "github.com/rs/zerolog/log"
 	"github.com/txchat/dtalk/pkg/api/trace"
 	"github.com/txchat/dtalk/pkg/mysql"
+	"github.com/txchat/dtalk/pkg/rand"
 	"github.com/txchat/dtalk/pkg/redis"
 	"github.com/txchat/dtalk/service/group/config"
-	"github.com/txchat/dtalk/pkg/rand"
 )
 
 var srvName = "group/dao"
