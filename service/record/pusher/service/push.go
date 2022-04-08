@@ -104,6 +104,17 @@ func (p *Pusher) UniCast(ctx context.Context, m *record.PushMsg) error {
 	if p.s.cfg.OffPush.IsEnabled {
 		p.pushOffline(m, []string{m.GetTarget()})
 	}
+
+	//TODO 临时处理一下
+	midsMsg.ToIds = []string{m.GetFromId()}
+	_, err := p.s.logicClient.PushByMids(ctx, midsMsg)
+	if err != nil {
+		p.s.log.Debug().Err(err).
+			Str("appId", midsMsg.GetAppId()).Strs("toIds", midsMsg.GetToIds()).Int("len of msg", len(midsMsg.GetMsg())).
+			Msg("UniCast PushByMids Failed")
+	}
+
+	midsMsg.ToIds = []string{m.GetTarget()}
 	reply, err := p.s.logicClient.PushByMids(ctx, midsMsg)
 	if err != nil {
 		p.s.log.Debug().Err(err).
@@ -112,16 +123,6 @@ func (p *Pusher) UniCast(ctx context.Context, m *record.PushMsg) error {
 		return err
 	}
 	p.s.log.Debug().Str("appId", midsMsg.GetAppId()).Strs("to ids", midsMsg.GetToIds()).Msg("UniCast success")
-
-	//TODO 临时处理一下
-	midsMsg.ToIds = []string{m.GetFromId()}
-	_, err = p.s.logicClient.PushByMids(ctx, midsMsg)
-	if err != nil {
-		p.s.log.Debug().Err(err).
-			Str("appId", midsMsg.GetAppId()).Strs("toIds", midsMsg.GetToIds()).Int("len of msg", len(midsMsg.GetMsg())).
-			Msg("UniCast PushByMids Failed")
-		return err
-	}
 
 	index := comet.PushMsgReply{}
 	err = proto.Unmarshal(reply.Msg, &index)

@@ -59,6 +59,6 @@ type SyncRecordsReq struct {
 type SyncRecordsResp struct {
 	// 聊天记录数量
 	RecordCount int `json:"record_count"`
-	// 聊天记录
-	Records [][]byte `json:"records"`
+	// 聊天记录 base64 encoding
+	Records []string `json:"records"`
 }

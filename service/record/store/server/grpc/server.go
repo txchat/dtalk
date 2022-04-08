@@ -87,7 +87,7 @@ func (s *server) GetRecordsAfterMid(ctx context.Context, req *pb.GetRecordsAfter
 }
 
 func (s *server) GetSyncRecordsAfterMid(ctx context.Context, req *pb.GetSyncRecordsAfterMidReq) (*pb.GetSyncRecordsAfterMidReply, error) {
-	items, err := s.svr.GetSyncMsg("", req.GetUid(), req.GetMid(), req.GetCount())
+	items, err := s.svr.GetSyncMsgJustBizLevel("", req.GetUid(), req.GetMid(), req.GetCount())
 	if err != nil {
 		return &pb.GetSyncRecordsAfterMidReply{}, err
 	}
