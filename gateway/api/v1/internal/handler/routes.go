@@ -91,6 +91,7 @@ func SetupEngine(e *gin.Engine) *gin.Engine {
 		{
 			recordRoute.POST("/revoke", api.AuthMiddleWare(), record.RevokeHandler(serverCtx))
 			recordRoute.POST("/focus", api.AuthMiddleWare(), record.FocusHandler(serverCtx))
+			recordRoute.POST("/sync-record", api.AuthMiddleWare(), record.SyncRecords(serverCtx))
 		}
 	}
 
@@ -105,7 +106,6 @@ func SetupEngine(e *gin.Engine) *gin.Engine {
 	store.Use(api.AuthMiddleWare())
 	{
 		store.POST("/pri-chat-record", record.GetPriRecords(serverCtx))
-		store.POST("/sync-record", record.GetPriRecords(serverCtx))
 	}
 
 	return e

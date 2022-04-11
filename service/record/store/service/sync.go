@@ -226,3 +226,79 @@ func (s *Service) GetSyncMsg(key, uid string, startMid, count int64) ([][]byte, 
 	}
 	return records[0:num], nil
 }
+
+func (s *Service) GetSyncMsgJustBizLevel(key, uid string, startMid, count int64) ([][]byte, error) {
+	bizP := &xproto.Proto{
+		EventType: xproto.Proto_common,
+	}
+
+	//私聊 DESC
+	uMsg, err := s.dao.UserMsgAfter(uid, startMid, count)
+	if err != nil {
+		return nil, err
+	}
+
+	//to ASC
+	for i := 0; i < len(uMsg)/2; i++ {
+		uMsg[i], uMsg[len(uMsg)-1-i] = uMsg[len(uMsg)-1-i], uMsg[i]
+	}
+
+	//群聊
+	gMsg, err := s.dao.GroupMsgAfter(uid, startMid, count)
+	if err != nil {
+		return nil, err
+	}
+	//to ASC
+	for i := 0; i < len(gMsg)/2; i++ {
+		gMsg[i], gMsg[len(gMsg)-1-i] = gMsg[len(gMsg)-1-i], gMsg[i]
+	}
+
+	var records = make([][]byte, len(uMsg)+len(gMsg))
+	var num = 0
+	for _, m := range uMsg {
+		eveP := &xproto.Common{
+			ChannelType: xproto.Channel_ToUser,
+			Mid:         util.ToInt64(m.Mid),
+			Seq:         m.Seq,
+			From:        m.SenderId,
+			Target:      m.ReceiverId,
+			MsgType:     xproto.MsgType(m.MsgType),
+			Msg:         model.ConvertMsg(m.MsgType, []byte(m.Content)),
+			Source:      model.ConvertSource([]byte(m.Source)),
+			Reference:   model.ConvertReference([]byte(m.Reference)),
+			Datetime:    m.CreateTime,
+		}
+		bizP.Body, err = proto.Marshal(eveP)
+		bytes, err := proto.Marshal(bizP)
+		if err != nil {
+			s.log.Error().Err(err).Msg("Push msg Marshal failed")
+			continue
+		}
+		records[num] = bytes
+		num++
+	}
+
+	for _, m := range gMsg {
+		eveP := &xproto.Common{
+			ChannelType: xproto.Channel_ToGroup,
+			Mid:         util.ToInt64(m.Mid),
+			Seq:         m.Seq,
+			From:        m.SenderId,
+			Target:      m.ReceiverId,
+			MsgType:     xproto.MsgType(m.MsgType),
+			Msg:         model.ConvertMsg(m.MsgType, []byte(m.Content)),
+			Source:      model.ConvertSource([]byte(m.Source)),
+			Reference:   model.ConvertReference([]byte(m.Reference)),
+			Datetime:    m.CreateTime,
+		}
+		bizP.Body, err = proto.Marshal(eveP)
+		bytes, err := proto.Marshal(bizP)
+		if err != nil {
+			s.log.Error().Err(err).Msg("Push msg Marshal failed")
+			continue
+		}
+		records[num] = bytes
+		num++
+	}
+	return records[0:num], nil
+}

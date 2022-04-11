@@ -1,6 +1,7 @@
 package record
 
 import (
+	"encoding/base64"
 	"github.com/txchat/dtalk/gateway/api/v1/internal/model"
 	xerror "github.com/txchat/dtalk/pkg/error"
 	"github.com/txchat/dtalk/pkg/util"
@@ -56,9 +57,14 @@ func (l *Logic) GetSyncRecord(uid string, req *model.SyncRecordsReq) (*model.Syn
 		return nil, xerror.NewError(xerror.QueryFailed).SetExtMessage(err.Error())
 	}
 
+	records := make([]string, len(resp.GetRecords()))
+	for i, record := range resp.GetRecords() {
+		records[i] = base64.StdEncoding.EncodeToString(record)
+	}
+
 	res := &model.SyncRecordsResp{
 		RecordCount: len(resp.GetRecords()),
-		Records:     resp.GetRecords(),
+		Records:     records,
 	}
 
 	return res, nil

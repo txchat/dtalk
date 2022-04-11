@@ -31,7 +31,9 @@ func (l *Logic) GetConflictDevice(uid, deviceType, uuid string) (*device.Device,
 		if len(devices) < 1 {
 			break
 		}
-		var latestConn = devices[0]
+		var latestConn = &device.Device{
+			DeviceUUid: uuid,
+		}
 		for _, d := range devices {
 			switch xproto.Device(d.DeviceType) {
 			case xproto.Device_Android, xproto.Device_IOS:
