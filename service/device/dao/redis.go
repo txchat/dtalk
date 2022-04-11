@@ -75,10 +75,15 @@ func (d *Dao) setExpire(device *model.Device) error {
 		}
 		if item.ConnectId != device.ConnectId {
 			switch xproto.Device(item.DeviceType) {
-			case xproto.Device_IOS:
-			case xproto.Device_Android:
+			case xproto.Device_IOS, xproto.Device_Android:
+				if xproto.Device(device.DeviceType) != xproto.Device_Android &&
+					xproto.Device(device.DeviceType) != xproto.Device_IOS {
+					continue
+				}
 			default:
-				continue
+				if item.DeviceType != device.DeviceType || item.DeviceUuid != device.DeviceUuid {
+					continue
+				}
 			}
 			n++
 			if err := conn.Send("HDEL", keyDevice(item.Uid), item.ConnectId); err != nil {
