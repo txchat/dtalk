@@ -3,6 +3,9 @@ package auth
 import (
 	"errors"
 	"github.com/txchat/dtalk/pkg/address"
+	xcrypt "github.com/txchat/dtalk/pkg/crypt"
+	//secp256k1_ethereum "github.com/txchat/dtalk/pkg/crypt/secp256k1-ethereum"
+	secp256k1_haltingstate "github.com/txchat/dtalk/pkg/crypt/secp256k1-haltingstate"
 	"time"
 )
 
@@ -16,14 +19,21 @@ type ApiAuthenticator interface {
 }
 
 type defaultApuAuthenticator struct {
+	crypt xcrypt.Encrypt
 }
 
 func NewDefaultApuAuthenticator() *defaultApuAuthenticator {
-	return &defaultApuAuthenticator{}
+	driver, err := xcrypt.Load(secp256k1_haltingstate.Name)
+	if err != nil {
+		panic(err)
+	}
+	return &defaultApuAuthenticator{
+		crypt: driver,
+	}
 }
 
 func (d *defaultApuAuthenticator) Request(appId string, pubKey, privKey []byte) string {
-	authT := NewAuthToken(appId, time.Now().UnixNano()/1000)
+	authT := NewAuthToken(d.crypt, appId, time.Now().UnixNano()/1000)
 
 	ar := NewApiRequest(authT.getToken(privKey), authT.getMetadata(), pubKey)
 	return ar.getSig()
@@ -34,7 +44,7 @@ func (d *defaultApuAuthenticator) Auth(sig string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	authT, err := NewAuthTokenFromMetadata(ar.getMetadata())
+	authT, err := NewAuthTokenFromMetadata(d.crypt, ar.getMetadata())
 	if err != nil {
 		return "", err
 	}

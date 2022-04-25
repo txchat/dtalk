@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/haltingstate/secp256k1-go"
+	xcrypt "github.com/txchat/dtalk/pkg/crypt"
 	"github.com/txchat/dtalk/pkg/util"
 )
 
@@ -18,17 +18,19 @@ type AuthToken struct {
 	appId              string
 	timestamp          int64
 	expireTimeInterval time.Duration
+	crypt              xcrypt.Encrypt
 }
 
-func NewAuthToken(appId string, timestamp int64) *AuthToken {
+func NewAuthToken(crypt xcrypt.Encrypt, appId string, timestamp int64) *AuthToken {
 	return &AuthToken{
+		crypt:              crypt,
 		appId:              appId,
 		timestamp:          timestamp,
 		expireTimeInterval: DefaultExpireTimeInterval,
 	}
 }
 
-func NewAuthTokenFromMetadata(metadata string) (*AuthToken, error) {
+func NewAuthTokenFromMetadata(crypt xcrypt.Encrypt, metadata string) (*AuthToken, error) {
 	msg := strings.SplitN(metadata, "*", -1)
 	if len(msg) < 2 {
 		return nil, fmt.Errorf("metadata parse feilds error need 2 got %d", len(msg))
@@ -40,6 +42,7 @@ func NewAuthTokenFromMetadata(metadata string) (*AuthToken, error) {
 	appId := msg[1]
 
 	return &AuthToken{
+		crypt:              crypt,
 		appId:              appId,
 		timestamp:          timestamp,
 		expireTimeInterval: DefaultExpireTimeInterval,
@@ -54,7 +57,8 @@ func (t *AuthToken) getToken(privKey []byte) string {
 	metadata := t.getMetadata()
 	// enc metadata
 	msg256 := sha256.Sum256([]byte(metadata))
-	token := base64.StdEncoding.EncodeToString(secp256k1.Sign(msg256[:], privKey))
+	//token := base64.StdEncoding.EncodeToString(secp256k1.Sign(msg256[:], privKey))
+	token := base64.StdEncoding.EncodeToString(t.crypt.Sign(msg256[:], privKey))
 	return token
 }
 
@@ -69,5 +73,6 @@ func (t *AuthToken) match(token string, pubKey []byte) bool {
 		return false
 	}
 	msg256 := sha256.Sum256([]byte(t.getMetadata()))
-	return util.Secp256k1Verify(msg256[:], sig, pubKey)
+	//return util.Secp256k1Verify(msg256[:], sig, pubKey)
+	return 1 == t.crypt.Verify(msg256[:], sig, pubKey)
 }
