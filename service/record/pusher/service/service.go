@@ -315,9 +315,11 @@ func (s *Service) DealConn(ctx context.Context, m *logic.BizMsg) error {
 				return err
 			}
 		}
-		err = s.dao.BatchPushPublish(ctx, m.Key, m.GetFromId())
-		if err != nil {
-			logger.Error().Err(err).Msg("BatchPushPublish failed")
+		if dev != nil && (dev.Device == xproto.Device_Android || dev.Device == xproto.Device_IOS) {
+			err = s.dao.BatchPushPublish(ctx, m.Key, m.GetFromId())
+			if err != nil {
+				logger.Error().Err(err).Msg("BatchPushPublish failed")
+			}
 		}
 		//连接群聊
 		err = s.JoinGroups(ctx, m.GetFromId(), m.GetKey())
@@ -353,18 +355,27 @@ func (s *Service) DealConn(ctx context.Context, m *logic.BizMsg) error {
 			//TODO print err
 			return nil
 		}
-		err = s.dao.MarkReadPublish(ctx, m.Key, m.GetFromId(), imparse.FrameType(item.Type), item.Logs)
-		if err != nil {
-			logger.Error().Err(err).Int32("ack", p.Ack).Msg("MarkReadPublish failed")
+		dev, err := s.deviceClient.GetDeviceByConnID(ctx, &device.GetDeviceByConnIdRequest{
+			Uid:    m.GetFromId(),
+			ConnID: m.GetKey(),
+		})
+		if err != nil || dev == nil {
+			logger.Error().Err(err).Int32("ack", p.Ack).Str("uid", m.GetFromId()).Str("connID", m.GetKey()).Msg("GetDeviceByConnID failed")
 		}
-		switch item.Type {
-		case string(chat.PrivateFrameType):
-			err := s.UniCastSignalReceived(ctx, item)
+		if xproto.Device(dev.GetDeviceType()) == xproto.Device_Android || xproto.Device(dev.GetDeviceType()) == xproto.Device_IOS {
+			err = s.dao.MarkReadPublish(ctx, m.Key, m.GetFromId(), imparse.FrameType(item.Type), item.Logs)
 			if err != nil {
-				logger.Error().Err(err).Int32("ack", p.Ack).Msg("UniCastSignalReceived failed")
-				return err
+				logger.Error().Err(err).Int32("ack", p.Ack).Msg("MarkReadPublish failed")
 			}
-		default:
+			switch item.Type {
+			case string(chat.PrivateFrameType):
+				err := s.UniCastSignalReceived(ctx, item)
+				if err != nil {
+					logger.Error().Err(err).Int32("ack", p.Ack).Msg("UniCastSignalReceived failed")
+					return err
+				}
+			default:
+			}
 		}
 	case int32(comet.Op_SyncMsgReq):
 		//TODO disabled

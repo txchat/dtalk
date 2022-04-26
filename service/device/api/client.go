@@ -46,3 +46,7 @@ func (c *Client) EnableThreadPushDevice(ctx context.Context, in *EnableThreadPus
 func (c *Client) GetUserAllDevices(ctx context.Context, in *GetUserAllDevicesRequest) (*GetUserAllDevicesReply, error) {
 	return c.client.GetUserAllDevices(ctx, in)
 }
+
+func (c *Client) GetDeviceByConnID(ctx context.Context, in *GetDeviceByConnIdRequest) (*Device, error) {
+	return c.client.GetDeviceByConnId(ctx, in)
+}

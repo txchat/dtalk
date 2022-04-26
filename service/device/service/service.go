@@ -45,3 +45,7 @@ func (s *Service) EnableThreadPushDevice(ctx context.Context, uid, connId string
 func (s *Service) GetUserAllDevices(ctx context.Context, uid string) ([]*model.Device, error) {
 	return s.dao.GetAllDevices(uid)
 }
+
+func (s *Service) GetDeviceByConnId(ctx context.Context, uid, connID string) (*model.Device, error) {
+	return s.dao.GetDevicesByConnID(uid, connID)
+}
