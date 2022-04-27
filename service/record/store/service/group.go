@@ -8,11 +8,15 @@ import (
 	xproto "github.com/txchat/imparse/proto"
 )
 
-func (s *Service) AppendGroupMsg(p *xproto.Common) error {
+func (s *Service) AppendGroupMsg(isSelfRead bool, p *xproto.Common) error {
 	//获取所有群成员
 	members, err := s.dao.AllGroupMembers(context.TODO(), p.Target)
 	if err != nil {
 		return err
+	}
+	var selfRead uint8 = model.Received
+	if !isSelfRead {
+		selfRead = model.UnReceive
 	}
 	var msgRelate = make([]*model.MsgRelation, len(members))
 	for i, member := range members {
@@ -24,7 +28,7 @@ func (s *Service) AppendGroupMsg(p *xproto.Common) error {
 				OwnerUid:   p.From,
 				OtherUid:   p.Target,
 				Type:       model.Send,
-				State:      model.Received,
+				State:      selfRead,
 				CreateTime: p.Datetime,
 			}
 		} else {
@@ -71,9 +75,13 @@ func (s *Service) AppendGroupMsg(p *xproto.Common) error {
 	return nil
 }
 
-func (s *Service) StoreGroupMsg(pro *xproto.Common) error {
+func (s *Service) StoreGroupMsg(deviceType xproto.Device, pro *xproto.Common) error {
 	//step 1.存数据库
-	err := s.AppendGroupMsg(pro)
+	isSelfRead := false
+	if deviceType == xproto.Device_IOS || deviceType == xproto.Device_Android {
+		isSelfRead = true
+	}
+	err := s.AppendGroupMsg(isSelfRead, pro)
 	if err != nil {
 		s.log.Error().Err(err).Msg("AppendGroupMsg failed")
 		return model.ErrConsumeRedo

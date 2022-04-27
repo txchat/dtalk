@@ -42,6 +42,13 @@ KeepAliveTimeout=                  "20s"
     dial = "1s"
     timeout = "1s"
 
+[DeviceRPCClient]
+    regAddrs = "127.0.0.1:2379"
+    schema = "dtalk"
+    srvName = "device"
+    dial = "1s"
+    timeout = "1s"
+
 [MySQL]
 Host= "127.0.0.1"
 Port= 3306

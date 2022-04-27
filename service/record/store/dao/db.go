@@ -22,8 +22,10 @@ const (
 	_SetGroupRecordState          = `UPDATE dtalk_group_msg_relation SET state = ? WHERE owner_uid = ? AND mid = ?`
 	_DelGroupMsgContent           = `DELETE FROM dtalk_group_msg_content WHERE mid = ?`
 
-	_GetUnReceiveMsg      = `SELECT co.mid as mid,co.seq as seq,co.sender_id as sender_id,co.receiver_id as receiver_id,co.msg_type as msg_type,co.content as content,co.create_time as create_time,co.source as source,co.reference as reference FROM dtalk_msg_relation AS re RIGHT JOIN dtalk_msg_content AS co ON re.mid=co.mid WHERE re.owner_uid=? AND re.type=? AND re.state=? ORDER BY re.mid`
-	_GetUnReceiveGroupMsg = `SELECT co.mid as mid,co.seq as seq,co.sender_id as sender_id,co.receiver_id as receiver_id,co.msg_type as msg_type,co.content as content,co.create_time as create_time,co.source as source,co.reference as reference FROM dtalk_group_msg_relation AS re RIGHT JOIN dtalk_group_msg_content AS co ON re.mid=co.mid WHERE re.owner_uid=? AND re.type=? AND re.state=? ORDER BY re.mid`
+	//_GetUnReceiveMsg      = `SELECT co.mid as mid,co.seq as seq,co.sender_id as sender_id,co.receiver_id as receiver_id,co.msg_type as msg_type,co.content as content,co.create_time as create_time,co.source as source,co.reference as reference FROM dtalk_msg_relation AS re RIGHT JOIN dtalk_msg_content AS co ON re.mid=co.mid WHERE re.owner_uid=? AND re.type=? AND re.state=? ORDER BY re.mid`
+	_GetUnReceiveMsg = `SELECT co.mid as mid,co.seq as seq,co.sender_id as sender_id,co.receiver_id as receiver_id,co.msg_type as msg_type,co.content as content,co.create_time as create_time,co.source as source,co.reference as reference FROM dtalk_msg_relation AS re RIGHT JOIN dtalk_msg_content AS co ON re.mid=co.mid WHERE re.owner_uid=? AND re.state=? ORDER BY re.mid`
+	//_GetUnReceiveGroupMsg = `SELECT co.mid as mid,co.seq as seq,co.sender_id as sender_id,co.receiver_id as receiver_id,co.msg_type as msg_type,co.content as content,co.create_time as create_time,co.source as source,co.reference as reference FROM dtalk_group_msg_relation AS re RIGHT JOIN dtalk_group_msg_content AS co ON re.mid=co.mid WHERE re.owner_uid=? AND re.type=? AND re.state=? ORDER BY re.mid`
+	_GetUnReceiveGroupMsg = `SELECT co.mid as mid,co.seq as seq,co.sender_id as sender_id,co.receiver_id as receiver_id,co.msg_type as msg_type,co.content as content,co.create_time as create_time,co.source as source,co.reference as reference FROM dtalk_group_msg_relation AS re RIGHT JOIN dtalk_group_msg_content AS co ON re.mid=co.mid WHERE re.owner_uid=? AND re.state=? ORDER BY re.mid`
 	_GetUserMsg           = `SELECT co.mid as mid,co.seq as seq,co.sender_id as sender_id,co.receiver_id as receiver_id,co.msg_type as msg_type,co.content as content,co.create_time as create_time,co.source as source,co.reference as reference FROM dtalk_msg_relation AS re RIGHT JOIN dtalk_msg_content AS co ON re.mid=co.mid WHERE re.owner_uid=? ORDER BY re.mid LIMIT ?,?`
 	_GetUserMsgAfter      = `SELECT co.mid as mid,co.seq as seq,co.sender_id as sender_id,co.receiver_id as receiver_id,co.msg_type as msg_type,co.content as content,co.create_time as create_time,co.source as source,co.reference as reference FROM dtalk_msg_relation AS re RIGHT JOIN dtalk_msg_content AS co ON re.mid=co.mid WHERE re.owner_uid=? AND co.mid>? ORDER BY re.mid DESC LIMIT ?,?`
 	_GetGroupMsgAfter     = `SELECT co.mid as mid,co.seq as seq,co.sender_id as sender_id,co.receiver_id as receiver_id,co.msg_type as msg_type,co.content as content,co.create_time as create_time,co.source as source,co.reference as reference FROM dtalk_group_msg_relation AS re RIGHT JOIN dtalk_group_msg_content AS co ON re.mid=co.mid WHERE re.owner_uid=? AND co.mid>? ORDER BY re.mid DESC LIMIT ?,?`
@@ -76,7 +78,7 @@ func (d *Dao) DelMsgContent(mid int64) (int64, int64, error) {
 }
 
 func (d *Dao) UnReceiveMsg(uid string) ([]*model.MsgContent, error) {
-	maps, err := d.conn.Query(_GetUnReceiveMsg, uid, model.Rev, model.UnReceive)
+	maps, err := d.conn.Query(_GetUnReceiveMsg, uid, model.UnReceive)
 	if err != nil {
 		return nil, err
 	}
@@ -189,7 +191,7 @@ func (d *Dao) DelGroupMsgContent(mid int64) (int64, int64, error) {
 }
 
 func (d *Dao) UnReceiveGroupMsg(uid string) ([]*model.MsgContent, error) {
-	maps, err := d.conn.Query(_GetUnReceiveGroupMsg, uid, model.Rev, model.UnReceive)
+	maps, err := d.conn.Query(_GetUnReceiveGroupMsg, uid, model.UnReceive)
 	if err != nil {
 		return nil, err
 	}
