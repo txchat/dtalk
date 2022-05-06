@@ -249,14 +249,15 @@ func (s *Service) DealStore(ctx context.Context, m *record.PushMsg) error {
 		return err
 	}
 	//TODO 暂时处理，之后device信息统一通过answer服务传递
+	devType := xproto.Device_Android
 	dev, err := s.deviceClient.GetDeviceByConnID(ctx, &device.GetDeviceByConnIdRequest{
 		Uid:    m.GetFromId(),
 		ConnID: m.GetKey(),
 	})
-	if err != nil || dev == nil {
-		s.log.Error().Err(err).Str("uid", m.GetFromId()).Str("connID", m.GetKey()).Msg("GetDeviceByConnID failed")
+	if dev != nil {
+		devType = xproto.Device(dev.GetDeviceType())
 	}
-	if err := s.storage.SaveMsg(ctx, xproto.Device(dev.GetDeviceType()), frame); err != nil {
+	if err := s.storage.SaveMsg(ctx, devType, frame); err != nil {
 		s.log.Error().Stack().Err(err).Str("key", m.Key).Str("from", m.FromId).Msg("Store error")
 		return err
 	}
