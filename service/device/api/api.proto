@@ -32,8 +32,18 @@ message GetUserAllDevicesReply {
   repeated Device devices = 1;
 }
 
+message GetDeviceByConnIdRequest {
+  string uid = 1;
+  string connID = 2;
+}
+
+message GetDeviceByConnIdReply {
+  Device device = 1;
+}
+
 service DeviceSrv {
   rpc AddDevice(Device) returns (Empty);
   rpc EnableThreadPushDevice(EnableThreadPushDeviceRequest) returns (Empty);
   rpc GetUserAllDevices(GetUserAllDevicesRequest) returns (GetUserAllDevicesReply);
+  rpc GetDeviceByConnId(GetDeviceByConnIdRequest) returns (Device);
 }

@@ -21,6 +21,7 @@ type DeviceSrvClient interface {
 	AddDevice(ctx context.Context, in *Device, opts ...grpc.CallOption) (*Empty, error)
 	EnableThreadPushDevice(ctx context.Context, in *EnableThreadPushDeviceRequest, opts ...grpc.CallOption) (*Empty, error)
 	GetUserAllDevices(ctx context.Context, in *GetUserAllDevicesRequest, opts ...grpc.CallOption) (*GetUserAllDevicesReply, error)
+	GetDeviceByConnId(ctx context.Context, in *GetDeviceByConnIdRequest, opts ...grpc.CallOption) (*Device, error)
 }
 
 type deviceSrvClient struct {
@@ -58,6 +59,15 @@ func (c *deviceSrvClient) GetUserAllDevices(ctx context.Context, in *GetUserAllD
 	return out, nil
 }
 
+func (c *deviceSrvClient) GetDeviceByConnId(ctx context.Context, in *GetDeviceByConnIdRequest, opts ...grpc.CallOption) (*Device, error) {
+	out := new(Device)
+	err := c.cc.Invoke(ctx, "/dtalk.device.DeviceSrv/GetDeviceByConnId", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // DeviceSrvServer is the server API for DeviceSrv service.
 // All implementations must embed UnimplementedDeviceSrvServer
 // for forward compatibility
@@ -65,6 +75,7 @@ type DeviceSrvServer interface {
 	AddDevice(context.Context, *Device) (*Empty, error)
 	EnableThreadPushDevice(context.Context, *EnableThreadPushDeviceRequest) (*Empty, error)
 	GetUserAllDevices(context.Context, *GetUserAllDevicesRequest) (*GetUserAllDevicesReply, error)
+	GetDeviceByConnId(context.Context, *GetDeviceByConnIdRequest) (*Device, error)
 	mustEmbedUnimplementedDeviceSrvServer()
 }
 
@@ -80,6 +91,9 @@ func (UnimplementedDeviceSrvServer) EnableThreadPushDevice(context.Context, *Ena
 }
 func (UnimplementedDeviceSrvServer) GetUserAllDevices(context.Context, *GetUserAllDevicesRequest) (*GetUserAllDevicesReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserAllDevices not implemented")
+}
+func (UnimplementedDeviceSrvServer) GetDeviceByConnId(context.Context, *GetDeviceByConnIdRequest) (*Device, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetDeviceByConnId not implemented")
 }
 func (UnimplementedDeviceSrvServer) mustEmbedUnimplementedDeviceSrvServer() {}
 
@@ -148,6 +162,24 @@ func _DeviceSrv_GetUserAllDevices_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DeviceSrv_GetDeviceByConnId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetDeviceByConnIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DeviceSrvServer).GetDeviceByConnId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/dtalk.device.DeviceSrv/GetDeviceByConnId",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DeviceSrvServer).GetDeviceByConnId(ctx, req.(*GetDeviceByConnIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // DeviceSrv_ServiceDesc is the grpc.ServiceDesc for DeviceSrv service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -166,6 +198,10 @@ var DeviceSrv_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetUserAllDevices",
 			Handler:    _DeviceSrv_GetUserAllDevices_Handler,
+		},
+		{
+			MethodName: "GetDeviceByConnId",
+			Handler:    _DeviceSrv_GetDeviceByConnId_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

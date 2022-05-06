@@ -6,6 +6,7 @@ import (
 	"github.com/txchat/dtalk/service/record/store/model"
 	"github.com/txchat/imparse"
 	"github.com/txchat/imparse/chat"
+	xproto "github.com/txchat/imparse/proto"
 	"strconv"
 	"time"
 )
@@ -30,20 +31,20 @@ type DB struct {
 	s *Service
 }
 
-func (d *DB) SaveMsg(frame imparse.Frame) error {
+func (d *DB) SaveMsg(deviceType xproto.Device, frame imparse.Frame) error {
 	switch frame.Type() {
 	case chat.PrivateFrameType:
 		pv := frame.(*chat.PrivateFrame)
 		if pv.GetTransmissionMethod() != imparse.UniCast {
 			return model.ErrFrameType
 		}
-		return d.s.StoreMsg(pv.GetBase())
+		return d.s.StoreMsg(deviceType, pv.GetBase())
 	case chat.GroupFrameType:
 		pv := frame.(*chat.GroupFrame)
 		if pv.GetTransmissionMethod() != imparse.GroupCast {
 			return model.ErrFrameType
 		}
-		return d.s.StoreGroupMsg(pv.GetBase())
+		return d.s.StoreGroupMsg(deviceType, pv.GetBase())
 	case chat.SignalFrameType:
 		pv := frame.(*chat.SignalFrame)
 		base := pv.GetBase()

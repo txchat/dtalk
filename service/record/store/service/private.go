@@ -7,7 +7,7 @@ import (
 	xproto "github.com/txchat/imparse/proto"
 )
 
-func (s *Service) AppendMsg(p *xproto.Common) error {
+func (s *Service) AppendMsg(isSelfRead bool, p *xproto.Common) error {
 	tx, err := s.dao.NewTx()
 	if err != nil {
 		return err
@@ -27,12 +27,16 @@ func (s *Service) AppendMsg(p *xproto.Common) error {
 		tx.RollBack()
 		return err
 	}
+	var selfRead uint8 = model.Received
+	if !isSelfRead {
+		selfRead = model.UnReceive
+	}
 	_, _, err = s.dao.AppendMsgRelation(tx, &model.MsgRelation{
 		Mid:        strconv.FormatInt(p.Mid, 10),
 		OwnerUid:   p.From,
 		OtherUid:   p.Target,
 		Type:       model.Send,
-		State:      model.Received,
+		State:      selfRead,
 		CreateTime: p.Datetime,
 	})
 	if err != nil {
@@ -109,9 +113,13 @@ func (s *Service) PushMem(p *xproto.Common) error {
 	return nil
 }
 
-func (s *Service) StoreMsg(pro *xproto.Common) error {
+func (s *Service) StoreMsg(deviceType xproto.Device, pro *xproto.Common) error {
 	//step 1.存数据库
-	err := s.AppendMsg(pro)
+	isSelfRead := false
+	if deviceType == xproto.Device_IOS || deviceType == xproto.Device_Android {
+		isSelfRead = true
+	}
+	err := s.AppendMsg(isSelfRead, pro)
 	if err != nil {
 		s.log.Error().Err(err).Msg("AppendMsg failed")
 		return model.ErrConsumeRedo

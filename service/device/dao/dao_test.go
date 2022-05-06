@@ -23,7 +23,7 @@ func TestMain(m *testing.M) {
 	testLog = zlog.Logger
 	testRedis = newRedis(&config.Redis{
 		Network:      "tcp",
-		Addr:         "127.0.0.1:6379",
+		Addr:         "172.16.101.127:6379",
 		Auth:         "",
 		Active:       60000,
 		Idle:         1024,

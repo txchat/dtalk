@@ -74,3 +74,22 @@ func (s *server) GetUserAllDevices(ctx context.Context, req *pb.GetUserAllDevice
 		Devices: devicesRlt,
 	}, nil
 }
+
+func (s *server) GetDeviceByConnId(ctx context.Context, req *pb.GetDeviceByConnIdRequest) (*pb.Device, error) {
+	device, err := s.svr.GetDeviceByConnId(ctx, req.GetUid(), req.GetConnID())
+	if err != nil {
+		return &pb.Device{}, err
+	}
+	return &pb.Device{
+		Uid:         device.Uid,
+		ConnectId:   device.ConnectId,
+		DeviceUUid:  device.DeviceUuid,
+		DeviceType:  device.DeviceType,
+		DeviceName:  device.DeviceName,
+		Username:    device.Username,
+		DeviceToken: device.DeviceToken,
+		IsEnabled:   device.IsEnabled,
+		AddTime:     device.AddTime,
+		DTUid:       device.DTUid,
+	}, nil
+}
