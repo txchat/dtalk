@@ -1,0 +1,88 @@
+version: "2.4"
+services:
+  mysql:
+    image: mysql:${MYSQL_VERSION}
+    platform: linux/amd64
+    container_name: ${MYSQL_CONTAINER_NAME}
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    ports:
+      - "3306:3306"
+    volumes:
+      - ${MYSQL_DATA_VOLUME}:/var/lib/mysql
+#      - ${MYSQL_CONFIG_VOLUME}:/etc/mysql/my.cnf
+      - ${MYSQL_LOG_VOLUME}:/logs
+      - ${MYSQL_INIT_VOLUME}:/docker-entrypoint-initdb.d
+    networks:
+      - txchat-components
+    environment:
+      TZ: Asia/Shanghai
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_ROOT_HOST: ${MYSQL_ROOT_HOST}
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 20s
+      retries: 10
+  minio:
+    image: minio/minio:${MINIO_VERSION}
+    container_name: ${MINIO_CONTAINER_NAME}
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - ${MINIO_DATA_VOLUME}:/data
+    networks:
+      - txchat-components
+    command: server --console-address ":9001" /data
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    restart: always
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+  nginx:
+    image: custom-nginx:${NGINX_VERSION}
+    build:
+      context: .
+      dockerfile: nginx.Dockerfile
+      args:
+        version: ${NGINX_VERSION}
+    container_name: ${NGINX_CONTAINER_NAME}
+    volumes:
+      - ${NGINX_CONFIG_VOLUME}:/etc/nginx/conf.d:ro
+      - ${NGINX_LOG_VOLUME}:/var/log/nginx/
+    networks:
+      - txchat-components
+    ports:
+      - "80"
+      - "8888:8888"
+    depends_on:
+      - gateway
+      - discovery
+      - backup
+      - oss
+      - backend
+      - comet
+      - call
+
+volumes:
+  txchat-mysql-data:
+    external: true
+  txchat-mysql-config:
+    external: true
+  txchat-mysql-log:
+    external: true
+  txchat-mysql-init:
+    external: true
+  txchat-minio-data:
+    external: true
+  txchat-nginx-config:
+    external: true
+  txchat-nginx-log:
+    external: true
+networks:
+  txchat-components:
+    external: true
