@@ -10,6 +10,21 @@ created_network=()
 serviceList=$1
 projectVersion=$2
 
+# platform adaptation
+HOST_OS=$(uname -s | tr '[:upper:]' '[:lower:]')
+case ${HOST_OS} in
+"darwin")
+  function dosed() {
+    sed -r -i '' "$@"
+  }
+  ;;
+*)
+  function dosed() {
+    sed -r -i "$@"
+  }
+  ;;
+esac
+
 function network_create() {
   networkName=$1
   filterName=$(docker network ls | awk 'NR>1{ print $2 }' | grep -w "${networkName}")
@@ -59,7 +74,7 @@ for sName in ${serviceList} ; do \
   # 将「-」转为「_」并将小写转大写
   upperSName=$(echo "${sName//[-]/_}" | tr '[:lower:]' '[:upper:]')
   # 修改.env文件服务镜像版本号
-  sed -r -i '' "s/(${upperSName}_IMAGE=)\s*(.+)/\1${projectVersion}/" .env
+  dosed "s/(${upperSName}_IMAGE=)\s*(.+)/\1${projectVersion}/" .env
 done
 
 for vname in ${volumes[*]} ; do \
