@@ -1,0 +1,156 @@
+version: "2.4"
+services:
+  gateway:
+    image: txchat-gateway:${GATEWAY_IMAGE}
+    container_name: ${GATEWAY_CONTAINER_NAME}
+    networks:
+      - txchat-components
+      - txchat-service
+    volumes:
+      - ${GATEWAY_CONFIG_VOLUME}:/etc/txchat-gateway/config
+  backend:
+    image: txchat-backend:${BACKEND_IMAGE}
+    container_name: ${BACKEND_CONTAINER_NAME}
+    networks:
+      - txchat-components
+      - txchat-service
+    volumes:
+      - ${BACKEND_CONFIG_VOLUME}:/etc/txchat-backend/config
+    depends_on:
+      mysql:
+        condition: service_healthy
+  backup:
+    image: txchat-backup:${BACKUP_IMAGE}
+    container_name: ${BACKUP_CONTAINER_NAME}
+    networks:
+      - txchat-components
+      - txchat-service
+    volumes:
+      - ${BACKUP_CONFIG_VOLUME}:/etc/txchat-backup/config
+    depends_on:
+      mysql:
+        condition: service_healthy
+  call:
+    image: txchat-call:${CALL_IMAGE}
+    container_name: ${CALL_CONTAINER_NAME}
+    networks:
+      - txchat-components
+      - txchat-service
+    volumes:
+      - ${CALL_CONFIG_VOLUME}:/etc/txchat-call/config
+  device:
+    image: txchat-device:${DEVICE_IMAGE}
+    container_name: ${DEVICE_CONTAINER_NAME}
+    networks:
+      - txchat-components
+      - txchat-service
+    volumes:
+      - ${DEVICE_CONFIG_VOLUME}:/etc/txchat-device/config
+  discovery:
+    image: txchat-discovery:${DISCOVERY_IMAGE}
+    container_name: ${DISCOVERY_CONTAINER_NAME}
+    networks:
+      - txchat-components
+      - txchat-service
+    volumes:
+      - ${DISCOVERY_CONFIG_VOLUME}:/etc/txchat-discovery/config
+  generator:
+    image: txchat-generator:${GENERATOR_IMAGE}
+    container_name: ${GENERATOR_CONTAINER_NAME}
+    networks:
+      - txchat-components
+      - txchat-service
+    volumes:
+      - ${GENERATOR_CONFIG_VOLUME}:/etc/txchat-generator/config
+  group:
+    image: txchat-group:${GROUP_IMAGE}
+    container_name: ${GROUP_CONTAINER_NAME}
+    networks:
+      - txchat-components
+      - txchat-service
+    volumes:
+      - ${GROUP_CONFIG_VOLUME}:/etc/txchat-group/config
+    depends_on:
+      mysql:
+        condition: service_healthy
+  offline-push:
+    image: txchat-offline-push:${OFFLINE_PUSH_IMAGE}
+    container_name: ${OFFLINE_PUSH_CONTAINER_NAME}
+    networks:
+      - txchat-components
+      - txchat-service
+    volumes:
+      - ${OFFLINE_PUSH_CONFIG_VOLUME}:/etc/txchat-offline-push/config
+  oss:
+    image: txchat-oss:${OSS_IMAGE}
+    container_name: ${OSS_CONTAINER_NAME}
+    networks:
+      - txchat-components
+      - txchat-service
+    volumes:
+      - ${OSS_CONFIG_VOLUME}:/etc/txchat-oss/config
+  answer:
+    image: txchat-answer:${ANSWER_IMAGE}
+    container_name: ${ANSWER_CONTAINER_NAME}
+    networks:
+      - txchat-components
+      - txchat-service
+    volumes:
+      - ${ANSWER_CONFIG_VOLUME}:/etc/txchat-answer/config
+  pusher:
+    image: txchat-pusher:${PUSHER_IMAGE}
+    container_name: ${PUSHER_CONTAINER_NAME}
+    networks:
+      - txchat-components
+      - txchat-service
+    volumes:
+      - ${PUSHER_CONFIG_VOLUME}:/etc/txchat-pusher/config
+    depends_on:
+      - answer
+  store:
+    image: txchat-store:${STORE_IMAGE}
+    container_name: ${STORE_CONTAINER_NAME}
+    networks:
+      - txchat-components
+      - txchat-service
+    volumes:
+      - ${STORE_CONFIG_VOLUME}:/etc/txchat-store/config
+    depends_on:
+      mysql:
+        condition: service_healthy
+      answer:
+        condition: service_started
+      pusher:
+        condition: service_started
+networks:
+  txchat-components:
+    external: true
+  txchat-service:
+    external: true
+volumes:
+  txchat-gateway-config:
+    external: true
+  txchat-backend-config:
+    external: true
+  txchat-backup-config:
+    external: true
+  txchat-call-config:
+    external: true
+  txchat-device-config:
+    external: true
+  txchat-discovery-config:
+    external: true
+  txchat-generator-config:
+    external: true
+  txchat-group-config:
+    external: true
+  txchat-offline-push-config:
+    external: true
+  txchat-oss-config:
+    external: true
+  txchat-answer-config:
+    external: true
+  txchat-pusher-config:
+    external: true
+  txchat-store-config:
+    external: true

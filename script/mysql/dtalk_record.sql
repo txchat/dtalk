@@ -1,21 +1,24 @@
 /*
  Navicat Premium Data Transfer
 
- Source Server         : 172.16.101.127
+ Source Server         : localhost
  Source Server Type    : MySQL
  Source Server Version : 50733
- Source Host           : 172.16.101.127:3306
- Source Schema         : dtalk
+ Source Host           : localhost:3306
+ Source Schema         : dtalk_record
 
  Target Server Type    : MySQL
  Target Server Version : 50733
  File Encoding         : 65001
 
- Date: 18/11/2021 10:37:07
+ Date: 01/06/2022 16:02:37
 */
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
+
+CREATE DATABASE IF NOT EXISTS dtalk_record DEFAULT CHARACTER SET = utf8mb4;
+Use dtalk_record;
 
 -- ----------------------------
 -- Table structure for dtalk_group_msg_content
@@ -30,6 +33,7 @@ CREATE TABLE `dtalk_group_msg_content` (
   `content` longtext NOT NULL COMMENT '消息内容',
   `create_time` bigint(20) NOT NULL COMMENT '创建时间',
   `source` varchar(1024) DEFAULT NULL COMMENT '转发来源',
+  `reference` varchar(255) DEFAULT NULL COMMENT '引用信息',
   PRIMARY KEY (`mid`) USING BTREE,
   KEY `idx_sender_id_seq` (`sender_id`,`seq`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
@@ -63,6 +67,7 @@ CREATE TABLE `dtalk_msg_content` (
   `content` longtext NOT NULL COMMENT '消息内容',
   `create_time` bigint(20) NOT NULL COMMENT '创建时间',
   `source` varchar(1024) DEFAULT NULL COMMENT '转发来源',
+  `reference` varchar(255) DEFAULT NULL COMMENT '引用信息',
   PRIMARY KEY (`mid`) USING BTREE,
   KEY `idx_sender_id_seq` (`sender_id`,`seq`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
@@ -94,10 +99,10 @@ CREATE TABLE `dtalk_msg_version` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
--- Table structure for dtalk_notice_content
+-- Table structure for dtalk_signal_content
 -- ----------------------------
-DROP TABLE IF EXISTS `dtalk_notice_content`;
-CREATE TABLE `dtalk_notice_content` (
+DROP TABLE IF EXISTS `dtalk_signal_content`;
+CREATE TABLE `dtalk_signal_content` (
   `id` bigint(20) NOT NULL COMMENT '消息id',
   `uid` varchar(40) NOT NULL COMMENT '接收者',
   `type` tinyint(3) DEFAULT NULL COMMENT '通知类型',

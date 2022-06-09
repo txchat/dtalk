@@ -28,6 +28,8 @@ var (
 	gitCommit = ""
 	// buildTime 编译时间
 	buildTime = ""
+	// osArch 目标主机架构
+	osArch = ""
 
 	isShowVersion = flag.Bool("v", false, "show project version")
 )
@@ -39,7 +41,8 @@ func showVersion(isShow bool) {
 		fmt.Printf(" Version: %s\n", projectVersion)
 		fmt.Printf(" Go Version: %s\n", goVersion)
 		fmt.Printf(" Git Commit: %s\n", gitCommit)
-		fmt.Printf(" Build Time: %s\n", buildTime)
+		fmt.Printf(" Built: %s\n", buildTime)
+		fmt.Printf(" OS/Arch: %s\n", osArch)
 		os.Exit(0)
 	}
 }
