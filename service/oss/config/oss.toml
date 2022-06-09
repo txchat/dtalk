@@ -25,5 +25,5 @@ Env = "release"
     Policy = ""
     DurationSeconds = 3600
     Bucket = "dtalk-test"
-    EndPoint = "txchat-minio:9010"
-    PublicUrl = "http://127.0.0.1:9010"
+    EndPoint = "txchat-minio:9000"
+    PublicUrl = "http://host_ipaddress:9000"

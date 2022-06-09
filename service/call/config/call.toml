@@ -32,7 +32,7 @@ Node  = 1
     Timeout = "1s"
 
 [TCRTCConfig]
-    SDKAppId  = 1400543084
-    SecretKey = "1ed1b5e2729395c1e8b55b83be72e60139dfa36ff3fa67bc3c3285592a7b3cf6"
+    SDKAppId  = 0
+    SecretKey = ""
     Expire    = 86400
 

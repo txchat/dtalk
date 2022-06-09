@@ -36,27 +36,27 @@ addr = "0.0.0.0:19000"
 
 [[modules]]
     Name = "wallet"
-    IsEnabled = true
-    EndPoints = ["http://172.16.101.87:8901","http://172.16.101.107:8083"]   # changeme (1. 红包服务 http 服务地址, 2. 钱包服务 http 服务地址)
+    IsEnabled = false
+    EndPoints = ["", ""]   # changeme (1. 红包服务 http 服务地址, 2. 钱包服务 http 服务地址)
 
 [[modules]]
     Name = "redPacket"
-    IsEnabled = true
-    EndPoints = ["http://172.16.101.87:8901","http://172.16.101.107:8083"]   # changeme (1. 红包服务 http 服务地址, 2. 钱包服务 http 服务地址)
+    IsEnabled = false
+    EndPoints = ["", ""]   # changeme (1. 红包服务 http 服务地址, 2. 钱包服务 http 服务地址)
 
 [[modules]]
     Name = "oa"
-    IsEnabled = true
-    EndPoints = ["http://127.0.0.1:20000"]        # changeme (oa 服务地址)
+    IsEnabled = false
+    EndPoints = ["http://oa-gateway:20000"]        # changeme (oa 服务地址)
 
 [[modules]]
     Name = "shop"
-    IsEnabled = true
-    EndPoints = ["http://146.56.218.121:12009"]     # changeme (链上购服务地址)
+    IsEnabled = false
+    EndPoints = [""]     # changeme (链上购服务地址)
 
 [[modules]]
     Name="live"
-    IsEnabled=true
+    IsEnabled= false
     EndPoints=[""]
 
 [Revoke]
