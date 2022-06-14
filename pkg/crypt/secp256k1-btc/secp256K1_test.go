@@ -3,7 +3,7 @@ package secp256K1
 import (
 	"crypto/sha256"
 	"encoding/hex"
-	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/btcsuite/btcd/btcec"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -21,22 +21,47 @@ func Test_ComparePublicKey(t *testing.T) {
 	public, err := hex.DecodeString(publicKey)
 	assert.Nil(t, err)
 
-	ecdsaPubKey, err := crypto.DecompressPubkey(public)
+	btcecPubKey, err := btcec.ParsePubKey(public, btcec.S256())
+	assert.Nil(t, err)
+	t.Log("decompressed public key:", hex.EncodeToString(btcecPubKey.SerializeUncompressed()))
+	t.Log("65 byte hybrid format public key:", hex.EncodeToString(btcecPubKey.SerializeHybrid()))
+	t.Log("compressed public key:", hex.EncodeToString(btcecPubKey.SerializeCompressed()))
+}
+
+func Test_ComparePrivateKey(t *testing.T) {
+	public, err := hex.DecodeString(publicKey)
 	assert.Nil(t, err)
 
-	ecdsaPubKeyByte := crypto.FromECDSAPub(ecdsaPubKey)
-	t.Log("decompressed public key:", hex.EncodeToString(ecdsaPubKeyByte))
-	//t.Log("65 byte hybrid format public key:", hex.EncodeToString(btcecPubKey.SerializeHybrid()))
-	t.Log("compressed public key:", hex.EncodeToString(crypto.CompressPubkey(ecdsaPubKey)))
-
-	pub, err := crypto.UnmarshalPubkey(ecdsaPubKeyByte)
+	private, err := hex.DecodeString(privateKey)
 	assert.Nil(t, err)
-	assert.Equal(t, true, pub.Equal(ecdsaPubKey))
+
+	btcecPrvKey, btcecPubKey := btcec.PrivKeyFromBytes(btcec.S256(), private)
+	assert.Equal(t, btcecPubKey.SerializeCompressed(), btcecPrvKey.PubKey().SerializeCompressed())
+	assert.Equal(t, public, btcecPrvKey.PubKey().SerializeCompressed())
+
+	t.Log("decompressed private key:", hex.EncodeToString(btcecPrvKey.Serialize()))
+}
+
+func Test_CompareSignature(t *testing.T) {
+	msg256 := sha256.Sum256([]byte(message))
+
+	private, err := hex.DecodeString(privateKey)
+	assert.Nil(t, err)
+
+	btcecPrvKey, _ := btcec.PrivKeyFromBytes(btcec.S256(), private)
+
+	signature, err := btcecPrvKey.Sign(msg256[:])
+	t.Log("uncompressed signature:", hex.EncodeToString(signature.Serialize()))
+	assert.Nil(t, err)
+
+	sig, err := btcec.SignCompact(btcec.S256(), btcecPrvKey, msg256[:], true)
+	t.Log("compressed signature:", hex.EncodeToString(sig))
+	assert.Nil(t, err)
 }
 
 // msg: 原文；sigHex：签名后的hex string
 func verify(msg, sigHex string) (int, error) {
-	var eth ethereum
+	var btc bitcoin
 	public, err := hex.DecodeString(publicKey)
 	if err != nil {
 		return 0, err
@@ -46,17 +71,17 @@ func verify(msg, sigHex string) (int, error) {
 		return 0, err
 	}
 	msg256 := sha256.Sum256([]byte(msg))
-	return eth.Verify(msg256[:], sig, public), nil
+	return btc.Verify(msg256[:], sig, public), nil
 }
 
 func Test_ChatSign(t *testing.T) {
-	var eth ethereum
+	var btc bitcoin
 	msg256 := sha256.Sum256([]byte(message))
 
 	private, err := hex.DecodeString(privateKey)
 	assert.Nil(t, err)
 
-	sig := eth.Sign(msg256[:], private)
+	sig := btc.Sign(msg256[:], private)
 	sigHex := hex.EncodeToString(sig)
 
 	t.Log(sigHex)

@@ -1,52 +1,68 @@
 package secp256K1
 
 import (
+	"crypto/sha256"
 	"encoding/hex"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
+var (
+	mnemonic   = "游 即 暗 体 柬 京 非 李 限 稻 跳 务 桥 凶 溶"
+	privateKey = "fa884fd1b47d9e9e8dc19e47dc1a794a524ce5d4ee1b82ec92b1ffc1f109c2b6"
+	publicKey  = "022db0e08669b30c5dab8c564b428db4944912144088943ec9b690a9046bc8f78b"
+	address    = "1AqutxNoVTtcWiVYpBtvficAgea1dYTddR"
+
+	message = "hello world"
+)
+
+// msg: 原文；sigHex：签名后的hex string
+func verify(msg, sigHex string) (int, error) {
+	var bty haltingstate
+	public, err := hex.DecodeString(publicKey)
+	if err != nil {
+		return 0, err
+	}
+	sig, err := hex.DecodeString(sigHex)
+	if err != nil {
+		return 0, err
+	}
+	msg256 := sha256.Sum256([]byte(msg))
+	return bty.Verify(msg256[:], sig, public), nil
+}
+
 func Test_ChatSign(t *testing.T) {
 	var bty haltingstate
-	msg := []byte("1624503307409*aaaaaaaaaaaaaaaaaa")
-	privateKey, err := hex.DecodeString("5befd5ad6b2195fd44a5353e009b0ad3ca1de32c412f45f9524649ff1eb1f21c")
-	if err != nil {
-		t.Error(err)
-		return
-	}
-	sig := bty.Sign(msg, privateKey)
-	t.Log(hex.EncodeToString(sig))
+	msg256 := sha256.Sum256([]byte(message))
+	private, err := hex.DecodeString(privateKey)
+	assert.Nil(t, err)
+
+	sig := bty.Sign(msg256[:], private)
+	sigHex := hex.EncodeToString(sig)
+
+	t.Log(sigHex)
+	ret, err := verify(message, sigHex)
+	assert.Nil(t, err)
+	assert.Equal(t, 1, ret)
 }
 
-func Test_Verify(t *testing.T) {
-	var bty haltingstate
-	msg := []byte("1624503307409*aaaaaaaaaaaaaaaaaa")
-	publicKey, err := hex.DecodeString("03c94c689f4ae2002bc05215684617146b84e81571ab854de4b171066087fc9df6")
-	if err != nil {
-		t.Error(err)
-		return
-	}
-	sig, err := hex.DecodeString("93181cf41ebc1b65ff3fe464a2e088711fb376c0ac27802311b183b2995fe3d57bb9908cf4dd3de7ce3fffbdeee9ce0e0526daa4a4b245432380cb6c90fdafbe01")
-	if err != nil {
-		t.Error(err)
-		return
-	}
-	ret := bty.Verify(msg, sig, publicKey)
-	t.Log(ret)
+func Test_VerifyHaltingstate(t *testing.T) {
+	sigHex := "0b7feff8af5cd69c2d20a3dbde6014292cd6d95d8c5e28d3111e9f6e7939108b2926d9dad50cef9c347b53b8fff64be0134beefdf592fe08f069a5d87e8a34ea00"
+	ret, err := verify(message, sigHex)
+	assert.Nil(t, err)
+	assert.Equal(t, 1, ret)
 }
 
-func Test_Verify2(t *testing.T) {
-	var bty haltingstate
-	msg := []byte("1624521238050*aaaaaaaaaaaaaaaaaa")
-	publicKey, err := hex.DecodeString("0341655c5af9badc5199f8bcd4efffc5fdef6f571e36a8e314a6ea2656af82d2ed")
-	if err != nil {
-		t.Error(err)
-		return
-	}
-	sig, err := hex.DecodeString("30af6bf3a149a1e7f82651c71a02c470857cdf0d5821be8cc478584e2855982d5a91487067135d7077d97d621777957cd6567c51ba890c410142897de040d3e501")
-	if err != nil {
-		t.Error(err)
-		return
-	}
-	ret := bty.Verify(msg, sig, publicKey)
-	t.Log(ret)
+func Test_VerifyBTC(t *testing.T) {
+	sigHex := "1fb358a084270887a76eed1a9c1ef34c3e47fab875ce50e3074509e1f4e2834b8312af78c34b3769d373e204a4f4b015b69c46e5f7721134b9d8950d2be0e8fdf8"
+	ret, err := verify(message, sigHex)
+	assert.Nil(t, err)
+	assert.Equal(t, 1, ret)
+}
+
+func Test_VerifyETH(t *testing.T) {
+	sigHex := "b358a084270887a76eed1a9c1ef34c3e47fab875ce50e3074509e1f4e2834b8312af78c34b3769d373e204a4f4b015b69c46e5f7721134b9d8950d2be0e8fdf800"
+	ret, err := verify(message, sigHex)
+	assert.Nil(t, err)
+	assert.Equal(t, 1, ret)
 }

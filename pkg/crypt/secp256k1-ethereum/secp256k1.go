@@ -2,10 +2,8 @@ package secp256K1
 
 import (
 	"bytes"
-	"encoding/hex"
 	"fmt"
 	"github.com/ethereum/go-ethereum/crypto"
-	//"github.com/ethereum/go-ethereum/crypto/secp256k1"
 )
 
 type ethereum struct {
@@ -33,19 +31,15 @@ func (t *ethereum) Verify(msg []byte, sig []byte, pubkey []byte) int {
 		return 0
 	}
 
-	pub, err := crypto.UnmarshalPubkey(pubkey)
+	ecdsaPubKey, err := crypto.DecompressPubkey(pubkey)
 	if err != nil {
 		fmt.Println(err)
 		return 0
 	}
-	if bytes.Equal(crypto.FromECDSAPub(pub), crypto.FromECDSAPub(recoveredPub)) {
+
+	if bytes.Equal(crypto.FromECDSAPub(ecdsaPubKey), crypto.FromECDSAPub(recoveredPub)) {
 		return 1
 	}
-	fmt.Println(hex.EncodeToString(crypto.FromECDSAPub(pub)))
-	fmt.Println(hex.EncodeToString(crypto.FromECDSAPub(recoveredPub)))
-	fmt.Println(hex.EncodeToString(crypto.FromECDSAPub(recoveredPub)))
-	fmt.Println(crypto.PubkeyToAddress(*recoveredPub).String())
-	fmt.Println(crypto.PubkeyToAddress(*recoveredPub).String())
 
 	return 0
 }
