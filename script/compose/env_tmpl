@@ -16,7 +16,7 @@ MYSQL_INIT_VOLUME=txchat-mysql-init
 # mysql端口号
 MYSQL_REAL_PORT=3306
 # mysql超级用户密码
-MYSQL_ROOT_PASSWORD=123456
+MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
 # mysql超级用户允许地址
 MYSQL_ROOT_HOST=%
 
@@ -30,7 +30,7 @@ MINIO_DATA_VOLUME=txchat-minio-data
 # minio超级用户账户
 MINIO_ROOT_USER=minio
 # minio超级用户密码
-MINIO_ROOT_PASSWORD=minio1234
+MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
 
 ## NGINX
 # nginx版本号

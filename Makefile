@@ -30,20 +30,27 @@ images: build_linux_amd64 ## 打包docker镜像
 		docker build --build-arg server_name=$$i . -f server.Dockerfile -t txchat-$$i:${projectVersion}; \
 	done
 
-docker-compose-up: images ## 使用docker compose启动
+init-compose: images ## 使用docker compose启动
 	cp -R script/compose/. run_compose/
 	cp -R script/mysql/. run_compose/
 	cp -R script/nginx/. run_compose/
 	cd run_compose && \
-	./initwork.sh "${servers}" "${projectVersion}" && \
-	docker compose -f components.compose.yaml -f service.compose.yaml up -d
+	./envfill.sh;\
+	./initwork.sh "${servers}" "${projectVersion}"
+
+docker-compose-up: ## 使用docker compose启动
+	@if [ ! -d "run_compose/" ]; then \
+		exit -1;\
+     fi; \
+	cd run_compose && \
+	docker-compose -f components.compose.yaml -f service.compose.yaml up -d
 
 docker-compose-%: ## 使用docker compose 命令(服务列表：make docker-compose-ls；停止服务：make docker-compose-stop；卸载服务：make docker-compose-down)
 	@if [ ! -d "run_compose/" ]; then \
        cp -R script/compose/. run_compose/; \
      fi; \
     cd run_compose && \
-    docker compose -f components.compose.yaml -f service.compose.yaml $*
+    docker-compose -f components.compose.yaml -f service.compose.yaml $*
 
 test:
 	$(GOENV) go test -v ./...
