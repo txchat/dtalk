@@ -8,7 +8,7 @@ AppId= "dtalk"
     Host = "txchat-mysql"
     Port = 3306
     User= "root"
-    Pwd=  "123456"
+    Pwd=  "${MYSQL_PASSWORD}"
     Db=   "dtalk"
 
 [Reg]

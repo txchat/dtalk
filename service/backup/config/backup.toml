@@ -22,7 +22,7 @@ addr = "0.0.0.0:18004"
     Host = "txchat-mysql"
     Port = 3306
     User = "root"
-    Pwd = "123456"
+    Pwd = "${MYSQL_PASSWORD}"
     Db = "dtalk"
 
 [SMS]

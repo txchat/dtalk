@@ -2,6 +2,7 @@ package config
 
 import (
 	"flag"
+	"io/ioutil"
 	"os"
 	"time"
 
@@ -35,7 +36,14 @@ func init() {
 // Init init config.
 func Init() (err error) {
 	Conf = Default()
-	_, err = toml.DecodeFile(confPath, &Conf)
+	//TODO 使用环境变量填充，临时处理
+	bs, err := ioutil.ReadFile(confPath)
+	if err != nil {
+		return err
+	}
+	filled := os.ExpandEnv(string(bs))
+	_, err = toml.Decode(filled, &Conf)
+	//_, err = toml.DecodeFile(confPath, &Conf)
 	return
 }
 

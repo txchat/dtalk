@@ -9,7 +9,7 @@ addr = "0.0.0.0:18102"
     Host = "txchat-mysql"  # changeme (mysql 服务地址)
     Port = 3306         # changeme (mysql 服务端口)
     User = "root"       # changeme (mysql 账号)
-    Pwd = "123456"      # changeme (mysql 密码)
+    Pwd = "${MYSQL_PASSWORD}"      # changeme (mysql 密码)
     Db = "dtalk"
 
 [Debug]

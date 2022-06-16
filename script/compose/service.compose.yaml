@@ -11,6 +11,8 @@ services:
   backend:
     image: txchat-backend:${BACKEND_IMAGE}
     container_name: ${BACKEND_CONTAINER_NAME}
+    environment:
+      MYSQL_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     networks:
       - txchat-components
       - txchat-service
@@ -22,6 +24,8 @@ services:
   backup:
     image: txchat-backup:${BACKUP_IMAGE}
     container_name: ${BACKUP_CONTAINER_NAME}
+    environment:
+      MYSQL_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     networks:
       - txchat-components
       - txchat-service
@@ -65,6 +69,8 @@ services:
   group:
     image: txchat-group:${GROUP_IMAGE}
     container_name: ${GROUP_CONTAINER_NAME}
+    environment:
+      MYSQL_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     networks:
       - txchat-components
       - txchat-service
@@ -110,6 +116,8 @@ services:
   store:
     image: txchat-store:${STORE_IMAGE}
     container_name: ${STORE_CONTAINER_NAME}
+    environment:
+      MYSQL_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     networks:
       - txchat-components
       - txchat-service

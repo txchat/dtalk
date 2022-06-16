@@ -65,7 +65,6 @@ services:
       - backup
       - oss
       - backend
-      - comet
       - call
 
 volumes:
