@@ -52,6 +52,10 @@ docker-compose-%: ## 使用docker compose 命令(服务列表：make docker-comp
     cd run_compose && \
     docker-compose -f components.compose.yaml -f service.compose.yaml $*
 
+.PHONY: doc
+doc:
+	./script/doc/doc.sh v1
+
 test:
 	$(GOENV) go test -v ./...
 
