@@ -2,7 +2,7 @@ COMPOSE_PROJECT_NAME=txchat_biz
 
 ## MYSQL
 # mysql版本号
-MYSQL_VERSION=5.7
+MYSQL_VERSION=8-oracle
 # mysql容器名称
 MYSQL_CONTAINER_NAME=txchat-mysql
 # mysql数据卷

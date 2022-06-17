@@ -2,7 +2,6 @@ version: "2.4"
 services:
   mysql:
     image: mysql:${MYSQL_VERSION}
-    platform: linux/amd64
     container_name: ${MYSQL_CONTAINER_NAME}
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     ports:
@@ -21,7 +20,7 @@ services:
     restart: unless-stopped
     healthcheck:
       test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
-      timeout: 20s
+      timeout: 10s
       retries: 10
   minio:
     image: minio/minio:${MINIO_VERSION}
