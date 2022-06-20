@@ -26,26 +26,26 @@ func TestCreateAuthAsClient(t *testing.T) {
 	privKey, err := hex.DecodeString(privateKey)
 	assert.Nil(t, err)
 
-	authT := NewAuthToken(driver, "dtalk", time.Now().UnixNano()/1000)
+	signatory := NewSignatory(driver, "dtalk", time.Now().UnixMilli())
 
-	ar := NewApiRequest(authT.getToken(privKey), authT.getMetadata(), pubKey)
-	t.Log(ar.getSig())
+	apiRequest := NewApiRequest(signatory.doSignature(privKey), signatory.getMetadata(), pubKey)
+	t.Log(apiRequest.getToken())
 }
 
 func TestCreateAuthAsServer(t *testing.T) {
 	driver, err := xcrypt.Load(secp256k1_haltingstate.Name)
 	assert.Nil(t, err)
 
-	sig := "cIwU/HCDoaqRb9GYeXoLpv2L/Qojuvn2SNgbbkLheD9Lh37AY3iDpawH9uUtDj0j8pp/i0LTiKQNzWw9d0UsFQA=#164594983600*dtalk#02b2dcf40123a5364a4bc9fd717db92122f90321a6771a47bc922100c9852c8b68"
+	token := "cIwU/HCDoaqRb9GYeXoLpv2L/Qojuvn2SNgbbkLheD9Lh37AY3iDpawH9uUtDj0j8pp/i0LTiKQNzWw9d0UsFQA=#164594983600*dtalk#02b2dcf40123a5364a4bc9fd717db92122f90321a6771a47bc922100c9852c8b68"
 
-	ar, err := NewApiRequestFromSig(sig)
+	apiRequest, err := NewApiRequestFromToken(token)
 	assert.Nil(t, err)
 
-	authT, err := NewAuthTokenFromMetadata(driver, ar.getMetadata())
+	signatory, err := NewSignatoryFromMetadata(driver, apiRequest.getMetadata())
 	assert.Nil(t, err)
 
-	isMatch, err := authT.match(ar.getToken(), ar.getPublicKey())
+	isMatch, err := signatory.match(apiRequest.getSignature(), apiRequest.getPublicKey())
 	assert.Nil(t, err)
-	assert.Equal(t, true, isMatch)
-	assert.Equal(t, true, authT.isExpire())
+	assert.True(t, isMatch)
+	assert.True(t, signatory.isExpire())
 }

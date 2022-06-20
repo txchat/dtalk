@@ -97,7 +97,7 @@ func AuthMiddleWare() gin.HandlerFunc {
 			context.Set(DeviceName, deviceName)
 			context.Set(Version, version)
 		} else {
-			server := auth.NewDefaultApuAuthenticator()
+			server := auth.NewDefaultApiAuthenticator()
 			uid, err := server.Auth(sig)
 			if err != nil {
 				switch err {
