@@ -15,6 +15,6 @@ func Load(name string) (Encrypt, error) {
 }
 
 type Encrypt interface {
-	Sign(msg []byte, privkey []byte) []byte
-	Verify(msg []byte, sig []byte, pubkey []byte) int
+	Sign(msg []byte, privkey []byte) ([]byte, error)
+	Verify(msg []byte, sig []byte, pubkey []byte) (bool, error)
 }

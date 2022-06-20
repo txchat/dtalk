@@ -55,10 +55,12 @@ func (t *AuthToken) getMetadata() string {
 
 func (t *AuthToken) getToken(privKey []byte) string {
 	metadata := t.getMetadata()
-	// enc metadata
+	// sha356 encoding metadata
 	msg256 := sha256.Sum256([]byte(metadata))
-	//token := base64.StdEncoding.EncodeToString(secp256k1.Sign(msg256[:], privKey))
-	token := base64.StdEncoding.EncodeToString(t.crypt.Sign(msg256[:], privKey))
+	// secp256k1(eth format) sign
+	sig, _ := t.crypt.Sign(msg256[:], privKey)
+	// base64 encoding signature
+	token := base64.StdEncoding.EncodeToString(sig)
 	return token
 }
 
@@ -66,13 +68,13 @@ func (t *AuthToken) isExpire() bool {
 	return util.CheckTimeOut(t.timestamp, t.expireTimeInterval)
 }
 
-func (t *AuthToken) match(token string, pubKey []byte) bool {
-	//desc msg
+func (t *AuthToken) match(token string, pubKey []byte) (bool, error) {
+	// base64 decoding token
 	sig, err := base64.StdEncoding.DecodeString(token)
 	if err != nil {
-		return false
+		return false, err
 	}
 	msg256 := sha256.Sum256([]byte(t.getMetadata()))
-	//return util.Secp256k1Verify(msg256[:], sig, pubKey)
-	return 1 == t.crypt.Verify(msg256[:], sig, pubKey)
+	// secp256k1(eth format) verify
+	return t.crypt.Verify(msg256[:], sig, pubKey)
 }

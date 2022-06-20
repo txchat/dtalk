@@ -101,10 +101,10 @@ func AuthMiddleWare() gin.HandlerFunc {
 			uid, err := server.Auth(sig)
 			if err != nil {
 				switch err {
-				case auth.ERR_SIGNATUREINVALID:
-					err = xerror.NewError(xerror.SignatureInvalid)
 				case auth.ERR_SIGNATUREEXPIRED:
 					err = xerror.NewError(xerror.SignatureExpired)
+				default:
+					err = xerror.NewError(xerror.SignatureInvalid)
 				}
 				log.Debug().Err(err).Msg("VerifyAddress failed")
 				context.Set(ReqError, err)

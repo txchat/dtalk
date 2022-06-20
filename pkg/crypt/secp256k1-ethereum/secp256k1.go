@@ -2,44 +2,35 @@ package secp256K1
 
 import (
 	"bytes"
-	"fmt"
 	"github.com/ethereum/go-ethereum/crypto"
 )
 
 type ethereum struct {
 }
 
-func (t *ethereum) Sign(msg []byte, privkey []byte) []byte {
+func (t *ethereum) Sign(msg []byte, privkey []byte) ([]byte, error) {
 	priv, err := crypto.ToECDSA(privkey)
 	if err != nil {
-		fmt.Println(err)
-		return nil
+		return nil, err
 	}
 	sig, err := crypto.Sign(msg, priv)
 	//ret , err := secp256k1.Sign(msg, privkey)
 	if err != nil {
-		fmt.Println(err)
-		return nil
+		return nil, err
 	}
-	return sig
+	return sig, nil
 }
 
-func (t *ethereum) Verify(msg []byte, sig []byte, pubkey []byte) int {
+func (t *ethereum) Verify(msg []byte, sig []byte, pubkey []byte) (bool, error) {
 	recoveredPub, err := crypto.SigToPub(msg, sig)
 	if err != nil {
-		fmt.Println(err)
-		return 0
+		return false, err
 	}
 
 	ecdsaPubKey, err := crypto.DecompressPubkey(pubkey)
 	if err != nil {
-		fmt.Println(err)
-		return 0
+		return false, err
 	}
 
-	if bytes.Equal(crypto.FromECDSAPub(ecdsaPubKey), crypto.FromECDSAPub(recoveredPub)) {
-		return 1
-	}
-
-	return 0
+	return bytes.Equal(crypto.FromECDSAPub(ecdsaPubKey), crypto.FromECDSAPub(recoveredPub)), nil
 }

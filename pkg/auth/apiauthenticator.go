@@ -2,6 +2,7 @@ package auth
 
 import (
 	"errors"
+	"fmt"
 	"github.com/txchat/dtalk/pkg/address"
 	xcrypt "github.com/txchat/dtalk/pkg/crypt"
 	//secp256k1_ethereum "github.com/txchat/dtalk/pkg/crypt/secp256k1-ethereum"
@@ -48,8 +49,8 @@ func (d *defaultApuAuthenticator) Auth(sig string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if !authT.match(ar.getToken(), ar.getPublicKey()) {
-		return "", ERR_SIGNATUREINVALID
+	if isMatch, err := authT.match(ar.getToken(), ar.getPublicKey()); !isMatch {
+		return "", fmt.Errorf("%s, %s", ERR_SIGNATUREINVALID.Error(), err.Error())
 	}
 	if authT.isExpire() {
 		return "", ERR_SIGNATUREEXPIRED
