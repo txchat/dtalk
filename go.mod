@@ -11,7 +11,9 @@ require (
 	github.com/aliyun/alibaba-cloud-sdk-go v1.61.948
 	github.com/aliyun/aliyun-oss-go-sdk v2.1.8+incompatible
 	github.com/bsm/sarama-cluster v2.1.15+incompatible
+	github.com/btcsuite/btcd v0.22.0-beta
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/ethereum/go-ethereum v1.10.8
 	github.com/gammazero/workerpool v1.1.2
 	github.com/gin-contrib/pprof v1.3.0
 	github.com/gin-gonic/gin v1.6.3

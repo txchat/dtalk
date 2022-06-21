@@ -97,14 +97,14 @@ func AuthMiddleWare() gin.HandlerFunc {
 			context.Set(DeviceName, deviceName)
 			context.Set(Version, version)
 		} else {
-			server := auth.NewDefaultApuAuthenticator()
+			server := auth.NewDefaultApiAuthenticator()
 			uid, err := server.Auth(sig)
 			if err != nil {
 				switch err {
-				case auth.ERR_SIGNATUREINVALID:
-					err = xerror.NewError(xerror.SignatureInvalid)
 				case auth.ERR_SIGNATUREEXPIRED:
 					err = xerror.NewError(xerror.SignatureExpired)
+				default:
+					err = xerror.NewError(xerror.SignatureInvalid)
 				}
 				log.Debug().Err(err).Msg("VerifyAddress failed")
 				context.Set(ReqError, err)
