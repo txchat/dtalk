@@ -45,7 +45,7 @@ require (
 	//github.com/txchat/imparse v0.0.0-00010101000000-000000000000
 	//github.com/txchat/im-pkg v0.0.0-00010101000000-000000000000
 	github.com/txchat/im-pkg v0.0.1
-	github.com/txchat/imparse v0.0.1
+	github.com/txchat/imparse v0.0.2
 	github.com/uber/jaeger-client-go v2.30.0+incompatible
 	go.etcd.io/etcd/api/v3 v3.5.0
 	go.etcd.io/etcd/client/v3 v3.5.0

@@ -4,48 +4,52 @@ Env = "debug"
 addr = "0.0.0.0:18004"
 
 [Reg]
-Schema = "dtalk"
-SrvName = "backup"
-RegAddrs = "127.0.0.1:2379"
+    Schema = "dtalk"
+    SrvName = "backup"
+    RegAddrs = "txchat-etcd:2379"
 
 [GRPCServer]
-Network=                           "tcp"
-Addr=                              ":18012"
-Timeout=                           "1s"
-KeepAliveMaxConnectionIdle=        "60s"
-KeepAliveMaxConnectionAge=         "2h"
-KeepAliveMaxMaxConnectionAgeGrace= "20s"
-KeepAliveTime=                     "60s"
-KeepAliveTimeout=                  "20s"
+    Network=                           "tcp"
+    Addr=                              ":18012"
+    Timeout=                           "1s"
+    KeepAliveMaxConnectionIdle=        "60s"
+    KeepAliveMaxConnectionAge=         "2h"
+    KeepAliveMaxMaxConnectionAgeGrace= "20s"
+    KeepAliveTime=                     "60s"
+    KeepAliveTimeout=                  "20s"
 
 [MySQL]
-Host = "127.0.0.1"
-Port = 3306
-User = "root"
-Pwd = "123456"
-Db = "dtalk"
+    Host = "txchat-mysql"
+    Port = 3306
+    User = "root"
+    Pwd = "${MYSQL_PASSWORD}"
+    Db = "dtalk"
 
 [SMS]
-Surl = ""
-AppKey = ""
-SecretKey = ""
-Msg = ""
-Env = "debug"
+    Surl = ""
+    AppKey = ""
+    SecretKey = ""
+    Msg = ""
+    Env = "debug"
 
 [SMS.CodeTypes]
-quick="quick"
+    quick="quick"
+    bind="bind"
+    export="import"
 
 [Email]
-Surl = ""
-AppKey = ""
-SecretKey = ""
-Msg = ""
-Env = "debug"
+    Surl = ""
+    AppKey = ""
+    SecretKey = ""
+    Msg = ""
+    Env = "debug"
 
 [Email.CodeTypes]
-quick="quick"
+    quick="quick"
+    bind="bind"
+    export="import"
 
 [[Whitelist]]
-Account=""
-Code=""
-Enable=true
+    Account="11111111111"
+    Code="12345"
+    Enable=true

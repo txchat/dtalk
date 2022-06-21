@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-
 	"github.com/Shopify/sarama"
 	"github.com/gammazero/workerpool"
 	"github.com/golang/protobuf/proto"
@@ -12,6 +11,7 @@ import (
 	traceLog "github.com/opentracing/opentracing-go/log"
 	"github.com/rs/zerolog"
 	zlog "github.com/rs/zerolog/log"
+	device "github.com/txchat/dtalk/service/device/api"
 	"github.com/txchat/dtalk/service/record/kafka/consumer"
 	record "github.com/txchat/dtalk/service/record/proto"
 	"github.com/txchat/dtalk/service/record/store/config"
@@ -19,6 +19,8 @@ import (
 	"github.com/txchat/dtalk/service/record/store/model"
 	"github.com/txchat/imparse"
 	"github.com/txchat/imparse/chat"
+	xproto "github.com/txchat/imparse/proto"
+	"time"
 )
 
 type Service struct {
@@ -30,6 +32,8 @@ type Service struct {
 
 	parser  chat.StandardParse
 	storage imparse.Storage
+
+	deviceClient *device.Client
 
 	workPoolRev   *workerpool.WorkerPool
 	workPoolStore *workerpool.WorkerPool
@@ -46,6 +50,7 @@ func New(c *config.Config) *Service {
 		storeConsumers: consumer.NewKafkaConsumers(
 			fmt.Sprintf("store-%s-topic", c.AppId),
 			fmt.Sprintf("store-%s-group", c.AppId), c.StoreSub.Brokers, c.StoreSub.Number),
+		deviceClient:  device.New(c.DeviceRPCClient.RegAddrs, c.DeviceRPCClient.Schema, c.DeviceRPCClient.SrvName, time.Duration(c.DeviceRPCClient.Dial)),
 		workPoolRev:   workerpool.New(c.RevSub.MaxWorker),
 		workPoolStore: workerpool.New(c.StoreSub.MaxWorker),
 	}
@@ -243,7 +248,16 @@ func (s *Service) DealStore(ctx context.Context, m *record.PushMsg) error {
 		s.log.Error().Stack().Err(err).Str("key", m.Key).Str("from", m.FromId).Msg("NewFrame error")
 		return err
 	}
-	if err := s.storage.SaveMsg(ctx, frame); err != nil {
+	//TODO 暂时处理，之后device信息统一通过answer服务传递
+	devType := xproto.Device_Android
+	dev, err := s.deviceClient.GetDeviceByConnID(ctx, &device.GetDeviceByConnIdRequest{
+		Uid:    m.GetFromId(),
+		ConnID: m.GetKey(),
+	})
+	if dev != nil {
+		devType = xproto.Device(dev.GetDeviceType())
+	}
+	if err := s.storage.SaveMsg(ctx, devType, frame); err != nil {
 		s.log.Error().Stack().Err(err).Str("key", m.Key).Str("from", m.FromId).Msg("Store error")
 		return err
 	}

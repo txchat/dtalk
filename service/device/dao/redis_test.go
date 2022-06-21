@@ -6,6 +6,7 @@ import (
 	"github.com/txchat/dtalk/pkg/util"
 	"github.com/txchat/dtalk/service/device/model"
 	"gopkg.in/Shopify/sarama.v1"
+	"reflect"
 	"testing"
 	"time"
 )
@@ -188,6 +189,54 @@ func TestDao_setExpire(t *testing.T) {
 			}
 			if err := d.setExpire(tt.args.device); (err != nil) != tt.wantErr {
 				t.Errorf("setExpire() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestDao_GetDevicesByConnID(t *testing.T) {
+	type fields struct {
+		log   zerolog.Logger
+		redis *redis.Pool
+	}
+	type args struct {
+		uid    string
+		connID string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    *model.Device
+		wantErr bool
+	}{
+		{
+			name: "",
+			fields: fields{
+				log:   testLog,
+				redis: testRedis,
+			},
+			args: args{
+				uid:    "115Mkz6vxW61Phj3UM3MPft1mCLrEiXUrQ",
+				connID: "c76a14e7-14c3-44a9-94e8-17a728301513",
+			},
+			want:    nil,
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			d := &Dao{
+				log:   tt.fields.log,
+				redis: tt.fields.redis,
+			}
+			got, err := d.GetDevicesByConnID(tt.args.uid, tt.args.connID)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("GetDevicesByConnID() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("GetDevicesByConnID() got = %v, want %v", got, tt.want)
 			}
 		})
 	}

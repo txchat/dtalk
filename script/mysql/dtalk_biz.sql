@@ -1,21 +1,24 @@
 /*
  Navicat Premium Data Transfer
 
- Source Server         : 172.16.101.107
+ Source Server         : localhost
  Source Server Type    : MySQL
- Source Server Version : 50732
- Source Host           : 172.16.101.107:3306
+ Source Server Version : 50736
+ Source Host           : localhost:3306
  Source Schema         : dtalk
 
  Target Server Type    : MySQL
- Target Server Version : 50732
+ Target Server Version : 50736
  File Encoding         : 65001
 
- Date: 18/11/2021 10:36:53
+ Date: 01/06/2022 15:59:54
 */
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
+
+CREATE DATABASE IF NOT EXISTS dtalk DEFAULT CHARACTER SET = utf8mb4;
+Use dtalk;
 
 -- ----------------------------
 -- Table structure for dtalk_addr_backup
@@ -33,6 +36,17 @@ CREATE TABLE `dtalk_addr_backup` (
   PRIMARY KEY (`address`),
   KEY `idx_phone` (`phone`) USING HASH,
   KEY `idx_email` (`email`) USING HASH
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Table structure for dtalk_addr_move
+-- ----------------------------
+DROP TABLE IF EXISTS `dtalk_addr_move`;
+CREATE TABLE `dtalk_addr_move` (
+  `bty_addr` varchar(255) NOT NULL COMMENT 'bty地址',
+  `btc_addr` varchar(255) NOT NULL COMMENT 'btc地址',
+  `state` tinyint(255) DEFAULT NULL COMMENT '0->对应关系已建立；1-> 好友关系已迁移',
+  PRIMARY KEY (`bty_addr`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
@@ -126,6 +140,7 @@ CREATE TABLE `dtalk_group_info` (
   `group_friend_type` tinyint(4) NOT NULL COMMENT '加好友限制， 0=群内可加好友，1=群内禁止加好友',
   `group_aes_key` varchar(255) DEFAULT NULL COMMENT 'aes key',
   `group_pub_name` varchar(255) DEFAULT NULL COMMENT '群公开名称',
+  `group_type` tinyint(4) DEFAULT NULL COMMENT '群类型 (0: 普通群, 1: 全员群, 2: 部门群)',
   PRIMARY KEY (`group_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -205,6 +220,6 @@ CREATE TABLE `dtalk_ver_backend` (
   `update_time` bigint(20) NOT NULL COMMENT '更新时间',
   `create_time` bigint(20) NOT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 SET FOREIGN_KEY_CHECKS = 1;

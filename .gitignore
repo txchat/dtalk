@@ -1,6 +1,8 @@
 build/
 .idea/
 target/
-dtalk_bin_*
+target_*
+run_compose
 .DS_Store
-dtalk_service_*
+swagger/docs
+api-v1.md

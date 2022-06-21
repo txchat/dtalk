@@ -147,6 +147,29 @@ func (d *Dao) EnableDevice(uid, connId string) error {
 	return nil
 }
 
+func (d *Dao) GetDevicesByConnID(uid, connID string) (*model.Device, error) {
+	key := keyDevice(uid)
+	conn := d.redis.Get()
+	defer conn.Close()
+	jsonItem, err := redis.String(conn.Do("HGET", key, connID))
+	if err != nil {
+		d.log.Error().Err(err).Msg(fmt.Sprintf("conn.DO(HGET %s %s)", key, connID))
+		return nil, err
+	}
+
+	item := model.Device{}
+	err = json.Unmarshal([]byte(jsonItem), &item)
+	if err != nil {
+		return nil, err
+	}
+	//获取deviceToken所属的uid
+	item.DTUid, err = d.GetTokenDevice(item.DeviceToken)
+	if err != nil {
+		return nil, err
+	}
+	return &item, nil
+}
+
 //key:userId; val:json
 func (d *Dao) GetAllDevices(uid string) ([]*model.Device, error) {
 	key := keyDevice(uid)
