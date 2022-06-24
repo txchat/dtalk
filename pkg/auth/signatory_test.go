@@ -28,8 +28,8 @@ func TestCreateAuthAsClient(t *testing.T) {
 
 	signatory := NewSignatory(driver, "dtalk", time.Now().UnixMilli())
 
-	apiRequest := NewApiRequest(signatory.doSignature(privKey), signatory.getMetadata(), pubKey)
-	t.Log(apiRequest.getToken())
+	apiRequest := NewApiRequest(signatory.DoSignature(privKey), signatory.GetMetadata(), pubKey)
+	t.Log(apiRequest.GetToken())
 }
 
 func TestCreateAuthAsServer(t *testing.T) {
@@ -41,11 +41,11 @@ func TestCreateAuthAsServer(t *testing.T) {
 	apiRequest, err := NewApiRequestFromToken(token)
 	assert.Nil(t, err)
 
-	signatory, err := NewSignatoryFromMetadata(driver, apiRequest.getMetadata())
+	signatory, err := NewSignatoryFromMetadata(driver, apiRequest.GetMetadata())
 	assert.Nil(t, err)
 
-	isMatch, err := signatory.match(apiRequest.getSignature(), apiRequest.getPublicKey())
+	isMatch, err := signatory.Match(apiRequest.GetSignature(), apiRequest.GetPublicKey())
 	assert.Nil(t, err)
 	assert.True(t, isMatch)
-	assert.True(t, signatory.isExpire())
+	assert.True(t, signatory.IsExpire())
 }

@@ -36,19 +36,18 @@ func NewApiRequestFromToken(token string) (*ApiRequest, error) {
 	}, nil
 }
 
-// get signature
-func (t *ApiRequest) getToken() string {
+func (t *ApiRequest) GetToken() string {
 	return fmt.Sprintf("%s#%s#%s", t.signature, t.metadata, hex.EncodeToString(t.pubKey))
 }
 
-func (t *ApiRequest) getSignature() string {
+func (t *ApiRequest) GetSignature() string {
 	return t.signature
 }
 
-func (t *ApiRequest) getMetadata() string {
+func (t *ApiRequest) GetMetadata() string {
 	return t.metadata
 }
 
-func (t *ApiRequest) getPublicKey() []byte {
+func (t *ApiRequest) GetPublicKey() []byte {
 	return t.pubKey
 }
