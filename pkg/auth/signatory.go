@@ -48,12 +48,12 @@ func NewSignatoryFromMetadata(crypt xcrypt.Encrypt, metadata string) (*Signatory
 	}, nil
 }
 
-func (t *Signatory) getMetadata() string {
+func (t *Signatory) GetMetadata() string {
 	return fmt.Sprintf("%d*%s", t.timestamp, t.appId)
 }
 
-func (t *Signatory) doSignature(privKey []byte) string {
-	metadata := t.getMetadata()
+func (t *Signatory) DoSignature(privKey []byte) string {
+	metadata := t.GetMetadata()
 	// sha356 encoding metadata
 	msg256 := sha256.Sum256([]byte(metadata))
 	// secp256k1(eth format) sign
@@ -63,17 +63,17 @@ func (t *Signatory) doSignature(privKey []byte) string {
 	return token
 }
 
-func (t *Signatory) isExpire() bool {
+func (t *Signatory) IsExpire() bool {
 	return time.Now().After(time.UnixMilli(t.timestamp).Add(t.expireTimeInterval))
 }
 
-func (t *Signatory) match(signature string, pubKey []byte) (bool, error) {
+func (t *Signatory) Match(signature string, pubKey []byte) (bool, error) {
 	// base64 decoding signature
 	sig, err := base64.StdEncoding.DecodeString(signature)
 	if err != nil {
 		return false, err
 	}
-	msg256 := sha256.Sum256([]byte(t.getMetadata()))
+	msg256 := sha256.Sum256([]byte(t.GetMetadata()))
 	// secp256k1(eth format) verify
 	return t.crypt.Verify(msg256[:], sig, pubKey)
 }

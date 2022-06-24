@@ -55,8 +55,8 @@ func NewDefaultApiAuthenticatorAsDriver(driver xcrypt.Encrypt) *defaultApiAuthen
 func (d *defaultApiAuthenticator) Request(appId string, pubKey, privKey []byte) string {
 	signatory := NewSignatory(d.crypt, appId, time.Now().UnixMilli())
 
-	apiRequest := NewApiRequest(signatory.doSignature(privKey), signatory.getMetadata(), pubKey)
-	return apiRequest.getToken()
+	apiRequest := NewApiRequest(signatory.DoSignature(privKey), signatory.GetMetadata(), pubKey)
+	return apiRequest.GetToken()
 }
 
 func (d *defaultApiAuthenticator) Auth(token string) (string, error) {
@@ -64,17 +64,17 @@ func (d *defaultApiAuthenticator) Auth(token string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	signatory, err := NewSignatoryFromMetadata(d.crypt, apiRequest.getMetadata())
+	signatory, err := NewSignatoryFromMetadata(d.crypt, apiRequest.GetMetadata())
 	if err != nil {
 		return "", err
 	}
-	if isMatch, err := signatory.match(apiRequest.getSignature(), apiRequest.getPublicKey()); !isMatch {
+	if isMatch, err := signatory.Match(apiRequest.GetSignature(), apiRequest.GetPublicKey()); !isMatch {
 		return "", ERR_SIGNATUREINVALID(err)
 	}
-	if signatory.isExpire() {
+	if signatory.IsExpire() {
 		return "", ERR_SIGNATUREEXPIRED
 	}
-	uid := address.PublicKeyToAddress(address.NormalVer, apiRequest.getPublicKey())
+	uid := address.PublicKeyToAddress(address.NormalVer, apiRequest.GetPublicKey())
 	if uid == "" {
 		return "", ERR_UIDINVALID
 	}
