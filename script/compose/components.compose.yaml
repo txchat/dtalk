@@ -58,6 +58,7 @@ services:
     ports:
       - "80"
       - "8888:8888"
+      - "8889:8889"
     depends_on:
       - gateway
       - discovery
