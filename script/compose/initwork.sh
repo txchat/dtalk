@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC2034
 work_dir=$(
     cd "$(dirname "$0")" || exit
     pwd
@@ -46,6 +47,7 @@ function volume_create() {
 }
 
 function initMySQL() {
+    # shellcheck disable=SC2048
     for vname in ${created_volume[*]}; do
         if [ "${vname}" = "txchat-mysql-init" ]; then
             # 将初始化sql文件传入mysql初始化卷中
@@ -58,6 +60,7 @@ function initMySQL() {
 }
 
 function initNginx() {
+    # shellcheck disable=SC2048
     for vname in ${created_volume[*]}; do
         if [ "${vname}" = "txchat-nginx-config" ]; then
             docker container create --name dummy -v "txchat-nginx-config":/root hello-world
@@ -77,6 +80,7 @@ for sName in ${serviceList}; do
     dosed "s/(${upperSName}_IMAGE=)\s*(.+)/\1${projectVersion}/" .env
 done
 
+# shellcheck disable=SC2048
 for vname in ${volumes[*]}; do
     volume_create "${vname}"
 done

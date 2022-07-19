@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC2034
 work_dir=$(
     cd "$(dirname "$0")" || exit
     pwd
@@ -9,6 +10,7 @@ function randomPassword() {
     MINIO_ROOT_PASSWORD=$(openssl rand -base64 16)
 }
 
+# shellcheck disable=SC1091
 source key 2>/dev/null || randomPassword
 
 eval "cat <<EOF

@@ -1,3 +1,5 @@
+#!/bin/bash
+
 docker run -d --name jaeger \
     -e COLLECTOR_ZIPKIN_HOST_PORT=:9411 \
     -p 5775:5775/udp \
