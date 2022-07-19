@@ -1,14 +1,15 @@
 package dao
 
 import (
+	"reflect"
+	"testing"
+	"time"
+
 	"github.com/gomodule/redigo/redis"
 	"github.com/rs/zerolog"
 	"github.com/txchat/dtalk/pkg/util"
 	"github.com/txchat/dtalk/service/device/model"
 	"gopkg.in/Shopify/sarama.v1"
-	"reflect"
-	"testing"
-	"time"
 )
 
 func TestDao_GetAllDevices(t *testing.T) {

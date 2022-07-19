@@ -1,10 +1,11 @@
 package cdk
 
 import (
-	"github.com/txchat/dtalk/pkg/util"
-	"github.com/txchat/dtalk/service/backend/model/types"
 	"sync"
 	"testing"
+
+	"github.com/txchat/dtalk/pkg/util"
+	"github.com/txchat/dtalk/service/backend/model/types"
 )
 
 func TestCreateCdkOrder(t *testing.T) {

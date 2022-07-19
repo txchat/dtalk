@@ -1,11 +1,12 @@
 package dao
 
 import (
-	"github.com/txchat/dtalk/pkg/util"
-	"github.com/txchat/dtalk/service/backend/model/db"
 	"math"
 	"strings"
 	"time"
+
+	"github.com/txchat/dtalk/pkg/util"
+	"github.com/txchat/dtalk/service/backend/model/db"
 )
 
 const (

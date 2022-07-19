@@ -1,12 +1,13 @@
 package http
 
 import (
+	"net/http"
+
 	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
 	"github.com/inconshreveable/log15"
 	"github.com/txchat/dtalk/pkg/api"
 	"github.com/txchat/dtalk/service/discovery/service"
-	"net/http"
 )
 
 var (

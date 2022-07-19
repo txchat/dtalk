@@ -2,6 +2,7 @@ package secp256K1
 
 import (
 	"bytes"
+
 	"github.com/ethereum/go-ethereum/crypto"
 )
 

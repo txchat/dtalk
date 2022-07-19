@@ -2,6 +2,7 @@ package whitelist
 
 import (
 	"errors"
+
 	"github.com/txchat/dtalk/service/backup/config"
 	"github.com/txchat/dtalk/service/backup/model"
 )

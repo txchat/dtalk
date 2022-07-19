@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+
 	xerror "github.com/txchat/dtalk/pkg/error"
 	pb "github.com/txchat/dtalk/service/group/api"
 	"github.com/txchat/dtalk/service/group/model/biz"

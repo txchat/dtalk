@@ -3,6 +3,7 @@ package mock
 import (
 	"context"
 	"fmt"
+
 	"github.com/txchat/dtalk/service/record/kafka/publisher"
 	"gopkg.in/Shopify/sarama.v1"
 	kafka "gopkg.in/Shopify/sarama.v1"

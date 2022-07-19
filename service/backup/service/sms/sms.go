@@ -5,7 +5,6 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"github.com/txchat/dtalk/service/backup/model"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -13,6 +12,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/txchat/dtalk/service/backup/model"
 
 	"github.com/inconshreveable/log15"
 	http_tools "github.com/txchat/dtalk/pkg/net/http"
@@ -253,7 +254,7 @@ func MapToSortUrlEncode(paramsMap map[string]string) string {
 	v := url.Values{}
 
 	mapKeys := []string{}
-	for k, _ := range paramsMap {
+	for k := range paramsMap {
 		mapKeys = append(mapKeys, k)
 	}
 	sort.Strings(mapKeys)

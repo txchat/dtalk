@@ -2,9 +2,10 @@ package kafka
 
 import (
 	"fmt"
+	"strconv"
+
 	cluster "github.com/bsm/sarama-cluster"
 	"github.com/txchat/dtalk/service/offline-push/config"
-	"strconv"
 )
 
 func NewKafkaConsumers(appId string, cfg *config.MQSubClient, groupIdx int) map[string]*Consumer {

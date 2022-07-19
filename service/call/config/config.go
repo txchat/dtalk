@@ -2,10 +2,11 @@ package config
 
 import (
 	"flag"
+	"time"
+
 	"github.com/BurntSushi/toml"
 	"github.com/txchat/dtalk/pkg/redis"
 	xtime "github.com/txchat/dtalk/pkg/time"
-	"time"
 )
 
 var (

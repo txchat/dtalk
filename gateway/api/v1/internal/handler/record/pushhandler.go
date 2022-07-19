@@ -1,6 +1,8 @@
 package record
 
 import (
+	"io/ioutil"
+
 	"github.com/gin-gonic/gin"
 	"github.com/golang/protobuf/proto"
 	"github.com/txchat/dtalk/gateway/api/v1/internal/logic/record"
@@ -8,7 +10,6 @@ import (
 	"github.com/txchat/dtalk/pkg/api"
 	xerror "github.com/txchat/dtalk/pkg/error"
 	comet "github.com/txchat/im/api/comet/grpc"
-	"io/ioutil"
 )
 
 // PushToUid

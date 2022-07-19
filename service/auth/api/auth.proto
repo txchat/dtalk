@@ -4,15 +4,11 @@ syntax = "proto3";
 package dtalk.auth;
 option go_package = "github.com/txchat/dtalk/service/auth";
 
-message AuthRequest{
+message AuthRequest {
   string appid = 1;
   string token = 2;
 }
 
-message AuthReply {
-  string uid = 1;
-}
+message AuthReply { string uid = 1; }
 
-service Auth {
-  rpc DoAuth(AuthRequest) returns (AuthReply);
-}
+service Auth { rpc DoAuth(AuthRequest) returns (AuthReply); }

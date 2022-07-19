@@ -2,8 +2,9 @@ package grpc
 
 import (
 	"context"
-	"github.com/txchat/dtalk/service/auth/model"
 	"time"
+
+	"github.com/txchat/dtalk/service/auth/model"
 
 	xgrpc "github.com/txchat/dtalk/pkg/net/grpc"
 	pb "github.com/txchat/dtalk/service/auth/api"

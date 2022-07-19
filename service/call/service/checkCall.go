@@ -1,10 +1,11 @@
 package service
 
 import (
+	"time"
+
 	xerror "github.com/txchat/dtalk/pkg/error"
 	"github.com/txchat/dtalk/pkg/util"
 	"github.com/txchat/dtalk/service/call/model"
-	"time"
 )
 
 func (s *Service) CheckCall(req *model.CheckCallRequest) (res *model.CheckCallResponse, err error) {

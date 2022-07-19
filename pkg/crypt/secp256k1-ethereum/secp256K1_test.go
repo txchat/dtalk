@@ -3,9 +3,10 @@ package secp256K1
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"testing"
+
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 var (

@@ -2,6 +2,7 @@ package biz
 
 import (
 	"context"
+
 	xerror "github.com/txchat/dtalk/pkg/error"
 	"github.com/txchat/dtalk/pkg/util"
 	"github.com/txchat/dtalk/service/group/model/types"

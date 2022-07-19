@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/Shopify/sarama"
 	"github.com/gammazero/workerpool"
 	"github.com/golang/protobuf/proto"
@@ -20,7 +22,6 @@ import (
 	"github.com/txchat/imparse"
 	"github.com/txchat/imparse/chat"
 	xproto "github.com/txchat/imparse/proto"
-	"time"
 )
 
 type Service struct {

@@ -2,6 +2,7 @@ package cdk
 
 import (
 	"fmt"
+
 	"github.com/pkg/errors"
 	xerror "github.com/txchat/dtalk/pkg/error"
 	"github.com/txchat/dtalk/pkg/util"

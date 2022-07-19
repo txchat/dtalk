@@ -2,6 +2,7 @@ package model
 
 import (
 	"encoding/json"
+
 	"github.com/dgrijalva/jwt-go"
 	"github.com/txchat/dtalk/pkg/util"
 )

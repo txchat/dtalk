@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+
 	"github.com/golang/protobuf/proto"
 	"github.com/txchat/dtalk/pkg/util"
 	"github.com/txchat/dtalk/service/record/answer/dao"
@@ -49,7 +50,7 @@ func (d *DB) GetMid(ctx context.Context) (id int64, err error) {
 func (d *DB) GetFilters() map[imparse.FrameType][]imparse.Filter {
 	//filters
 	return map[imparse.FrameType][]imparse.Filter{
-		chat.GroupFrameType: []imparse.Filter{
+		chat.GroupFrameType: {
 			func(ctx context.Context, frame imparse.Frame) error {
 				f := frame.(*chat.GroupFrame)
 				//判断群聊拦截

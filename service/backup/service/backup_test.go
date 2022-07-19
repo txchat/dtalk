@@ -1,11 +1,12 @@
 package service
 
 import (
+	"testing"
+
 	"github.com/inconshreveable/log15"
 	"github.com/txchat/dtalk/service/backup/config"
 	"github.com/txchat/dtalk/service/backup/dao"
 	"github.com/txchat/dtalk/service/backup/model"
-	"testing"
 )
 
 func TestService_PhoneIsBound(t *testing.T) {

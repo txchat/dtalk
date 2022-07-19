@@ -2,8 +2,9 @@ package dao
 
 import (
 	"context"
-	idgen "github.com/txchat/dtalk/service/generator/api"
 	"time"
+
+	idgen "github.com/txchat/dtalk/service/generator/api"
 )
 
 // Receive receive a message.

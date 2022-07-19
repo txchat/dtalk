@@ -5,18 +5,15 @@ package dtalk.pusher;
 option go_package = "github.com/txchat/dtalk/service/record/pusher";
 
 message PushReq {
-    string key = 1;
-    string from = 2;
-    string mid = 3;
-    string target = 4;
-    bytes data = 5;
-    int32 type = 6;
-    string frameType = 7;
+  string key = 1;
+  string from = 2;
+  string mid = 3;
+  string target = 4;
+  bytes data = 5;
+  int32 type = 6;
+  string frameType = 7;
 }
 
-message PushReply {
-}
+message PushReply {}
 
-service Pusher {
-    rpc PushClient(PushReq) returns (PushReply);
-}
+service Pusher { rpc PushClient(PushReq) returns (PushReply); }

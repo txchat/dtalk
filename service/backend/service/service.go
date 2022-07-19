@@ -1,12 +1,13 @@
 package service
 
 import (
+	"time"
+
 	"github.com/inconshreveable/log15"
 	"github.com/txchat/dtalk/service/backend/config"
 	"github.com/txchat/dtalk/service/backend/dao"
 	"github.com/txchat/dtalk/service/backend/service/cdk"
 	idgen "github.com/txchat/dtalk/service/generator/api"
-	"time"
 )
 
 type Service struct {

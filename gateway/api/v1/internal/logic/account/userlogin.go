@@ -2,6 +2,7 @@ package account
 
 import (
 	"context"
+
 	"github.com/txchat/dtalk/gateway/api/v1/internal/model"
 	"github.com/txchat/dtalk/gateway/api/v1/internal/svc"
 	device "github.com/txchat/dtalk/service/device/api"

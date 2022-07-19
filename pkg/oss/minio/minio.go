@@ -3,12 +3,13 @@ package minio
 import (
 	"context"
 	"fmt"
+	"io"
+	"sort"
+
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/pkg/errors"
 	"github.com/txchat/dtalk/pkg/oss"
-	"io"
-	"sort"
 )
 
 var _ oss.Oss = (*Minio)(nil)

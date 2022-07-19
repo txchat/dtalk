@@ -1,12 +1,13 @@
 package api
 
 import (
+	"net/http"
+	"reflect"
+
 	"github.com/gin-gonic/gin"
 	zlog "github.com/rs/zerolog/log"
 	"github.com/txchat/dtalk/pkg/auth"
 	xerror "github.com/txchat/dtalk/pkg/error"
-	"net/http"
-	"reflect"
 )
 
 var log = zlog.Logger

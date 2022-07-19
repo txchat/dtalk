@@ -2,6 +2,7 @@ package trace
 
 import (
 	"context"
+
 	"github.com/txchat/dtalk/pkg/api"
 	"github.com/txchat/dtalk/pkg/api/trace"
 	"google.golang.org/grpc"

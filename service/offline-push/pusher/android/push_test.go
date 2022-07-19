@@ -1,8 +1,9 @@
 package android
 
 import (
-	"github.com/txchat/dtalk/service/offline-push/pusher"
 	"testing"
+
+	"github.com/txchat/dtalk/service/offline-push/pusher"
 )
 
 func Test_androidPusher_SinglePush(t1 *testing.T) {

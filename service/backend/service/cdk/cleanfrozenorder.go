@@ -1,8 +1,9 @@
 package cdk
 
 import (
-	"github.com/txchat/dtalk/service/backend/model/biz"
 	"time"
+
+	"github.com/txchat/dtalk/service/backend/model/biz"
 )
 
 func (s *ServiceContent) CleanFrozenOrder() {
@@ -22,7 +23,7 @@ func (s *ServiceContent) CleanFrozenOrder() {
 			}
 		}
 
-		for k, _ := range OrderSet {
+		for k := range OrderSet {
 			err := s.dao.CleanFrozenCdks(k)
 			if err != nil {
 				s.log.Err(err).Int64("orderId", k).Msg("CleanFrozenCdks Error")

@@ -2,9 +2,10 @@ package dao
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/txchat/dtalk/pkg/util"
 	"github.com/txchat/dtalk/service/record/store/model"
-	"strings"
 )
 
 const (

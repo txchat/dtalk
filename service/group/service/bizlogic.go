@@ -3,8 +3,9 @@ package service
 import (
 	"context"
 	"fmt"
-	"github.com/txchat/dtalk/pkg/util"
 	"time"
+
+	"github.com/txchat/dtalk/pkg/util"
 
 	"github.com/pkg/errors"
 	"github.com/txchat/dtalk/service/group/model"

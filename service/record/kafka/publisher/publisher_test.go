@@ -1,8 +1,9 @@
 package publisher
 
 import (
-	"github.com/google/uuid"
 	"testing"
+
+	"github.com/google/uuid"
 
 	"gopkg.in/Shopify/sarama.v1"
 )

@@ -3,11 +3,14 @@ package auth
 import (
 	"errors"
 	"fmt"
+
 	"github.com/txchat/dtalk/pkg/address"
 	xcrypt "github.com/txchat/dtalk/pkg/crypt"
+
 	//secp256k1_ethereum "github.com/txchat/dtalk/pkg/crypt/secp256k1-ethereum"
-	secp256k1_haltingstate "github.com/txchat/dtalk/pkg/crypt/secp256k1-haltingstate"
 	"time"
+
+	secp256k1_haltingstate "github.com/txchat/dtalk/pkg/crypt/secp256k1-haltingstate"
 )
 
 var ERR_SIGNATUREEXPIRED = errors.New("signature expired")

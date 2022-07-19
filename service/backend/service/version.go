@@ -1,11 +1,12 @@
 package service
 
 import (
+	"time"
+
 	"github.com/dgrijalva/jwt-go"
 	xerror "github.com/txchat/dtalk/pkg/error"
 	"github.com/txchat/dtalk/service/backend/config"
 	"github.com/txchat/dtalk/service/backend/model"
-	"time"
 )
 
 func (s *Service) CreateVersion(request *model.VersionCreateRequest) (res *model.VersionCreateResponse, err error) {

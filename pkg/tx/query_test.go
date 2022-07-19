@@ -2,8 +2,9 @@ package tx
 
 import (
 	"encoding/json"
-	chainCommon "github.com/33cn/chain33/common"
 	"testing"
+
+	chainCommon "github.com/33cn/chain33/common"
 
 	chainTypes "github.com/33cn/chain33/types"
 )

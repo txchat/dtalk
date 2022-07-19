@@ -1,9 +1,10 @@
 package service
 
 import (
+	"time"
+
 	xerror "github.com/txchat/dtalk/pkg/error"
 	"github.com/txchat/dtalk/service/backup/model"
-	"time"
 )
 
 func (s *Service) EditMnemonic(addr, mne string) error {

@@ -1,14 +1,15 @@
 package svc
 
 import (
+	"sync"
+	"time"
+
 	xerror "github.com/txchat/dtalk/pkg/error"
 	"github.com/txchat/dtalk/pkg/interceptor/trace"
 	device "github.com/txchat/dtalk/service/device/api"
 	group "github.com/txchat/dtalk/service/group/api"
 	store "github.com/txchat/dtalk/service/record/store/api"
 	"google.golang.org/grpc"
-	"sync"
-	"time"
 
 	"github.com/txchat/dtalk/gateway/api/v1/internal/config"
 	answer "github.com/txchat/dtalk/service/record/answer/api"

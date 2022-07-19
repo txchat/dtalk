@@ -2,12 +2,13 @@ package minio
 
 import (
 	"bytes"
-	"github.com/stretchr/testify/require"
-	"github.com/txchat/dtalk/pkg/oss"
 	"math"
 	"os"
 	"sort"
 	"testing"
+
+	"github.com/stretchr/testify/require"
+	"github.com/txchat/dtalk/pkg/oss"
 )
 
 /*

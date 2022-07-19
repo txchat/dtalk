@@ -13,8 +13,8 @@ message PushCommonMsgReq {
 }
 
 message PushCommonMsgReply {
-    int64 mid = 1;
-    uint64 time = 2;
+  int64 mid = 1;
+  uint64 time = 2;
 }
 
 message PushNoticeMsgReq {
@@ -25,9 +25,7 @@ message PushNoticeMsgReq {
   bytes data = 5;
 }
 
-message PushNoticeMsgReply {
-    int64 mid = 1;
-}
+message PushNoticeMsgReply { int64 mid = 1; }
 
 message UniCastSignalReq {
   imparse.signal.SignalType type = 1;
@@ -35,9 +33,7 @@ message UniCastSignalReq {
   bytes body = 3;
 }
 
-message UniCastSignalReply {
-    int64 mid = 1;
-}
+message UniCastSignalReply { int64 mid = 1; }
 
 message GroupCastSignalReq {
   imparse.signal.SignalType type = 1;
@@ -45,9 +41,7 @@ message GroupCastSignalReq {
   bytes body = 3;
 }
 
-message GroupCastSignalReply {
-  int64 mid = 1;
-}
+message GroupCastSignalReply { int64 mid = 1; }
 
 service Answer {
   rpc PushCommonMsg(PushCommonMsgReq) returns (PushCommonMsgReply);

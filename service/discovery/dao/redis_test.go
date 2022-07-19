@@ -1,14 +1,15 @@
 package dao
 
 import (
+	"os"
+	"testing"
+	"time"
+
 	"github.com/gomodule/redigo/redis"
 	"github.com/inconshreveable/log15"
 	xtime "github.com/txchat/dtalk/pkg/time"
 	"github.com/txchat/dtalk/service/discovery/config"
 	"github.com/txchat/dtalk/service/discovery/model"
-	"os"
-	"testing"
-	"time"
 )
 
 var test_redis_pool *redis.Pool

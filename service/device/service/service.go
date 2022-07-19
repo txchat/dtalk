@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/txchat/dtalk/service/device/config"

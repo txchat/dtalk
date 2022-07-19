@@ -3,11 +3,12 @@ package service
 import (
 	"crypto/sha256"
 	"encoding/hex"
-	xerror "github.com/txchat/dtalk/pkg/error"
-	"github.com/txchat/dtalk/service/auth/model"
 	"io/ioutil"
 	"math/rand"
 	"time"
+
+	xerror "github.com/txchat/dtalk/pkg/error"
+	"github.com/txchat/dtalk/service/auth/model"
 )
 
 func (s *Service) SignIn(request *model.SignInRequest) (res *model.SignInResponse, err error) {

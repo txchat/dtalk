@@ -2,6 +2,7 @@ package record
 
 import (
 	"encoding/base64"
+
 	"github.com/txchat/dtalk/gateway/api/v1/internal/model"
 	xerror "github.com/txchat/dtalk/pkg/error"
 	"github.com/txchat/dtalk/pkg/util"
