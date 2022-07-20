@@ -2,9 +2,10 @@ package grpc
 
 import (
 	"context"
+	"time"
+
 	xerror "github.com/txchat/dtalk/pkg/error"
 	"github.com/txchat/dtalk/service/group/logic"
-	"time"
 
 	"github.com/txchat/dtalk/pkg/interceptor/logger"
 	"github.com/txchat/dtalk/pkg/interceptor/trace"

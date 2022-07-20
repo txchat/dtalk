@@ -2,14 +2,15 @@ package config
 
 import (
 	"flag"
+	"io/ioutil"
+	"os"
+	"time"
+
 	"github.com/BurntSushi/toml"
 	"github.com/txchat/dtalk/pkg/net/grpc"
 	xgrpc "github.com/txchat/dtalk/pkg/net/grpc"
 	"github.com/txchat/dtalk/pkg/redis"
 	xtime "github.com/txchat/dtalk/pkg/time"
-	"io/ioutil"
-	"os"
-	"time"
 )
 
 var (

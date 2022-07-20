@@ -1,7 +1,7 @@
 #!/bin/bash
 work_dir=$(
-  cd "$(dirname "$0")" || exit
-  pwd
+    cd "$(dirname "$0")" || exit
+    pwd
 )/../..
 
 api_version="$1"
@@ -19,7 +19,7 @@ swag2md_name="swag2md"
 
 echo "start generating api.md"
 "${swag2md_name}" \
-  -t "即时通讯TxChat${api_version}接口文档" \
-  -s "${work_dir}/${swagger_name}"/docs/swagger.json \
-  -o "${work_dir}/api-${api_version}.md"
+    -t "即时通讯TxChat${api_version}接口文档" \
+    -s "${work_dir}/${swagger_name}"/docs/swagger.json \
+    -o "${work_dir}/api-${api_version}.md"
 echo "generating api-${api_version}.md success"

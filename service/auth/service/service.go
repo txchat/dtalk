@@ -1,11 +1,12 @@
 package service
 
 import (
+	"net/http"
+
 	"github.com/inconshreveable/log15"
 	"github.com/txchat/dtalk/service/auth/config"
 	"github.com/txchat/dtalk/service/auth/dao"
 	"github.com/txchat/dtalk/service/auth/model"
-	"net/http"
 )
 
 type Service struct {

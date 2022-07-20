@@ -1,11 +1,12 @@
 package cdk
 
 import (
+	"time"
+
 	xerror "github.com/txchat/dtalk/pkg/error"
 	"github.com/txchat/dtalk/pkg/util"
 	"github.com/txchat/dtalk/service/backend/model/db"
 	"github.com/txchat/dtalk/service/backend/model/types"
-	"time"
 )
 
 func (s *ServiceContent) CreateCdkTypeSvc(req *types.CreateCdkTypeReq) (res *types.CreateCdkTypeResp, err error) {

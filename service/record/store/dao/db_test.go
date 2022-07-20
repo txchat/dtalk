@@ -1,10 +1,11 @@
 package dao
 
 import (
-	"github.com/txchat/dtalk/service/group/api"
-	"github.com/txchat/dtalk/service/record/pusher/api"
 	"testing"
 	"time"
+
+	group "github.com/txchat/dtalk/service/group/api"
+	pusher "github.com/txchat/dtalk/service/record/pusher/api"
 
 	"github.com/gomodule/redigo/redis"
 	"github.com/rs/zerolog"

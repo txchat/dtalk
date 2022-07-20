@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+
 	xerror "github.com/txchat/dtalk/pkg/error"
 	"github.com/txchat/dtalk/service/group/model"
 	"github.com/txchat/dtalk/service/group/model/biz"

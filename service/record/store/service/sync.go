@@ -2,10 +2,11 @@ package service
 
 import (
 	"context"
-	"github.com/txchat/imparse"
-	"github.com/txchat/imparse/chat"
 	"math"
 	"strconv"
+
+	"github.com/txchat/imparse"
+	"github.com/txchat/imparse/chat"
 
 	"github.com/golang/protobuf/proto"
 	"github.com/txchat/dtalk/pkg/util"

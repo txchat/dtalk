@@ -1,8 +1,9 @@
 package http
 
 import (
-	"github.com/gin-contrib/pprof"
 	"net/http"
+
+	"github.com/gin-contrib/pprof"
 
 	"github.com/txchat/dtalk/pkg/api/logger"
 	"github.com/txchat/dtalk/pkg/api/trace"

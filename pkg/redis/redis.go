@@ -4,10 +4,11 @@ package redis
 
 import (
 	"encoding/json"
-	"github.com/gomodule/redigo/redis"
-	xtime "github.com/txchat/dtalk/pkg/time"
 	"sync"
 	"time"
+
+	"github.com/gomodule/redigo/redis"
+	xtime "github.com/txchat/dtalk/pkg/time"
 )
 
 // Config .

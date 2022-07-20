@@ -2,11 +2,12 @@ package config
 
 import (
 	"flag"
-	"github.com/BurntSushi/toml"
-	xtime "github.com/txchat/dtalk/pkg/time"
 	"io/ioutil"
 	"os"
 	"time"
+
+	"github.com/BurntSushi/toml"
+	xtime "github.com/txchat/dtalk/pkg/time"
 )
 
 var (

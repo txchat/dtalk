@@ -2,8 +2,9 @@ package android
 
 import (
 	"errors"
-	"github.com/txchat/dtalk/pkg/util"
 	"strconv"
+
+	"github.com/txchat/dtalk/pkg/util"
 
 	push "github.com/oofpgDLD/u-push"
 	android_push "github.com/oofpgDLD/u-push/android"

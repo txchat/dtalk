@@ -2,11 +2,12 @@ package config
 
 import (
 	"flag"
+	"time"
+
 	"github.com/BurntSushi/toml"
 	"github.com/txchat/dtalk/pkg/net/grpc"
 	xgrpc "github.com/txchat/dtalk/pkg/net/grpc"
 	xtime "github.com/txchat/dtalk/pkg/time"
-	"time"
 )
 
 var (

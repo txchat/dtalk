@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+
 	"github.com/inconshreveable/log15"
 	"github.com/txchat/dtalk/service/discovery/config"
 	"github.com/txchat/dtalk/service/discovery/dao"

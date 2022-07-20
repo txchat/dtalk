@@ -2,8 +2,9 @@ package dao
 
 import (
 	"context"
-	groupApi "github.com/txchat/dtalk/service/group/api"
 	"time"
+
+	groupApi "github.com/txchat/dtalk/service/group/api"
 )
 
 func (d *Dao) CheckInGroup(ctx context.Context, uid string, gid int64) (isOk bool, err error) {

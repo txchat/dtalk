@@ -1,10 +1,11 @@
 package dao
 
 import (
+	"testing"
+
 	"github.com/inconshreveable/log15"
 	"github.com/jinzhu/gorm"
 	"github.com/txchat/dtalk/service/backup/model"
-	"testing"
 )
 
 func TestDao_CreateAddressEnrolment(t *testing.T) {

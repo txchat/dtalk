@@ -1,11 +1,12 @@
 package prometheus
 
 import (
+	"reflect"
+
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"reflect"
 )
 
 func PrometheusHandler() gin.HandlerFunc {

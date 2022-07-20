@@ -1,10 +1,11 @@
 package mock
 
 import (
+	"time"
+
 	"github.com/golang/protobuf/proto"
 	offlinepush "github.com/txchat/dtalk/service/offline-push/api"
 	xproto "github.com/txchat/imparse/proto"
-	"time"
 )
 
 type Msg struct {

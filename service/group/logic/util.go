@@ -1,10 +1,11 @@
 package logic
 
 import (
+	"strings"
+
 	xerror "github.com/txchat/dtalk/pkg/error"
 	pb "github.com/txchat/dtalk/service/group/api"
 	"github.com/txchat/dtalk/service/group/model/biz"
-	"strings"
 )
 
 func FilteredMemberIds(memberIds []string) []string {

@@ -2,10 +2,11 @@ package debug
 
 import (
 	"errors"
-	"github.com/txchat/dtalk/service/backup/model"
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/txchat/dtalk/service/backup/model"
 )
 
 type DebugValidate struct {

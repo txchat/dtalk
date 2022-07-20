@@ -1,10 +1,11 @@
 package dao
 
 import (
+	"math"
+
 	xerror "github.com/txchat/dtalk/pkg/error"
 	"github.com/txchat/dtalk/pkg/util"
 	"github.com/txchat/dtalk/service/backend/model"
-	"math"
 )
 
 const (

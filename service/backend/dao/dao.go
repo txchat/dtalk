@@ -2,6 +2,7 @@ package dao
 
 import (
 	"fmt"
+
 	"github.com/inconshreveable/log15"
 	"github.com/txchat/dtalk/pkg/mysql"
 	"github.com/txchat/dtalk/service/backend/config"

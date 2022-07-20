@@ -4,14 +4,15 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"github.com/Terry-Mao/goim/pkg/ip"
-	"github.com/txchat/dtalk/pkg/naming"
-	"github.com/txchat/dtalk/service/auth/server/grpc"
 	"net"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/Terry-Mao/goim/pkg/ip"
+	"github.com/txchat/dtalk/pkg/naming"
+	"github.com/txchat/dtalk/service/auth/server/grpc"
 
 	"github.com/inconshreveable/log15"
 	"github.com/txchat/dtalk/service/auth/config"

@@ -1,11 +1,12 @@
 package dao
 
 import (
+	"testing"
+	"time"
+
 	"github.com/inconshreveable/log15"
 	"github.com/jinzhu/gorm"
 	"github.com/txchat/dtalk/service/backup/model"
-	"testing"
-	"time"
 )
 
 func TestDao_Query(t *testing.T) {

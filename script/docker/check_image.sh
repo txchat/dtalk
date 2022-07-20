@@ -1,7 +1,8 @@
 #!/bin/bash
+# shellcheck disable=SC2034
 work_dir=$(
-  cd "$(dirname "$0")" || exit
-  pwd
+    cd "$(dirname "$0")" || exit
+    pwd
 )/../..
 
 REPOSITORY=$1
@@ -11,8 +12,8 @@ TAG=$2
 targetLen=$(docker images | grep -w "${REPOSITORY}" | grep -w "${TAG}" | awk '{ print length($0) }')
 
 if [ "${targetLen}" != "" ]; then
-  exit 0
+    exit 0
 else
-  docker pull "${REPOSITORY}:${TAG}"
-  exit $?
+    docker pull "${REPOSITORY}:${TAG}"
+    exit $?
 fi

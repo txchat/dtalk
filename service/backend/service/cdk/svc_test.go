@@ -1,12 +1,13 @@
 package cdk
 
 import (
-	"github.com/txchat/dtalk/service/backend/config"
-	"github.com/txchat/dtalk/service/backend/dao"
-	idgen "github.com/txchat/dtalk/service/generator/api"
 	"os"
 	"testing"
 	"time"
+
+	"github.com/txchat/dtalk/service/backend/config"
+	"github.com/txchat/dtalk/service/backend/dao"
+	idgen "github.com/txchat/dtalk/service/generator/api"
 )
 
 var (

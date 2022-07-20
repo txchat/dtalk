@@ -1,8 +1,9 @@
 package model
 
 import (
-	idgen "github.com/txchat/dtalk/service/generator/api"
 	"time"
+
+	idgen "github.com/txchat/dtalk/service/generator/api"
 )
 
 type Session struct {

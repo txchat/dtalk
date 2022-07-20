@@ -3,10 +3,11 @@ package service
 // 组合各种数据访问来构建业务逻辑。
 
 import (
+	"time"
+
 	"github.com/txchat/dtalk/pkg/mysql"
 	"github.com/txchat/dtalk/service/group/model/biz"
 	"github.com/txchat/dtalk/service/group/model/db"
-	"time"
 )
 
 func (s *Service) getNowTime() int64 {

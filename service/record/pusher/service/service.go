@@ -4,10 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	device "github.com/txchat/dtalk/service/device/api"
 	"reflect"
 	"runtime"
 	"time"
+
+	device "github.com/txchat/dtalk/service/device/api"
 
 	"github.com/Shopify/sarama"
 	"github.com/gammazero/workerpool"

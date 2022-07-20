@@ -2,16 +2,16 @@ package main
 
 import (
 	"fmt"
-	cluster "github.com/bsm/sarama-cluster"
-	"github.com/inconshreveable/log15"
-	"github.com/txchat/dtalk/service/offline-push/service/kafka"
-	"github.com/txchat/dtalk/service/record/kafka/consumer"
-	logic "github.com/txchat/im/api/logic/grpc"
 	"os"
 	"os/signal"
 	"strconv"
 	"syscall"
 	"time"
+
+	cluster "github.com/bsm/sarama-cluster"
+	"github.com/inconshreveable/log15"
+	"github.com/txchat/dtalk/service/offline-push/service/kafka"
+	logic "github.com/txchat/im/api/logic/grpc"
 )
 
 var log = log15.New("test main", "model", "kafka consume")

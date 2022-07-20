@@ -2,8 +2,9 @@ package grpc
 
 import (
 	"context"
-	"github.com/txchat/dtalk/service/device/model"
 	"time"
+
+	"github.com/txchat/dtalk/service/device/model"
 
 	"github.com/rs/zerolog"
 	xgrpc "github.com/txchat/dtalk/pkg/net/grpc"

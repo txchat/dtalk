@@ -2,11 +2,12 @@ package config
 
 import (
 	"flag"
+	"time"
+
 	"github.com/BurntSushi/toml"
 	xtime "github.com/txchat/dtalk/pkg/time"
 	"github.com/uber/jaeger-client-go"
 	traceConfig "github.com/uber/jaeger-client-go/config"
-	"time"
 )
 
 var (

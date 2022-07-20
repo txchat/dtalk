@@ -2,13 +2,14 @@ package service
 
 import (
 	"fmt"
+	"strconv"
+	"time"
+
 	"github.com/txchat/dtalk/pkg/util"
 	"github.com/txchat/dtalk/service/record/store/model"
 	"github.com/txchat/imparse"
 	"github.com/txchat/imparse/chat"
 	xproto "github.com/txchat/imparse/proto"
-	"strconv"
-	"time"
 )
 
 func (s *Service) MarkReceived(tp, uid string, mid int64) error {

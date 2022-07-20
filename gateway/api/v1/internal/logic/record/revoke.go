@@ -2,8 +2,9 @@ package record
 
 import (
 	"context"
-	"github.com/txchat/dtalk/service/group/model/biz"
 	"time"
+
+	"github.com/txchat/dtalk/service/group/model/biz"
 
 	xproto "github.com/golang/protobuf/proto"
 	"github.com/pkg/errors"

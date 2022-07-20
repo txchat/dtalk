@@ -4,12 +4,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/inconshreveable/log15"
 
+	"net/http"
+
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/txchat/dtalk/pkg/api"
 	_ "github.com/txchat/dtalk/service/auth/docs"
 	"github.com/txchat/dtalk/service/auth/service"
-	"net/http"
 )
 
 var (

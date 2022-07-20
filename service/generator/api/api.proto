@@ -4,12 +4,8 @@ syntax = "proto3";
 package dtalk.generator;
 option go_package = "github.com/txchat/dtalk/service/generator";
 
-message Empty{}
+message Empty {}
 
-message GetIDReply {
-    int64 id = 1;
-}
+message GetIDReply { int64 id = 1; }
 
-service Generator {
-    rpc GetID(Empty) returns (GetIDReply);
-}
+service Generator { rpc GetID(Empty) returns (GetIDReply); }

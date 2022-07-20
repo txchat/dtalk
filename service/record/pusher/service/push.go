@@ -3,10 +3,11 @@ package service
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/rs/zerolog"
 	"github.com/txchat/dtalk/pkg/util"
 	device "github.com/txchat/dtalk/service/device/api"
-	"time"
 
 	"github.com/golang/protobuf/proto"
 	offlinepush "github.com/txchat/dtalk/service/offline-push/api"

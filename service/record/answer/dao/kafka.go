@@ -3,6 +3,7 @@ package dao
 import (
 	"context"
 	"fmt"
+
 	"gopkg.in/Shopify/sarama.v1"
 )
 

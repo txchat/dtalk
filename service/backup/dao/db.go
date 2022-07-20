@@ -1,9 +1,10 @@
 package dao
 
 import (
+	"time"
+
 	"github.com/jinzhu/gorm"
 	"github.com/txchat/dtalk/service/backup/model"
-	"time"
 )
 
 func (d *Dao) Query(tp uint32, query string) (*model.AddrBackup, error) {

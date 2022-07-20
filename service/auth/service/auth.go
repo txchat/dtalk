@@ -4,13 +4,14 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
-	publicUtil "github.com/txchat/dtalk/pkg/util"
-	"github.com/txchat/dtalk/service/auth/model"
-	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"net/http"
 	"strings"
 	"time"
+
+	publicUtil "github.com/txchat/dtalk/pkg/util"
+	"github.com/txchat/dtalk/service/auth/model"
+	"gopkg.in/yaml.v2"
 )
 
 func (s *Service) Auth(request *model.AuthRequest) (res *model.AuthResponse, err error) {

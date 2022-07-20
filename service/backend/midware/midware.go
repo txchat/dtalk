@@ -1,12 +1,13 @@
 package midware
 
 import (
+	"strings"
+
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/txchat/dtalk/pkg/api"
 	xerror "github.com/txchat/dtalk/pkg/error"
 	"github.com/txchat/dtalk/service/backend/model"
-	"strings"
 )
 
 func JWTAuthMiddleWare(flag bool, key string) gin.HandlerFunc {

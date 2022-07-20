@@ -2,6 +2,7 @@ package secp256K1
 
 import (
 	"fmt"
+
 	"github.com/haltingstate/secp256k1-go"
 )
 

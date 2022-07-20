@@ -3,13 +3,14 @@ package util
 import (
 	"encoding/hex"
 	"fmt"
-	"github.com/inconshreveable/log15"
 	"net/url"
 	"reflect"
 	"sort"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/inconshreveable/log15"
 
 	"github.com/haltingstate/secp256k1-go"
 )

@@ -2,11 +2,12 @@ package config
 
 import (
 	"fmt"
-	"github.com/BurntSushi/toml"
 	"io/ioutil"
 	"os"
 	"path"
 	"syscall"
+
+	"github.com/BurntSushi/toml"
 )
 
 var loaders = map[string]func([]byte, interface{}) error{

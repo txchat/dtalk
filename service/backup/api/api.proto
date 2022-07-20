@@ -4,28 +4,26 @@ syntax = "proto3";
 package dtalk.backup;
 option go_package = "github.com/txchat/dtalk/service/backup";
 
-enum QueryType{
-    Phone = 0;
-    Email = 1;
-    Address = 2;
+enum QueryType {
+  Phone = 0;
+  Email = 1;
+  Address = 2;
 }
 
 message RetrieveReq {
-    QueryType type = 1;
-    string val = 2;
+  QueryType type = 1;
+  string val = 2;
 }
 
 message RetrieveReply {
-    string Address = 1;
-    string Area = 2;
-    string Phone = 3;
-    string Email = 4;
-    string Mnemonic = 5;
-    string PrivateKey = 6;
-    int64 UpdateTime = 7;
-    int64 CreateTime = 8;
+  string Address = 1;
+  string Area = 2;
+  string Phone = 3;
+  string Email = 4;
+  string Mnemonic = 5;
+  string PrivateKey = 6;
+  int64 UpdateTime = 7;
+  int64 CreateTime = 8;
 }
 
-service Backup {
-    rpc Retrieve(RetrieveReq) returns (RetrieveReply);
-}
+service Backup { rpc Retrieve(RetrieveReq) returns (RetrieveReply); }

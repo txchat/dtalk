@@ -3,10 +3,11 @@ package auth
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/txchat/dtalk/pkg/naming"
 	"github.com/txchat/dtalk/pkg/net/grpc"
 	"google.golang.org/grpc/resolver"
-	"time"
 )
 
 type Client struct {

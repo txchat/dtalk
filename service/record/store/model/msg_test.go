@@ -1,8 +1,9 @@
 package model
 
 import (
-	xproto "github.com/txchat/imparse/proto"
 	"testing"
+
+	xproto "github.com/txchat/imparse/proto"
 )
 
 func TestParseSource(t *testing.T) {

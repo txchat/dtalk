@@ -3,6 +3,7 @@ package dao
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/gomodule/redigo/redis"
 	"github.com/txchat/dtalk/service/discovery/model"
 )

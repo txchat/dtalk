@@ -1,6 +1,8 @@
 package http
 
 import (
+	"net/http"
+
 	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
 	"github.com/inconshreveable/log15"
@@ -11,7 +13,6 @@ import (
 	_ "github.com/txchat/dtalk/service/backend/docs"
 	"github.com/txchat/dtalk/service/backend/midware"
 	"github.com/txchat/dtalk/service/backend/service"
-	"net/http"
 )
 
 var (
