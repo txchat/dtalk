@@ -1,0 +1,31 @@
+// protoc -I=. -I=$GOPATH/src --go_out=plugins=grpc:. *.proto
+syntax = "proto3";
+
+package dtalk.vip;
+option go_package = "github.com/txchat/dtalk/service/vip";
+
+message VIP { string uid = 1; }
+
+message AddVIPsReq { repeated string uid = 1; }
+
+message AddVIPsReply { repeated string uid = 1; }
+
+message GetVIPReq { string uid = 1; }
+
+message GetVIPReply { VIP vip = 1; }
+
+message GetVIPsReq {
+  int32 start = 1;
+  int32 limit = 2;
+}
+
+message GetVIPsReply {
+  repeated VIP vip = 1;
+  int32 totalCount = 2;
+}
+
+service VIPSrv {
+  rpc AddVIPs(AddVIPsReq) returns (AddVIPsReply);
+  rpc GetVIPs(GetVIPsReq) returns (GetVIPsReply);
+  rpc GetVIP(GetVIPReq) returns (GetVIPReply);
+}

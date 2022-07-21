@@ -1,0 +1,27 @@
+[log]
+    Level="info"
+    Mode="console"
+    Path=""
+    Display="json"
+
+[Reg]
+    Schema = "dtalk"
+    SrvName = "vip"
+    RegAddrs = "txchat-etcd:2379"
+
+[GRPCServer]
+    Network=                           "tcp"
+    Addr=                              ":18016"
+    Timeout=                           "1s"
+    KeepAliveMaxConnectionIdle=        "60s"
+    KeepAliveMaxConnectionAge=         "2h"
+    KeepAliveMaxMaxConnectionAgeGrace= "20s"
+    KeepAliveTime=                     "60s"
+    KeepAliveTimeout=                  "20s"
+
+[MySQL]
+    Host = "txchat-mysql"
+    Port = 3306
+    User = "root"
+    Pwd = "${MYSQL_PASSWORD}"
+    Db = "dtalk"
