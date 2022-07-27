@@ -64,7 +64,8 @@ function initNginx() {
     for vname in ${created_volume[*]}; do
         if [ "${vname}" = "txchat-nginx-config" ]; then
             docker container create --name dummy -v "txchat-nginx-config":/root hello-world
-            docker cp conf.d/* dummy:/root/
+            docker cp conf.d/dtalk.conf dummy:/root/dtalk.conf
+            docker cp conf.d/dtalk_pprof.conf dummy:/root/dtalk_pprof.conf
             docker rm dummy
         fi
     done
