@@ -76,6 +76,13 @@ func Default() *Config {
 			Dial:     xtime.Duration(time.Second),
 			Timeout:  xtime.Duration(time.Second),
 		},
+		VIPRPCClient: &RPCClient{
+			RegAddrs: "127.0.0.1:2379",
+			Schema:   "dtalk",
+			SrvName:  "vip",
+			Dial:     xtime.Duration(time.Second),
+			Timeout:  xtime.Duration(time.Second),
+		},
 	}
 }
 
@@ -89,6 +96,7 @@ type Config struct {
 	StoreRPCClient  *RPCClient
 	GroupRPCClient  *RPCClient
 	DeviceRPCClient *RPCClient
+	VIPRPCClient    *RPCClient
 }
 
 type HttpServer struct {

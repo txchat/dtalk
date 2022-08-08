@@ -256,6 +256,12 @@ func (s *server) CreateGroup(ctx context.Context, req *pb.CreateGroupReq) (*pb.C
 	return l.CreateGroup(req)
 }
 
+// CreateNFTGroup .
+func (s *server) CreateNFTGroup(ctx context.Context, req *pb.CreateNFTGroupReq) (*pb.CreateNFTGroupResp, error) {
+	l := logic.NewCreateNFTGroupLogic(ctx, s.svc)
+	return l.CreateNFTGroup(req)
+}
+
 // ChangeOwner .
 func (s *server) ChangeOwner(ctx context.Context, req *pb.ChangeOwnerReq) (*pb.ChangeOwnerResp, error) {
 	l := logic.NewChangeOwnerLogic(ctx, s.svc)
@@ -305,6 +311,11 @@ func (s *server) GroupExit(ctx context.Context, req *pb.GroupExitReq) (*pb.Group
 func (s *server) GroupRemove(ctx context.Context, req *pb.GroupRemoveReq) (*pb.GroupRemoveResp, error) {
 	l := logic.NewGroupRemoveLogic(ctx, s.svc)
 	return l.GroupRemove(req)
+}
+
+func (s *server) GetNFTGroupExtInfo(ctx context.Context, req *pb.GetNFTGroupExtInfoReq) (*pb.GetNFTGroupExtInfoResp, error) {
+	l := logic.NewGetNFTGroupExtInfoLogic(ctx, s.svc)
+	return l.GetNFTGroupExtInfo(req)
 }
 
 func (s *server) InviteGroupMembers(ctx context.Context, req *pb.InviteGroupMembersReq) (*pb.InviteGroupMembersResp, error) {

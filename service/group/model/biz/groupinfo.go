@@ -144,3 +144,14 @@ func NewGroupIdFromContext(ctx context.Context) (int64, error) {
 
 	return 0, xerror.NewError(xerror.GroupNotExist)
 }
+
+type NFTGroupCondition struct {
+	Type int32
+	NFT  []*NFT
+}
+
+type NFT struct {
+	Type int32
+	Name string
+	Id   string
+}

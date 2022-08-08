@@ -118,6 +118,7 @@ func SetupGroupRoutes(e *gin.Engine) *gin.Engine {
 	root.Use(api.AuthMiddleWare(), trace.TraceMiddleware(), logMiddleware.Handle())
 	{
 		root.POST("/create-group", group.CreateGroupHandler(serverCtx))
+		root.POST("/create-nft-group", group.CreateNFTGroupHandler(serverCtx))
 		root.POST("/invite-group-members", group.InviteGroupMembersHandler(serverCtx))
 		root.POST("/group-exit", group.GroupExitHandler(serverCtx))
 		root.POST("/group-disband", group.GroupDisbandHandler(serverCtx))
@@ -135,6 +136,7 @@ func SetupGroupRoutes(e *gin.Engine) *gin.Engine {
 		root.POST("/member/muteTime", group.UpdateGroupMemberMuteTimeHandler(serverCtx))
 
 		root.POST("/group-info", group.GetGroupInfoHandler(serverCtx))
+		root.POST("/nft-group-ext-info", group.GetNFTGroupExtInfoHandler(serverCtx))
 		root.POST("/group-pub-info", group.GetGroupPubInfoHandler(serverCtx))
 		root.POST("/group-list", group.GetGroupListHandler(serverCtx))
 		root.POST("/group-member-list", group.GetGroupMemberListHandler(serverCtx))

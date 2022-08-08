@@ -114,6 +114,14 @@ ON mem.group_id=mute.group_id AND mem.group_member_id=mute.group_member_id
 WHERE mem.group_id=? AND mem.group_member_id=? AND mem.group_member_type<?`
 )
 
+const (
+	_InsertNFTGroupConditionPrefix = `INSERT IGNORE INTO dtalk_nft_group_condition (group_id,nft_type,nft_id,nft_name) VALUES `
+	_InsertNFTGroupInfoExt         = `INSERT IGNORE INTO dtalk_nft_group_info_ext (group_id,condition_type) VALUES (?,?)`
+
+	_GetNFTGroupExtInfoByGroupId   = `SELECT * FROM dtalk_nft_group_info_ext WHERE group_id=?`
+	_GetNFTGroupConditionByGroupId = `SELECT * FROM dtalk_nft_group_condition WHERE group_id=?`
+)
+
 // dtalk_group_info
 
 func (d *Dao) InsertGroupInfo(tx *mysql.MysqlTx, form *db.GroupInfo) (int64, int64, error) {
@@ -122,6 +130,55 @@ func (d *Dao) InsertGroupInfo(tx *mysql.MysqlTx, form *db.GroupInfo) (int64, int
 		form.GroupIntroduce, form.GroupStatus, form.GroupOwnerId, nowTime, nowTime,
 		form.GroupJoinType, form.GroupMuteType, form.GroupFriendType, form.GroupAESKey, form.GroupPubName, form.GroupType)
 	return num, lastId, err
+}
+
+func (d *Dao) InsertNFTGroupInfoExt(tx *mysql.MysqlTx, form *db.NFTGroupInfoExt) (int64, int64, error) {
+	num, lastId, err := tx.Exec(_InsertNFTGroupInfoExt, form.GroupId, form.ConditionType)
+	return num, lastId, err
+}
+
+func (d *Dao) InsertNFTGroupConditions(tx *mysql.MysqlTx, form []*db.NFTGroupCondition) (int64, int64, error) {
+	placeholder := ""
+	var insertValues []interface{}
+	for i, condition := range form {
+		if i == 0 {
+			placeholder += "(?,?,?,?)"
+		} else {
+			placeholder += ",(?,?,?,?)"
+		}
+		insertValues = append(insertValues, condition.GroupId, condition.NFTType, condition.NFTId, condition.NFTName)
+	}
+	sqlStr := _InsertNFTGroupConditionPrefix + placeholder
+	num, lastId, err := tx.Exec(sqlStr, insertValues...)
+	return num, lastId, err
+}
+
+func (d *Dao) GetNFTGroupConditionsByGroupId(groupId int64) ([]*db.NFTGroupCondition, error) {
+	maps, err := d.conn.Query(_GetNFTGroupConditionByGroupId, groupId)
+	if err != nil {
+		return nil, err
+	}
+	if len(maps) == 0 {
+		return nil, model.ErrRecordNotExist
+	}
+	res := make([]*db.NFTGroupCondition, len(maps))
+
+	for i := range maps {
+		res[i] = db.ConvertNFTGroupCondition(maps[i])
+	}
+	return res, nil
+}
+
+func (d *Dao) GetNFTGroupExtInfoByGroupId(groupId int64) (*db.NFTGroupInfoExt, error) {
+	maps, err := d.conn.Query(_GetNFTGroupExtInfoByGroupId, groupId)
+	if err != nil {
+		return nil, err
+	}
+	if len(maps) == 0 {
+		return nil, model.ErrRecordNotExist
+	}
+	res := maps[0]
+	return db.ConvertNFTGroupInfoExt(res), nil
 }
 
 func (d *Dao) updateGroupInfoName(form *db.GroupInfo) (int64, int64, error) {

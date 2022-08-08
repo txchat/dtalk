@@ -12,6 +12,7 @@ const (
 	TokenError          = -1014
 	DeviceTypeError     = -1015
 	ReconnectNotAllowed = -1016
+	PermissionDenied    = -1017
 
 	FeaturesUnSupported = -2000
 	VerifyCodeSendError = -4006
@@ -87,6 +88,7 @@ var errorMsg = map[int]string{
 	TokenError:          "token错误",
 	DeviceTypeError:     "获取设备类型失败",
 	ReconnectNotAllowed: "设备重连不被允许",
+	PermissionDenied:    "权限不足",
 
 	ExportAddressPhoneInconsistent: "账号与绑定手机不一致",
 	ExportAddressEmailInconsistent: "账号与绑定邮箱不一致",

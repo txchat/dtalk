@@ -31,6 +31,8 @@ type GroupClient interface {
 	GetGroupInfo(ctx context.Context, in *GetGroupInfoReq, opts ...grpc.CallOption) (*GetGroupInfoResp, error)
 	// 创建群聊
 	CreateGroup(ctx context.Context, in *CreateGroupReq, opts ...grpc.CallOption) (*CreateGroupResp, error)
+	// 创建藏品群
+	CreateNFTGroup(ctx context.Context, in *CreateNFTGroupReq, opts ...grpc.CallOption) (*CreateNFTGroupResp, error)
 	// 邀请新成员
 	InviteGroupMembers(ctx context.Context, in *InviteGroupMembersReq, opts ...grpc.CallOption) (*InviteGroupMembersResp, error)
 	// 退出群
@@ -69,6 +71,8 @@ type GroupClient interface {
 	GetGroupMemberInfo(ctx context.Context, in *GetGroupMemberInfoReq, opts ...grpc.CallOption) (*GetGroupMemberInfoResp, error)
 	// 查询群内禁言列表
 	GetMuteList(ctx context.Context, in *GetMuteListReq, opts ...grpc.CallOption) (*GetMuteListResp, error)
+	// 查询NFT群拓展信息
+	GetNFTGroupExtInfo(ctx context.Context, in *GetNFTGroupExtInfoReq, opts ...grpc.CallOption) (*GetNFTGroupExtInfoResp, error)
 	// 更新群类型
 	ForceUpdateGroupType(ctx context.Context, in *ForceUpdateGroupTypeReq, opts ...grpc.CallOption) (*ForceUpdateGroupTypeResp, error)
 	// 解散群, 强制解散
@@ -163,6 +167,15 @@ func (c *groupClient) GetGroupInfo(ctx context.Context, in *GetGroupInfoReq, opt
 func (c *groupClient) CreateGroup(ctx context.Context, in *CreateGroupReq, opts ...grpc.CallOption) (*CreateGroupResp, error) {
 	out := new(CreateGroupResp)
 	err := c.cc.Invoke(ctx, "/dtalk.group.Group/CreateGroup", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *groupClient) CreateNFTGroup(ctx context.Context, in *CreateNFTGroupReq, opts ...grpc.CallOption) (*CreateNFTGroupResp, error) {
+	out := new(CreateNFTGroupResp)
+	err := c.cc.Invoke(ctx, "/dtalk.group.Group/CreateNFTGroup", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -340,6 +353,15 @@ func (c *groupClient) GetMuteList(ctx context.Context, in *GetMuteListReq, opts 
 	return out, nil
 }
 
+func (c *groupClient) GetNFTGroupExtInfo(ctx context.Context, in *GetNFTGroupExtInfoReq, opts ...grpc.CallOption) (*GetNFTGroupExtInfoResp, error) {
+	out := new(GetNFTGroupExtInfoResp)
+	err := c.cc.Invoke(ctx, "/dtalk.group.Group/GetNFTGroupExtInfo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *groupClient) ForceUpdateGroupType(ctx context.Context, in *ForceUpdateGroupTypeReq, opts ...grpc.CallOption) (*ForceUpdateGroupTypeResp, error) {
 	out := new(ForceUpdateGroupTypeResp)
 	err := c.cc.Invoke(ctx, "/dtalk.group.Group/ForceUpdateGroupType", in, out, opts...)
@@ -437,6 +459,8 @@ type GroupServer interface {
 	GetGroupInfo(context.Context, *GetGroupInfoReq) (*GetGroupInfoResp, error)
 	// 创建群聊
 	CreateGroup(context.Context, *CreateGroupReq) (*CreateGroupResp, error)
+	// 创建藏品群
+	CreateNFTGroup(context.Context, *CreateNFTGroupReq) (*CreateNFTGroupResp, error)
 	// 邀请新成员
 	InviteGroupMembers(context.Context, *InviteGroupMembersReq) (*InviteGroupMembersResp, error)
 	// 退出群
@@ -475,6 +499,8 @@ type GroupServer interface {
 	GetGroupMemberInfo(context.Context, *GetGroupMemberInfoReq) (*GetGroupMemberInfoResp, error)
 	// 查询群内禁言列表
 	GetMuteList(context.Context, *GetMuteListReq) (*GetMuteListResp, error)
+	// 查询NFT群拓展信息
+	GetNFTGroupExtInfo(context.Context, *GetNFTGroupExtInfoReq) (*GetNFTGroupExtInfoResp, error)
 	// 更新群类型
 	ForceUpdateGroupType(context.Context, *ForceUpdateGroupTypeReq) (*ForceUpdateGroupTypeResp, error)
 	// 解散群, 强制解散
@@ -523,6 +549,9 @@ func (UnimplementedGroupServer) GetGroupInfo(context.Context, *GetGroupInfoReq) 
 }
 func (UnimplementedGroupServer) CreateGroup(context.Context, *CreateGroupReq) (*CreateGroupResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateGroup not implemented")
+}
+func (UnimplementedGroupServer) CreateNFTGroup(context.Context, *CreateNFTGroupReq) (*CreateNFTGroupResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateNFTGroup not implemented")
 }
 func (UnimplementedGroupServer) InviteGroupMembers(context.Context, *InviteGroupMembersReq) (*InviteGroupMembersResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method InviteGroupMembers not implemented")
@@ -580,6 +609,9 @@ func (UnimplementedGroupServer) GetGroupMemberInfo(context.Context, *GetGroupMem
 }
 func (UnimplementedGroupServer) GetMuteList(context.Context, *GetMuteListReq) (*GetMuteListResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMuteList not implemented")
+}
+func (UnimplementedGroupServer) GetNFTGroupExtInfo(context.Context, *GetNFTGroupExtInfoReq) (*GetNFTGroupExtInfoResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetNFTGroupExtInfo not implemented")
 }
 func (UnimplementedGroupServer) ForceUpdateGroupType(context.Context, *ForceUpdateGroupTypeReq) (*ForceUpdateGroupTypeResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ForceUpdateGroupType not implemented")
@@ -761,6 +793,24 @@ func _Group_CreateGroup_Handler(srv interface{}, ctx context.Context, dec func(i
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(GroupServer).CreateGroup(ctx, req.(*CreateGroupReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Group_CreateNFTGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateNFTGroupReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GroupServer).CreateNFTGroup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/dtalk.group.Group/CreateNFTGroup",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GroupServer).CreateNFTGroup(ctx, req.(*CreateNFTGroupReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1107,6 +1157,24 @@ func _Group_GetMuteList_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Group_GetNFTGroupExtInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetNFTGroupExtInfoReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GroupServer).GetNFTGroupExtInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/dtalk.group.Group/GetNFTGroupExtInfo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GroupServer).GetNFTGroupExtInfo(ctx, req.(*GetNFTGroupExtInfoReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Group_ForceUpdateGroupType_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ForceUpdateGroupTypeReq)
 	if err := dec(in); err != nil {
@@ -1309,6 +1377,10 @@ var Group_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Group_CreateGroup_Handler,
 		},
 		{
+			MethodName: "CreateNFTGroup",
+			Handler:    _Group_CreateNFTGroup_Handler,
+		},
+		{
 			MethodName: "InviteGroupMembers",
 			Handler:    _Group_InviteGroupMembers_Handler,
 		},
@@ -1383,6 +1455,10 @@ var Group_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetMuteList",
 			Handler:    _Group_GetMuteList_Handler,
+		},
+		{
+			MethodName: "GetNFTGroupExtInfo",
+			Handler:    _Group_GetNFTGroupExtInfo_Handler,
 		},
 		{
 			MethodName: "ForceUpdateGroupType",

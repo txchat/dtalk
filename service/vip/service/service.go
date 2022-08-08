@@ -30,7 +30,7 @@ func (s *Service) Shutdown(ctx context.Context) {
 
 // GetVIP 查询VIP成员
 func (s *Service) GetVIP(ctx context.Context, uid string) (*model.VIPEntity, error) {
-	return s.vipRepo.GetVIP()
+	return s.vipRepo.GetVIP(uid)
 }
 
 // AddVIP 添加VIP成员

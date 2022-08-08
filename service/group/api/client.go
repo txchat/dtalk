@@ -129,6 +129,16 @@ func (c *Client) CreateGroup(ctx context.Context, req *CreateGroupReq) (*CreateG
 	return client.CreateGroup(ctx, req)
 }
 
+func (c *Client) CreateNFTGroup(ctx context.Context, req *CreateNFTGroupReq) (*CreateNFTGroupResp, error) {
+	client := NewGroupClient(c.conn)
+	return client.CreateNFTGroup(ctx, req)
+}
+
+func (c *Client) GetNFTGroupExtInfo(ctx context.Context, req *GetNFTGroupExtInfoReq) (*GetNFTGroupExtInfoResp, error) {
+	client := NewGroupClient(c.conn)
+	return client.GetNFTGroupExtInfo(ctx, req)
+}
+
 func (c *Client) GetGroupList(ctx context.Context, req *GetGroupListReq) (*GetGroupListResp, error) {
 	client := NewGroupClient(c.conn)
 	return client.GetGroupList(ctx, req)

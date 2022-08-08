@@ -71,6 +71,47 @@ type CreateGroupResp struct {
 	Members []*GroupMember `json:"members" form:"members"`
 }
 
+type CreateNFTGroupReq struct {
+	Name      string
+	Avatar    string   `json:"avatar" form:"avatar"`
+	Introduce string   `json:"introduce" form:"introduce"`
+	MemberIds []string `json:"memberIds" form:"memberIds"`
+
+	// 持有条件
+	Condition *Condition `json:"condition" form:"condition"`
+}
+
+type Condition struct {
+	// 持有条件，0=持有其中之一（默认），1=需全部持有
+	Type int32 `json:"type" form:"type"`
+	// 指定藏品
+	NFT []*NFT `json:"nft" form:"nft"`
+}
+
+type NFT struct {
+	Type int32  `json:"type" form:"type"`
+	Name string `json:"name" form:"name"`
+	ID   string `json:"id" form:"id"`
+}
+
+type CreateNFTGroupResp struct {
+	*GroupInfo
+	// 群成员
+	Members []*GroupMember `json:"members" form:"members"`
+	// 持有条件
+	//Condition *Condition `json:"condition" form:"condition"`
+}
+
+type GetNFTGroupExtInfoReq struct {
+	// 群 ID
+	Id int64 `json:"id" form:"id"`
+}
+
+type GetNFTGroupExtInfoResp struct {
+	// 持有条件
+	Condition *Condition `json:"condition" form:"condition"`
+}
+
 type InviteGroupMembersReq struct {
 	Id int64 `json:"id" form:"id"`
 	// 如果同时填了 idStr, 则优先选择 idStr

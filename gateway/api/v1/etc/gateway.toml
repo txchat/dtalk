@@ -34,6 +34,13 @@ addr = "0.0.0.0:19000"
     Dial = "1s"
     Timeout = "1s"
 
+[VIPRPCClient]
+    RegAddrs = "txchat-etcd:2379"
+    Schema = "dtalk"
+    SrvName = "vip"
+    Dial = "1s"
+    Timeout = "1s"
+
 [[modules]]
     Name = "wallet"
     IsEnabled = false

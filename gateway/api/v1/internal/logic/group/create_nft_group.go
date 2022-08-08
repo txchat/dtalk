@@ -7,7 +7,7 @@ import (
 	vip "github.com/txchat/dtalk/service/vip/api"
 )
 
-func (l *GroupLogic) CreateGroup(req *types.CreateGroupReq) (*types.CreateGroupResp, error) {
+func (l *GroupLogic) CreateNFTGroup(req *types.CreateNFTGroupReq) (*types.CreateNFTGroupResp, error) {
 	name := req.Name
 	addr := l.getOpe()
 	owner := &pb.GroupMemberInfo{
@@ -34,9 +34,9 @@ func (l *GroupLogic) CreateGroup(req *types.CreateGroupReq) (*types.CreateGroupR
 		})
 	}
 
-	resp1, err := l.svcCtx.GroupClient.CreateGroup(l.ctx, &pb.CreateGroupReq{
+	resp1, err := l.svcCtx.GroupClient.CreateNFTGroup(l.ctx, &pb.CreateNFTGroupReq{
 		Name:      name,
-		GroupType: pb.GroupType_GROUP_TYPE_NORMAL,
+		GroupType: pb.GroupType_GROUP_TYPE_NFT,
 		Owner:     owner,
 		Members:   members,
 	})
@@ -58,7 +58,7 @@ func (l *GroupLogic) CreateGroup(req *types.CreateGroupReq) (*types.CreateGroupR
 	Group := NewTypesGroupInfo(resp2.Group)
 	Members := NewTypesGroupMemberInfos(resp2.Group.Members)
 
-	return &types.CreateGroupResp{
+	return &types.CreateNFTGroupResp{
 		GroupInfo: Group,
 		Members:   Members,
 	}, nil

@@ -10,7 +10,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/txchat/dtalk/service/vip/dao"
+	"github.com/txchat/dtalk/service/vip/dao/mock"
 
 	"github.com/Terry-Mao/goim/pkg/ip"
 	"github.com/rs/zerolog/log"
@@ -73,7 +73,8 @@ func main() {
 		Msg("config info")
 
 	// repository init
-	repo := dao.NewVIPRepositoryMySQL(config.Conf.Env, config.Conf.MySQL)
+	//repo := dao.NewVIPRepositoryMySQL(config.Conf.Env, config.Conf.MySQL)
+	repo := mock.NewAllowMockUsers()
 	// service init
 	svc := service.New(repo)
 	rpc := grpc.New(config.Conf.GRPCServer, svc, log.Logger)

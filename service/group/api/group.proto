@@ -16,6 +16,7 @@ enum GroupType {
   GROUP_TYPE_NORMAL = 0; // 普通群
   GROUP_TYPE_ENT = 1;    // 全员群
   GROUP_TYPE_DEP = 2;    // 部门群
+  GROUP_TYPE_NFT = 3;    // 藏品群
 }
 
 // 群内加群设置
@@ -140,6 +141,27 @@ message CreateGroupReq {
 }
 
 message CreateGroupResp { int64 group_id = 1; }
+
+message Condition {
+  int32 type = 1;
+  message NFT {
+    int32 type = 1;
+    string name = 2;
+    string id = 3;
+  }
+  repeated NFT nft = 2;
+}
+
+// 创建群聊
+message CreateNFTGroupReq {
+  string name = 1;
+  GroupType group_type = 2;
+  GroupMemberInfo owner = 3;
+  repeated GroupMemberInfo members = 4;
+  Condition condition = 5;
+}
+
+message CreateNFTGroupResp { int64 group_id = 1; }
 
 message InviteGroupMembersReq {
   int64 group_id = 1;
@@ -296,6 +318,10 @@ message GetMuteListReq {
 
 message GetMuteListResp { repeated GroupMemberBizInfo members = 1; }
 
+message GetNFTGroupExtInfoReq { int64 group_id = 1; }
+
+message GetNFTGroupExtInfoResp { Condition condition = 1; }
+
 // -------------- oa 远程调用 ----------------
 
 message ForceAddMemberReq {
@@ -405,6 +431,8 @@ service Group {
 
   // 创建群聊
   rpc CreateGroup(CreateGroupReq) returns (CreateGroupResp);
+  // 创建藏品群
+  rpc CreateNFTGroup(CreateNFTGroupReq) returns (CreateNFTGroupResp);
   // 邀请新成员
   rpc InviteGroupMembers(InviteGroupMembersReq)
       returns (InviteGroupMembersResp);
@@ -452,6 +480,9 @@ service Group {
   // 查询群内禁言列表
   rpc GetMuteList(GetMuteListReq) returns (GetMuteListResp);
 
+  // 查询NFT群拓展信息
+  rpc GetNFTGroupExtInfo(GetNFTGroupExtInfoReq)
+      returns (GetNFTGroupExtInfoResp);
   // ------------- Third Force --------------
 
   // 更新群类型

@@ -60,7 +60,7 @@ func (repo *VIPRepositoryMySQL) CloseDB() {
 	defer repo.db.Close()
 }
 
-func (repo *VIPRepositoryMySQL) GetVIP() (*model.VIPEntity, error) {
+func (repo *VIPRepositoryMySQL) GetVIP(uid string) (*model.VIPEntity, error) {
 	var vip model.VIPEntity
 	err := repo.db.First(&vip).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
