@@ -21,6 +21,7 @@ func (s *Service) execNFTGroupCreate(extInfo *db.NFTGroupInfoExt, conditions []*
 		return err
 	}
 
+	// 藏品群拓展信息
 	if extInfo != nil {
 		if _, _, err = s.dao.InsertNFTGroupInfoExt(tx, extInfo); err != nil {
 			return err
@@ -31,10 +32,6 @@ func (s *Service) execNFTGroupCreate(extInfo *db.NFTGroupInfoExt, conditions []*
 		if _, _, err = s.dao.InsertNFTGroupConditions(tx, conditions); err != nil {
 			return err
 		}
-	}
-	// 藏品群拓展信息
-	if _, _, err = s.dao.InsertGroupInfo(tx, groupInfo); err != nil {
-		return err
 	}
 
 	if err = s.InsertGroupMembers(tx, members); err != nil {

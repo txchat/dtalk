@@ -54,7 +54,7 @@ type GroupInfo struct {
 	AdminNum int32 `json:"adminNum"`
 	//
 	AESKey string `json:"key"`
-	// 群类型 (0: 普通群, 1: 全员群, 2: 部门群)
+	// 群类型 (0: 普通群, 1: 全员群, 2: 部门群, 3: 藏品群)
 	GroupType int32 `json:"groupType"`
 }
 
