@@ -124,6 +124,14 @@ OSS_CONTAINER_NAME=txchat-oss-node1
 # oss配置卷
 OSS_CONFIG_VOLUME=txchat-oss-config
 
+## VIP
+# vip服务镜像
+VIP_IMAGE=v0.0.0
+# vip容器名称
+VIP_CONTAINER_NAME=txchat-vip-node1
+# vip配置卷
+VIP_CONFIG_VOLUME=txchat-vip-config
+
 ## ANSWER
 # answer服务镜像
 ANSWER_IMAGE=v0.0.0

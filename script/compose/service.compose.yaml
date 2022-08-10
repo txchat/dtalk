@@ -95,6 +95,14 @@ services:
       - txchat-service
     volumes:
       - ${OSS_CONFIG_VOLUME}:/etc/txchat-oss/config
+  vip:
+    image: txchat-vip:${VIP_IMAGE}
+    container_name: ${VIP_CONTAINER_NAME}
+    networks:
+      - txchat-components
+      - txchat-service
+    volumes:
+      - ${VIP_CONFIG_VOLUME}:/etc/txchat-vip/config
   answer:
     image: txchat-answer:${ANSWER_IMAGE}
     container_name: ${ANSWER_CONTAINER_NAME}
@@ -155,6 +163,8 @@ volumes:
   txchat-offline-push-config:
     external: true
   txchat-oss-config:
+    external: true
+  txchat-vip-config:
     external: true
   txchat-answer-config:
     external: true
