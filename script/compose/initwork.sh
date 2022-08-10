@@ -33,6 +33,7 @@ function network_create() {
         #不存在就创建
         created_network+=("$networkName")
         docker network create "$networkName"
+        echo "$networkName network created"
     fi
 }
 
@@ -43,6 +44,7 @@ function volume_create() {
         #不存在就创建
         created_volume+=("$volumeName")
         docker volume create "$volumeName"
+        echo "$volumeName volume created"
     fi
 }
 
@@ -50,6 +52,7 @@ function initMySQL() {
     # shellcheck disable=SC2048
     for vname in ${created_volume[*]}; do
         if [ "${vname}" = "txchat-mysql-init" ]; then
+            echo "starting init MySQL"
             # 将初始化sql文件传入mysql初始化卷中
             docker container create --name dummy -v "txchat-mysql-init":/root hello-world
             docker cp dtalk_biz.sql dummy:/root/dtalk_biz.sql
@@ -63,6 +66,7 @@ function initNginx() {
     # shellcheck disable=SC2048
     for vname in ${created_volume[*]}; do
         if [ "${vname}" = "txchat-nginx-config" ]; then
+            echo "starting init Nginx"
             docker container create --name dummy -v "txchat-nginx-config":/root hello-world
             docker cp conf.d/dtalk.conf dummy:/root/dtalk.conf
             docker cp conf.d/dtalk_pprof.conf dummy:/root/dtalk_pprof.conf
