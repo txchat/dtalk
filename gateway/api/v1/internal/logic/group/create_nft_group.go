@@ -34,11 +34,28 @@ func (l *GroupLogic) CreateNFTGroup(req *types.CreateNFTGroupReq) (*types.Create
 		})
 	}
 
+	reqCondition := req.Condition
+	if reqCondition == nil {
+		return nil, xerror.NewError(xerror.ParamsError).SetExtMessage("入群条件为空")
+	}
+	nfts := make([]*pb.Condition_NFT, len(reqCondition.NFT))
+	for i, nft := range req.Condition.NFT {
+		nfts[i] = &pb.Condition_NFT{
+			Type: nft.Type,
+			Name: nft.Name,
+			Id:   nft.ID,
+		}
+	}
+	condition := &pb.Condition{
+		Type: reqCondition.Type,
+		Nft:  nfts,
+	}
 	resp1, err := l.svcCtx.GroupClient.CreateNFTGroup(l.ctx, &pb.CreateNFTGroupReq{
 		Name:      name,
 		GroupType: pb.GroupType_GROUP_TYPE_NFT,
 		Owner:     owner,
 		Members:   members,
+		Condition: condition,
 	})
 	if err != nil {
 		return nil, err

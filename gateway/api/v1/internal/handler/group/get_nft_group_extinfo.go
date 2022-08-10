@@ -16,7 +16,7 @@ import (
 // @Param FZM-SIGNATURE	header string true "MOCK"
 // @Param data body types.GetNFTGroupExtInfoReq false "body"
 // @Success 200 {object} types.GeneralResp{data=types.GetNFTGroupExtInfoResp}
-// @Router	/group/app/get-nft-group-ext-info [post]
+// @Router	/group/app/nft-group-ext-info [post]
 func GetNFTGroupExtInfoHandler(ctx *svc.ServiceContext) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		req := &types.GetNFTGroupExtInfoReq{}
