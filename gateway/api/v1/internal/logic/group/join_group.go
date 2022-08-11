@@ -2,6 +2,8 @@ package logic
 
 import (
 	"github.com/txchat/dtalk/gateway/api/v1/internal/types"
+	xerror "github.com/txchat/dtalk/pkg/error"
+	"github.com/txchat/dtalk/pkg/slg"
 	"github.com/txchat/dtalk/pkg/util"
 	pb "github.com/txchat/dtalk/service/group/api"
 )
@@ -27,10 +29,23 @@ func (l *GroupLogic) JoinGroup(req *types.JoinGroupReq) (*types.JoinGroupResp, e
 		}
 		//如果是藏品群：2. 查询用户是否有入群资格
 		if conditions := extInfo.GetCondition(); conditions != nil {
-			//TODO 请求上链购接口判断 conditions.GetType() conditions.GetNft()
-			var allowed = true
-			if !allowed {
-
+			//请求上链购接口判断 conditions.GetType() conditions.GetNft()
+			ids := make([]string, len(conditions.GetNft()))
+			for i, nft := range conditions.GetNft() {
+				ids[i] = nft.GetId()
+			}
+			gps, err := l.svcCtx.SlgClient.LoadGroupPermission([]*slg.UserCondition{
+				{
+					UID:        l.getOpe(),
+					HandleType: conditions.GetType(),
+					Conditions: ids,
+				},
+			})
+			if err != nil {
+				return nil, err
+			}
+			if !gps.IsPermission(l.getOpe()) {
+				return nil, xerror.NewError(xerror.PermissionDenied)
 			}
 		}
 	}

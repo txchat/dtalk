@@ -470,3 +470,7 @@ type RejectGroupApplyReq struct {
 
 type RejectGroupApplyResp struct {
 }
+
+type IsWhitelistResp struct {
+	Exist bool `json:"exist" form:"exist"`
+}

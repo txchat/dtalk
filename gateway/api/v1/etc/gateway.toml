@@ -41,6 +41,10 @@ addr = "0.0.0.0:19000"
     Dial = "1s"
     Timeout = "1s"
 
+[SlgHTTPClient]
+    Host = "http://localhost:8888"
+    Salt = ""
+
 [[modules]]
     Name = "wallet"
     IsEnabled = false

@@ -142,6 +142,7 @@ func SetupGroupRoutes(e *gin.Engine) *gin.Engine {
 		root.POST("/group-member-list", group.GetGroupMemberListHandler(serverCtx))
 		root.POST("/group-member-info", group.GetGroupMemberInfoHandler(serverCtx))
 		root.POST("/mute-list", group.GetMuteListHandler(serverCtx))
+		root.POST("/is-whitelist", group.IsWhitelistHandler(serverCtx))
 
 	}
 	return e

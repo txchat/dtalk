@@ -516,6 +516,8 @@ github.com/gogo/protobuf v1.3.0/go.mod h1:SlYgWuQ5SjCEi6WLHjHCa1yvBfUnHcTbrrZtXP
 github.com/gogo/protobuf v1.3.1/go.mod h1:SlYgWuQ5SjCEi6WLHjHCa1yvBfUnHcTbrrZtXPKa29o=
 github.com/gogo/protobuf v1.3.2 h1:Ov1cvc58UF3b5XjBnZv7+opcTcQFZebYjWzi34vdm4Q=
 github.com/gogo/protobuf v1.3.2/go.mod h1:P1XiOD3dCwIKUDQYPy72D8LYyHL2YPYrpS2s69NZV8Q=
+github.com/goinggo/mapstructure v0.0.0-20140717182941-194205d9b4a9 h1:wqckanyE9qc/XnvnybC6SHOb8Nyd62QXAZOzA8twFig=
+github.com/goinggo/mapstructure v0.0.0-20140717182941-194205d9b4a9/go.mod h1:64ikIrMv84B+raz7akXOqbF7cK3/OQQ/6cClY10oy7A=
 github.com/goji/httpauth v0.0.0-20160601135302-2da839ab0f4d/go.mod h1:nnjvkQ9ptGaCkuDUx6wNykzzlUixGxvkme+H/lnzb+A=
 github.com/golang-jwt/jwt v3.2.1+incompatible/go.mod h1:8pz2t5EyA70fFQQSrl6XZXzqecmYZeUEB8OUGHkxJ+I=
 github.com/golang-sql/civil v0.0.0-20190719163853-cb61b32ac6fe h1:lXe2qZdvpiX5WZkZR4hgp4KJVfY3nMkvmwbVkpv1rVY=
@@ -1607,9 +1609,9 @@ github.com/txchat/im v0.0.1/go.mod h1:o8FD7hkTh0wX1OrATpm5Zrx4dyqdP0Ilvz3Sk2Bws0
 github.com/txchat/im-pkg v0.0.1 h1:pR24ubqlh9LMSUl7bEkmFpx3OHj5bOZyiis7xEfHYpY=
 github.com/txchat/im-pkg v0.0.1/go.mod h1:MPRQGxQU0M1GTucTMoHkR++gHXeBnISlzto9meK9VL0=
 github.com/txchat/imparse v0.0.1/go.mod h1:wQFzxb5b2fJv3vkFZNHlVUOhgxoRF5Jf99n50ou2hTM=
-github.com/tyler-smith/go-bip39 v1.0.1-0.20181017060643-dbb3b84ba2ef/go.mod h1:sJ5fKU0s6JVwZjjcUEX2zFOnvq0ASQ2K9Zr6cf67kNs=
 github.com/txchat/imparse v0.0.2 h1:7UhyfltMxRLP3KEDyZRcp8/JcjHxHBgeZBgHNWD71t4=
 github.com/txchat/imparse v0.0.2/go.mod h1:qmueNQUVyvJAPPPMKZLjbpb+8x/rRTCibEYfKrbKszY=
+github.com/tyler-smith/go-bip39 v1.0.1-0.20181017060643-dbb3b84ba2ef/go.mod h1:sJ5fKU0s6JVwZjjcUEX2zFOnvq0ASQ2K9Zr6cf67kNs=
 github.com/uber-go/tally v3.3.15+incompatible/go.mod h1:YDTIBxdXyOU/sCWilKB4bgyufu1cEi0jdVnRdxvjnmU=
 github.com/uber/athenadriver v1.1.4/go.mod h1:tQjho4NzXw55LGfSZEcETuYydpY1vtmixUabHkC1K/E=
 github.com/uber/jaeger-client-go v2.23.0+incompatible/go.mod h1:WVhlPFC8FDjOFMMWRy2pZqQJSXxYSwNYOkTr/Z6d3Kk=

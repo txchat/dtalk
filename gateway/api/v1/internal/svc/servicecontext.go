@@ -4,6 +4,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/txchat/dtalk/pkg/slg"
+
 	"github.com/txchat/dtalk/gateway/api/v1/internal/config"
 	xerror "github.com/txchat/dtalk/pkg/error"
 	"github.com/txchat/dtalk/pkg/interceptor/trace"
@@ -25,6 +27,8 @@ type ServiceContext struct {
 	GroupClient  *group.Client
 	DeviceClient *device.Client
 	VIPClient    *vip.Client
+
+	SlgClient *slg.Client
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -40,6 +44,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 			time.Duration(c.GroupRPCClient.Dial),
 			grpc.WithChainUnaryInterceptor(xerror.ErrClientInterceptor, trace.UnaryClientInterceptor),
 		),
+		SlgClient: slg.NewClient(slg.NewHTTPClient(c.SlgHTTPClient.Host, c.SlgHTTPClient.Salt)),
 	}
 
 	return sc

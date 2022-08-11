@@ -4,6 +4,8 @@ import (
 	"flag"
 	"time"
 
+	"github.com/txchat/dtalk/pkg/slg"
+
 	"github.com/BurntSushi/toml"
 	xtime "github.com/txchat/dtalk/pkg/time"
 	"github.com/uber/jaeger-client-go"
@@ -83,6 +85,10 @@ func Default() *Config {
 			Dial:     xtime.Duration(time.Second),
 			Timeout:  xtime.Duration(time.Second),
 		},
+		SlgHTTPClient: &slg.HTTPClientConfig{
+			Host: "",
+			Salt: "",
+		},
 	}
 }
 
@@ -97,6 +103,7 @@ type Config struct {
 	GroupRPCClient  *RPCClient
 	DeviceRPCClient *RPCClient
 	VIPRPCClient    *RPCClient
+	SlgHTTPClient   *slg.HTTPClientConfig
 }
 
 type HttpServer struct {
