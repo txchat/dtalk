@@ -70,6 +70,7 @@ func main() {
 	log.Info().
 		Interface("Modules", config.Conf.Modules).
 		Interface("Server", config.Conf.Server).
+		Interface("SlgHTTPClient", config.Conf.SlgHTTPClient).
 		Msg("config info")
 
 	//trace init
