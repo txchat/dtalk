@@ -23,7 +23,7 @@ func TestHTTPClient_GroupPermissionVerification(t *testing.T) {
 		{
 			name: "",
 			fields: fields{
-				url:  "/root/mall/open/chat/group-permission-verification",
+				url:  "",
 				salt: "",
 			},
 			args: args{
@@ -36,7 +36,7 @@ func TestHTTPClient_GroupPermissionVerification(t *testing.T) {
 				},
 			},
 			want: GroupPermission{
-				"12quUKnXMaHfxYvUB9bePW3k4eSj6H4ADo": false,
+				"12quUKnXMaHfxYvUB9bePW3k4eSj6H4ADo": true,
 			},
 			wantErr: false,
 		},

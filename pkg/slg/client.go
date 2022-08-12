@@ -25,9 +25,9 @@ type groupPermissionVerificationConditions struct {
 }
 
 type groupPermissionVerificationParams struct {
-	Conditions []*groupPermissionVerificationConditions `json:"Conditions"`
+	Conditions []*groupPermissionVerificationConditions `json:"conditions"`
 	Type       int32                                    `json:"type"`
-	UID        string                                   `json:"UID"`
+	UID        string                                   `json:"uid"`
 }
 
 type groupPermissionVerificationReq struct {
@@ -42,7 +42,7 @@ type basicResp struct {
 }
 
 type groupPermissionVerificationDataResp struct {
-	UID  string `json:"UID"`
+	UID  string `json:"uid"`
 	Flag bool   `json:"flag"`
 }
 
