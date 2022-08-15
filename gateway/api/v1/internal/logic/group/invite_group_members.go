@@ -29,31 +29,10 @@ func (l *GroupLogic) InviteGroupMembers(req *types.InviteGroupMembersReq) (*type
 		}
 		//如果是藏品群：2. 查询用户是否有入群资格
 		if conditionsRequest := extInfo.GetCondition(); conditionsRequest != nil {
-			//请求上链购接口判断 conditionsRequest.GetType() conditionsRequest.GetNft()
-			ids := make([]string, len(conditionsRequest.GetNft()))
-			for i, nft := range conditionsRequest.GetNft() {
-				ids[i] = nft.GetId()
-			}
-			conditions := make([]*slg.UserCondition, len(req.NewMemberIds))
-			for i, tarId := range req.NewMemberIds {
-				item := &slg.UserCondition{
-					UID:        tarId,
-					HandleType: conditionsRequest.GetType(),
-					Conditions: ids,
-				}
-				conditions[i] = item
-			}
-			gps, err := l.svcCtx.SlgClient.LoadGroupPermission(conditions)
+			invitedMembers, err = l.nftInviteMembersFilter(conditionsRequest, req.NewMemberIds)
 			if err != nil {
 				return nil, err
 			}
-			filteredMembers := make([]string, 0)
-			for _, memberId := range req.NewMemberIds {
-				if gps.IsPermission(memberId) {
-					filteredMembers = append(filteredMembers, memberId)
-				}
-			}
-			invitedMembers = filteredMembers
 		} else {
 			return nil, xerror.NewError(xerror.PermissionDenied).SetExtMessage("group condition not find")
 		}
@@ -72,4 +51,32 @@ func (l *GroupLogic) InviteGroupMembers(req *types.InviteGroupMembersReq) (*type
 		Id:    groupId,
 		IdStr: util.ToString(groupId),
 	}, nil
+}
+
+func (l *GroupLogic) nftInviteMembersFilter(condition *pb.Condition, members []string) ([]string, error) {
+	//请求上链购接口判断 conditionsRequest.GetType() conditionsRequest.GetNft()
+	ids := make([]string, len(condition.GetNft()))
+	for i, nft := range condition.GetNft() {
+		ids[i] = nft.GetId()
+	}
+	conditions := make([]*slg.UserCondition, len(members))
+	for i, tarId := range members {
+		item := &slg.UserCondition{
+			UID:        tarId,
+			HandleType: condition.GetType(),
+			Conditions: ids,
+		}
+		conditions[i] = item
+	}
+	gps, err := l.svcCtx.SlgClient.LoadGroupPermission(conditions)
+	if err != nil {
+		return nil, err
+	}
+	filteredMembers := make([]string, 0)
+	for _, memberId := range members {
+		if gps.IsPermission(memberId) {
+			filteredMembers = append(filteredMembers, memberId)
+		}
+	}
+	return filteredMembers, nil
 }

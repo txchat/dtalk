@@ -25,19 +25,11 @@ func (l *GroupLogic) CreateNFTGroup(req *types.CreateNFTGroupReq) (*types.Create
 	if reply.GetVip() == nil || reply.GetVip().GetUid() != addr {
 		return nil, xerror.NewError(xerror.PermissionDenied)
 	}
-
-	members := make([]*pb.GroupMemberInfo, 0, len(req.MemberIds))
-	for _, memberId := range req.MemberIds {
-		members = append(members, &pb.GroupMemberInfo{
-			Id:   memberId,
-			Name: "",
-		})
-	}
-
 	reqCondition := req.Condition
 	if reqCondition == nil {
 		return nil, xerror.NewError(xerror.ParamsError).SetExtMessage("入群条件为空")
 	}
+
 	nfts := make([]*pb.Condition_NFT, len(reqCondition.NFT))
 	for i, nft := range req.Condition.NFT {
 		nfts[i] = &pb.Condition_NFT{
@@ -50,6 +42,20 @@ func (l *GroupLogic) CreateNFTGroup(req *types.CreateNFTGroupReq) (*types.Create
 		Type: reqCondition.Type,
 		Nft:  nfts,
 	}
+	//过滤不满足条件的成员
+	filteredMember, err := l.nftInviteMembersFilter(condition, req.MemberIds)
+	if err != nil {
+		return nil, err
+	}
+
+	members := make([]*pb.GroupMemberInfo, 0, len(filteredMember))
+	for _, memberId := range filteredMember {
+		members = append(members, &pb.GroupMemberInfo{
+			Id:   memberId,
+			Name: "",
+		})
+	}
+
 	resp1, err := l.svcCtx.GroupClient.CreateNFTGroup(l.ctx, &pb.CreateNFTGroupReq{
 		Name:      name,
 		GroupType: pb.GroupType_GROUP_TYPE_NFT,
