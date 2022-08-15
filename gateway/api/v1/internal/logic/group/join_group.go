@@ -36,7 +36,7 @@ func (l *GroupLogic) JoinGroup(req *types.JoinGroupReq) (*types.JoinGroupResp, e
 			}
 			gps, err := l.svcCtx.SlgClient.LoadGroupPermission([]*slg.UserCondition{
 				{
-					UID:        l.getOpe(),
+					UID:        req.InviterId,
 					HandleType: conditions.GetType(),
 					Conditions: ids,
 				},
@@ -44,9 +44,11 @@ func (l *GroupLogic) JoinGroup(req *types.JoinGroupReq) (*types.JoinGroupResp, e
 			if err != nil {
 				return nil, err
 			}
-			if !gps.IsPermission(l.getOpe()) {
+			if !gps.IsPermission(req.InviterId) {
 				return nil, xerror.NewError(xerror.PermissionDenied)
 			}
+		} else {
+			return nil, xerror.NewError(xerror.PermissionDenied).SetExtMessage("group condition not find")
 		}
 	}
 

@@ -1,7 +1,6 @@
 package logic
 
 import (
-	"github.com/rs/zerolog/log"
 	"github.com/txchat/dtalk/gateway/api/v1/internal/types"
 	xerror "github.com/txchat/dtalk/pkg/error"
 	"github.com/txchat/dtalk/pkg/slg"
@@ -11,7 +10,7 @@ import (
 
 func (l *GroupLogic) InviteGroupMembers(req *types.InviteGroupMembersReq) (*types.InviteGroupMembersResp, error) {
 	groupId := req.Id
-
+	invitedMembers := req.NewMemberIds
 	//根据groupId查询基本群信息
 	groupPubInfo, err := l.svcCtx.GroupClient.GetPubGroupInfo(l.ctx, &pb.GetPubGroupInfoReq{
 		GroupId:  groupId,
@@ -20,7 +19,6 @@ func (l *GroupLogic) InviteGroupMembers(req *types.InviteGroupMembersReq) (*type
 	if err != nil {
 		return nil, err
 	}
-	log.Debug().Interface("group Type", groupPubInfo.GetGroup().GetType()).Msg("")
 	if groupPubInfo.GetGroup().GetType() == pb.GroupType_GROUP_TYPE_NFT {
 		//如果是藏品群：1. 获取入群条件
 		extInfo, err := l.svcCtx.GroupClient.GetNFTGroupExtInfo(l.ctx, &pb.GetNFTGroupExtInfoReq{
@@ -30,28 +28,33 @@ func (l *GroupLogic) InviteGroupMembers(req *types.InviteGroupMembersReq) (*type
 			return nil, err
 		}
 		//如果是藏品群：2. 查询用户是否有入群资格
-		if conditions := extInfo.GetCondition(); conditions != nil {
-			//请求上链购接口判断 conditions.GetType() conditions.GetNft()
-			ids := make([]string, len(conditions.GetNft()))
-			for i, nft := range conditions.GetNft() {
+		if conditionsRequest := extInfo.GetCondition(); conditionsRequest != nil {
+			//请求上链购接口判断 conditionsRequest.GetType() conditionsRequest.GetNft()
+			ids := make([]string, len(conditionsRequest.GetNft()))
+			for i, nft := range conditionsRequest.GetNft() {
 				ids[i] = nft.GetId()
 			}
-			log.Debug().Int("nft len", len(ids)).Msg("")
-			gps, err := l.svcCtx.SlgClient.LoadGroupPermission([]*slg.UserCondition{
-				{
-					UID:        l.getOpe(),
-					HandleType: conditions.GetType(),
+			conditions := make([]*slg.UserCondition, len(req.NewMemberIds))
+			for i, tarId := range req.NewMemberIds {
+				item := &slg.UserCondition{
+					UID:        tarId,
+					HandleType: conditionsRequest.GetType(),
 					Conditions: ids,
-				},
-			})
+				}
+				conditions[i] = item
+			}
+			gps, err := l.svcCtx.SlgClient.LoadGroupPermission(conditions)
 			if err != nil {
 				return nil, err
 			}
-			if !gps.IsPermission(l.getOpe()) {
-				return nil, xerror.NewError(xerror.PermissionDenied)
+			filteredMembers := make([]string, 0)
+			for _, memberId := range req.NewMemberIds {
+				if gps.IsPermission(l.getOpe()) {
+					filteredMembers = append(filteredMembers, memberId)
+				}
 			}
+			invitedMembers = filteredMembers
 		} else {
-			log.Debug().Msg("group condition not find")
 			return nil, xerror.NewError(xerror.PermissionDenied).SetExtMessage("group condition not find")
 		}
 	}
@@ -59,7 +62,7 @@ func (l *GroupLogic) InviteGroupMembers(req *types.InviteGroupMembersReq) (*type
 	_, err = l.svcCtx.GroupClient.InviteGroupMembers(l.ctx, &pb.InviteGroupMembersReq{
 		GroupId:   groupId,
 		InviterId: l.getOpe(),
-		MemberIds: req.NewMemberIds,
+		MemberIds: invitedMembers,
 	})
 	if err != nil {
 		return nil, err
