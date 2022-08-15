@@ -1,6 +1,7 @@
 package logic
 
 import (
+	"github.com/rs/zerolog/log"
 	"github.com/txchat/dtalk/gateway/api/v1/internal/types"
 	xerror "github.com/txchat/dtalk/pkg/error"
 	"github.com/txchat/dtalk/pkg/slg"
@@ -19,6 +20,7 @@ func (l *GroupLogic) InviteGroupMembers(req *types.InviteGroupMembersReq) (*type
 	if err != nil {
 		return nil, err
 	}
+	log.Debug().Interface("group Type", groupPubInfo.GetGroup().GetType()).Msg("")
 	if groupPubInfo.GetGroup().GetType() == pb.GroupType_GROUP_TYPE_NFT {
 		//如果是藏品群：1. 获取入群条件
 		extInfo, err := l.svcCtx.GroupClient.GetNFTGroupExtInfo(l.ctx, &pb.GetNFTGroupExtInfoReq{
@@ -34,6 +36,7 @@ func (l *GroupLogic) InviteGroupMembers(req *types.InviteGroupMembersReq) (*type
 			for i, nft := range conditions.GetNft() {
 				ids[i] = nft.GetId()
 			}
+			log.Debug().Int("nft len", len(ids)).Msg("")
 			gps, err := l.svcCtx.SlgClient.LoadGroupPermission([]*slg.UserCondition{
 				{
 					UID:        l.getOpe(),
@@ -47,6 +50,9 @@ func (l *GroupLogic) InviteGroupMembers(req *types.InviteGroupMembersReq) (*type
 			if !gps.IsPermission(l.getOpe()) {
 				return nil, xerror.NewError(xerror.PermissionDenied)
 			}
+		} else {
+			log.Debug().Msg("group condition not find")
+			return nil, xerror.NewError(xerror.PermissionDenied).SetExtMessage("group condition not find")
 		}
 	}
 
