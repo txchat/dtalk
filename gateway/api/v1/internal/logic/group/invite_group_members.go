@@ -49,7 +49,7 @@ func (l *GroupLogic) InviteGroupMembers(req *types.InviteGroupMembersReq) (*type
 			}
 			filteredMembers := make([]string, 0)
 			for _, memberId := range req.NewMemberIds {
-				if gps.IsPermission(l.getOpe()) {
+				if gps.IsPermission(memberId) {
 					filteredMembers = append(filteredMembers, memberId)
 				}
 			}
