@@ -318,6 +318,11 @@ func (s *server) GetNFTGroupExtInfo(ctx context.Context, req *pb.GetNFTGroupExtI
 	return l.GetNFTGroupExtInfo(req)
 }
 
+func (s *server) GetNFTGroupsExtInfo(ctx context.Context, req *pb.GetNFTGroupsExtInfoReq) (*pb.GetNFTGroupsExtInfoResp, error) {
+	l := logic.NewGetNFTGroupsExtInfoLogic(ctx, s.svc)
+	return l.GetNFTGroupsExtInfo(req)
+}
+
 func (s *server) InviteGroupMembers(ctx context.Context, req *pb.InviteGroupMembersReq) (*pb.InviteGroupMembersResp, error) {
 	l := logic.NewInviteGroupMembersLogic(ctx, s.svc)
 	return l.InviteGroupMembers(req)

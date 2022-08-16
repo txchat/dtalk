@@ -35,6 +35,7 @@ const (
 	GroupTypeNormal = 0 // 普通群
 	GroupTypeEnt    = 1 // 全员群
 	GroupTypeDep    = 2 // 部门群
+	GroupTypeNFT    = 3 // 藏品群
 )
 
 type GroupInfo struct {

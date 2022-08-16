@@ -1,6 +1,7 @@
 package dao
 
 import (
+	"strconv"
 	"strings"
 
 	"github.com/txchat/dtalk/pkg/mysql"
@@ -120,6 +121,8 @@ const (
 
 	_GetNFTGroupExtInfoByGroupId   = `SELECT * FROM dtalk_nft_group_info_ext WHERE group_id=?`
 	_GetNFTGroupConditionByGroupId = `SELECT * FROM dtalk_nft_group_condition WHERE group_id=?`
+
+	_GetKindGroupsGroupId = `SELECT group_id FROM dtalk_group_info WHERE group_type=? AND group_status=?`
 )
 
 // dtalk_group_info
@@ -179,6 +182,20 @@ func (d *Dao) GetNFTGroupExtInfoByGroupId(groupId int64) (*db.NFTGroupInfoExt, e
 	}
 	res := maps[0]
 	return db.ConvertNFTGroupInfoExt(res), nil
+}
+
+func (d *Dao) GetNFTGroupsGroupId() ([]int64, error) {
+	maps, err := d.conn.Query(_GetKindGroupsGroupId, biz.GroupTypeNFT, biz.GroupStatusNormal)
+	if err != nil {
+		return nil, err
+	}
+	groups := make([]int64, 0)
+	for _, m := range maps {
+		if id, err := strconv.ParseInt(m["group_id"], 10, 64); err != nil {
+			groups = append(groups, id)
+		}
+	}
+	return groups, nil
 }
 
 func (d *Dao) updateGroupInfoName(form *db.GroupInfo) (int64, int64, error) {

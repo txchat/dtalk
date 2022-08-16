@@ -5,7 +5,7 @@ projectVersion=$(shell git describe --abbrev=8 --tags)
 gitCommit=$(shell git rev-parse --short=8 HEAD)
 
 pkgCommitName=${projectVersion}_${gitCommit}
-servers=answer backend backup call device discovery gateway generator group offline-push oss pusher store vip
+servers=answer backend backup call device discovery gateway generator group offline-push oss pusher store vip kickout
 
 help: ## Display this help screen
 	@printf "Help doc:\nUsage: make [command]\n"

@@ -132,6 +132,14 @@ VIP_CONTAINER_NAME=txchat-vip-node1
 # vip配置卷
 VIP_CONFIG_VOLUME=txchat-vip-config
 
+## KICKOUT
+# kickout服务镜像
+KICKOUT_IMAGE=v0.0.0
+# kickout容器名称
+KICKOUT_CONTAINER_NAME=txchat-kickout-node1
+# kickout配置卷
+KICKOUT_CONFIG_VOLUME=txchat-kickout-config
+
 ## ANSWER
 # answer服务镜像
 ANSWER_IMAGE=v0.0.0

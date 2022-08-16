@@ -103,6 +103,14 @@ services:
       - txchat-service
     volumes:
       - ${VIP_CONFIG_VOLUME}:/etc/txchat-vip/config
+  kickout:
+    image: txchat-kickout:${KICKOUT_IMAGE}
+    container_name: ${KICKOUT_CONTAINER_NAME}
+    networks:
+      - txchat-components
+      - txchat-service
+    volumes:
+      - ${KICKOUT_CONFIG_VOLUME}:/etc/txchat-kickout/config
   answer:
     image: txchat-answer:${ANSWER_IMAGE}
     container_name: ${ANSWER_CONTAINER_NAME}
@@ -165,6 +173,8 @@ volumes:
   txchat-oss-config:
     external: true
   txchat-vip-config:
+    external: true
+  txchat-kickout-config:
     external: true
   txchat-answer-config:
     external: true

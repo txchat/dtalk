@@ -139,6 +139,11 @@ func (c *Client) GetNFTGroupExtInfo(ctx context.Context, req *GetNFTGroupExtInfo
 	return client.GetNFTGroupExtInfo(ctx, req)
 }
 
+func (c *Client) GetNFTGroupsExtInfo(ctx context.Context, req *GetNFTGroupsExtInfoReq) (*GetNFTGroupsExtInfoResp, error) {
+	client := NewGroupClient(c.conn)
+	return client.GetNFTGroupsExtInfo(ctx, req)
+}
+
 func (c *Client) GetGroupList(ctx context.Context, req *GetGroupListReq) (*GetGroupListResp, error) {
 	client := NewGroupClient(c.conn)
 	return client.GetGroupList(ctx, req)
@@ -157,6 +162,11 @@ func (c *Client) GetGroupMemberList(ctx context.Context, req *GetGroupMemberList
 func (c *Client) GetMuteList(ctx context.Context, req *GetMuteListReq) (*GetMuteListResp, error) {
 	client := NewGroupClient(c.conn)
 	return client.GetMuteList(ctx, req)
+}
+
+func (c *Client) GetGroupInfo(ctx context.Context, req *GetGroupInfoReq) (*GetGroupInfoResp, error) {
+	client := NewGroupClient(c.conn)
+	return client.GetGroupInfo(ctx, req)
 }
 
 func (c *Client) GetPriGroupInfo(ctx context.Context, req *GetPriGroupInfoReq) (*GetPriGroupInfoResp, error) {

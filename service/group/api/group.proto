@@ -322,6 +322,16 @@ message GetNFTGroupExtInfoReq { int64 group_id = 1; }
 
 message GetNFTGroupExtInfoResp { Condition condition = 1; }
 
+message GetNFTGroupsExtInfoReq {}
+
+message GetNFTGroupsExtInfoResp {
+  message ConditionUnionGroupId {
+    int64 group_id = 1;
+    Condition condition = 2;
+  }
+  repeated ConditionUnionGroupId conditions = 1;
+}
+
 // -------------- oa 远程调用 ----------------
 
 message ForceAddMemberReq {
@@ -483,6 +493,9 @@ service Group {
   // 查询NFT群拓展信息
   rpc GetNFTGroupExtInfo(GetNFTGroupExtInfoReq)
       returns (GetNFTGroupExtInfoResp);
+  // 获取所有藏品群拓展信息
+  rpc GetNFTGroupsExtInfo(GetNFTGroupsExtInfoReq)
+      returns (GetNFTGroupsExtInfoResp);
   // ------------- Third Force --------------
 
   // 更新群类型
