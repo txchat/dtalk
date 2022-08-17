@@ -60,7 +60,11 @@ func main() {
 	// set global log instance
 	log.Logger = logger.With().Str("service", srvName).Logger()
 	log.Info().
+		Str("env", config.Conf.Env).
 		Interface("xLog", config.Conf.Log).
+		Str("TaskSpec", config.Conf.TaskSpec).
+		Interface("GroupRPCClient", config.Conf.GroupRPCClient).
+		Interface("SlgHTTPClient", config.Conf.SlgHTTPClient).
 		Msg("config info")
 
 	// service init
