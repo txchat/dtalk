@@ -74,7 +74,7 @@ func main() {
 
 	// repository init
 	//repo := dao.NewVIPRepositoryMySQL(config.Conf.Env, config.Conf.MySQL)
-	repo := mock.NewAllowMockUsers()
+	repo := mock.NewAllowMockUsers(config.Conf.Whitelists)
 	// service init
 	svc := service.New(repo)
 	rpc := grpc.New(config.Conf.GRPCServer, svc, log.Logger)

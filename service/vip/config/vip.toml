@@ -1,3 +1,9 @@
+Whitelists=[
+    "12quUKnXMaHfxYvUB9bePW3k4eSj6H4ADo",
+    "1EwiqdTK68Wgp5geDhqRf9ocrhBg9dJCqX",
+    "1cMZ4qdSn9erZVmYf2wtsWxKVU6ZyUkSD"
+]
+
 [log]
     Level="info"
     Mode="console"

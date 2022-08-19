@@ -6,21 +6,22 @@ import (
 	"github.com/txchat/dtalk/service/vip/model"
 )
 
-var users = map[string]bool{
-	"12quUKnXMaHfxYvUB9bePW3k4eSj6H4ADo": true,
-	"1EwiqdTK68Wgp5geDhqRf9ocrhBg9dJCqX": true,
-	"1cMZ4qdSn9erZVmYf2wtsWxKVU6ZyUkSD":  true,
-}
-
 type AllowMockUsers struct {
+	users map[string]bool
 }
 
-func NewAllowMockUsers() *AllowMockUsers {
-	return &AllowMockUsers{}
+func NewAllowMockUsers(wls []string) *AllowMockUsers {
+	users := make(map[string]bool)
+	for _, u := range wls {
+		users[u] = true
+	}
+	return &AllowMockUsers{
+		users: users,
+	}
 }
 
 func (po *AllowMockUsers) GetVIP(uid string) (*model.VIPEntity, error) {
-	if b, ok := users[uid]; b && ok {
+	if b, ok := po.users[uid]; b && ok {
 		return &model.VIPEntity{
 			UID:        uid,
 			UpdateTime: time.Time{},

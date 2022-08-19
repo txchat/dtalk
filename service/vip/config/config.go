@@ -72,9 +72,10 @@ func Default() *Config {
 }
 
 type Config struct {
-	Env string
-	Log xlog.Config
-	Reg *Reg
+	Env        string
+	Whitelists []string
+	Log        xlog.Config
+	Reg        *Reg
 	//gRPC server
 	GRPCServer *grpc.ServerConfig
 	MySQL      *MySQL
