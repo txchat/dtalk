@@ -108,6 +108,9 @@ func NewHTTPClient(host, salt string) *HTTPClient {
 }
 
 func (c *HTTPClient) GroupPermissionVerification(conditions []*UserCondition) (GroupPermission, error) {
+	if len(conditions) <= 0 {
+		return make(map[string]bool), nil
+	}
 	headers := make(map[string]string)
 	headers["Content-Type"] = "application/json"
 
