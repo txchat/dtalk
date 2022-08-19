@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package generator;
+option go_package = "./generator";
+
+message GetIDReq {}
+
+message GetIDReply { int64 id = 1; }
+
+service Generator { rpc GetID(GetIDReq) returns (GetIDReply); }
