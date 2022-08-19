@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package device;
+option go_package = "./device";
+
+message Empty {}
+
+message DeviceInfo {
+  string uid = 1;
+  string connectId = 2;
+  string deviceUUid = 3;
+  int32 deviceType = 4;
+  string deviceName = 5;
+  string username = 6;
+  string deviceToken = 7;
+  bool isEnabled = 8;
+  uint64 addTime = 9;
+  string DTUid = 10;
+}
+
+message EnableThreadPushDeviceRequest {
+  string uid = 1;
+  string connId = 2;
+}
+
+message GetUserAllDevicesRequest { string uid = 1; }
+
+message GetUserAllDevicesReply { repeated DeviceInfo devices = 1; }
+
+message GetDeviceByConnIdRequest {
+  string uid = 1;
+  string connID = 2;
+}
+
+message GetDeviceByConnIdReply { DeviceInfo device = 1; }
+
+service Device {
+  rpc AddDevice(DeviceInfo) returns (Empty);
+  rpc EnableThreadPushDevice(EnableThreadPushDeviceRequest) returns (Empty);
+  rpc GetUserAllDevices(GetUserAllDevicesRequest)
+      returns (GetUserAllDevicesReply);
+  rpc GetDeviceByConnId(GetDeviceByConnIdRequest) returns (DeviceInfo);
+}
