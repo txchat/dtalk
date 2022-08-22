@@ -1,0 +1,20 @@
+type GetModuleResp struct {
+	Name      string   `json:"name" enums:"wallet,oa,redpacket"`
+	IsEnabled bool     `json:"isEnabled"`
+	EndPoints []string `json:"endPoints"`
+}
+
+
+type GetModulesReq {
+}
+
+type GetModulesResp {
+    Name string        `json:"name" enums:"wallet,oa,redPacket,live,shop"`
+    IsEnabled bool     `json:"isEnabled"`
+	EndPoints []string `json:"endPoints"`
+}
+
+service center-api {
+	@handler GetModules
+	post /app/modules/all (GetModulesReq) returns ([]GetModulesResp)
+}

@@ -5,18 +5,28 @@ import (
 	"net/http"
 
 	"github.com/txchat/dtalk/app/gateway/center/internal/svc"
+
 	"github.com/zeromicro/go-zero/rest"
 )
 
 func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 	server.AddRoutes(
-		rest.WithMiddlewares([]rest.Middleware{serverCtx.HTTPRespMiddleware}, []rest.Route{
+		[]rest.Route{
 			{
 				Method:  http.MethodPost,
 				Path:    "/disc/nodes",
 				Handler: GetNodesHandler(serverCtx),
 			},
-		}...,
-		),
+		},
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodPost,
+				Path:    "/app/modules/all",
+				Handler: GetModulesHandler(serverCtx),
+			},
+		},
 	)
 }

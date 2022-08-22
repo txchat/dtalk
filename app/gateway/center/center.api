@@ -1,5 +1,6 @@
 import(
 	"declare/discovery.api"
+	"declare/modules.api"
 )
 
 info(

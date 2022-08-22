@@ -24,3 +24,18 @@ type ContractNode struct {
 	Name    string `json:"name"`
 	Address string `json:"address"`
 }
+
+type GetModuleResp struct {
+	Name      string   `json:"name" enums:"wallet,oa,redpacket"`
+	IsEnabled bool     `json:"isEnabled"`
+	EndPoints []string `json:"endPoints"`
+}
+
+type GetModulesReq struct {
+}
+
+type GetModulesResp struct {
+	Name      string   `json:"name" enums:"wallet,oa,redPacket,live,shop"`
+	IsEnabled bool     `json:"isEnabled"`
+	EndPoints []string `json:"endPoints"`
+}

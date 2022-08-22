@@ -6,3 +6,10 @@ ChatNodes:
   - { name: "default", address: "test1" }
 ContractNodes:
   - { name: "default", address: "test2" }
+Modules:
+  - { name: "wallet", isEnabled: true, endPoints: ["http://124.70.184.206:8901","http://172.16.101.107:8083"] }
+  - { name: "oa", isEnabled: true, endPoints: ["http://172.16.101.107:20000"] }
+  #地址1：红包平行链合约节点，地址2：滨江钱包查询服务地址
+  - { name: "redPacket", isEnabled: true, endPoints: ["http://124.70.184.206:8901","http://172.16.101.107:8083"] }
+  - { name: "live", isEnabled: true, endPoints: [] }
+  - { name: "shop", isEnabled: true, endPoints: ["http://146.56.218.121:12009"] }
