@@ -1,0 +1,22 @@
+type GetNodesReq {
+}
+
+type GetNodesResp {
+	Servers []*ChatNode `json:"servers"`
+	Nodes []*ContractNode `json:"nodes"`
+}
+
+type ChatNode {
+	Name    string `json:"name"`
+	Address string `json:"address"`
+}
+
+type ContractNode {
+	Name    string `json:"name"`
+	Address string `json:"address"`
+}
+
+service center-api {
+	@handler GetNodes
+	post /disc/nodes (GetNodesReq) returns (GetNodesResp)
+}
