@@ -7,6 +7,14 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
+type Config struct {
+	Host string
+	Port int32
+	User string
+	Pwd  string
+	DB   string
+}
+
 type MysqlConn struct {
 	Host   string
 	Port   string

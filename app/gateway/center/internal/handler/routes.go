@@ -21,12 +21,55 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 	)
 
 	server.AddRoutes(
+		rest.WithMiddlewares([]rest.Middleware{serverCtx.ParseHeaderMiddleware},
+			[]rest.Route{
+				{
+					Method:  http.MethodPost,
+					Path:    "/app/modules/all",
+					Handler: GetModulesHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/app/version/check",
+					Handler: VersionCheckHandler(serverCtx),
+				},
+			}...,
+		),
+	)
+
+	server.AddRoutes(
 		[]rest.Route{
 			{
 				Method:  http.MethodPost,
-				Path:    "/app/modules/all",
-				Handler: GetModulesHandler(serverCtx),
+				Path:    "/backend/user/login",
+				Handler: LoginHandler(serverCtx),
 			},
 		},
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodPost,
+				Path:    "/backend/version/create",
+				Handler: CreateVersionHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPut,
+				Path:    "/backend/version/update",
+				Handler: UpdateVersionHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPut,
+				Path:    "/backend/version/change-status",
+				Handler: ChangeVersionStateHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/backend/version/list",
+				Handler: ListVersionHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
 	)
 }

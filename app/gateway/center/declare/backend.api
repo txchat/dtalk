@@ -1,0 +1,85 @@
+type LoginReq {
+	UserName string `json:"userName"`
+	Password string `json:"password"`
+}
+
+type LoginResp {
+	UserInfo UserInfo `json:"userInfo"`
+}
+
+type UserInfo {
+	UserName string `json:"userName"`
+	Token    string `json:"token"`
+}
+
+type CreateVersionReq {
+	Platform    string   `json:"platform"`
+	Description []string `json:"description"`
+	Force       bool     `json:"force"`
+	Url         string   `json:"url"`
+	VersionCode int64    `json:"versionCode"`
+	VersionName string   `json:"versionName"`
+	DeviceType  string   `json:"deviceType"`
+	OpeUser     string   `json:"opeUser"`
+	Md5         string   `json:"md5"`
+	Size        int64    `json:"size"`
+}
+
+type CreateVersionResp {
+	Version VersionInfo `json:"version"`
+}
+
+type UpdateVersionReq {
+	Description []string `json:"description"`
+	Force       bool     `json:"force"`
+	Url         string   `json:"url"`
+	VersionCode int64    `json:"versionCode"`
+	VersionName string   `json:"versionName"`
+	Id          int64    `json:"id"`
+	OpeUser     string   `json:"opeUser"`
+	Md5         string   `json:"md5"`
+	Size        int64    `json:"size"`
+}
+
+type UpdateVersionResp {
+	Version VersionInfo `json:"version"`
+}
+
+type ChangeVersionStateReq {
+	Id      int64  `json:"id"`
+	OpeUser string `json:"opeUser,optional"`
+}
+
+type ChangeVersionStateResp struct {
+}
+
+type ListVersionReq {
+	Page       int64  `form:"page,default=0"`
+	Platform   string `form:"platform,default=%"`
+	DeviceType string `form:"deviceType,default=%"`
+}
+
+type ListVersionResp {
+	TotalElements int64         `json:"totalElements"`
+	TotalPages    int64         `json:"totalPages"`
+	VersionList   []VersionInfo `json:"versionList"`
+}
+
+service center-api {
+	@handler Login
+	post /backend/user/login (LoginReq) returns (LoginResp)
+}
+
+@server(
+    jwt: Auth
+)
+service center-api {
+    @handler CreateVersion
+    post /backend/version/create (CreateVersionReq) returns (CreateVersionResp)
+    @handler UpdateVersion
+    put /backend/version/update (UpdateVersionReq) returns (UpdateVersionResp)
+    @handler ChangeVersionState
+    put /backend/version/change-status (ChangeVersionStateReq) returns (ChangeVersionStateResp)
+    @handler ListVersion
+    get /backend/version/list (ListVersionReq) returns (ListVersionResp)
+}

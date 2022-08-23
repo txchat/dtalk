@@ -13,3 +13,16 @@ Modules:
   - { name: "redPacket", isEnabled: true, endPoints: ["http://124.70.184.206:8901","http://172.16.101.107:8083"] }
   - { name: "live", isEnabled: true, endPoints: [] }
   - { name: "shop", isEnabled: true, endPoints: ["http://146.56.218.121:12009"] }
+Backend:
+  Platform: "Chat33Pro"
+  Users:
+    - { username: "root", password: "root" }
+Auth:
+  AccessSecret: "12345678"
+  AccessExpire: 86400000000000
+VersionRPC:
+  Etcd:
+    Hosts:
+      - "localhost:2379"
+    Key: "version.rpc"
+    Timeout: 60000 # 60s

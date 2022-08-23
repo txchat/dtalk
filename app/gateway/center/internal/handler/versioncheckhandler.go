@@ -12,16 +12,20 @@ import (
 	"github.com/zeromicro/go-zero/rest/httpx"
 )
 
-func GetNodesHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
+func VersionCheckHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req types.GetNodesReq
+		var req types.VersionCheckReq
 		if err := httpx.Parse(r, &req); err != nil {
 			xcontext.Set(r, api.ReqError, xerror.NewError(xerror.ParamsError).SetExtMessage(err.Error()))
 			return
 		}
 
-		l := logic.NewGetNodesLogic(r.Context(), svcCtx)
-		resp, err := l.GetNodes(&req)
+		deviceType, ok := api.GetXContextStringOk(r, api.DeviceType)
+		if ok {
+			req.DeviceType = deviceType
+		}
+		l := logic.NewVersionCheckLogic(r.Context(), svcCtx)
+		resp, err := l.VersionCheck(&req)
 
 		xcontext.Set(r, api.ReqResult, resp)
 		xcontext.Set(r, api.ReqError, err)

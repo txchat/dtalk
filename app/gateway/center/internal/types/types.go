@@ -39,3 +39,96 @@ type GetModulesResp struct {
 	IsEnabled bool     `json:"isEnabled"`
 	EndPoints []string `json:"endPoints"`
 }
+
+type VersionInfo struct {
+	Id          int64    `json:"id"`
+	Platform    string   `json:"platform"`
+	Status      int32    `json:"status"`
+	DeviceType  string   `json:"deviceType"`
+	VersionName string   `json:"versionName"`
+	VersionCode int64    `json:"versionCode"`
+	Url         string   `json:"url"`
+	Force       bool     `json:"force"`
+	Description []string `json:"description"`
+	OpeUser     string   `json:"opeUser"`
+	Md5         string   `json:"md5"`
+	Size        int64    `json:"size"`
+	UpdateTime  int64    `json:"updateTime"`
+	CreateTime  int64    `json:"createTime"`
+}
+
+type VersionCheckReq struct {
+	VersionCode int64  `json:"versionCode"`
+	DeviceType  string `json:"deviceType,optional"`
+}
+
+type VersionCheckResp struct {
+	VersionInfo
+}
+
+type LoginReq struct {
+	UserName string `json:"userName"`
+	Password string `json:"password"`
+}
+
+type LoginResp struct {
+	UserInfo UserInfo `json:"userInfo"`
+}
+
+type UserInfo struct {
+	UserName string `json:"userName"`
+	Token    string `json:"token"`
+}
+
+type CreateVersionReq struct {
+	Platform    string   `json:"platform"`
+	Description []string `json:"description"`
+	Force       bool     `json:"force"`
+	Url         string   `json:"url"`
+	VersionCode int64    `json:"versionCode"`
+	VersionName string   `json:"versionName"`
+	DeviceType  string   `json:"deviceType"`
+	OpeUser     string   `json:"opeUser"`
+	Md5         string   `json:"md5"`
+	Size        int64    `json:"size"`
+}
+
+type CreateVersionResp struct {
+	Version VersionInfo `json:"version"`
+}
+
+type UpdateVersionReq struct {
+	Description []string `json:"description"`
+	Force       bool     `json:"force"`
+	Url         string   `json:"url"`
+	VersionCode int64    `json:"versionCode"`
+	VersionName string   `json:"versionName"`
+	Id          int64    `json:"id"`
+	OpeUser     string   `json:"opeUser"`
+	Md5         string   `json:"md5"`
+	Size        int64    `json:"size"`
+}
+
+type UpdateVersionResp struct {
+	Version VersionInfo `json:"version"`
+}
+
+type ChangeVersionStateReq struct {
+	Id      int64  `json:"id"`
+	OpeUser string `json:"opeUser,optional"`
+}
+
+type ChangeVersionStateResp struct {
+}
+
+type ListVersionReq struct {
+	Page       int64  `form:"page,default=0"`
+	Platform   string `form:"platform,default=%"`
+	DeviceType string `form:"deviceType,default=%"`
+}
+
+type ListVersionResp struct {
+	TotalElements int64         `json:"totalElements"`
+	TotalPages    int64         `json:"totalPages"`
+	VersionList   []VersionInfo `json:"versionList"`
+}

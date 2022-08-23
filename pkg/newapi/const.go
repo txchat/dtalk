@@ -21,3 +21,7 @@ const (
 	UUID       = "uuid"
 	Version    = "version"
 )
+
+const (
+	BackendJWTUsername = "username"
+)

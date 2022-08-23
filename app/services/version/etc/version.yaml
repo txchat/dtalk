@@ -1,0 +1,12 @@
+Name: version.rpc
+ListenOn: 127.0.0.1:8080
+Etcd:
+  Hosts:
+  - 127.0.0.1:2379
+  Key: version.rpc
+MySQL:
+  Host: "localhost"
+  Port: 3306
+  User: "root"
+  Pwd: "123456"
+  DB: "dtalk"

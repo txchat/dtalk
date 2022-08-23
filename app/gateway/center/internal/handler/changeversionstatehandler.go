@@ -12,16 +12,21 @@ import (
 	"github.com/zeromicro/go-zero/rest/httpx"
 )
 
-func GetNodesHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
+func ChangeVersionStateHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req types.GetNodesReq
+		var req types.ChangeVersionStateReq
 		if err := httpx.Parse(r, &req); err != nil {
 			xcontext.Set(r, api.ReqError, xerror.NewError(xerror.ParamsError).SetExtMessage(err.Error()))
 			return
 		}
-
-		l := logic.NewGetNodesLogic(r.Context(), svcCtx)
-		resp, err := l.GetNodes(&req)
+		username, ok := api.GetStringOk(r, api.BackendJWTUsername)
+		if !ok {
+			xcontext.Set(r, api.ReqError, xerror.NewError(xerror.SignatureInvalid))
+			return
+		}
+		req.OpeUser = username
+		l := logic.NewChangeVersionStateLogic(r.Context(), svcCtx)
+		resp, err := l.ChangeVersionState(&req)
 
 		xcontext.Set(r, api.ReqResult, resp)
 		xcontext.Set(r, api.ReqError, err)

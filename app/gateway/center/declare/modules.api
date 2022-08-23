@@ -14,7 +14,35 @@ type GetModulesResp {
 	EndPoints []string `json:"endPoints"`
 }
 
+type VersionInfo {
+	Id          int64       `json:"id"`
+	Platform    string      `json:"platform"`
+	Status      int32       `json:"status"`
+	DeviceType  string      `json:"deviceType"`
+	VersionName string      `json:"versionName"`
+	VersionCode int64       `json:"versionCode"`
+	Url         string      `json:"url"`
+	Force       bool        `json:"force"`
+	Description []string    `json:"description"`
+	OpeUser     string      `json:"opeUser"`
+	Md5         string      `json:"md5"`
+	Size        int64       `json:"size"`
+	UpdateTime  int64       `json:"updateTime"`
+	CreateTime  int64       `json:"createTime"`
+}
+
+type VersionCheckReq {
+    VersionCode int64  `json:"versionCode"`
+    DeviceType  string `json:"deviceType,optional"`
+}
+
+type VersionCheckResp {
+    VersionInfo
+}
+
 service center-api {
 	@handler GetModules
 	post /app/modules/all (GetModulesReq) returns ([]GetModulesResp)
+    @handler VersionCheck
+    post /app/version/check (VersionCheckReq) returns (VersionCheckResp)
 }

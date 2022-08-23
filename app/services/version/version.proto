@@ -1,0 +1,91 @@
+syntax = "proto3";
+
+package version;
+option go_package = "./version";
+
+message VersionInfo {
+  int64 id = 1;
+  string platform = 2;
+  int32 status = 3;
+  string deviceType = 4;
+  string versionName = 5;
+  int64 versionCode = 6;
+  string url = 7;
+  bool force = 8;
+  repeated string description = 9;
+  string opeUser = 10;
+  string md5 = 11;
+  int64 size = 12;
+  int64 updateTime = 13;
+  int64 createTime = 14;
+}
+
+message CreateReq { VersionInfo versionInfo = 1; }
+
+message CreateResp { int64 id = 1; }
+
+message UpdateReq { VersionInfo versionInfo = 1; }
+
+message UpdateResp { int64 id = 1; }
+
+message QueryReq { int64 id = 1; }
+
+message QueryResp { VersionInfo versionInfo = 1; }
+
+message ReleaseSpecificVersionReq {
+  int64 vid = 1;
+  string operator = 2;
+}
+
+message ReleaseSpecificVersionResp {}
+
+message SpecificPlatformAndDeviceTypeVersionsReq {
+  string platform = 1;
+  string deviceType = 2;
+  int64 page = 3;
+  int64 size = 4;
+}
+
+message SpecificPlatformAndDeviceTypeVersionsReqResp {
+  repeated VersionInfo versionInfo = 1;
+}
+
+message SpecificPlatformAndDeviceTypeCountReq {
+  string platform = 1;
+  string deviceType = 2;
+}
+
+message SpecificPlatformAndDeviceTypeCountResp { int64 totalCount = 1; }
+
+message LastReleaseVersionReq {
+  string platform = 1;
+  string deviceType = 2;
+}
+
+message LastReleaseVersionResp { VersionInfo versionInfo = 1; }
+
+message ForceNumberBetweenReq {
+  string platform = 1;
+  string deviceType = 2;
+  int64 begin = 3;
+  int64 end = 4;
+}
+
+message ForceNumberBetweenResp { int64 num = 1; }
+
+service Version {
+  rpc Create(CreateReq) returns (CreateResp);
+  rpc Update(UpdateReq) returns (UpdateResp);
+  rpc Query(QueryReq) returns (QueryResp);
+  rpc ReleaseSpecificVersion(ReleaseSpecificVersionReq)
+      returns (ReleaseSpecificVersionResp);
+  rpc SpecificPlatformAndDeviceTypeVersions(
+      SpecificPlatformAndDeviceTypeVersionsReq)
+      returns (SpecificPlatformAndDeviceTypeVersionsReqResp);
+  rpc SpecificPlatformAndDeviceTypeCount(SpecificPlatformAndDeviceTypeCountReq)
+      returns (SpecificPlatformAndDeviceTypeCountResp);
+  rpc LastReleaseVersion(LastReleaseVersionReq)
+      returns (LastReleaseVersionResp);
+  rpc ForceNumberBetween(ForceNumberBetweenReq)
+      returns (ForceNumberBetweenResp);
+}
