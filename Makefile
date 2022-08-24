@@ -56,6 +56,25 @@ docker-compose-%: ## 使用docker compose 命令(服务列表：make docker-comp
 doc:
 	./script/doc/doc.sh v1
 
+test-init:
+	cp -R script/test/components/. test_compose/
+	cp -R script/mysql/. test_compose/
+	cp -R script/nginx/. test_compose/
+
+test-up:
+	@if [ ! -d "test_compose/" ]; then \
+		exit -1;\
+	 fi; \
+	cd test_compose && \
+	docker compose -f components.compose.yaml up -d
+
+test-%:
+	@if [ ! -d "test_compose/" ]; then \
+       cp -R script/compose/. test_compose/; \
+     fi; \
+    cd test_compose && \
+    docker compose -f components.compose.yaml $*
+
 test:
 	$(GOENV) go test -v ./...
 

@@ -3,6 +3,7 @@ build/
 target/
 target_*
 run_compose
+test_compose
 .DS_Store
 swagger/docs
 api-v1.md
