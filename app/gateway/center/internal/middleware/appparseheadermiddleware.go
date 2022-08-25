@@ -14,7 +14,6 @@ func NewAppParseHeaderMiddleware() *AppParseHeaderMiddleware {
 	return &AppParseHeaderMiddleware{}
 }
 
-// Handle 处理
 func (m *AppParseHeaderMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		uuid := r.Header.Get(api.HeaderUUID)

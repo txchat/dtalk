@@ -132,3 +132,122 @@ type ListVersionResp struct {
 	TotalPages    int64         `json:"totalPages"`
 	VersionList   []VersionInfo `json:"versionList"`
 }
+
+type AddressInfo struct {
+	Address    string `json:"address"`
+	Area       string `json:"area"`
+	Phone      string `json:"phone"`
+	Email      string `json:"email"`
+	Mnemonic   string `json:"mnemonic"`
+	PrivateKey string `json:"private_key"`
+	UpdateTime int64  `json:"update_time"`
+	CreateTime int64  `json:"create_time"`
+}
+
+type QueryPhoneReq struct {
+	Area  string `json:"area,optional"`
+	Phone string `json:"phone"`
+}
+
+type QueryPhoneResp struct {
+	Exists bool `json:"exists"`
+}
+
+type QueryEmailReq struct {
+	Email string `json:"email"`
+}
+
+type QueryEmailResp struct {
+	Exists bool `json:"exists"`
+}
+
+type PhoneRetrieveReq struct {
+	Area  string `json:"area,optional"`
+	Phone string `json:"phone"`
+	Code  string `json:"code"`
+}
+
+type PhoneRetrieveResp struct {
+	AddressInfo
+}
+
+type EmailRetrieveReq struct {
+	Email string `json:"email"`
+	Code  string `json:"code"`
+}
+
+type EmailRetrieveResp struct {
+	AddressInfo
+}
+
+type AddressRetrieveReq struct {
+}
+
+type AddressRetrieveResp struct {
+	AddressInfo
+}
+
+type PhoneExportReq struct {
+	Area    string `json:"area,optional"`
+	Phone   string `json:"phone"`
+	Code    string `json:"code"`
+	Address string `json:"address"`
+}
+
+type PhoneExportResp struct {
+}
+
+type EmailExportReq struct {
+	Email   string `json:"email"`
+	Code    string `json:"code"`
+	Address string `json:"address"`
+}
+
+type EmailExportResp struct {
+}
+
+type PhoneBindingReq struct {
+	Area     string `json:"area,optional"`
+	Phone    string `json:"phone"`
+	Code     string `json:"code"`
+	Mnemonic string `json:"mnemonic"`
+}
+
+type PhoneBindingResp struct {
+	Address string `json:"address"`
+}
+
+type EmailBindingReq struct {
+	Email    string `json:"email"`
+	Code     string `json:"code"`
+	Mnemonic string `json:"mnemonic"`
+}
+
+type EmailBindingResp struct {
+	Address string `json:"address"`
+}
+
+type PhoneRelateReq struct {
+	Area     string `json:"area,optional"`
+	Phone    string `json:"phone"`
+	Mnemonic string `json:"mnemonic"`
+}
+
+type PhoneRelateResp struct {
+	Address string `json:"address"`
+}
+
+type EditMnemonicReq struct {
+	Mnemonic string `json:"mnemonic"`
+}
+
+type EditMnemonicResp struct {
+}
+
+type GetAddressReq struct {
+	Query string `json:"query"`
+}
+
+type GetAddressResp struct {
+	Address string `json:"address"`
+}

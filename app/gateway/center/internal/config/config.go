@@ -12,6 +12,7 @@ type Config struct {
 	ContractNodes []*types.ContractNode
 	Modules       []Module
 	VersionRPC    zrpc.RpcClientConf
+	BackupRPC     zrpc.RpcClientConf
 	Backend       struct {
 		Platform string
 		Users    []BackendUser

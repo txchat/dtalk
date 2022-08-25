@@ -1,3 +1,14 @@
+syntax = "v2"
+
+info(
+    title: "discovery api declare"
+    desc: ""
+    author: "dld"
+    email: "oofpgdld@gmail.com"
+    version: "v1.0.0"
+)
+// goctl api format -dir .
+
 type GetNodesReq {
 }
 

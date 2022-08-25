@@ -1,3 +1,14 @@
+syntax = "v2"
+
+info(
+    title: "backend api declare"
+    desc: ""
+    author: "dld"
+    email: "oofpgdld@gmail.com"
+    version: "v1.0.0"
+)
+// goctl api format -dir .
+
 type LoginReq {
 	UserName string `json:"userName"`
 	Password string `json:"password"`
@@ -65,6 +76,9 @@ type ListVersionResp {
 	VersionList   []VersionInfo `json:"versionList"`
 }
 
+@server(
+    group: backend
+)
 service center-api {
 	@handler Login
 	post /backend/user/login (LoginReq) returns (LoginResp)
@@ -72,6 +86,7 @@ service center-api {
 
 @server(
     jwt: Auth
+    group: backend
 )
 service center-api {
     @handler CreateVersion

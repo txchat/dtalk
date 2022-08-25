@@ -1,3 +1,14 @@
+syntax = "v2"
+
+info(
+    title: "modules api declare"
+    desc: ""
+    author: "dld"
+    email: "oofpgdld@gmail.com"
+    version: "v1.0.0"
+)
+// goctl api format -dir .
+
 type GetModuleResp struct {
 	Name      string   `json:"name" enums:"wallet,oa,redpacket"`
 	IsEnabled bool     `json:"isEnabled"`
@@ -40,6 +51,9 @@ type VersionCheckResp {
     VersionInfo
 }
 
+@server(
+	middleware: AppParseHeaderMiddleware
+)
 service center-api {
 	@handler GetModules
 	post /app/modules/all (GetModulesReq) returns ([]GetModulesResp)

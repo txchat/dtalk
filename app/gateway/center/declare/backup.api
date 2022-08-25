@@ -1,0 +1,166 @@
+syntax = "v2"
+
+info(
+    title: "backup api declare"
+    desc: ""
+    author: "dld"
+    email: "oofpgdld@gmail.com"
+    version: "v1.0.0"
+)
+// goctl api format -dir .
+
+type AddressInfo {
+    Address    string    `json:"address"`
+    Area       string    `json:"area"`
+    Phone      string    `json:"phone"`
+    Email      string    `json:"email"`
+    Mnemonic   string    `json:"mnemonic"`
+    PrivateKey string    `json:"private_key"`
+    UpdateTime int64     `json:"update_time"`
+    CreateTime int64     `json:"create_time"`
+}
+
+type QueryPhoneReq {
+    Area  string `json:"area,optional"`
+    Phone string `json:"phone"`
+}
+
+type QueryPhoneResp {
+	Exists bool `json:"exists"`
+}
+
+type QueryEmailReq {
+    Email string `json:"email"`
+}
+
+type QueryEmailResp {
+	Exists bool `json:"exists"`
+}
+
+type PhoneRetrieveReq {
+    Area  string `json:"area,optional"`
+    Phone string `json:"phone"`
+    Code  string `json:"code"`
+}
+
+type PhoneRetrieveResp {
+	AddressInfo
+}
+
+type EmailRetrieveReq {
+    Email string `json:"email"`
+    Code  string `json:"code"`
+}
+
+type EmailRetrieveResp {
+	AddressInfo
+}
+
+type AddressRetrieveReq {
+}
+
+type AddressRetrieveResp {
+	AddressInfo
+}
+
+type PhoneExportReq {
+    Area    string `json:"area,optional"`
+    Phone   string `json:"phone"`
+    Code    string `json:"code"`
+    Address string `json:"address"`
+}
+
+type PhoneExportResp {
+}
+
+type EmailExportReq {
+    Email   string `json:"email"`
+    Code    string `json:"code"`
+    Address string `json:"address"`
+}
+
+type EmailExportResp {
+}
+
+type PhoneBindingReq {
+    Area     string `json:"area,optional"`
+    Phone    string `json:"phone"`
+    Code     string `json:"code"`
+    Mnemonic string `json:"mnemonic"`
+}
+
+type PhoneBindingResp {
+    Address string `json:"address"`
+}
+
+type EmailBindingReq {
+    Email    string `json:"email"`
+    Code     string `json:"code"`
+    Mnemonic string `json:"mnemonic"`
+}
+
+type EmailBindingResp {
+    Address string `json:"address"`
+}
+
+type PhoneRelateReq {
+    Area     string `json:"area,optional"`
+    Phone    string `json:"phone"`
+    Mnemonic string `json:"mnemonic"`
+}
+
+type PhoneRelateResp {
+    Address string `json:"address"`
+}
+
+type EditMnemonicReq {
+    Mnemonic string `json:"mnemonic"`
+}
+
+type EditMnemonicResp {
+}
+
+type GetAddressReq {
+    Query string `json:"query"`
+}
+
+type GetAddressResp {
+    Address string `json:"address"`
+}
+
+@server(
+	group: backup
+)
+service center-api {
+	@handler QueryPhone
+	post /backup/phone-query (QueryPhoneReq) returns (QueryPhoneResp)
+	@handler QueryEmail
+	post /backup/email-query (QueryEmailReq) returns (QueryEmailResp)
+	@handler PhoneRetrieve
+	post /backup/phone-retrieve (PhoneRetrieveReq) returns (PhoneRetrieveResp)
+	@handler EmailRetrieve
+	post /backup/email-retrieve (EmailRetrieveReq) returns (EmailRetrieveResp)
+	@handler PhoneExport
+	post /backup/phone-export (PhoneExportReq) returns (PhoneExportResp)
+	@handler EmailExport
+	post /backup/email-export (EmailExportReq) returns (EmailExportResp)
+}
+
+@server(
+	group: backup
+	middleware: AppAuthMiddleware
+)
+service center-api {
+	@handler PhoneBinding
+	post /backup/phone-binding (PhoneBindingReq) returns (PhoneBindingResp)
+	@handler EmailBinding
+	post /backup/email-binding (EmailBindingReq) returns (EmailBindingResp)
+	@handler PhoneRelate
+	post /backup/phone-relate (PhoneRelateReq) returns (PhoneRelateResp)
+	@handler AddressRetrieve
+	post /backup/address-retrieve (AddressRetrieveReq) returns (AddressRetrieveResp)
+	@handler EditMnemonic
+	post /backup/edit-mnemonic (EditMnemonicReq) returns (EditMnemonicResp)
+	@handler GetAddress
+	post /backup/get-address (GetAddressReq) returns (GetAddressResp)
+}

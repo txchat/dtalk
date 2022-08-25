@@ -1,14 +1,15 @@
-package handler
+package backend
 
 import (
 	"net/http"
 
 	xcontext "github.com/gorilla/context"
-	"github.com/txchat/dtalk/app/gateway/center/internal/logic"
-	"github.com/txchat/dtalk/app/gateway/center/internal/svc"
-	"github.com/txchat/dtalk/app/gateway/center/internal/types"
 	xerror "github.com/txchat/dtalk/pkg/error"
 	api "github.com/txchat/dtalk/pkg/newapi"
+
+	"github.com/txchat/dtalk/app/gateway/center/internal/logic/backend"
+	"github.com/txchat/dtalk/app/gateway/center/internal/svc"
+	"github.com/txchat/dtalk/app/gateway/center/internal/types"
 	"github.com/zeromicro/go-zero/rest/httpx"
 )
 
@@ -20,7 +21,7 @@ func LoginHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 			return
 		}
 
-		l := logic.NewLoginLogic(r.Context(), svcCtx)
+		l := backend.NewLoginLogic(r.Context(), svcCtx)
 		resp, err := l.Login(&req)
 
 		xcontext.Set(r, api.ReqResult, resp)

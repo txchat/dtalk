@@ -1,20 +1,21 @@
-package handler
+package backend
 
 import (
 	"net/http"
 
 	xcontext "github.com/gorilla/context"
-	"github.com/txchat/dtalk/app/gateway/center/internal/logic"
-	"github.com/txchat/dtalk/app/gateway/center/internal/svc"
-	"github.com/txchat/dtalk/app/gateway/center/internal/types"
 	xerror "github.com/txchat/dtalk/pkg/error"
 	api "github.com/txchat/dtalk/pkg/newapi"
+
+	"github.com/txchat/dtalk/app/gateway/center/internal/logic/backend"
+	"github.com/txchat/dtalk/app/gateway/center/internal/svc"
+	"github.com/txchat/dtalk/app/gateway/center/internal/types"
 	"github.com/zeromicro/go-zero/rest/httpx"
 )
 
-func ChangeVersionStateHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
+func UpdateVersionHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req types.ChangeVersionStateReq
+		var req types.UpdateVersionReq
 		if err := httpx.Parse(r, &req); err != nil {
 			xcontext.Set(r, api.ReqError, xerror.NewError(xerror.ParamsError).SetExtMessage(err.Error()))
 			return
@@ -25,8 +26,8 @@ func ChangeVersionStateHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 			return
 		}
 		req.OpeUser = username
-		l := logic.NewChangeVersionStateLogic(r.Context(), svcCtx)
-		resp, err := l.ChangeVersionState(&req)
+		l := backend.NewUpdateVersionLogic(r.Context(), svcCtx)
+		resp, err := l.UpdateVersion(&req)
 
 		xcontext.Set(r, api.ReqResult, resp)
 		xcontext.Set(r, api.ReqError, err)

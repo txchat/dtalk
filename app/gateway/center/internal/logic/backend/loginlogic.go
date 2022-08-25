@@ -1,4 +1,4 @@
-package logic
+package backend
 
 import (
 	"context"
@@ -8,7 +8,6 @@ import (
 	"github.com/txchat/dtalk/app/gateway/center/internal/svc"
 	"github.com/txchat/dtalk/app/gateway/center/internal/types"
 	xerror "github.com/txchat/dtalk/pkg/error"
-
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
