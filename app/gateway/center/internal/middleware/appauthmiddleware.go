@@ -3,26 +3,40 @@ package middleware
 import (
 	"net/http"
 
+	"github.com/txchat/dtalk/app/gateway/center/internal/middleware/authmock"
+
 	"github.com/txchat/dtalk/pkg/auth"
 	xerror "github.com/txchat/dtalk/pkg/error"
 	xhttp "github.com/txchat/dtalk/pkg/net/http"
 )
 
 type AppAuthMiddleware struct {
+	mock authmock.Mock
 }
 
-func NewAppAuthMiddleware() *AppAuthMiddleware {
-	return &AppAuthMiddleware{}
+func NewAppAuthMiddleware(mock authmock.Mock) *AppAuthMiddleware {
+	return &AppAuthMiddleware{
+		mock: mock,
+	}
 }
 
 func (m *AppAuthMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// parse header
-		bizHeader := xhttp.ConvertCustom(r)
+		custom := xhttp.ConvertCustom(r)
 
-		// TODO MOCK
+		// MOCK
+		if m.mock != nil {
+			uid := m.mock.Signature(custom.Signature)
+			if uid != "" {
+				//set context values
+				custom.UID = uid
+				next(w, custom.SetWithRequest(r))
+				return
+			}
+		}
 		server := auth.NewDefaultApiAuthenticator()
-		uid, err := server.Auth(bizHeader.Signature)
+		uid, err := server.Auth(custom.Signature)
 		if err != nil {
 			switch err {
 			case auth.ERR_SIGNATUREEXPIRED:
@@ -34,7 +48,7 @@ func (m *AppAuthMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 		//set context values
-		bizHeader.UID = uid
-		next(w, bizHeader.SetWithRequest(r))
+		custom.UID = uid
+		next(w, custom.SetWithRequest(r))
 	}
 }

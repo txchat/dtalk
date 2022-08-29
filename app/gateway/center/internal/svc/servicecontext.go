@@ -4,6 +4,7 @@ import (
 	"github.com/txchat/dtalk/app/gateway/center/internal/config"
 	"github.com/txchat/dtalk/app/gateway/center/internal/logic/backenduser"
 	"github.com/txchat/dtalk/app/gateway/center/internal/middleware"
+	"github.com/txchat/dtalk/app/gateway/center/internal/middleware/authmock"
 	"github.com/txchat/dtalk/app/services/backup/backupclient"
 	"github.com/txchat/dtalk/app/services/version/versionclient"
 	xerror "github.com/txchat/dtalk/pkg/error"
@@ -25,7 +26,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		Config:                   c,
 		UsersManager:             backenduser.NewUserManager(c.Backend.Users),
 		AppParseHeaderMiddleware: middleware.NewAppParseHeaderMiddleware().Handle,
-		AppAuthMiddleware:        middleware.NewAppAuthMiddleware().Handle,
+		AppAuthMiddleware:        middleware.NewAppAuthMiddleware(authmock.NewKVMock()).Handle,
 		VersionRPC: versionclient.NewVersion(zrpc.MustNewClient(c.VersionRPC,
 			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor))),
 		BackupRPC: backupclient.NewBackup(zrpc.MustNewClient(c.BackupRPC,
