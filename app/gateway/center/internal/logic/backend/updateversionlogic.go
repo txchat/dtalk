@@ -3,6 +3,8 @@ package backend
 import (
 	"context"
 
+	xhttp "github.com/txchat/dtalk/pkg/net/http"
+
 	"github.com/txchat/dtalk/app/services/version/versionclient"
 
 	"github.com/txchat/dtalk/app/gateway/center/internal/svc"
@@ -13,19 +15,22 @@ import (
 
 type UpdateVersionLogic struct {
 	logx.Logger
-	ctx    context.Context
-	svcCtx *svc.ServiceContext
+	ctx      context.Context
+	svcCtx   *svc.ServiceContext
+	username string
 }
 
 func NewUpdateVersionLogic(ctx context.Context, svcCtx *svc.ServiceContext) *UpdateVersionLogic {
 	return &UpdateVersionLogic{
-		Logger: logx.WithContext(ctx),
-		ctx:    ctx,
-		svcCtx: svcCtx,
+		Logger:   logx.WithContext(ctx),
+		ctx:      ctx,
+		svcCtx:   svcCtx,
+		username: ctx.Value(xhttp.BackendJWTUsername).(string),
 	}
 }
 
 func (l *UpdateVersionLogic) UpdateVersion(req *types.UpdateVersionReq) (resp *types.UpdateVersionResp, err error) {
+	req.OpeUser = l.username
 	createResp, err := l.svcCtx.VersionRPC.Update(l.ctx, &versionclient.UpdateReq{
 		VersionInfo: &versionclient.VersionInfo{
 			Id:          req.Id,

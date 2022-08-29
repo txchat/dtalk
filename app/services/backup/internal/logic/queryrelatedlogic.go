@@ -28,7 +28,7 @@ func NewQueryRelatedLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Quer
 func (l *QueryRelatedLogic) QueryRelated(in *backup.QueryRelatedReq) (*backup.QueryRelatedResp, error) {
 	switch x := in.Params.(type) {
 	case *backup.QueryRelatedReq_BindPhone:
-		item, err := l.svcCtx.Repo.QueryBind(model.Phone, x.BindPhone.GetPhone())
+		item, err := l.svcCtx.Repo.QueryRelate(model.Phone, x.BindPhone.GetPhone())
 		if err != nil {
 			return &backup.QueryRelatedResp{}, err
 		}

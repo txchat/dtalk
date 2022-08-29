@@ -31,3 +31,18 @@ func (s *BackupServer) QueryRelated(ctx context.Context, in *backup.QueryRelated
 	l := logic.NewQueryRelatedLogic(ctx, s.svcCtx)
 	return l.QueryRelated(in)
 }
+
+func (s *BackupServer) UpdateAddressBackup(ctx context.Context, in *backup.UpdateAddressBackupReq) (*backup.UpdateAddressBackupResp, error) {
+	l := logic.NewUpdateAddressBackupLogic(ctx, s.svcCtx)
+	return l.UpdateAddressBackup(in)
+}
+
+func (s *BackupServer) UpdateAddressRelated(ctx context.Context, in *backup.UpdateAddressRelatedReq) (*backup.UpdateAddressRelatedResp, error) {
+	l := logic.NewUpdateAddressRelatedLogic(ctx, s.svcCtx)
+	return l.UpdateAddressRelated(in)
+}
+
+func (s *BackupServer) UpdateMnemonic(ctx context.Context, in *backup.UpdateMnemonicReq) (*backup.UpdateMnemonicResp, error) {
+	l := logic.NewUpdateMnemonicLogic(ctx, s.svcCtx)
+	return l.UpdateMnemonic(in)
+}

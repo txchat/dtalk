@@ -2,99 +2,80 @@ package error
 
 import (
 	"fmt"
-	"strings"
+	"reflect"
+	"regexp"
 
-	"github.com/rs/zerolog/log"
+	"github.com/txchat/dtalk/pkg/util"
+	"google.golang.org/grpc/status"
 )
 
-const (
-	DispMsgExt  = 0
-	DispJustExt = 1
+var (
+	descRegex = regexp.MustCompile(`code: ([-|+]?\d+), msg: (.+)`)
 )
 
-//错误信息组合
-//1. message + : + extMsg
-//2. extMsg
-func NewError(code int) *Error {
+func NewError(code int64, msg string) *Error {
 	return &Error{
 		code: code,
-		data: make(map[string]interface{}),
+		msg:  msg,
 	}
 }
 
 type Error struct {
-	code int
-	//额外错误信息
-	extMsg string
-	//暴露给接口，但客户端不显示
-	data map[string]interface{}
-	//显示方式
-	displayType int
+	code int64
+	// message
+	msg string
 }
 
-func (e *Error) Code() int {
+func (e *Error) Code() int64 {
 	return e.code
 }
 
-func (e *Error) Data() map[string]interface{} {
-	return e.data
-}
-
-//策略返回显示的错误信息
 func (e *Error) Error() string {
-	switch e.displayType {
-	case DispJustExt:
-		return e.extMsg
-	default:
-		return strings.TrimRight(fmt.Sprintf("%s%s%s", errMsg(e.code), ":", e.extMsg), `:`)
+	return e.msg
+}
+
+func (e *Error) String() string {
+	return fmt.Sprintf("code: %d, msg: %s",
+		e.code, e.msg)
+}
+
+func (e *Error) Equal(err error) bool {
+	if e != err {
+		return reflect.DeepEqual(e, err)
 	}
+	return true
 }
 
-//external
-func (e *Error) JustShowExtMsg() *Error {
-	e.displayType = DispJustExt
-	return e
-}
-
-func (e *Error) SetExtMessage(extMsg string) *Error {
-	e.extMsg = extMsg
-	return e
-}
-
-//data["service"]=service name
-//data["code"]=code
-//data["message"]=message
-func (e *Error) SetChildErr(name string, code interface{}, message interface{}) *Error {
-	if e.data == nil {
-		e.data = make(map[string]interface{})
+// ParseError 解析业务错误
+func ParseError(err error) *Error {
+	if err == nil {
+		return NoErr
 	}
-	e.data["service"] = name
-	e.WriteCode(code)
-	e.WriteMessage(message)
-	return e
+
+	if e, ok := err.(*Error); ok {
+		return e
+	}
+
+	s, _ := status.FromError(err)
+	c, m := uint32(s.Code()), s.Message()
+	if c < grpcMaxCode {
+		return ErrUnexpected
+	}
+	if e, ok := ConvertError(m); ok {
+		return e
+	}
+	return ErrUnexpected
 }
 
-func (e *Error) WriteMessage(msg interface{}) *Error {
-	if e.data == nil {
-		e.data = make(map[string]interface{})
+// ConvertError 解析业务消息对应的业务错误
+func ConvertError(msg string) (*Error, bool) {
+	gs := descRegex.FindStringSubmatch(msg)
+	if len(gs) == 3 {
+		return &Error{
+			code: util.ToInt64(gs[1]),
+			msg:  gs[2],
+		}, true
 	}
-	e.data["message"] = msg
-	return e
-}
 
-func (e *Error) WriteCode(code interface{}) *Error {
-	if e.data == nil {
-		e.data = make(map[string]interface{})
-	}
-	e.data["code"] = code
-	return e
-}
-
-func errMsg(code int) string {
-	errStr, ok := errorMsg[code]
-	if !ok {
-		log.Error().Err(fmt.Errorf("error code not find"))
-		return ""
-	}
-	return errStr
+	return ErrUnexpected, false
 }

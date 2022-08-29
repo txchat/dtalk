@@ -20,9 +20,11 @@ message QueryBindReq {
     string phone = 2;
   }
   message email { string email = 1; }
+  message address { string addr = 1; }
   oneof params {
     phone bind_phone = 1;
     email bind_email = 2;
+    address bind_address = 3;
   }
 }
 
@@ -38,7 +40,36 @@ message QueryRelatedReq {
 
 message QueryRelatedResp { AddressInfo info = 1; }
 
+enum BackupType {
+  Phone = 0;
+  Email = 1;
+  Addr = 2;
+}
+
+message UpdateAddressBackupReq {
+  BackupType type = 1;
+  AddressInfo stub = 2;
+}
+
+message UpdateAddressBackupResp {}
+
+message UpdateAddressRelatedReq {
+  BackupType type = 1;
+  AddressInfo stub = 2;
+}
+
+message UpdateAddressRelatedResp {}
+
+message UpdateMnemonicReq { AddressInfo stub = 1; }
+
+message UpdateMnemonicResp {}
+
 service Backup {
   rpc QueryBind(QueryBindReq) returns (QueryBindResp);
   rpc QueryRelated(QueryRelatedReq) returns (QueryRelatedResp);
+  rpc UpdateAddressBackup(UpdateAddressBackupReq)
+      returns (UpdateAddressBackupResp);
+  rpc UpdateAddressRelated(UpdateAddressRelatedReq)
+      returns (UpdateAddressRelatedResp);
+  rpc UpdateMnemonic(UpdateMnemonicReq) returns (UpdateMnemonicResp);
 }

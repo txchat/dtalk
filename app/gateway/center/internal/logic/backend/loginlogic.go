@@ -27,7 +27,7 @@ func NewLoginLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LoginLogic 
 
 func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginResp, err error) {
 	if !l.svcCtx.UsersManager.IsMatch(req.UserName, req.Password) {
-		return nil, xerror.NewError(xerror.ParamsError).SetExtMessage("用户名或密码错误")
+		return nil, xerror.ErrUserAccountOrPWD
 	}
 	// get token
 	token, err := l.getJwtToken(l.svcCtx.Config.Auth.AccessSecret, req.UserName, time.Now().Unix(), l.svcCtx.Config.Auth.AccessExpire)

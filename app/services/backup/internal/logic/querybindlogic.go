@@ -60,6 +60,23 @@ func (l *QueryBindLogic) QueryBind(in *backup.QueryBindReq) (*backup.QueryBindRe
 				CreateTime: item.CreateTime.UnixMicro(),
 			},
 		}, err
+	case *backup.QueryBindReq_BindAddress:
+		item, err := l.svcCtx.Repo.QueryBind(model.Address, x.BindAddress.GetAddr())
+		if err != nil {
+			return &backup.QueryBindResp{}, err
+		}
+		return &backup.QueryBindResp{
+			Info: &backup.AddressInfo{
+				Address:    item.Address,
+				Area:       item.Area,
+				Phone:      item.Phone,
+				Email:      item.Email,
+				Mnemonic:   item.Mnemonic,
+				PrivateKey: item.PrivateKey,
+				UpdateTime: item.UpdateTime.UnixMicro(),
+				CreateTime: item.CreateTime.UnixMicro(),
+			},
+		}, err
 	case nil:
 		return &backup.QueryBindResp{}, fmt.Errorf("QueryBindReq.Params is not set")
 	default:

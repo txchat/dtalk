@@ -3,10 +3,9 @@ package middleware
 import (
 	"net/http"
 
-	"github.com/gorilla/context"
 	"github.com/txchat/dtalk/pkg/auth"
 	xerror "github.com/txchat/dtalk/pkg/error"
-	api "github.com/txchat/dtalk/pkg/newapi"
+	xhttp "github.com/txchat/dtalk/pkg/net/http"
 )
 
 type AppAuthMiddleware struct {
@@ -18,33 +17,24 @@ func NewAppAuthMiddleware() *AppAuthMiddleware {
 
 func (m *AppAuthMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		sig := r.Header.Get(api.HeaderSignature)
-		uuid := r.Header.Get(api.HeaderUUID)
-		device := r.Header.Get(api.HeaderDeviceType)
-		deviceName := r.Header.Get(api.HeaderDeviceName)
-		version := r.Header.Get(api.HeaderVersion)
+		// parse header
+		bizHeader := xhttp.ConvertCustom(r)
 
 		// TODO MOCK
 		server := auth.NewDefaultApiAuthenticator()
-		uid, err := server.Auth(sig)
+		uid, err := server.Auth(bizHeader.Signature)
 		if err != nil {
 			switch err {
 			case auth.ERR_SIGNATUREEXPIRED:
-				err = xerror.NewError(xerror.SignatureExpired)
+				err = xerror.ErrSignatureExpired
 			default:
-				err = xerror.NewError(xerror.SignatureInvalid)
+				err = xerror.ErrSignatureInvalid
 			}
-			context.Set(r, api.ReqError, err)
+			xhttp.Error(w, r, err)
 			return
 		}
-		//set val
-		context.Set(r, api.Signature, sig)
-		context.Set(r, api.Address, uid)
-		context.Set(r, api.UUID, uuid)
-		context.Set(r, api.DeviceType, device)
-		context.Set(r, api.DeviceName, deviceName)
-		context.Set(r, api.Version, version)
-
-		next(w, r)
+		//set context values
+		bizHeader.UID = uid
+		next(w, bizHeader.SetWithRequest(r))
 	}
 }

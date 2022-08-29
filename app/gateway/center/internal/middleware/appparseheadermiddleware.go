@@ -3,8 +3,7 @@ package middleware
 import (
 	"net/http"
 
-	"github.com/gorilla/context"
-	api "github.com/txchat/dtalk/pkg/newapi"
+	xhttp "github.com/txchat/dtalk/pkg/net/http"
 )
 
 type AppParseHeaderMiddleware struct {
@@ -16,17 +15,9 @@ func NewAppParseHeaderMiddleware() *AppParseHeaderMiddleware {
 
 func (m *AppParseHeaderMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		uuid := r.Header.Get(api.HeaderUUID)
-		device := r.Header.Get(api.HeaderDeviceType)
-		deviceName := r.Header.Get(api.HeaderDeviceName)
-		version := r.Header.Get(api.HeaderVersion)
-
-		//set val
-		context.Set(r, api.UUID, uuid)
-		context.Set(r, api.DeviceType, device)
-		context.Set(r, api.DeviceName, deviceName)
-		context.Set(r, api.Version, version)
-
-		next(w, r)
+		// parse header
+		bizHeader := xhttp.ConvertCustom(r)
+		//set context values
+		next(w, bizHeader.SetWithRequest(r))
 	}
 }

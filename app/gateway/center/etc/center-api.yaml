@@ -26,3 +26,9 @@ VersionRPC:
       - "localhost:2379"
     Key: "version.rpc"
     Timeout: 60000 # 60s
+BackupRPC:
+  Etcd:
+    Hosts:
+      - "localhost:2379"
+    Key: "backup.rpc"
+    Timeout: 60000 # 60s

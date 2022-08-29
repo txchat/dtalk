@@ -9,6 +9,7 @@ import (
 	"github.com/txchat/dtalk/app/services/backup/internal/config"
 	"github.com/txchat/dtalk/app/services/backup/internal/server"
 	"github.com/txchat/dtalk/app/services/backup/internal/svc"
+	xerror "github.com/txchat/dtalk/pkg/error"
 
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/core/service"
@@ -52,6 +53,8 @@ func main() {
 		}
 	})
 	defer s.Stop()
+
+	s.AddUnaryInterceptors(xerror.ErrInterceptor)
 
 	fmt.Printf("Starting rpc server at %s...\n", c.ListenOn)
 	s.Start()

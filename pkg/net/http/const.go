@@ -1,4 +1,4 @@
-package api
+package http
 
 const (
 	HeaderSignature  = "FZM-SIGNATURE"

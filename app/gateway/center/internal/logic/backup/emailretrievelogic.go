@@ -3,6 +3,8 @@ package backup
 import (
 	"context"
 
+	xerror "github.com/txchat/dtalk/pkg/error"
+
 	"github.com/txchat/dtalk/app/services/backup/backup"
 	"github.com/txchat/dtalk/app/services/backup/backupclient"
 
@@ -50,6 +52,9 @@ func (l *EmailRetrieveLogic) EmailRetrieve(req *types.EmailRetrieveReq) (resp *t
 				CreateTime: queryBindResp.GetInfo().GetCreateTime(),
 			},
 		}
+	}
+	if xerror.ErrNotFound.Equal(err) {
+		err = nil
 	}
 	return
 }

@@ -39,7 +39,7 @@ func (repo *VersionRepositoryMysql) GetVersionInfo(ctx context.Context, vid int6
 		return nil, err
 	}
 	if len(records) < 1 {
-		return nil, xerror.NewError(xerror.ParamsError).SetExtMessage("无此id的记录")
+		return nil, xerror.ErrNotFound
 	}
 	record := records[0]
 	version, err := model.ConvertVersionForm(record)
@@ -75,7 +75,7 @@ func (repo *VersionRepositoryMysql) ReleaseSpecificVersion(ctx context.Context, 
 		return err
 	}
 	if len(records) == 0 {
-		return xerror.NewError(xerror.ParamsError).SetExtMessage("无此id的记录")
+		return xerror.ErrNotFound
 	}
 	deviceType := records[0]["device_type"]
 	platform := records[0]["platform"]
@@ -128,7 +128,7 @@ func (repo *VersionRepositoryMysql) SpecificPlatformAndDeviceTypeCount(ctx conte
 		return 0, err
 	}
 	if len(countRecords) == 0 {
-		return 0, xerror.NewError(xerror.ParamsError).SetExtMessage("无此记录")
+		return 0, xerror.ErrNotFound
 	}
 	totalCount := util.ToInt64(countRecords[0]["COUNT(*)"])
 	return totalCount, nil

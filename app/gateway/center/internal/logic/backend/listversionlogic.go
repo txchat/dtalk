@@ -28,6 +28,7 @@ func NewListVersionLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ListV
 
 func (l *ListVersionLogic) ListVersion(req *types.ListVersionReq) (resp *types.ListVersionResp, err error) {
 	size := int64(20)
+	req.Platform = l.svcCtx.Config.Backend.Platform
 	versionInfoRPCResp, err := l.svcCtx.VersionRPC.SpecificPlatformAndDeviceTypeVersions(l.ctx, &versionclient.SpecificPlatformAndDeviceTypeVersionsReq{
 		Platform:   req.Platform,
 		DeviceType: req.DeviceType,

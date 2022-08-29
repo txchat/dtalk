@@ -3,6 +3,8 @@ package backup
 import (
 	"context"
 
+	xerror "github.com/txchat/dtalk/pkg/error"
+
 	"github.com/txchat/dtalk/app/services/backup/backup"
 	"github.com/txchat/dtalk/app/services/backup/backupclient"
 
@@ -50,5 +52,8 @@ func (l *QueryPhoneLogic) QueryPhone(req *types.QueryPhoneReq) (resp *types.Quer
 		isExists = queryRelatedResp != nil && queryRelatedResp.GetInfo() != nil
 	}
 	resp = &types.QueryPhoneResp{Exists: isExists}
+	if xerror.ErrNotFound.Equal(err) {
+		err = nil
+	}
 	return
 }

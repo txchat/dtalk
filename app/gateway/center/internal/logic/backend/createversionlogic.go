@@ -3,6 +3,8 @@ package backend
 import (
 	"context"
 
+	xhttp "github.com/txchat/dtalk/pkg/net/http"
+
 	"github.com/txchat/dtalk/app/services/version/versionclient"
 
 	"github.com/txchat/dtalk/app/gateway/center/internal/svc"
@@ -13,19 +15,23 @@ import (
 
 type CreateVersionLogic struct {
 	logx.Logger
-	ctx    context.Context
-	svcCtx *svc.ServiceContext
+	ctx      context.Context
+	svcCtx   *svc.ServiceContext
+	username string
 }
 
 func NewCreateVersionLogic(ctx context.Context, svcCtx *svc.ServiceContext) *CreateVersionLogic {
 	return &CreateVersionLogic{
-		Logger: logx.WithContext(ctx),
-		ctx:    ctx,
-		svcCtx: svcCtx,
+		Logger:   logx.WithContext(ctx),
+		ctx:      ctx,
+		svcCtx:   svcCtx,
+		username: ctx.Value(xhttp.BackendJWTUsername).(string),
 	}
 }
 
 func (l *CreateVersionLogic) CreateVersion(req *types.CreateVersionReq) (resp *types.CreateVersionResp, err error) {
+	req.OpeUser = l.username
+	req.Platform = l.svcCtx.Config.Backend.Platform
 	createResp, err := l.svcCtx.VersionRPC.Create(l.ctx, &versionclient.CreateReq{
 		VersionInfo: &versionclient.VersionInfo{
 			Platform:    req.Platform,

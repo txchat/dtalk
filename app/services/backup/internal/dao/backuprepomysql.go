@@ -2,6 +2,9 @@ package dao
 
 import (
 	"fmt"
+	"time"
+
+	xerror "github.com/txchat/dtalk/pkg/error"
 
 	"github.com/jinzhu/gorm"
 	"github.com/txchat/dtalk/app/services/backup/internal/model"
@@ -37,7 +40,7 @@ func NewDefaultConn(mode string, cfg xmysql.Config) *gorm.DB {
 
 	db.Set("gorm:table_options",
 		"ENGINE=InnoDB AUTO_INCREMENT=1 CHARACTER SET=utf8mb4 COLLATE=utf8mb4_general_ci").AutoMigrate(
-		&model.AddrBackup{}, &model.AddrRelate{}, &model.AddrMove{},
+		&model.AddrBackup{}, &model.AddrRelate{},
 	)
 	return db
 }
@@ -69,7 +72,7 @@ func (repo *BackupRepositoryMysql) QueryBind(queryType int32, queryCase string) 
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
 	} else if err == gorm.ErrRecordNotFound {
-		return nil, nil
+		return nil, xerror.ErrNotFound
 	}
 	return &record, nil
 }
@@ -91,7 +94,144 @@ func (repo *BackupRepositoryMysql) QueryRelate(queryType int32, queryCase string
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
 	} else if err == gorm.ErrRecordNotFound {
-		return nil, nil
+		return nil, xerror.ErrNotFound
 	}
 	return &record, nil
+}
+
+func (repo *BackupRepositoryMysql) createAddrBackup(r *model.AddrBackup) error {
+	return repo.conn.Create(r).Error
+}
+
+func (repo *BackupRepositoryMysql) createAddrRelate(r *model.AddrRelate) error {
+	return repo.conn.Create(r).Error
+}
+
+func (repo *BackupRepositoryMysql) updatePhone(r *model.AddrBackup) error {
+	var records []model.AddrBackup
+	tx := repo.conn.Begin()
+	err := tx.Where("phone = ? AND address != ?", r.Phone, r.Address).Find(&records).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		tx.Rollback()
+		return err
+	}
+	items := map[string]interface{}{"phone": "", "area": ""}
+	for _, record := range records {
+		err = tx.Model(model.AddrBackup{}).Where("address = ?", record.Address).Updates(items).Error
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+	err = tx.Model(model.AddrBackup{}).Where("address = ?", r.Address).Updates(r).Error
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	tx.Commit()
+	return nil
+}
+
+func (repo *BackupRepositoryMysql) updatePhoneRelate(r *model.AddrRelate) error {
+	var records []model.AddrRelate
+	tx := repo.conn.Begin()
+	err := tx.Where("phone = ? AND address != ?", r.Phone, r.Address).Find(&records).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		tx.Rollback()
+		return err
+	}
+	items := map[string]interface{}{"phone": "", "area": ""}
+	for _, record := range records {
+		err = tx.Model(model.AddrRelate{}).Where("address = ?", record.Address).Updates(items).Error
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+	err = tx.Model(model.AddrRelate{}).Where("address = ?", r.Address).Updates(r).Error
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	tx.Commit()
+	return nil
+}
+
+func (repo *BackupRepositoryMysql) updateEmail(r *model.AddrBackup) error {
+	var records []model.AddrBackup
+	tx := repo.conn.Begin()
+	err := tx.Where("email = ? AND address != ?", r.Email, r.Address).Find(&records).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		tx.Rollback()
+		return err
+	}
+	items := map[string]interface{}{"email": ""}
+	for _, record := range records {
+		err = tx.Model(model.AddrBackup{}).Where("address = ?", record.Address).Updates(items).Error
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+	err = tx.Model(model.AddrBackup{}).Where("address = ?", r.Address).Updates(r).Error
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	tx.Commit()
+	return nil
+}
+
+func (repo *BackupRepositoryMysql) UpdateAddrBackup(tp int32, r *model.AddrBackup) error {
+	var record model.AddrBackup
+	err := repo.conn.Where("address = ?", r.Address).First(&record).Error
+	if err != nil {
+		if err != gorm.ErrRecordNotFound {
+			return err
+		}
+		r.CreateTime = time.Now()
+		err = repo.createAddrBackup(r)
+		if err != nil {
+			return err
+		}
+	}
+	switch tp {
+	case model.Phone:
+		return repo.updatePhone(r)
+	case model.Email:
+		return repo.updateEmail(r)
+	default:
+		return model.ErrQueryType
+	}
+}
+
+func (repo *BackupRepositoryMysql) UpdateAddrRelate(tp int32, r *model.AddrRelate) error {
+	var record model.AddrRelate
+	err := repo.conn.Where("address = ?", r.Address).First(&record).Error
+	if err != nil {
+		if err != gorm.ErrRecordNotFound {
+			return err
+		}
+		r.CreateTime = time.Now()
+		err = repo.createAddrRelate(r)
+		if err != nil {
+			return err
+		}
+	}
+	switch tp {
+	case model.Phone:
+		return repo.updatePhoneRelate(r)
+	case model.Email:
+		return model.ErrQueryType
+	default:
+		return model.ErrQueryType
+	}
+}
+
+func (repo *BackupRepositoryMysql) UpdateMnemonic(r *model.AddrBackup) error {
+	err := repo.conn.Model(model.AddrBackup{}).Where("address = ?", r.Address).Updates(r).Error
+	if err != nil {
+		return err
+	}
+	return nil
 }

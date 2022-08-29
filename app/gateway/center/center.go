@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/txchat/dtalk/app/gateway/center/internal/middleware"
-
 	"github.com/txchat/dtalk/app/gateway/center/internal/config"
 	"github.com/txchat/dtalk/app/gateway/center/internal/handler"
 	"github.com/txchat/dtalk/app/gateway/center/internal/svc"
@@ -43,9 +41,6 @@ func main() {
 
 	server := rest.MustNewServer(c.RestConf)
 	defer server.Stop()
-
-	// HTTP全局中间件
-	server.Use(middleware.NewResponseMiddleware().Handle)
 
 	ctx := svc.NewServiceContext(c)
 	handler.RegisterHandlers(server, ctx)

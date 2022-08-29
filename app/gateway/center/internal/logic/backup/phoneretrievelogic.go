@@ -5,6 +5,7 @@ import (
 
 	"github.com/txchat/dtalk/app/services/backup/backup"
 	"github.com/txchat/dtalk/app/services/backup/backupclient"
+	xerror "github.com/txchat/dtalk/pkg/error"
 
 	"github.com/txchat/dtalk/app/gateway/center/internal/svc"
 	"github.com/txchat/dtalk/app/gateway/center/internal/types"
@@ -39,6 +40,7 @@ func (l *PhoneRetrieveLogic) PhoneRetrieve(req *types.PhoneRetrieveReq) (resp *t
 		},
 	})
 	if queryBindResp == nil || queryBindResp.GetInfo() == nil {
+		// query
 		queryRelatedResp, err = l.svcCtx.BackupRPC.QueryRelated(l.ctx, &backupclient.QueryRelatedReq{
 			Params: &backup.QueryRelatedReq_BindPhone{
 				BindPhone: &backupclient.QueryRelatedReqPhone{
@@ -60,22 +62,28 @@ func (l *PhoneRetrieveLogic) PhoneRetrieve(req *types.PhoneRetrieveReq) (resp *t
 					CreateTime: queryRelatedResp.GetInfo().GetCreateTime(),
 				},
 			}
+			// and update
+			_, err = l.svcCtx.BackupRPC.UpdateAddressBackup(l.ctx, &backupclient.UpdateAddressBackupReq{
+				Type: backup.BackupType_Phone,
+				Stub: queryRelatedResp.GetInfo(),
+			})
+		}
+		if xerror.ErrNotFound.Equal(err) {
+			err = nil
 		}
 		return
 	}
-	if queryBindResp != nil && queryBindResp.GetInfo() != nil {
-		resp = &types.PhoneRetrieveResp{
-			AddressInfo: types.AddressInfo{
-				Address:    queryBindResp.GetInfo().GetAddress(),
-				Area:       queryBindResp.GetInfo().GetArea(),
-				Phone:      queryBindResp.GetInfo().GetPhone(),
-				Email:      queryBindResp.GetInfo().GetEmail(),
-				Mnemonic:   queryBindResp.GetInfo().GetMnemonic(),
-				PrivateKey: queryBindResp.GetInfo().GetPrivateKey(),
-				UpdateTime: queryBindResp.GetInfo().GetUpdateTime(),
-				CreateTime: queryBindResp.GetInfo().GetCreateTime(),
-			},
-		}
+	resp = &types.PhoneRetrieveResp{
+		AddressInfo: types.AddressInfo{
+			Address:    queryBindResp.GetInfo().GetAddress(),
+			Area:       queryBindResp.GetInfo().GetArea(),
+			Phone:      queryBindResp.GetInfo().GetPhone(),
+			Email:      queryBindResp.GetInfo().GetEmail(),
+			Mnemonic:   queryBindResp.GetInfo().GetMnemonic(),
+			PrivateKey: queryBindResp.GetInfo().GetPrivateKey(),
+			UpdateTime: queryBindResp.GetInfo().GetUpdateTime(),
+			CreateTime: queryBindResp.GetInfo().GetCreateTime(),
+		},
 	}
 	return
 }

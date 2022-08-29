@@ -3,6 +3,8 @@ package backup
 import (
 	"context"
 
+	xerror "github.com/txchat/dtalk/pkg/error"
+
 	"github.com/txchat/dtalk/app/gateway/center/internal/svc"
 	"github.com/txchat/dtalk/app/gateway/center/internal/types"
 
@@ -24,7 +26,10 @@ func NewEmailExportLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Email
 }
 
 func (l *EmailExportLogic) EmailExport(req *types.EmailExportReq) (resp *types.EmailExportResp, err error) {
-	// todo: add your logic here and delete this line
-
+	// todo: 通过短信服务验证
+	var b bool
+	if !b {
+		err = xerror.ErrExportAddressEmailInconsistent
+	}
 	return
 }
