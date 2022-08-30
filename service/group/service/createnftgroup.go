@@ -117,7 +117,7 @@ func (s *Service) CreateNFTGroup(ctx context.Context, condition *biz.NFTGroupCon
 		GroupType:       group.GroupType,
 	}
 
-	if group.GroupType == biz.GroupTypeNormal {
+	if group.GroupType == biz.GroupTypeNormal || group.GroupType == biz.GroupTypeNFT {
 		groupPo.GroupJoinType = biz.GroupJoinTypeAny
 	} else {
 		groupPo.GroupJoinType = biz.GroupJoinTypeAdmin
