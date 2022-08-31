@@ -147,6 +147,10 @@ func (s *Service) getGroupNFTNotHandleMembers(groupOwner string, condition *grou
 	filteredMembers := make([]string, 0)
 	for _, memberId := range members {
 		if !gps.IsPermission(memberId) {
+			//群主无需判断
+			if memberId == groupOwner {
+				continue
+			}
 			filteredMembers = append(filteredMembers, memberId)
 		}
 	}
