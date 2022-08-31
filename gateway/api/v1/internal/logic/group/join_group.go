@@ -45,7 +45,7 @@ func (l *GroupLogic) JoinGroup(req *types.JoinGroupReq) (*types.JoinGroupResp, e
 				return nil, err
 			}
 			if !gps.IsPermission(req.InviterId) {
-				return nil, xerror.NewError(xerror.PermissionDenied)
+				return nil, xerror.NewError(xerror.NTFGroupPermissionDenied)
 			}
 		} else {
 			return nil, xerror.NewError(xerror.PermissionDenied).SetExtMessage("group condition not find")

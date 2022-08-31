@@ -68,6 +68,8 @@ const (
 	CdkCoinNameErr     = -10304
 	CdkCoinNameExist   = -10305
 	CdkMaxNumberErr    = -10306
+
+	NTFGroupPermissionDenied = -10400
 )
 
 var errorMsg = map[int]string{
@@ -137,4 +139,6 @@ var errorMsg = map[int]string{
 	CdkCoinNameErr:     "该票券暂时不支持兑换",
 	CdkCoinNameExist:   "同名票券已存在",
 	CdkMaxNumberErr:    "该优惠券已达兑换上限, 请兑换其他优惠券",
+
+	NTFGroupPermissionDenied: "您未持有相应藏品，无法进入群聊",
 }

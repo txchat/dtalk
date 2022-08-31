@@ -1,7 +1,6 @@
 package dao
 
 import (
-	"strconv"
 	"strings"
 
 	"github.com/txchat/dtalk/pkg/mysql"
@@ -189,11 +188,9 @@ func (d *Dao) GetNFTGroupsGroupId() ([]int64, error) {
 	if err != nil {
 		return nil, err
 	}
-	groups := make([]int64, 0)
-	for _, m := range maps {
-		if id, err := strconv.ParseInt(m["group_id"], 10, 64); err != nil {
-			groups = append(groups, id)
-		}
+	groups := make([]int64, len(maps))
+	for i, m := range maps {
+		groups[i] = util.ToInt64(m["group_id"])
 	}
 	return groups, nil
 }

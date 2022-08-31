@@ -82,7 +82,8 @@ func (l *GroupLogic) CreateNFTGroup(req *types.CreateNFTGroupReq) (*types.Create
 	Members := NewTypesGroupMemberInfos(resp2.Group.Members)
 
 	return &types.CreateNFTGroupResp{
-		GroupInfo: Group,
-		Members:   Members,
+		GroupInfo:     Group,
+		Members:       Members,
+		NewMembersNum: len(members),
 	}, nil
 }

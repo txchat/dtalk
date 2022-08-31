@@ -48,8 +48,9 @@ func (l *GroupLogic) InviteGroupMembers(req *types.InviteGroupMembersReq) (*type
 	}
 
 	return &types.InviteGroupMembersResp{
-		Id:    groupId,
-		IdStr: util.ToString(groupId),
+		Id:            groupId,
+		IdStr:         util.ToString(groupId),
+		NewMembersNum: len(invitedMembers),
 	}, nil
 }
 

@@ -100,6 +100,7 @@ type CreateNFTGroupResp struct {
 	Members []*GroupMember `json:"members" form:"members"`
 	// 持有条件
 	//Condition *Condition `json:"condition" form:"condition"`
+	NewMembersNum int `json:"newMembersNum" form:"newMembersNum"`
 }
 
 type GetNFTGroupExtInfoReq struct {
@@ -127,6 +128,7 @@ type InviteGroupMembersResp struct {
 	MemberNum int32  `json:"memberNum" form:"memberNum" example:"5"`
 	//Inviter    GroupMember   `json:"inviter" form:"inviter"`
 	//NewMembers []GroupMember `json:"newMembers" form:"newMembers"`
+	NewMembersNum int `json:"newMembersNum" form:"newMembersNum"`
 }
 
 type GetGroupInfoReq struct {
