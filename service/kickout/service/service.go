@@ -129,10 +129,6 @@ func (s *Service) getGroupNFTNotHandleMembers(groupOwner string, condition *grou
 	}
 	conditions := make([]*slg.UserCondition, len(members))
 	for i, tarId := range members {
-		//群主无需判断
-		if tarId == groupOwner {
-			continue
-		}
 		item := &slg.UserCondition{
 			UID:        tarId,
 			HandleType: condition.GetType(),
@@ -147,7 +143,7 @@ func (s *Service) getGroupNFTNotHandleMembers(groupOwner string, condition *grou
 	filteredMembers := make([]string, 0)
 	for _, memberId := range members {
 		if !gps.IsPermission(memberId) {
-			//群主无需判断
+			//群主无论如何都不移除
 			if memberId == groupOwner {
 				continue
 			}
