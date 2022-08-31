@@ -101,7 +101,7 @@ func (s *Service) kickOut(ctx context.Context, round int) {
 			continue
 		}
 		//筛选出不满足入群条件的成员
-		filteredMembers, err := s.getGroupNFTNotHandleMembers(condition.GetCondition(), members)
+		filteredMembers, err := s.getGroupNFTNotHandleMembers(gInfo.GetGroupOwnerId(), condition.GetCondition(), members)
 		if err != nil {
 			roundLog.Error().Err(err).Msg("getGroupNFTNotHandleMembers")
 			continue
@@ -121,7 +121,7 @@ func (s *Service) kickOut(ctx context.Context, round int) {
 }
 
 // getGroupNFTNotHandleMembers 获取未持有相应藏品成员
-func (s *Service) getGroupNFTNotHandleMembers(condition *group.Condition, members []string) ([]string, error) {
+func (s *Service) getGroupNFTNotHandleMembers(groupOwner string, condition *group.Condition, members []string) ([]string, error) {
 	//请求上链购接口判断 conditionsRequest.GetType() conditionsRequest.GetNft()
 	ids := make([]string, len(condition.GetNft()))
 	for i, nft := range condition.GetNft() {
@@ -129,6 +129,10 @@ func (s *Service) getGroupNFTNotHandleMembers(condition *group.Condition, member
 	}
 	conditions := make([]*slg.UserCondition, len(members))
 	for i, tarId := range members {
+		//群主无需判断
+		if tarId == groupOwner {
+			continue
+		}
 		item := &slg.UserCondition{
 			UID:        tarId,
 			HandleType: condition.GetType(),
