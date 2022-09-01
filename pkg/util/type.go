@@ -3,206 +3,382 @@ package util
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
-	"log"
+	"math"
 	"runtime/debug"
 	"strconv"
 )
 
-var (
-	ErrTransToInt64 = errors.New("transfer type int64 error")
-	ErrTransToInt32 = errors.New("transfer type int32 error")
+const (
+	maxFloat32UintBit = 0x01 << 25
+	maxFloat64UintBit = 0x01 << 53
 )
 
-func ToInt(val interface{}) int {
-	return int(ToInt32(val))
+var (
+	ErrMissingPrecision     = errors.New("missing precision")
+	ErrOutOfRange           = errors.New("value out of range")
+	ErrInvalidSyntax        = errors.New("invalid syntax")
+	ErrOverflow             = errors.New("")
+	ErrEmptyValue           = errors.New("convert source data is empty")
+	ErrDataTypeNotSupported = errors.New("data type not supported")
+)
+
+func MustToInt(src interface{}) int {
+	return int(MustToInt64(src))
 }
 
-func ToUInt32(val interface{}) uint32 {
-	return uint32(ToInt32(val))
+func MustToInt32(src interface{}) int32 {
+	return int32(MustToInt64(src))
 }
 
-func ToUInt64(val interface{}) uint64 {
-	return uint64(ToInt64(val))
-}
-
-func ToInt32(o interface{}) int32 {
-	if o == nil {
+func MustToInt64(src interface{}) int64 {
+	v, err := ToInt64(src)
+	if err != nil {
 		debug.PrintStack()
-		log.Fatal("nil value")
-		return 0
+		panic(err)
+		//.Fatal("string parse int err", err)
 	}
-	switch t := o.(type) {
+	return v
+}
+
+func MustToUint(scr interface{}) uint {
+	return uint(MustToInt64(scr))
+}
+
+func MustToUint32(scr interface{}) uint32 {
+	return uint32(MustToInt64(scr))
+}
+
+func MustToUint64(scr interface{}) uint64 {
+	v, err := ToUint64(scr)
+	if err != nil {
+		debug.PrintStack()
+		panic(err)
+		//.Fatal("string parse int err", err)
+	}
+	return v
+}
+
+func ToInt(src interface{}) (int, error) {
+	v, err := ToInt64(src)
+	return int(v), err
+}
+
+func ToInt32(src interface{}) (int32, error) {
+	v, err := ToInt64(src)
+	if v > math.MaxInt32 || v < math.MinInt32 {
+		return 0, ErrOutOfRange
+	}
+	return int32(v), err
+}
+
+func ToInt64(src interface{}) (int64, error) {
+	if src == nil {
+		return 0, ErrEmptyValue
+	}
+	switch v := src.(type) {
 	case int:
-		return int32(t)
+		return int64(v), nil
+	case int8:
+		return int64(v), nil
+	case int16:
+		return int64(v), nil
 	case int32:
-		return t
+		return int64(v), nil
 	case int64:
-		return int32(t)
-	case float64:
-		return int32(t)
-	case string:
-		if o == "" {
-			debug.PrintStack()
-			log.Fatal("empty string")
-			return 0
+		return v, nil
+	case uint:
+		return int64(v), nil
+	case uint8:
+		return int64(v), nil
+	case uint16:
+		return int64(v), nil
+	case uint32:
+		return int64(v), nil
+	case uint64:
+		if v > math.MaxInt64 {
+			return 0, ErrOutOfRange
 		}
-		temp, err := strconv.ParseInt(o.(string), 10, 32)
-		if err != nil {
-			debug.PrintStack()
-			log.Fatal("string parse int err", err)
-			return 0
-		}
-		return int32(temp)
-	default:
-		debug.PrintStack()
-		log.Fatal("unknown type", fmt.Sprintf("%T", o))
-		return 0
-	}
-}
-
-func ToInt32E(o interface{}) (int32, error) {
-	if o == nil {
-		return 0, ErrTransToInt32
-	}
-	switch t := o.(type) {
-	case int:
-		return int32(t), nil
-	case int32:
-		return t, nil
-	case int64:
-		return int32(t), nil
-	case float64:
-		return int32(t), nil
-	case string:
-		if o == "" {
-			return 0, ErrTransToInt32
-		}
-		temp, err := strconv.ParseInt(o.(string), 10, 32)
-		if err != nil {
-			return 0, ErrTransToInt32
-		}
-		return int32(temp), nil
-	default:
-		return 0, ErrTransToInt32
-	}
-}
-
-func ToInt64(val interface{}) int64 {
-	if val == nil {
-		debug.PrintStack()
-		log.Fatal("nil value")
-		return 0
-	}
-	switch val.(type) {
-	case int:
-		return int64(val.(int))
-	case string:
-		if val.(string) == "" {
-			debug.PrintStack()
-			log.Fatal("empty string")
-			return 0
-		}
-		ret, err := strconv.ParseInt(val.(string), 10, 64)
-		if err != nil {
-			debug.PrintStack()
-			log.Fatal("string parse int err", err)
-			return 0
-		}
-		return ret
-	case float64:
-		return int64(val.(float64))
-	case int64:
-		return val.(int64)
-	case json.Number:
-		v := val.(json.Number)
-		ret, err := v.Int64()
-		if err != nil {
-			debug.PrintStack()
-			log.Fatal("unknown json number")
-			return 0
-		}
-		return ret
-	default:
-		debug.PrintStack()
-		log.Fatal("unknown type", fmt.Sprintf("%T", val))
-		return 0
-	}
-}
-
-func ToInt64E(val interface{}) (int64, error) {
-	if val == nil {
-		return 0, ErrTransToInt64
-	}
-	switch val.(type) {
-	case int:
-		return int64(val.(int)), nil
-	case string:
-		if val.(string) == "" {
-			return 0, ErrTransToInt64
-		}
-		ret, err := strconv.ParseInt(val.(string), 10, 64)
-		if err != nil {
-			return 0, ErrTransToInt64
-		}
-		return ret, nil
-	case float64:
-		return int64(val.(float64)), nil
-	case int64:
-		return val.(int64), nil
-	case json.Number:
-		v := val.(json.Number)
-		ret, err := v.Int64()
-		if err != nil {
-			return 0, ErrTransToInt64
-		}
-		return ret, nil
-	default:
-		return 0, ErrTransToInt64
-	}
-}
-
-func ToFloat64(val interface{}) float64 {
-	if val == nil {
-		debug.PrintStack()
-		log.Fatal("nil value")
-		return 0
-	}
-	switch val.(type) {
-	case string:
-		ret, err := strconv.ParseFloat(val.(string), 64)
-		if err != nil {
-			debug.PrintStack()
-			log.Fatal("string parse float err", err)
-		}
-		return ret
-	default:
-		if v, ok := val.(float64); ok {
-			return v
-		}
-		debug.PrintStack()
-		log.Fatal("unknown type", fmt.Sprintf("%T", val))
-		return 0
-	}
-}
-
-func TypeToString(val interface{}) string {
-	if val == nil {
-		debug.PrintStack()
-		log.Fatal("nil value")
-		return ""
-	}
-	switch val.(type) {
-	case float64:
-		return strconv.FormatFloat(val.(float64), 'f', -1, 64)
+		return int64(v), nil
+	case uintptr:
+		return int64(v), nil
 	case float32:
-		return strconv.FormatFloat(val.(float64), 'f', -1, 64)
-	case int64:
-		return strconv.FormatInt(val.(int64), 10)
+		tmp := math.Floor(float64(v))
+		if tmp != float64(v) {
+			return 0, ErrInvalidSyntax
+		}
+		if tmp > math.MaxInt64 || tmp < math.MinInt64 {
+			return 0, ErrOutOfRange
+		}
+		if tmp > maxFloat32UintBit {
+			return 0, ErrMissingPrecision
+		}
+		return int64(v), nil
+	case float64:
+		tmp := math.Floor(v)
+		if tmp != v {
+			return 0, ErrInvalidSyntax
+		}
+		if tmp > math.MaxInt64 || tmp < math.MinInt64 {
+			return 0, ErrOutOfRange
+		}
+		if tmp > maxFloat64UintBit {
+			return 0, ErrMissingPrecision
+		}
+		return int64(v), nil
+	case complex64:
+		return 0, ErrDataTypeNotSupported
+	case complex128:
+		return 0, ErrDataTypeNotSupported
+	case bool:
+		if v {
+			return 1, nil
+		}
+		return 0, nil
+	case string:
+		if v == "" {
+			return 0, ErrEmptyValue
+		}
+		tmp, err := strconv.ParseInt(v, 10, 64)
+		if err != nil {
+			return 0, err
+		}
+		return tmp, nil
+	case json.Number:
+		tmp, err := v.Int64()
+		if err != nil {
+			return 0, err
+		}
+		return tmp, nil
+	default:
+		return 0, ErrDataTypeNotSupported
 	}
-	return fmt.Sprintf("%v", val)
 }
 
-func ToBool(val interface{}) bool {
-	return ToUInt32(val) != 0
+func ToUint(src interface{}) (uint, error) {
+	v, err := ToUint64(src)
+	return uint(v), err
+}
+
+func ToUint32(src interface{}) (uint32, error) {
+	v, err := ToUint64(src)
+	if v > math.MaxUint32 {
+		return 0, ErrOutOfRange
+	}
+	return uint32(v), err
+}
+
+func ToUint64(src interface{}) (uint64, error) {
+	if src == nil {
+		return 0, ErrEmptyValue
+	}
+	switch v := src.(type) {
+	case int:
+		if v < 0 {
+			return 0, ErrOutOfRange
+		}
+		return uint64(v), nil
+	case int8:
+		if v < 0 {
+			return 0, ErrOutOfRange
+		}
+		return uint64(v), nil
+	case int16:
+		if v < 0 {
+			return 0, ErrOutOfRange
+		}
+		return uint64(v), nil
+	case int32:
+		if v < 0 {
+			return 0, ErrOutOfRange
+		}
+		return uint64(v), nil
+	case int64:
+		if v < 0 {
+			return 0, ErrOutOfRange
+		}
+		return uint64(v), nil
+	case uint:
+		return uint64(v), nil
+	case uint8:
+		return uint64(v), nil
+	case uint16:
+		return uint64(v), nil
+	case uint32:
+		return uint64(v), nil
+	case uint64:
+		return v, nil
+	case uintptr:
+		return uint64(v), nil
+	case float32:
+		tmp := math.Floor(float64(v))
+		if tmp != float64(v) {
+			return 0, ErrInvalidSyntax
+		}
+		if tmp > math.MaxUint64 || tmp < 0 {
+			return 0, ErrOutOfRange
+		}
+		if tmp > maxFloat32UintBit {
+			return 0, ErrMissingPrecision
+		}
+		return uint64(v), nil
+	case float64:
+		tmp := math.Floor(v)
+		if tmp != v {
+			return 0, ErrInvalidSyntax
+		}
+		if tmp > math.MaxUint64 || tmp < 0 {
+			return 0, ErrOutOfRange
+		}
+		if tmp > maxFloat64UintBit {
+			return 0, ErrMissingPrecision
+		}
+		return uint64(v), nil
+	case complex64:
+		return 0, ErrDataTypeNotSupported
+	case complex128:
+		return 0, ErrDataTypeNotSupported
+	case bool:
+		if v {
+			return 1, nil
+		}
+		return 0, nil
+	case string:
+		if v == "" {
+			return 0, ErrEmptyValue
+		}
+		tmp, err := strconv.ParseUint(v, 10, 64)
+		if err != nil {
+			return 0, err
+		}
+		return tmp, nil
+	case json.Number:
+		tmp, err := strconv.ParseUint(string(v), 10, 64)
+		if err != nil {
+			return 0, err
+		}
+		return tmp, nil
+	default:
+		return 0, ErrDataTypeNotSupported
+	}
+}
+
+// ToFloat returns the float64 result converted by src.
+func ToFloat(src interface{}) (float64, error) {
+	return ToFloat64(src)
+}
+
+// ToFloat32 returns the float32 result converted by src.
+func ToFloat32(src interface{}) (float32, error) {
+	v, err := ToFloat64(src)
+	if v > math.MaxFloat32 {
+		return 0, ErrOutOfRange
+	}
+	return float32(v), err
+}
+
+func ToFloat64(src interface{}) (float64, error) {
+	if src == nil {
+		return 0, ErrEmptyValue
+	}
+
+	switch v := src.(type) {
+	case int, int8, int16, int32, int64:
+		tmp, err := ToInt64(v)
+		return float64(tmp), err
+	case uint, uint8, uint16, uint32, uint64, uintptr:
+		tmp, err := ToUint64(v)
+		return float64(tmp), err
+	case float32:
+		return float64(v), nil
+	case float64:
+		return v, nil
+	case complex64:
+		return 0, ErrDataTypeNotSupported
+	case complex128:
+		return 0, ErrDataTypeNotSupported
+	case bool:
+		if v {
+			return 1, nil
+		}
+		return 0, nil
+	case string:
+		if v == "" {
+			return 0, ErrEmptyValue
+		}
+		return strconv.ParseFloat(v, 64)
+	case json.Number:
+		return v.Float64()
+	default:
+		return 0, ErrDataTypeNotSupported
+	}
+}
+
+func MustToString(src interface{}) string {
+	v, err := ToString(src)
+	if err != nil {
+		debug.PrintStack()
+		panic(err)
+	}
+	return v
+}
+
+func MustToBool(src interface{}) bool {
+	v, err := ToBool(src)
+	if err != nil {
+		debug.PrintStack()
+		panic(err)
+	}
+	return v
+}
+
+// ToString returns the string result converted by src.
+func ToString(src interface{}) (string, error) {
+	switch v := src.(type) {
+	case int, int8, int16, int32, int64:
+		tmp, err := ToInt64(v)
+		return strconv.FormatInt(tmp, 10), err
+	case uint, uint8, uint16, uint32, uint64, uintptr:
+		tmp, err := ToUint64(v)
+		return strconv.FormatUint(tmp, 10), err
+	case float32, float64, complex64, complex128:
+		tmp, err := ToFloat64(v)
+		return strconv.FormatFloat(tmp, 'f', -1, 64), err
+	case string:
+		return v, nil
+	case []byte:
+		return string(v), nil
+	case []rune:
+		return string(v), nil
+	case bool:
+		return strconv.FormatBool(v), nil
+	case nil:
+		return "", ErrEmptyValue
+	default:
+		return "", ErrDataTypeNotSupported
+	}
+}
+
+// ToBool returns the bool result converted by src.
+func ToBool(src interface{}) (bool, error) {
+	switch v := src.(type) {
+	case int, int8, int16, int32, int64:
+		tmp, err := ToInt64(v)
+		return tmp > 0, err
+	case uint, uint8, uint16, uint32, uint64, uintptr:
+		tmp, err := ToUint64(v)
+		return tmp > 0, err
+	case float32, float64, complex64, complex128:
+		tmp, err := ToFloat64(v)
+		return tmp > 0, err
+	case bool:
+		return v, nil
+	case string, []byte, []rune:
+		s, err := ToString(v)
+		if err != nil {
+			return false, err
+		}
+		return strconv.ParseBool(s)
+	default:
+		return false, ErrDataTypeNotSupported
+	}
 }

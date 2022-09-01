@@ -2,11 +2,9 @@ package util
 
 import (
 	"encoding/hex"
-	"fmt"
 	"net/url"
 	"reflect"
 	"sort"
-	"strconv"
 	"strings"
 	"time"
 
@@ -115,26 +113,11 @@ func paramsMap(i interface{}) map[string]string {
 	for i := 0; i < ss.NumField(); i++ {
 		field := ss.Field(i)
 		val := vv.Field(i).Interface()
-		keyName := ToString(field.Tag.Get("json"))
+		keyName := MustToString(field.Tag.Get("json"))
 		keyName = strings.Replace(keyName, ",omitempty", "", 1)
-		ret[keyName] = ToString(val)
+		ret[keyName] = MustToString(val)
 	}
 	return ret
-}
-
-func ToString(val interface{}) string {
-	if val == nil {
-		return ""
-	}
-	switch val.(type) {
-	case float64:
-		return strconv.FormatFloat(val.(float64), 'f', -1, 64)
-	case float32:
-		return strconv.FormatFloat(val.(float64), 'f', -1, 64)
-	case int64:
-		return strconv.FormatInt(val.(int64), 10)
-	}
-	return fmt.Sprintf("%v", val)
 }
 
 //兼容0x格式
