@@ -56,11 +56,11 @@ func (d *Dao) UnReceiveSignalMsg(uid string) ([]*model.SignalContent, error) {
 		ret[i] = &model.SignalContent{
 			Id:         m["id"],
 			Uid:        m["uid"],
-			Type:       uint8(util.ToUInt32(m["type"])),
-			State:      uint8(util.ToUInt32(m["state"])),
+			Type:       uint8(util.MustToUint32(m["type"])),
+			State:      uint8(util.MustToUint32(m["state"])),
 			Content:    m["content"],
-			CreateTime: uint64(util.ToInt64(m["create_time"])),
-			UpdateTime: uint64(util.ToInt64(m["update_time"])),
+			CreateTime: uint64(util.MustToInt64(m["create_time"])),
+			UpdateTime: uint64(util.MustToInt64(m["update_time"])),
 		}
 	}
 	return ret, err
@@ -76,11 +76,11 @@ func (d *Dao) SyncSignalMsg(uid string, startId, count int64) ([]*model.SignalCo
 		ret[i] = &model.SignalContent{
 			Id:         m["id"],
 			Uid:        m["uid"],
-			Type:       uint8(util.ToUInt32(m["type"])),
-			State:      uint8(util.ToUInt32(m["state"])),
+			Type:       uint8(util.MustToUint32(m["type"])),
+			State:      uint8(util.MustToUint32(m["state"])),
 			Content:    m["content"],
-			CreateTime: uint64(util.ToInt64(m["create_time"])),
-			UpdateTime: uint64(util.ToInt64(m["update_time"])),
+			CreateTime: uint64(util.MustToInt64(m["create_time"])),
+			UpdateTime: uint64(util.MustToInt64(m["update_time"])),
 		}
 	}
 	return ret, err

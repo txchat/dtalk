@@ -45,23 +45,23 @@ func ConvertGroupInfos(maps []map[string]string) []*GroupInfo {
 
 func ConvertGroupInfo(res map[string]string) *GroupInfo {
 	return &GroupInfo{
-		GroupId:         util.ToInt64(res["group_id"]),
+		GroupId:         util.MustToInt64(res["group_id"]),
 		GroupMarkId:     res["group_mark_id"],
 		GroupName:       res["group_name"],
 		GroupAvatar:     res["group_avatar"],
-		GroupMemberNum:  util.ToInt32(res["group_member_num"]),
-		GroupMaximum:    util.ToInt32(res["group_maximum"]),
+		GroupMemberNum:  util.MustToInt32(res["group_member_num"]),
+		GroupMaximum:    util.MustToInt32(res["group_maximum"]),
 		GroupIntroduce:  res["group_Introduce"],
-		GroupStatus:     util.ToInt32(res["group_status"]),
+		GroupStatus:     util.MustToInt32(res["group_status"]),
 		GroupOwnerId:    res["group_owner_id"],
-		GroupCreateTime: util.ToInt64(res["group_create_time"]),
-		GroupUpdateTime: util.ToInt64(res["group_update_time"]),
-		GroupJoinType:   util.ToInt32(res["group_join_type"]),
-		GroupMuteType:   util.ToInt32(res["group_mute_type"]),
-		GroupFriendType: util.ToInt32(res["group_friend_type"]),
-		GroupAESKey:     util.ToString(res["group_aes_key"]),
-		GroupPubName:    util.ToString(res["group_pub_name"]),
-		GroupType:       util.ToInt32(res["group_type"]),
+		GroupCreateTime: util.MustToInt64(res["group_create_time"]),
+		GroupUpdateTime: util.MustToInt64(res["group_update_time"]),
+		GroupJoinType:   util.MustToInt32(res["group_join_type"]),
+		GroupMuteType:   util.MustToInt32(res["group_mute_type"]),
+		GroupFriendType: util.MustToInt32(res["group_friend_type"]),
+		GroupAESKey:     util.MustToString(res["group_aes_key"]),
+		GroupPubName:    util.MustToString(res["group_pub_name"]),
+		GroupType:       util.MustToInt32(res["group_type"]),
 	}
 }
 

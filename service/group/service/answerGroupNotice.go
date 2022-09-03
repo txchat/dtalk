@@ -14,7 +14,7 @@ func (s *Service) PusherSignalJoin(ctx context.Context, groupId int64, groupMemb
 	actionSignInGroup := &xproto.SignalSignInGroup{
 		Uid:   groupMemberIds,
 		Group: groupId,
-		Time:  util.ToUInt64(nowTime),
+		Time:  util.MustToUint64(nowTime),
 	}
 	body, err := proto.Marshal(actionSignInGroup)
 	if err != nil {
@@ -22,7 +22,7 @@ func (s *Service) PusherSignalJoin(ctx context.Context, groupId int64, groupMemb
 	}
 
 	Signal := xproto.SignalType_SignInGroup
-	Target := util.ToString(groupId)
+	Target := util.MustToString(groupId)
 	Body := body
 
 	if err = s.answerClient.GroupCastSignal(ctx, Signal, Target, Body); err != nil {
@@ -36,7 +36,7 @@ func (s *Service) PusherSignalLeave(ctx context.Context, groupId int64, groupMem
 	actionSignOutGroup := &xproto.SignalSignOutGroup{
 		Uid:   groupMemberIds,
 		Group: groupId,
-		Time:  util.ToUInt64(nowTime),
+		Time:  util.MustToUint64(nowTime),
 	}
 	body, err := proto.Marshal(actionSignOutGroup)
 	if err != nil {
@@ -44,7 +44,7 @@ func (s *Service) PusherSignalLeave(ctx context.Context, groupId int64, groupMem
 	}
 
 	Signal := xproto.SignalType_SignOutGroup
-	Target := util.ToString(groupId)
+	Target := util.MustToString(groupId)
 	Body := body
 
 	if err = s.answerClient.GroupCastSignal(ctx, Signal, Target, Body); err != nil {
@@ -57,7 +57,7 @@ func (s *Service) PusherSignalDel(ctx context.Context, groupId int64) error {
 	nowTime := s.getNowTime()
 	actionDealeteGroup := &xproto.SignalDeleteGroup{
 		Group: groupId,
-		Time:  util.ToUInt64(nowTime),
+		Time:  util.MustToUint64(nowTime),
 	}
 	body, err := proto.Marshal(actionDealeteGroup)
 	if err != nil {
@@ -65,7 +65,7 @@ func (s *Service) PusherSignalDel(ctx context.Context, groupId int64) error {
 	}
 
 	Signal := xproto.SignalType_DeleteGroup
-	Target := util.ToString(groupId)
+	Target := util.MustToString(groupId)
 	Body := body
 
 	if err = s.answerClient.GroupCastSignal(ctx, Signal, Target, Body); err != nil {
@@ -94,7 +94,7 @@ func (s *Service) PusherSignalJoinType(ctx context.Context, groupId int64, joinT
 	action := &xproto.SignalUpdateGroupJoinType{
 		Group: groupId,
 		Type:  proJoinType,
-		Time:  util.ToUInt64(nowTime),
+		Time:  util.MustToUint64(nowTime),
 	}
 	body, err := proto.Marshal(action)
 	if err != nil {
@@ -102,7 +102,7 @@ func (s *Service) PusherSignalJoinType(ctx context.Context, groupId int64, joinT
 	}
 
 	Signal := xproto.SignalType_UpdateGroupJoinType
-	Target := util.ToString(groupId)
+	Target := util.MustToString(groupId)
 	Body := body
 
 	if err = s.answerClient.GroupCastSignal(ctx, Signal, Target, Body); err != nil {
@@ -128,7 +128,7 @@ func (s *Service) PusherSignalFriendType(ctx context.Context, groupId int64, fri
 	action := &xproto.SignalUpdateGroupFriendType{
 		Group: groupId,
 		Type:  proFriendType,
-		Time:  util.ToUInt64(nowTime),
+		Time:  util.MustToUint64(nowTime),
 	}
 	body, err := proto.Marshal(action)
 	if err != nil {
@@ -136,7 +136,7 @@ func (s *Service) PusherSignalFriendType(ctx context.Context, groupId int64, fri
 	}
 
 	Signal := xproto.SignalType_UpdateGroupFriendType
-	Target := util.ToString(groupId)
+	Target := util.MustToString(groupId)
 	Body := body
 
 	if err = s.answerClient.GroupCastSignal(ctx, Signal, Target, Body); err != nil {
@@ -162,7 +162,7 @@ func (s *Service) PusherSignalMuteType(ctx context.Context, groupId int64, muteT
 	action := &xproto.SignalUpdateGroupMuteType{
 		Group: groupId,
 		Type:  proMuteType,
-		Time:  util.ToUInt64(nowTime),
+		Time:  util.MustToUint64(nowTime),
 	}
 	body, err := proto.Marshal(action)
 	if err != nil {
@@ -170,7 +170,7 @@ func (s *Service) PusherSignalMuteType(ctx context.Context, groupId int64, muteT
 	}
 
 	Signal := xproto.SignalType_UpdateGroupMuteType
-	Target := util.ToString(groupId)
+	Target := util.MustToString(groupId)
 	Body := body
 
 	if err = s.answerClient.GroupCastSignal(ctx, Signal, Target, Body); err != nil {
@@ -199,7 +199,7 @@ func (s *Service) PusherSignalMemberType(ctx context.Context, groupId int64, mem
 		Group: groupId,
 		Type:  proMemberType,
 		Uid:   memberId,
-		Time:  util.ToUInt64(nowTime),
+		Time:  util.MustToUint64(nowTime),
 	}
 	body, err := proto.Marshal(action)
 	if err != nil {
@@ -207,7 +207,7 @@ func (s *Service) PusherSignalMemberType(ctx context.Context, groupId int64, mem
 	}
 
 	Signal := xproto.SignalType_UpdateGroupMemberType
-	Target := util.ToString(groupId)
+	Target := util.MustToString(groupId)
 	Body := body
 
 	if err = s.answerClient.GroupCastSignal(ctx, Signal, Target, Body); err != nil {
@@ -222,7 +222,7 @@ func (s *Service) PusherSignalMemberMuteTime(ctx context.Context, groupId int64,
 		Group:    groupId,
 		Uid:      memberIds,
 		MuteTime: muteTime,
-		Time:     util.ToUInt64(nowTime),
+		Time:     util.MustToUint64(nowTime),
 	}
 	body, err := proto.Marshal(action)
 	if err != nil {
@@ -230,7 +230,7 @@ func (s *Service) PusherSignalMemberMuteTime(ctx context.Context, groupId int64,
 	}
 
 	Signal := xproto.SignalType_UpdateGroupMemberMuteTime
-	Target := util.ToString(groupId)
+	Target := util.MustToString(groupId)
 	Body := body
 
 	if err = s.answerClient.GroupCastSignal(ctx, Signal, Target, Body); err != nil {
@@ -248,7 +248,7 @@ func (s *Service) PusherSignalGroupName(ctx context.Context, groupId int64, name
 	action := &xproto.SignalUpdateGroupName{
 		Group: groupId,
 		Name:  name,
-		Time:  util.ToUInt64(nowTime),
+		Time:  util.MustToUint64(nowTime),
 	}
 	body, err := proto.Marshal(action)
 	if err != nil {
@@ -256,7 +256,7 @@ func (s *Service) PusherSignalGroupName(ctx context.Context, groupId int64, name
 	}
 
 	Signal := xproto.SignalType_UpdateGroupName
-	Target := util.ToString(groupId)
+	Target := util.MustToString(groupId)
 	Body := body
 
 	if err = s.answerClient.GroupCastSignal(ctx, Signal, Target, Body); err != nil {
@@ -270,7 +270,7 @@ func (s *Service) PusherSignalGroupAvatar(ctx context.Context, groupId int64, av
 	action := &xproto.SignalUpdateGroupAvatar{
 		Group:  groupId,
 		Avatar: avatar,
-		Time:   util.ToUInt64(nowTime),
+		Time:   util.MustToUint64(nowTime),
 	}
 	body, err := proto.Marshal(action)
 	if err != nil {
@@ -278,7 +278,7 @@ func (s *Service) PusherSignalGroupAvatar(ctx context.Context, groupId int64, av
 	}
 
 	Signal := xproto.SignalType_UpdateGroupAvatar
-	Target := util.ToString(groupId)
+	Target := util.MustToString(groupId)
 	Body := body
 
 	if err = s.answerClient.GroupCastSignal(ctx, Signal, Target, Body); err != nil {

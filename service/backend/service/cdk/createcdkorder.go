@@ -90,7 +90,7 @@ func (s *ServiceContent) createOrder(msg *biz.CdkOrderMessage) *biz.CdkOrder {
 // CreateCdkOrderSvc 创建订单 Svc
 func (s *ServiceContent) CreateCdkOrderSvc(req *types.CreateCdkOrderReq) (resp *types.CreateCdkOrderResp, err error) {
 	personId := req.PersonId
-	cdkId := util.ToInt64(req.CdkId)
+	cdkId := util.MustToInt64(req.CdkId)
 	number := req.Number
 	done := make(chan *biz.CdkOrder)
 
@@ -115,7 +115,7 @@ func (s *ServiceContent) CreateCdkOrderSvc(req *types.CreateCdkOrderReq) (resp *
 	}
 
 	return &types.CreateCdkOrderResp{
-		OrderId: util.ToString(res.OrderId),
+		OrderId: util.MustToString(res.OrderId),
 	}, nil
 }
 

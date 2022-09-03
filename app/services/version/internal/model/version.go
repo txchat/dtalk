@@ -48,19 +48,19 @@ func ConvertVersionForm(record map[string]string) (*VersionForm, error) {
 		return nil, err
 	}
 	return &VersionForm{
-		Id:          util.ToInt64(record["id"]),
+		Id:          util.MustToInt64(record["id"]),
 		Platform:    record["platform"],
-		Status:      util.ToInt32(record["state"]),
+		Status:      util.MustToInt32(record["state"]),
 		DeviceType:  record["device_type"],
 		VersionName: record["version_name"],
-		VersionCode: util.ToInt64(record["version_code"]),
+		VersionCode: util.MustToInt64(record["version_code"]),
 		URL:         record["download_url"],
-		Force:       util.ToBool(record["force_update"]),
+		Force:       util.MustToBool(record["force_update"]),
 		Description: description,
 		OpeUser:     record["ope_user"],
 		Md5:         record["md5"],
-		Size:        util.ToInt64(record["size"]),
-		UpdateTime:  util.ToInt64(record["update_time"]),
-		CreateTime:  util.ToInt64(record["create_time"]),
+		Size:        util.MustToInt64(record["size"]),
+		UpdateTime:  util.MustToInt64(record["update_time"]),
+		CreateTime:  util.MustToInt64(record["create_time"]),
 	}, nil
 }

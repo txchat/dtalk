@@ -78,7 +78,7 @@ func (d *Dao) ChangeVersionStatus(form *model.VersionForm) error {
 		return nil
 	}
 
-	id := util.ToInt64(records[0]["id"])
+	id := util.MustToInt64(records[0]["id"])
 	_, _, err = tx.Exec(_ChangeOtherReleaseVersionStatus, form.UpdateTime, form.OpeUser, id)
 	if err != nil {
 		return err
@@ -105,7 +105,7 @@ func (d *Dao) GetVersionList(form *model.VersionForm, page int64, size int64) (*
 	if err != nil {
 		return nil, 0, 0, err
 	}
-	totalElements := util.ToInt64(countRecords[0]["COUNT(*)"])
+	totalElements := util.MustToInt64(countRecords[0]["COUNT(*)"])
 	totalPages := int64(math.Ceil(float64(totalElements) / float64(size)))
 	return response, totalElements, totalPages, nil
 }
@@ -125,7 +125,7 @@ func (d *Dao) CheckAndUpdateVersion(form *model.VersionForm) (*model.VersionForm
 	}
 	if !record.Force {
 		//判断期间是否包含强制更新版本
-		record.Force, _ = d.checkHaveForce(form, util.ToInt(record.VersionCode))
+		record.Force, _ = d.checkHaveForce(form, util.MustToInt(record.VersionCode))
 	}
 	return record, nil
 }
@@ -144,7 +144,7 @@ func (d *Dao) ConvertVersionList(records *[]map[string]string) (*[]model.Version
 }
 
 func (d *Dao) checkHaveForce(form *model.VersionForm, newVer int) (bool, error) {
-	oldVer := util.ToInt(form.VersionCode)
+	oldVer := util.MustToInt(form.VersionCode)
 	if oldVer >= newVer {
 		return false, nil
 	}
@@ -156,6 +156,6 @@ func (d *Dao) checkHaveForce(form *model.VersionForm, newVer int) (bool, error) 
 	if len(records) < 1 {
 		return false, nil
 	}
-	num := util.ToInt64(records[0]["force_num"])
+	num := util.MustToInt64(records[0]["force_num"])
 	return num > 0, nil
 }

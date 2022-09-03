@@ -11,7 +11,7 @@ import (
 
 func (s *Service) GetGroupApplyByIdSvc(ctx context.Context, req *types.GetGroupApplyByIdReq) (res *types.GetGroupApplysResp, err error) {
 	//personId := req.PersonId
-	applyId := util.ToInt64(req.ApplyId)
+	applyId := util.MustToInt64(req.ApplyId)
 
 	groupApplyBiz, err := s.getGroupApplyById(applyId)
 	if err != nil {

@@ -55,7 +55,7 @@ func (d *DB) GetFilters() map[imparse.FrameType][]imparse.Filter {
 				f := frame.(*chat.GroupFrame)
 				//判断群聊拦截
 				if f.GetMsgType() != xproto.MsgType_Notice {
-					if ok, err := d.dao.CheckInGroup(ctx, f.GetFrom(), util.ToInt64(f.GetTarget())); !ok {
+					if ok, err := d.dao.CheckInGroup(ctx, f.GetFrom(), util.MustToInt64(f.GetTarget())); !ok {
 						if err != nil {
 							return err
 						}

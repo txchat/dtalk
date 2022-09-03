@@ -18,7 +18,7 @@ func (s *ServiceContent) DeleteCdksSvc(req *types.DeleteCdksReq) (res *types.Del
 
 	ids := make([]int64, len(req.Ids), len(req.Ids))
 	for i, id := range req.Ids {
-		ids[i] = util.ToInt64(id)
+		ids[i] = util.MustToInt64(id)
 	}
 
 	err = s.dao.DeleteCdks(ids, time.Now().UnixNano()/1e6)

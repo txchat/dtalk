@@ -33,7 +33,7 @@ func NewTypesGroupInfo(do *pb.GroupBizInfo) *types.GroupInfo {
 
 	res := &types.GroupInfo{
 		Id:         do.Id,
-		IdStr:      util.ToString(do.Id),
+		IdStr:      util.MustToString(do.Id),
 		MarkId:     do.MarkId,
 		Name:       do.Name,
 		PublicName: do.PubName,

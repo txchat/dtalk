@@ -34,7 +34,7 @@ func (s *Service) GetGroupMemberListSvc(ctx context.Context, req *types.GetGroup
 
 	res = &types.GetGroupMemberListResponse{
 		Id:      groupId,
-		IdStr:   util.ToString(groupId),
+		IdStr:   util.MustToString(groupId),
 		Members: groupMemberTypes,
 	}
 

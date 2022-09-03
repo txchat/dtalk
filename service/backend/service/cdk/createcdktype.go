@@ -45,7 +45,7 @@ func (s *ServiceContent) CreateCdkTypeSvc(req *types.CreateCdkTypeReq) (res *typ
 		return nil, err
 	}
 	res = &types.CreateCdkTypeResp{
-		CdkId: util.ToString(cdkId),
+		CdkId: util.MustToString(cdkId),
 	}
 
 	return res, nil

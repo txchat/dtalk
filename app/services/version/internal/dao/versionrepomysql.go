@@ -92,7 +92,7 @@ func (repo *VersionRepositoryMysql) ReleaseSpecificVersion(ctx context.Context, 
 		return nil
 	}
 
-	id := util.ToInt64(records[0]["id"])
+	id := util.MustToInt64(records[0]["id"])
 	_, _, err = tx.Exec(_ChangeOtherReleaseVersionStatus, updateTime, operator, id)
 	if err != nil {
 		return err
@@ -130,7 +130,7 @@ func (repo *VersionRepositoryMysql) SpecificPlatformAndDeviceTypeCount(ctx conte
 	if len(countRecords) == 0 {
 		return 0, xerror.ErrNotFound
 	}
-	totalCount := util.ToInt64(countRecords[0]["COUNT(*)"])
+	totalCount := util.MustToInt64(countRecords[0]["COUNT(*)"])
 	return totalCount, nil
 }
 
@@ -162,5 +162,5 @@ func (repo *VersionRepositoryMysql) ForceNumberBetween(ctx context.Context, plat
 	if len(records) < 1 {
 		return 0, nil
 	}
-	return util.ToInt64(records[0]["force_num"]), nil
+	return util.MustToInt64(records[0]["force_num"]), nil
 }

@@ -20,6 +20,6 @@ func (l *GroupLogic) JoinGroup(req *types.JoinGroupReq) (*types.JoinGroupResp, e
 
 	return &types.JoinGroupResp{
 		Id:    groupId,
-		IdStr: util.ToString(groupId),
+		IdStr: util.MustToString(groupId),
 	}, nil
 }

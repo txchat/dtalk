@@ -88,7 +88,7 @@ func (g *GroupInfo) IsNormal() error {
 func (g *GroupInfo) ToTypes(owner *types.GroupMember, person *types.GroupMember) *types.GroupInfo {
 	return &types.GroupInfo{
 		Id:         g.GroupId,
-		IdStr:      util.ToString(g.GroupId),
+		IdStr:      util.MustToString(g.GroupId),
 		MarkId:     g.GroupMarkId,
 		Name:       g.GroupName,
 		Avatar:     g.GroupAvatar,

@@ -145,7 +145,7 @@ func (s *Service) inviteMember(ctx context.Context, group *biz.GroupInfo, req *t
 	// ? 不知道有没有用
 	res = &types.InviteGroupMembersResponse{
 		Id:        req.Id,
-		IdStr:     util.ToString(groupId),
+		IdStr:     util.MustToString(groupId),
 		MemberNum: group.GroupMemberNum + int32(len(newMembers)),
 		//Inviter:    req.Inviter,
 		//NewMembers: model.GroupMemberConvertGroupMemberInfo(newMembers),

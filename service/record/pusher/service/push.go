@@ -25,7 +25,7 @@ func (s *Service) PushUser(ctx context.Context, key, from, mid, target string, t
 	err := s.pusher.UniCast(ctx, &record.PushMsg{
 		AppId:     s.cfg.AppId,
 		FromId:    from,
-		Mid:       util.ToInt64(mid),
+		Mid:       util.MustToInt64(mid),
 		Key:       key,
 		Target:    target,
 		Msg:       body,
@@ -45,7 +45,7 @@ func (s *Service) PushClient(ctx context.Context, key, from, mid, target string,
 	err := s.pusher.UniCastDevices(ctx, &record.PushMsg{
 		AppId:     s.cfg.AppId,
 		FromId:    from,
-		Mid:       util.ToInt64(mid),
+		Mid:       util.MustToInt64(mid),
 		Key:       key,
 		Target:    target,
 		Msg:       body,

@@ -33,7 +33,7 @@ func UpdateGroupNameHandler(ctx *svc.ServiceContext) gin.HandlerFunc {
 		}
 
 		if req.IdStr != "" {
-			req.Id = util.ToInt64(req.IdStr)
+			req.Id = util.MustToInt64(req.IdStr)
 		}
 
 		l := logic.NewGroupLogic(c, ctx)

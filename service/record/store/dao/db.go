@@ -47,9 +47,9 @@ func convertMsgContent(m map[string]string) *model.MsgContent {
 		Seq:        m["seq"],
 		SenderId:   m["sender_id"],
 		ReceiverId: m["receiver_id"],
-		MsgType:    util.ToUInt32(m["msg_type"]),
+		MsgType:    util.MustToUint32(m["msg_type"]),
 		Content:    m["content"],
-		CreateTime: uint64(util.ToInt64(m["create_time"])),
+		CreateTime: uint64(util.MustToInt64(m["create_time"])),
 		Source:     m["source"],
 		Reference:  m["reference"],
 	}
@@ -229,9 +229,9 @@ func (d *Dao) GetPriRecord(fromId, targetId string, mid int64, recordCount int64
 			Seq:        m["seq"],
 			SenderId:   m["sender_id"],
 			ReceiverId: m["receiver_id"],
-			MsgType:    util.ToUInt32(m["msg_type"]),
+			MsgType:    util.MustToUint32(m["msg_type"]),
 			Content:    m["content"],
-			CreateTime: uint64(util.ToInt64(m["create_time"])),
+			CreateTime: uint64(util.MustToInt64(m["create_time"])),
 		}
 	}
 

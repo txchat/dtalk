@@ -17,12 +17,12 @@ type GroupMember struct {
 
 func ConvertGroupMember(res map[string]string) *GroupMember {
 	return &GroupMember{
-		GroupId:             util.ToInt64(res["group_id"]),
+		GroupId:             util.MustToInt64(res["group_id"]),
 		GroupMemberId:       res["group_member_id"],
 		GroupMemberName:     res["group_member_name"],
-		GroupMemberType:     util.ToInt32(res["group_member_type"]),
-		GroupMemberJoinTime: util.ToInt64(res["group_member_join_time"]),
-		//GroupMemberUpdateTime: util.ToInt64(res["group_member_update_time"]),
+		GroupMemberType:     util.MustToInt32(res["group_member_type"]),
+		GroupMemberJoinTime: util.MustToInt64(res["group_member_join_time"]),
+		//GroupMemberUpdateTime: util.MustToInt64(res["group_member_update_time"]),
 	}
 }
 
@@ -47,10 +47,10 @@ type GroupMemberMute struct {
 
 func ConvertGroupMemberMute(res map[string]string) *GroupMemberMute {
 	return &GroupMemberMute{
-		GroupId:                   util.ToInt64(res["group_id"]),
+		GroupId:                   util.MustToInt64(res["group_id"]),
 		GroupMemberId:             res["group_member_id"],
-		GroupMemberMuteTime:       util.ToInt64(res["group_member_mute_time"]),
-		GroupMemberMuteUpdateTime: util.ToInt64(res["group_member_mute_update_time"]),
+		GroupMemberMuteTime:       util.MustToInt64(res["group_member_mute_time"]),
+		GroupMemberMuteUpdateTime: util.MustToInt64(res["group_member_mute_update_time"]),
 	}
 }
 
@@ -68,12 +68,12 @@ func ConvertGroupMemberWithMute(res map[string]string) *GroupMemberWithMute {
 		res["group_member_mute_time"] = "0"
 	}
 	return &GroupMemberWithMute{
-		GroupId:             util.ToInt64(res["group_id"]),
+		GroupId:             util.MustToInt64(res["group_id"]),
 		GroupMemberId:       res["group_member_id"],
-		GroupMemberMuteTime: util.ToInt64(res["group_member_mute_time"]),
+		GroupMemberMuteTime: util.MustToInt64(res["group_member_mute_time"]),
 		GroupMemberName:     res["group_member_name"],
-		GroupMemberType:     util.ToInt32(res["group_member_type"]),
-		GroupMemberJoinTime: util.ToInt64(res["group_member_join_time"]),
+		GroupMemberType:     util.MustToInt32(res["group_member_type"]),
+		GroupMemberJoinTime: util.MustToInt64(res["group_member_join_time"]),
 	}
 }
 

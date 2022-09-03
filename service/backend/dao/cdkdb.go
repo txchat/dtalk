@@ -67,7 +67,7 @@ func (d *Dao) DeleteCdk(id int64, deleteTime int64) error {
 func (d *Dao) DeleteCdks(ids []int64, deleteTime int64) error {
 	idStrs := make([]string, 0, len(ids))
 	for _, id := range ids {
-		idStrs = append(idStrs, util.ToString(id))
+		idStrs = append(idStrs, util.MustToString(id))
 	}
 	idStr := "(" + strings.Join(idStrs, ",") + ")"
 	execSql := _DeleteCdks + idStr
@@ -79,7 +79,7 @@ func (d *Dao) DeleteCdks(ids []int64, deleteTime int64) error {
 func (d *Dao) DeleteCdkTypes(cdkIds []int64) error {
 	idStrs := make([]string, 0, len(cdkIds))
 	for _, id := range cdkIds {
-		idStrs = append(idStrs, util.ToString(id))
+		idStrs = append(idStrs, util.MustToString(id))
 	}
 	idStr := "(" + strings.Join(idStrs, ",") + ")"
 	execSql := _DeleteCdkTypes + idStr
@@ -91,7 +91,7 @@ func (d *Dao) DeleteCdkTypes(cdkIds []int64) error {
 func (d *Dao) DeleteCdksByCdkIds(cdkIds []int64) error {
 	idStrs := make([]string, 0, len(cdkIds))
 	for _, id := range cdkIds {
-		idStrs = append(idStrs, util.ToString(id))
+		idStrs = append(idStrs, util.MustToString(id))
 	}
 	idStr := "(" + strings.Join(idStrs, ",") + ")"
 	execSql := _DeleteCdksByCdkIds + idStr
@@ -159,7 +159,7 @@ func (d *Dao) GetCdkTypes(coinName string, page int64, size int64) ([]db.CdkType
 	if err != nil {
 		return nil, 0, 0, err
 	}
-	totalElements := util.ToInt64(recordsCount[0]["COUNT(*)"])
+	totalElements := util.MustToInt64(recordsCount[0]["COUNT(*)"])
 	totalPages := int64(math.Ceil(float64(totalElements) / float64(size)))
 	return response, totalElements, totalPages, nil
 }
@@ -180,7 +180,7 @@ func (d *Dao) GetCdks(cdkId int64, cdkContent string, page int64, size int64) ([
 	if err != nil {
 		return nil, 0, 0, err
 	}
-	totalElements := util.ToInt64(recordsCount[0]["COUNT(*)"])
+	totalElements := util.MustToInt64(recordsCount[0]["COUNT(*)"])
 	totalPages := int64(math.Ceil(float64(totalElements) / float64(size)))
 	return response, totalElements, totalPages, nil
 }
@@ -200,7 +200,7 @@ func (d *Dao) GetCdksWithUserId(userId string, page int64, size int64) ([]db.Cdk
 	if err != nil {
 		return nil, 0, 0, err
 	}
-	totalElements := util.ToInt64(recordsCount[0]["COUNT(*)"])
+	totalElements := util.MustToInt64(recordsCount[0]["COUNT(*)"])
 	totalPages := int64(math.Ceil(float64(totalElements) / float64(size)))
 	return response, totalElements, totalPages, nil
 }
@@ -223,21 +223,21 @@ func (d *Dao) GetCdksCount(cdkId int64) (int64, int64, int64, error) {
 	if err != nil {
 		return 0, 0, 0, err
 	}
-	Unused := util.ToInt64(res[0]["COUNT(*)"])
+	Unused := util.MustToInt64(res[0]["COUNT(*)"])
 
 	res, err = d.conn.Query(_GetFrozenCdksCount, cdkId)
 	if err != nil {
 		return 0, 0, 0, err
 
 	}
-	Frozen := util.ToInt64(res[0]["COUNT(*)"])
+	Frozen := util.MustToInt64(res[0]["COUNT(*)"])
 
 	res, err = d.conn.Query(_GetUsedCdksCount, cdkId)
 	if err != nil {
 		return 0, 0, 0, err
 
 	}
-	Used := util.ToInt64(res[0]["COUNT(*)"])
+	Used := util.MustToInt64(res[0]["COUNT(*)"])
 
 	return Unused, Frozen, Used, nil
 
@@ -248,7 +248,7 @@ func (d *Dao) GetUnusedCdksCount(cdkId string) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
-	response := util.ToInt64(recordsCount[0]["COUNT(*)"])
+	response := util.MustToInt64(recordsCount[0]["COUNT(*)"])
 	return response, nil
 }
 
@@ -257,7 +257,7 @@ func (d *Dao) GetFrozenCdksCount(cdkId string) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
-	response := util.ToInt64(recordsCount[0]["COUNT(*)"])
+	response := util.MustToInt64(recordsCount[0]["COUNT(*)"])
 	return response, nil
 }
 
@@ -266,7 +266,7 @@ func (d *Dao) GetUsedCdksCount(cdkId string) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
-	response := util.ToInt64(recordsCount[0]["COUNT(*)"])
+	response := util.MustToInt64(recordsCount[0]["COUNT(*)"])
 	return response, nil
 }
 
@@ -274,15 +274,15 @@ func (d *Dao) ToCdkTypes(records []map[string]string) ([]db.CdkType, error) {
 	cdkTypes := make([]db.CdkType, len(records), len(records))
 	for i, record := range records {
 		cdkType := db.CdkType{
-			CdkId:        util.ToInt64(record["cdk_id"]),
+			CdkId:        util.MustToInt64(record["cdk_id"]),
 			CdkName:      record["cdk_name"],
 			CdkInfo:      record["cdl_info"],
 			CoinName:     record["coin_name"],
-			ExchangeRate: util.ToInt64(record["exchange_rate"]),
+			ExchangeRate: util.MustToInt64(record["exchange_rate"]),
 			TimeInfo: db.TimeInfo{
-				CreateTime: util.ToInt64(record["create_time"]),
-				UpdateTime: util.ToInt64(record["update_time"]),
-				DeleteTime: util.ToInt64(record["delete_time"]),
+				CreateTime: util.MustToInt64(record["create_time"]),
+				UpdateTime: util.MustToInt64(record["update_time"]),
+				DeleteTime: util.MustToInt64(record["delete_time"]),
 			},
 		}
 
@@ -295,18 +295,18 @@ func (d *Dao) ToCdks(records []map[string]string) ([]db.Cdk, error) {
 	cdks := make([]db.Cdk, len(records), len(records))
 	for i, record := range records {
 		cdk := db.Cdk{
-			Id:         util.ToInt64(record["id"]),
-			CdkId:      util.ToInt64(record["cdk_id"]),
+			Id:         util.MustToInt64(record["id"]),
+			CdkId:      util.MustToInt64(record["cdk_id"]),
 			CdkContent: record["cdk_content"],
 			UserId:     record["user_id"],
-			CdkStatus:  util.ToInt32(record["cdk_status"]),
-			OrderId:    util.ToInt64(record["order_id"]),
+			CdkStatus:  util.MustToInt32(record["cdk_status"]),
+			OrderId:    util.MustToInt64(record["order_id"]),
 			TimeInfo: db.TimeInfo{
-				CreateTime: util.ToInt64(record["create_time"]),
-				UpdateTime: util.ToInt64(record["update_time"]),
-				DeleteTime: util.ToInt64(record["delete_time"]),
+				CreateTime: util.MustToInt64(record["create_time"]),
+				UpdateTime: util.MustToInt64(record["update_time"]),
+				DeleteTime: util.MustToInt64(record["delete_time"]),
 			},
-			ExchangeTime: util.ToInt64(record["exchange_time"]),
+			ExchangeTime: util.MustToInt64(record["exchange_time"]),
 		}
 
 		//fmt.Println(cdk)
@@ -319,7 +319,7 @@ func (d *Dao) ToCdks(records []map[string]string) ([]db.Cdk, error) {
 func (d *Dao) UpdateCdksStatus(ids []int64, status int64) error {
 	idStrs := make([]string, 0, len(ids))
 	for _, id := range ids {
-		idStrs = append(idStrs, util.ToString(id))
+		idStrs = append(idStrs, util.MustToString(id))
 	}
 	idStr := "(" + strings.Join(idStrs, ",") + ")"
 
@@ -363,7 +363,7 @@ func (d *Dao) GetUnusedCdks(cdkId int64, number int64) ([]db.Cdk, error) {
 func (d *Dao) FrozenCdksStatus(ids []int64, userId string, orderId int64) error {
 	idStrs := make([]string, 0, len(ids))
 	for _, id := range ids {
-		idStrs = append(idStrs, util.ToString(id))
+		idStrs = append(idStrs, util.MustToString(id))
 	}
 	idStr := "(" + strings.Join(idStrs, ",") + ")"
 
@@ -382,7 +382,7 @@ func (d *Dao) CheckCdkExist(cdkId int64, cdkContent string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	response := util.ToInt64(recordsCount[0]["COUNT(*)"])
+	response := util.MustToInt64(recordsCount[0]["COUNT(*)"])
 	return response >= 1, nil
 }
 
@@ -413,6 +413,6 @@ func (d *Dao) GetCdksCountByUserIdAndCdkId(cdkId int64, userId string) (int64, e
 	if err != nil {
 		return 0, err
 	}
-	response := util.ToInt64(recordsCount[0]["COUNT(*)"])
+	response := util.MustToInt64(recordsCount[0]["COUNT(*)"])
 	return response, nil
 }

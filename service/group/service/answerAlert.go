@@ -35,7 +35,7 @@ func (s *Service) PushGroupNoticeMsg(ctx context.Context, groupId int64, personI
 		return err
 	}
 	from := personId
-	target := util.ToString(groupId)
+	target := util.MustToString(groupId)
 
 	if err = s.PushNoticeMsg(ctx, 1, from, target, data); err != nil {
 		return err

@@ -14,7 +14,7 @@ import (
 func (l *Logic) GetPriRecord(req *model.GetPriRecordsReq) (*model.GetPriRecordsResp, error) {
 	resp, err := l.svcCtx.StoreClient.GetRecordsAfterMid(l.ctx, &store.GetRecordsAfterMidReq{
 		Tp:     proto.Channel_ToUser,
-		Mid:    util.ToInt64(req.Mid),
+		Mid:    util.MustToInt64(req.Mid),
 		From:   req.FromId,
 		Target: req.TargetId,
 		Count:  req.RecordCount,

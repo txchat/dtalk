@@ -17,7 +17,7 @@ func (s *ServiceContent) CreateCdksSvc(req *types.CreateCdksReq) (res *types.Cre
 		}
 	}()
 
-	cdkId := util.ToInt64(req.CdkId)
+	cdkId := util.MustToInt64(req.CdkId)
 
 	// 判断 cdkId 是否存在
 	_, err = s.GetCdkTypeByCdkId(cdkId)

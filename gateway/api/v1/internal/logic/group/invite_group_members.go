@@ -20,6 +20,6 @@ func (l *GroupLogic) InviteGroupMembers(req *types.InviteGroupMembersReq) (*type
 
 	return &types.InviteGroupMembersResp{
 		Id:    groupId,
-		IdStr: util.ToString(groupId),
+		IdStr: util.MustToString(groupId),
 	}, nil
 }

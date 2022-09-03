@@ -13,7 +13,7 @@ import (
 
 func (s *ServiceContent) DealCdkOrderSvc(req *types.DealCdkOrderReq) (res *types.DealCdkOrderResp, err error) {
 	personId := req.PersonId
-	orderId := util.ToInt64(req.OrderId)
+	orderId := util.MustToInt64(req.OrderId)
 	//result := req.Result
 	transferHash := req.TransferHash
 

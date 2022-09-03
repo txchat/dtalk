@@ -14,7 +14,7 @@ import (
 
 func (s *Service) LogicNoticeJoin(ctx context.Context, groupId int64, groupMemberIds []string) error {
 	gid := make([]string, 1, 1)
-	gid[0] = util.ToString(groupId)
+	gid[0] = util.MustToString(groupId)
 
 	groupMid := &logic.GroupsMid{
 		AppId: s.cfg.AppId,
@@ -40,7 +40,7 @@ func (s *Service) LogicNoticeLeave(ctx context.Context, groupId int64, groupMemb
 	time.Sleep(3 * time.Second)
 
 	gid := make([]string, 1, 1)
-	gid[0] = util.ToString(groupId)
+	gid[0] = util.MustToString(groupId)
 
 	groupMid := &logic.GroupsMid{
 		AppId: s.cfg.AppId,
@@ -66,7 +66,7 @@ func (s *Service) LogicNoticeDel(ctx context.Context, groupId int64) error {
 	time.Sleep(3 * time.Second)
 
 	gid := make([]string, 1, 1)
-	gid[0] = util.ToString(groupId)
+	gid[0] = util.MustToString(groupId)
 
 	delGroupsReq := &logic.DelGroupsReq{
 		AppId: s.cfg.AppId,

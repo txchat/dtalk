@@ -31,7 +31,7 @@ func (s *Service) sendPrivateSyncMsg(key, uid string, startMid int64) error {
 	for _, m := range records {
 		eveP := &xproto.Common{
 			ChannelType: xproto.Channel_ToUser,
-			Mid:         util.ToInt64(m.Mid),
+			Mid:         util.MustToInt64(m.Mid),
 			Seq:         m.Seq,
 			From:        m.SenderId,
 			Target:      m.ReceiverId,
@@ -73,7 +73,7 @@ func (s *Service) sendGroupSyncMsg(key, uid string, startMid int64) error {
 	for _, m := range records {
 		eveP := &xproto.Common{
 			ChannelType: xproto.Channel_ToGroup,
-			Mid:         util.ToInt64(m.Mid),
+			Mid:         util.MustToInt64(m.Mid),
 			Seq:         m.Seq,
 			From:        m.SenderId,
 			Target:      m.ReceiverId,
@@ -181,7 +181,7 @@ func (s *Service) GetSyncMsg(key, uid string, startMid, count int64) ([][]byte, 
 	for _, m := range uMsg {
 		eveP := &xproto.Common{
 			ChannelType: xproto.Channel_ToUser,
-			Mid:         util.ToInt64(m.Mid),
+			Mid:         util.MustToInt64(m.Mid),
 			Seq:         m.Seq,
 			From:        m.SenderId,
 			Target:      m.ReceiverId,
@@ -205,7 +205,7 @@ func (s *Service) GetSyncMsg(key, uid string, startMid, count int64) ([][]byte, 
 	for _, m := range gMsg {
 		eveP := &xproto.Common{
 			ChannelType: xproto.Channel_ToGroup,
-			Mid:         util.ToInt64(m.Mid),
+			Mid:         util.MustToInt64(m.Mid),
 			Seq:         m.Seq,
 			From:        m.SenderId,
 			Target:      m.ReceiverId,
@@ -259,7 +259,7 @@ func (s *Service) GetSyncMsgJustBizLevel(key, uid string, startMid, count int64)
 	for _, m := range uMsg {
 		eveP := &xproto.Common{
 			ChannelType: xproto.Channel_ToUser,
-			Mid:         util.ToInt64(m.Mid),
+			Mid:         util.MustToInt64(m.Mid),
 			Seq:         m.Seq,
 			From:        m.SenderId,
 			Target:      m.ReceiverId,
@@ -282,7 +282,7 @@ func (s *Service) GetSyncMsgJustBizLevel(key, uid string, startMid, count int64)
 	for _, m := range gMsg {
 		eveP := &xproto.Common{
 			ChannelType: xproto.Channel_ToGroup,
-			Mid:         util.ToInt64(m.Mid),
+			Mid:         util.MustToInt64(m.Mid),
 			Seq:         m.Seq,
 			From:        m.SenderId,
 			Target:      m.ReceiverId,

@@ -20,7 +20,7 @@ func (s *Service) StartCall(req *model.StartCallRequest) (res *model.StartCallRe
 
 	var groupId int64
 	if req.GroupId != "" {
-		groupId, err = util.ToInt64E(req.GroupId)
+		groupId, err = util.ToInt64(req.GroupId)
 		if err != nil {
 			return nil, err
 		}
@@ -58,12 +58,12 @@ func (s *Service) StartCall(req *model.StartCallRequest) (res *model.StartCallRe
 	res = &model.StartCallResponse{
 		RTCType:    session.RTCType,
 		TraceId:    session.TraceId,
-		TraceIdStr: util.ToString(session.TraceId),
+		TraceIdStr: util.MustToString(session.TraceId),
 		Caller:     session.Caller,
 		Invitees:   session.Invitees,
 		CreateTime: session.CreateTime,
 		Deadline:   session.Deadline,
-		GroupId:    util.ToString(session.GroupId),
+		GroupId:    util.MustToString(session.GroupId),
 		Timeout:    session.Timeout,
 	}
 	return res, nil

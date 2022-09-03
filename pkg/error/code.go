@@ -63,6 +63,7 @@ var (
 	ErrGroupApplyNotExist          = NewError(-10030, "该申请不存在")
 
 	ErrCallUserBusy = NewError(-10101, "对方在忙,请稍后再试")
+	ErrCallTimeout  = NewError(-10102, "通话已过期")
 
 	ErrOssFileTooSmall = NewError(-10201, "上传分片文件太小")
 	ErrOssFileTooBig   = NewError(-10202, "上传文件太大")

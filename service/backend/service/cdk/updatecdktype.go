@@ -14,7 +14,7 @@ func (s *ServiceContent) UpdateCdkTypeSvc(req *types.UpdateCdkTypeReq) (res *typ
 		}
 	}()
 
-	cdkId := util.ToInt64(req.CdkId)
+	cdkId := util.MustToInt64(req.CdkId)
 	err = s.dao.UpdateCdkType(cdkId, req.CdkName, req.CoinName, req.ExchangeRate)
 	if err != nil {
 		return nil, err

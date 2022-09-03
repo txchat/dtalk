@@ -13,7 +13,7 @@ func (d *Dao) AllGroupMembers(ctx context.Context, gid string) ([]string, error)
 		req   groupApi.GetMemberIdsRequest
 		reply *groupApi.GetMemberIdsReply
 	)
-	req.GroupId = util.ToInt64(gid)
+	req.GroupId = util.MustToInt64(gid)
 	ctx, cancel := context.WithDeadline(ctx, time.Now().Add(time.Second*3))
 	defer cancel()
 	reply, err := d.groupRPCClient.GetMemberIds(ctx, &req)

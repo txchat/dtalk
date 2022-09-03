@@ -7,7 +7,7 @@ import (
 )
 
 func (l *GroupLogic) ChangeOwner(req *types.ChangeOwnerReq) (*types.ChangeOwnerResp, error) {
-	groupId := util.ToInt64(req.Id)
+	groupId := util.MustToInt64(req.Id)
 	personId := l.getOpe()
 	memberId := req.MemberId
 

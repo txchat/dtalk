@@ -17,7 +17,7 @@ func (s *ServiceContent) ExchangeCdksSvc(req *types.ExchangeCdksReq) (res *types
 
 	ids := make([]int64, len(req.Ids), len(req.Ids))
 	for i, id := range req.Ids {
-		ids[i] = util.ToInt64(id)
+		ids[i] = util.MustToInt64(id)
 	}
 
 	err = s.dao.UpdateCdksStatus(ids, db.CdkExchange)

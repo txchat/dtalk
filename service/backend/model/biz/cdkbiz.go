@@ -27,7 +27,7 @@ type CdkType struct {
 
 func (cdkType *CdkType) ToTypes() *types.CdkType {
 	return &types.CdkType{
-		CdkId:        util.ToString(cdkType.CdkId),
+		CdkId:        util.MustToString(cdkType.CdkId),
 		CdkName:      cdkType.CdkName,
 		CoinName:     cdkType.CoinName,
 		ExchangeRate: cdkType.ExchangeRate,
@@ -53,14 +53,14 @@ type Cdk struct {
 
 func (cdk *Cdk) ToTypes() *types.Cdk {
 	return &types.Cdk{
-		Id:           util.ToString(cdk.Id),
-		CdkId:        util.ToString(cdk.CdkId),
+		Id:           util.MustToString(cdk.Id),
+		CdkId:        util.MustToString(cdk.CdkId),
 		CdkContent:   cdk.CdkContent,
 		UserId:       cdk.UserId,
 		CdkStatus:    cdk.CdkStatus,
-		OrderId:      util.ToString(cdk.OrderId),
-		CreateTime:   util.ToString(cdk.CreateTime),
-		ExchangeTime: util.ToString(cdk.ExchangeTime),
+		OrderId:      util.MustToString(cdk.OrderId),
+		CreateTime:   util.MustToString(cdk.CreateTime),
+		ExchangeTime: util.MustToString(cdk.ExchangeTime),
 	}
 }
 

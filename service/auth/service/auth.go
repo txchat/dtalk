@@ -152,7 +152,7 @@ func (s *Service) CompareValues(srcValue interface{}, destValue interface{}) (bo
 		}
 		//遍历映射，对值进行比较
 		for name, grandValueOfSrcValue := range subValueOfSrcValue {
-			stringOfName := publicUtil.ToString(name)
+			stringOfName := publicUtil.MustToString(name)
 			//判断是否存在该键值对
 			grandValueOfDestValue, exist := subValueOfDestValue[stringOfName]
 			if !exist {
@@ -169,8 +169,8 @@ func (s *Service) CompareValues(srcValue interface{}, destValue interface{}) (bo
 		return result, nil
 	}
 	//将值转换成字符串比较
-	srcValueString := publicUtil.ToString(srcValue)
-	destValueString := publicUtil.ToString(destValue)
+	srcValueString := publicUtil.MustToString(srcValue)
+	destValueString := publicUtil.MustToString(destValue)
 
 	if srcValueString == destValueString {
 		result = true
@@ -191,7 +191,7 @@ func (s *Service) FindUid(uidName string, result interface{}) (string, bool) {
 					return uid, found
 				}
 			} else if name == uidName {
-				uid = publicUtil.ToString(value)
+				uid = publicUtil.MustToString(value)
 				found = true
 				return uid, found
 			}
@@ -202,7 +202,7 @@ func (s *Service) FindUid(uidName string, result interface{}) (string, bool) {
 }
 
 func (s *Service) checkDigest(authInfo *model.AuthInfo, key string) (bool, error) {
-	str := authInfo.AppId + authInfo.Token + publicUtil.ToString(authInfo.CreateTime) + key
+	str := authInfo.AppId + authInfo.Token + publicUtil.MustToString(authInfo.CreateTime) + key
 	hash := sha256.New()
 	_, err := hash.Write([]byte(str))
 	if err != nil {
@@ -226,7 +226,7 @@ func (s *Service) ParseTokenInRequest(tokenInRequest *string) (digest string, cr
 		return "", 0, "", model.ErrInvalidToken
 	}
 	digest = stringArray[0]
-	createTime = publicUtil.ToInt64(stringArray[1])
+	createTime = publicUtil.MustToInt64(stringArray[1])
 	token = stringArray[2]
 	return digest, createTime, token, nil
 }

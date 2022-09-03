@@ -13,11 +13,11 @@ func TestCreateCdkOrder(t *testing.T) {
 	for i := 0; i < 10; i++ {
 		wg.Add(1)
 		go func(i int) {
-			t.Log("start req", util.ToString(i))
+			t.Log("start req", util.MustToString(i))
 			req := &types.CreateCdkOrderReq{
-				PersonId: util.ToString(i),
-				CdkId:    util.ToString(i),
-				Number:   util.ToInt64(i),
+				PersonId: util.MustToString(i),
+				CdkId:    util.MustToString(i),
+				Number:   util.MustToInt64(i),
 			}
 
 			resp, err := srv.CreateCdkOrderSvc(req)
@@ -26,7 +26,7 @@ func TestCreateCdkOrder(t *testing.T) {
 			} else {
 				t.Log(resp)
 			}
-			t.Log("end req", util.ToString(i))
+			t.Log("end req", util.MustToString(i))
 			wg.Done()
 		}(i)
 

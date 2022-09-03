@@ -15,8 +15,8 @@ func (s *Service) AcceptGroupApplySvc(ctx context.Context, req *types.AcceptGrou
 	//log := s.GetLogWithTrace(ctx)
 
 	personId := req.PersonId
-	groupId := util.ToInt64(req.Id)
-	applyId := util.ToInt64(req.ApplyId)
+	groupId := util.MustToInt64(req.Id)
+	applyId := util.MustToInt64(req.ApplyId)
 
 	// 查询审批详情
 	groupApply, err := s.getGroupApplyById(applyId)

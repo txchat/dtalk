@@ -12,7 +12,7 @@ import (
 
 func (s *Service) CreateGroupApplySvc(ctx context.Context, req *types.CreateGroupApplyReq) (res *types.CreateGroupApplyResp, err error) {
 	personId := req.PersonId
-	groupId := util.ToInt64(req.Id)
+	groupId := util.MustToInt64(req.Id)
 
 	_, err = s.GetGroupInfoByGroupId(ctx, groupId)
 	if err != nil {

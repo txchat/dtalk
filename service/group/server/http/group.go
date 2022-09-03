@@ -75,7 +75,7 @@ func InviteGroupMembers(c *gin.Context) {
 	}
 
 	if req.IdStr != "" {
-		req.Id = util.ToInt64(req.IdStr)
+		req.Id = util.MustToInt64(req.IdStr)
 	}
 
 	req.Inviter.MemberId = userId.(string)
@@ -118,7 +118,7 @@ func JoinGroup(c *gin.Context) {
 	}
 
 	if req.IdStr != "" {
-		req.Id = util.ToInt64(req.IdStr)
+		req.Id = util.MustToInt64(req.IdStr)
 	}
 
 	req.PersonId = userId.(string)
@@ -164,7 +164,7 @@ func GroupExit(c *gin.Context) {
 	}
 
 	if req.IdStr != "" {
-		req.Id = util.ToInt64(req.IdStr)
+		req.Id = util.MustToInt64(req.IdStr)
 	}
 
 	req.PersonId = userId.(string)
@@ -201,7 +201,7 @@ func GroupRemove(c *gin.Context) {
 	}
 
 	if req.IdStr != "" {
-		req.Id = util.ToInt64(req.IdStr)
+		req.Id = util.MustToInt64(req.IdStr)
 	}
 
 	req.PersonId = userId.(string)
@@ -233,7 +233,7 @@ func GroupDisband(c *gin.Context) {
 	}
 
 	if req.IdStr != "" {
-		req.Id = util.ToInt64(req.IdStr)
+		req.Id = util.MustToInt64(req.IdStr)
 	}
 
 	userId, ok := c.Get(api.Address)
@@ -271,7 +271,7 @@ func ChangeOwner(c *gin.Context) {
 	}
 
 	if req.IdStr != "" {
-		req.Id = util.ToInt64(req.IdStr)
+		req.Id = util.MustToInt64(req.IdStr)
 	}
 
 	userId, ok := c.Get(api.Address)
@@ -316,7 +316,7 @@ func GetGroupInfo(c *gin.Context) {
 	}
 
 	if req.IdStr != "" {
-		req.Id = util.ToInt64(req.IdStr)
+		req.Id = util.MustToInt64(req.IdStr)
 	}
 
 	req.PersonId = userId.(string)
@@ -352,7 +352,7 @@ func GetGroupPubInfo(c *gin.Context) {
 	}
 
 	if req.IdStr != "" {
-		req.Id = util.ToInt64(req.IdStr)
+		req.Id = util.MustToInt64(req.IdStr)
 	}
 
 	userId, ok := c.Get(api.Address)
@@ -413,7 +413,7 @@ func GetGroupMemberList(c *gin.Context) {
 	}
 
 	if req.IdStr != "" {
-		req.Id = util.ToInt64(req.IdStr)
+		req.Id = util.MustToInt64(req.IdStr)
 	}
 
 	userId, ok := c.Get(api.Address)
@@ -451,7 +451,7 @@ func GetGroupMemberInfo(c *gin.Context) {
 	}
 
 	if req.IdStr != "" {
-		req.Id = util.ToInt64(req.IdStr)
+		req.Id = util.MustToInt64(req.IdStr)
 	}
 
 	userId, ok := c.Get(api.Address)
@@ -488,7 +488,7 @@ func UpdateGroupName(c *gin.Context) {
 	}
 
 	if req.IdStr != "" {
-		req.Id = util.ToInt64(req.IdStr)
+		req.Id = util.MustToInt64(req.IdStr)
 	}
 
 	userId, ok := c.Get(api.Address)
@@ -526,7 +526,7 @@ func UpdateGroupAvatar(c *gin.Context) {
 	}
 
 	if req.IdStr != "" {
-		req.Id = util.ToInt64(req.IdStr)
+		req.Id = util.MustToInt64(req.IdStr)
 	}
 
 	userId, ok := c.Get(api.Address)
@@ -564,7 +564,7 @@ func UpdateGroupJoinType(c *gin.Context) {
 	}
 
 	if req.IdStr != "" {
-		req.Id = util.ToInt64(req.IdStr)
+		req.Id = util.MustToInt64(req.IdStr)
 	}
 
 	userId, ok := c.Get(api.Address)
@@ -602,7 +602,7 @@ func UpdateGroupFriendType(c *gin.Context) {
 	}
 
 	if req.IdStr != "" {
-		req.Id = util.ToInt64(req.IdStr)
+		req.Id = util.MustToInt64(req.IdStr)
 	}
 
 	userId, ok := c.Get(api.Address)
@@ -640,7 +640,7 @@ func UpdateGroupMemberName(c *gin.Context) {
 	}
 
 	if req.IdStr != "" {
-		req.Id = util.ToInt64(req.IdStr)
+		req.Id = util.MustToInt64(req.IdStr)
 	}
 
 	userId, ok := c.Get(api.Address)
@@ -678,7 +678,7 @@ func SetAdmin(c *gin.Context) {
 	}
 
 	if req.IdStr != "" {
-		req.Id = util.ToInt64(req.IdStr)
+		req.Id = util.MustToInt64(req.IdStr)
 	}
 
 	userId, ok := c.Get(api.Address)
@@ -716,7 +716,7 @@ func UpdateGroupMuteType(c *gin.Context) {
 	}
 
 	if req.IdStr != "" {
-		req.Id = util.ToInt64(req.IdStr)
+		req.Id = util.MustToInt64(req.IdStr)
 	}
 
 	userId, ok := c.Get(api.Address)
@@ -754,7 +754,7 @@ func SetMembersMuteTime(c *gin.Context) {
 	}
 
 	if req.IdStr != "" {
-		req.Id = util.ToInt64(req.IdStr)
+		req.Id = util.MustToInt64(req.IdStr)
 	}
 
 	userId, ok := c.Get(api.Address)
@@ -792,7 +792,7 @@ func GetMuteList(c *gin.Context) {
 	}
 
 	if req.IdStr != "" {
-		req.Id = util.ToInt64(req.IdStr)
+		req.Id = util.MustToInt64(req.IdStr)
 	}
 
 	userId, ok := c.Get(api.Address)
@@ -835,7 +835,7 @@ func GetGroupInfoById(c *gin.Context) {
 	}
 
 	if req.IdStr != "" {
-		req.Id = util.ToInt64(req.IdStr)
+		req.Id = util.MustToInt64(req.IdStr)
 	}
 
 	req.PersonId = userId.(string)
@@ -893,7 +893,7 @@ func GetGroupMemberInfoByUri(c *gin.Context) {
 	}
 
 	if req.IdStr != "" {
-		req.Id = util.ToInt64(req.IdStr)
+		req.Id = util.MustToInt64(req.IdStr)
 	}
 
 	userId, ok := c.Get(api.Address)
@@ -930,7 +930,7 @@ func GetGroupMemberListByUri(c *gin.Context) {
 	}
 
 	if req.IdStr != "" {
-		req.Id = util.ToInt64(req.IdStr)
+		req.Id = util.MustToInt64(req.IdStr)
 	}
 
 	userId, ok := c.Get(api.Address)

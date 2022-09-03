@@ -30,16 +30,16 @@ type GroupApply struct {
 
 func ConvertGroupApply(res map[string]string) *GroupApply {
 	return &GroupApply{
-		Id:           util.ToInt64(res["id"]),
-		GroupId:      util.ToInt64(res["group_id"]),
-		InviterId:    util.ToString(res["inviter_id"]),
-		MemberId:     util.ToString(res["member_id"]),
-		ApplyNote:    util.ToString(res["apply_note"]),
-		OperatorId:   util.ToString(res["operator_id"]),
-		ApplyStatus:  util.ToInt32(res["apply_status"]),
-		RejectReason: util.ToString(res["reject_reason"]),
-		CreateTime:   util.ToInt64(res["create_time"]),
-		UpdateTime:   util.ToInt64(res["update_time"]),
+		Id:           util.MustToInt64(res["id"]),
+		GroupId:      util.MustToInt64(res["group_id"]),
+		InviterId:    util.MustToString(res["inviter_id"]),
+		MemberId:     util.MustToString(res["member_id"]),
+		ApplyNote:    util.MustToString(res["apply_note"]),
+		OperatorId:   util.MustToString(res["operator_id"]),
+		ApplyStatus:  util.MustToInt32(res["apply_status"]),
+		RejectReason: util.MustToString(res["reject_reason"]),
+		CreateTime:   util.MustToInt64(res["create_time"]),
+		UpdateTime:   util.MustToInt64(res["update_time"]),
 	}
 }
 

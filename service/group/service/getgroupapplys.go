@@ -10,7 +10,7 @@ import (
 
 func (s *Service) GetGroupApplysSvc(ctx context.Context, req *types.GetGroupApplysReq) (res *types.GetGroupApplysResp, err error) {
 	//personId := req.PersonId
-	groupId := util.ToInt64(req.Id)
+	groupId := util.MustToInt64(req.Id)
 
 	groupApplyBizs, err := s.getGroupApplys(groupId, req.Count, req.Offset)
 	if err != nil {

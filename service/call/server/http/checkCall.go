@@ -36,7 +36,7 @@ func checkCall(c *gin.Context) {
 	}
 
 	if req.TraceIdStr != "" {
-		traceId, err := util.ToInt64E(req.TraceIdStr)
+		traceId, err := util.ToInt64(req.TraceIdStr)
 		if err != nil {
 			c.Set(api.ReqError, xerror.NewError(xerror.ParamsError).SetExtMessage(err.Error()))
 			return

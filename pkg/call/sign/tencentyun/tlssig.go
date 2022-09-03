@@ -2,13 +2,8 @@ package tencentyun
 
 import (
 	"github.com/tencentyun/tls-sig-api-v2-golang/tencentyun"
+	"github.com/txchat/dtalk/pkg/call/sign"
 )
-
-type TLSSig interface {
-	GetAppId() int32
-	GetUserSig(userId string) (string, error)
-	GenPrivateMapKey(userId string, roomId int32, privilegeMap int32) (string, error)
-}
 
 // TCTLSSig 腾讯音视频签名实例
 type TCTLSSig struct {
@@ -17,7 +12,7 @@ type TCTLSSig struct {
 	expire    int
 }
 
-func NewTCTLSSig(sdkAppId int, secretKey string, expire int) TLSSig {
+func NewTCTLSSig(sdkAppId int, secretKey string, expire int) sign.TLSSig {
 	return &TCTLSSig{
 		sdkAppId:  sdkAppId,
 		secretKey: secretKey,

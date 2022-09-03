@@ -29,7 +29,7 @@ func (s *Service) GetGroupInfoByConditionSvc(ctx context.Context, req *types.Get
 			groups = append(groups, groupInfo)
 		}
 	case 1:
-		groupId := util.ToInt64(req.Query)
+		groupId := util.MustToInt64(req.Query)
 		groupInfo, err := s.dao.GetGroupInfoByGroupId(ctx, groupId)
 		if err != nil && !errors.Is(err, model.ErrRecordNotExist) {
 			return nil, err

@@ -1,0 +1,83 @@
+syntax = "proto3";
+
+package call;
+option go_package = "./call";
+
+message Session {
+  int64 TraceId = 1;
+  int64 RoomId = 2;
+  int32 RTCType = 3;
+  // Deadline 超出后对方未接就结束通话
+  int64 Deadline = 4;
+  // Status 0=对方未接通, 1=双方正在通话中, 2=通话结束
+  int32 Status = 5;
+  repeated string Invitees = 6;
+  string Caller = 7;
+  int32 Timeout = 8;
+  int64 CreateTime = 9;
+  // GroupId 0=私聊，^0=群id
+  int64 GroupId = 10;
+}
+
+enum RTCType {
+  Undefined = 0;
+  Audio = 1;
+  Video = 2;
+}
+
+enum RejectType {
+  Reject = 0;
+  Occupied = 1;
+}
+
+message PrivateOfferReq {
+  string operator = 1;
+  string invitee = 2;
+  RTCType RTCType = 3;
+}
+
+message PrivateOfferResp { Session session = 1; }
+
+message GroupOfferReq {
+  string operator = 1;
+  repeated string invitees = 2;
+  RTCType RTCType = 3;
+  int64 groupID = 4;
+}
+
+message GroupOfferResp { Session session = 1; }
+
+message AcceptReq {
+  string operator = 1;
+  int64 traceId = 2;
+}
+
+message AcceptResp {
+  int64 RoomId = 1;
+  string UserSign = 2;
+  string PrivateMapKey = 3;
+  int32 SDKAppID = 4;
+}
+
+message RejectReq {
+  string operator = 1;
+  int64 traceId = 2;
+  RejectType rejectType = 3;
+}
+
+message RejectResp {}
+
+message CheckTaskReq {
+  string operator = 1;
+  int64 traceId = 2;
+}
+
+message CheckTaskResp { Session session = 1; }
+
+service Call {
+  rpc PrivateOffer(PrivateOfferReq) returns (PrivateOfferResp);
+  rpc GroupOffer(GroupOfferReq) returns (GroupOfferResp);
+  rpc Accept(AcceptReq) returns (AcceptResp);
+  rpc Reject(RejectReq) returns (RejectResp);
+  rpc CheckTask(CheckTaskReq) returns (CheckTaskResp);
+}

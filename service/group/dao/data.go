@@ -134,7 +134,7 @@ func (d *Dao) UpdateGroupInfoMemberNum(ctx context.Context, groupId int64) (int3
 	if err != nil {
 		return 0, errors.WithMessagef(err, "GetMembersByGroupId, groupId=%d", groupId)
 	}
-	newNum := util.ToInt32(len(members))
+	newNum := util.MustToInt32(len(members))
 	nowTime := d.getNowTime()
 
 	groupInfo := &db.GroupInfo{

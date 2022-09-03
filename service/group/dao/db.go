@@ -229,7 +229,7 @@ func (d *Dao) getGroupInfosByGroupIds(groupIds []int64) ([]*db.GroupInfo, error)
 
 	groupIdsSQL := ""
 	for _, groupId := range groupIds {
-		groupIdsSQL += util.ToString(groupId) + ","
+		groupIdsSQL += util.MustToString(groupId) + ","
 	}
 	groupIdsSQL = strings.TrimSuffix(groupIdsSQL, ",")
 
@@ -327,7 +327,7 @@ func (d *Dao) getGroupIdsByMemberId(memberId string) ([]int64, error) {
 
 	ret := make([]int64, len(maps))
 	for i, m := range maps {
-		ret[i] = util.ToInt64(m["group_id"])
+		ret[i] = util.MustToInt64(m["group_id"])
 	}
 	return ret, err
 }
@@ -384,7 +384,7 @@ func (d *Dao) GetMemberTypeMemberIdAndGroupId(groupMemberId string, groupId int6
 	if len(maps) == 0 {
 		return biz.GroupMemberTypeOther, nil
 	}
-	return util.ToInt32(maps[0]["group_member_type"]), nil
+	return util.MustToInt32(maps[0]["group_member_type"]), nil
 }
 
 func (d *Dao) getAdminNumByGroupId(groupId int64) (int32, error) {
@@ -392,7 +392,7 @@ func (d *Dao) getAdminNumByGroupId(groupId int64) (int32, error) {
 	if err != nil {
 		return 0, err
 	}
-	return util.ToInt32(res[0]["count(*)"]), nil
+	return util.MustToInt32(res[0]["count(*)"]), nil
 }
 
 func (d *Dao) getMemberNumByGroupId(groupId int64) (int32, error) {
@@ -400,7 +400,7 @@ func (d *Dao) getMemberNumByGroupId(groupId int64) (int32, error) {
 	if err != nil {
 		return 0, err
 	}
-	return util.ToInt32(res[0]["count(*)"]), nil
+	return util.MustToInt32(res[0]["count(*)"]), nil
 }
 
 // dtalk_group_member_mute
@@ -430,7 +430,7 @@ func (d *Dao) getGroupMemberMuteTime(groupId int64, memberId string) (int64, err
 	if len(maps) == 0 {
 		return 0, nil
 	}
-	return util.ToInt64(maps[0]["group_member_mute_time"]), nil
+	return util.MustToInt64(maps[0]["group_member_mute_time"]), nil
 }
 
 func (d *Dao) getGroupMuteNum(groupId int64, nowTime int64) (int32, error) {
@@ -438,7 +438,7 @@ func (d *Dao) getGroupMuteNum(groupId int64, nowTime int64) (int32, error) {
 	if err != nil {
 		return 0, err
 	}
-	return util.ToInt32(res[0]["count(*)"]), nil
+	return util.MustToInt32(res[0]["count(*)"]), nil
 }
 
 func (d *Dao) getGroupMuteList(groupId int64, nowTime int64) ([]*db.GroupMemberWithMute, error) {

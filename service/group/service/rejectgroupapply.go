@@ -10,8 +10,8 @@ import (
 
 func (s *Service) RejectGroupApplySvc(ctx context.Context, req *types.RejectGroupApplyReq) (res *types.RejectGroupApplyResp, err error) {
 	personId := req.PersonId
-	groupId := util.ToInt64(req.Id)
-	applyId := util.ToInt64(req.ApplyId)
+	groupId := util.MustToInt64(req.Id)
+	applyId := util.MustToInt64(req.ApplyId)
 
 	// 查询审批详情
 	groupApply, err := s.getGroupApplyById(applyId)

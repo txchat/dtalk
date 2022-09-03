@@ -46,13 +46,13 @@ func (s *Service) CheckCall(req *model.CheckCallRequest) (res *model.CheckCallRe
 
 	return &model.CheckCallResponse{
 		TraceId:    session.TraceId,
-		TraceIdStr: util.ToString(session.TraceId),
+		TraceIdStr: util.MustToString(session.TraceId),
 		RTCType:    session.RTCType,
 		Invitees:   session.Invitees,
 		Caller:     session.Caller,
 		CreateTime: session.CreateTime,
 		Deadline:   session.Deadline,
-		GroupId:    util.ToString(session.GroupId),
+		GroupId:    util.MustToString(session.GroupId),
 		Timeout:    session.Timeout,
 	}, nil
 }

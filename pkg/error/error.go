@@ -72,7 +72,7 @@ func ConvertError(msg string) (*Error, bool) {
 	gs := descRegex.FindStringSubmatch(msg)
 	if len(gs) == 3 {
 		return &Error{
-			code: util.ToInt64(gs[1]),
+			code: util.MustToInt64(gs[1]),
 			msg:  gs[2],
 		}, true
 	}

@@ -22,7 +22,7 @@ func (s *Service) CreateGroupSvc(ctx context.Context, req *types.CreateGroupRequ
 	}
 
 	// 判断群人数
-	if err := s.CheckGroupMemberNum(util.ToInt32(len(req.Members))+1, biz.GroupMaximum); err != nil {
+	if err := s.CheckGroupMemberNum(util.MustToInt32(len(req.Members))+1, biz.GroupMaximum); err != nil {
 		return nil, err
 	}
 
@@ -62,7 +62,7 @@ func (s *Service) CreateGroupSvc(ctx context.Context, req *types.CreateGroupRequ
 		GroupMarkId:     groupMarkId,
 		GroupName:       req.Name,
 		GroupAvatar:     req.Avatar,
-		GroupMemberNum:  util.ToInt32(len(groupMembers)),
+		GroupMemberNum:  util.MustToInt32(len(groupMembers)),
 		GroupMaximum:    biz.GroupMaximum,
 		GroupIntroduce:  req.Introduce,
 		GroupStatus:     biz.GroupStatusNormal,
@@ -85,13 +85,13 @@ func (s *Service) CreateGroupSvc(ctx context.Context, req *types.CreateGroupRequ
 	res = &types.CreateGroupResponse{
 		GroupInfo: &types.GroupInfo{
 			Id:         groupId,
-			IdStr:      util.ToString(groupId),
+			IdStr:      util.MustToString(groupId),
 			MarkId:     groupMarkId,
 			Name:       req.Name,
 			Avatar:     req.Avatar,
 			Introduce:  req.Introduce,
 			Owner:      &req.Owner,
-			MemberNum:  util.ToInt32(1 + len(req.Members)),
+			MemberNum:  util.MustToInt32(1 + len(req.Members)),
 			Maximum:    biz.GroupMaximum,
 			Status:     biz.GroupStatusNormal,
 			CreateTime: nowTime,

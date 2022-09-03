@@ -67,12 +67,12 @@ func (l *Logic) RevokeGroup(Operator string, mid int64) error {
 	}
 	if rd.SenderId != Operator {
 		//执行者
-		memOpt, err := l.svcCtx.GroupClient.GetMember(l.ctx, util.ToInt64(target), Operator)
+		memOpt, err := l.svcCtx.GroupClient.GetMember(l.ctx, util.MustToInt64(target), Operator)
 		if err != nil || memOpt == nil {
 			return err
 		}
 		//消息所有者
-		memOwn, err := l.svcCtx.GroupClient.GetMember(l.ctx, util.ToInt64(target), rd.SenderId)
+		memOwn, err := l.svcCtx.GroupClient.GetMember(l.ctx, util.MustToInt64(target), rd.SenderId)
 		if err != nil || memOwn == nil {
 			return err
 		}

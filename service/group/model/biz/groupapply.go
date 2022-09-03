@@ -39,8 +39,8 @@ type GroupApplyBiz struct {
 // ToTypes 将业务模型转换为 api 展示信息
 func (g *GroupApplyBiz) ToTypes() *types.GroupApplyInfo {
 	return &types.GroupApplyInfo{
-		ApplyId:      util.ToString(g.ApplyId),
-		GroupId:      util.ToString(g.GroupId),
+		ApplyId:      util.MustToString(g.ApplyId),
+		GroupId:      util.MustToString(g.GroupId),
 		InviterId:    g.InviterId,
 		MemberId:     g.MemberId,
 		ApplyNote:    g.ApplyNote,

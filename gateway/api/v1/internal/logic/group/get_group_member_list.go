@@ -21,7 +21,7 @@ func (l *GroupLogic) GetGroupMemberList(req *types.GetGroupMemberListReq) (*type
 
 	return &types.GetGroupMemberListResp{
 		Id:      groupId,
-		IdStr:   util.ToString(groupId),
+		IdStr:   util.MustToString(groupId),
 		Members: Members,
 	}, nil
 }

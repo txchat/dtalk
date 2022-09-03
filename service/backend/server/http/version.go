@@ -62,7 +62,7 @@ func GetVersionList(c *gin.Context) {
 	request := model.GetVersionListRequest{}
 	request.Platform = c.DefaultQuery("platform", "%")
 	request.DeviceType = c.DefaultQuery("deviceType", "%")
-	request.Page = util.ToInt64(c.DefaultQuery("page", "0"))
+	request.Page = util.MustToInt64(c.DefaultQuery("page", "0"))
 	ret, err := svc.GetVersionList(&request)
 	c.Set(api.ReqResult, ret)
 	c.Set(api.ReqError, err)

@@ -14,7 +14,7 @@ func (s *ServiceContent) GetCdksSvc(req *types.GetCdksReq) (res *types.GetCdksRe
 		}
 	}()
 
-	cdks, totalElements, totalPages, err := s.GetCdks(util.ToInt64(req.CdkId), req.CdkContent, req.Page, req.PageSize)
+	cdks, totalElements, totalPages, err := s.GetCdks(util.MustToInt64(req.CdkId), req.CdkContent, req.Page, req.PageSize)
 	if err != nil {
 		return nil, err
 	}

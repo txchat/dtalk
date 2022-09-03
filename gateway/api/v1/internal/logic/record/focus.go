@@ -56,7 +56,7 @@ func (l *Logic) FocusGroup(Operator string, logId int64) error {
 		return model.ErrPermission
 	}
 	//群成员判断
-	memOpt, err := l.svcCtx.GroupClient.GetMember(l.ctx, util.ToInt64(target), Operator)
+	memOpt, err := l.svcCtx.GroupClient.GetMember(l.ctx, util.MustToInt64(target), Operator)
 	if err != nil || memOpt == nil {
 		return err
 	}

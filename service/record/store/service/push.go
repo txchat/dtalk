@@ -30,7 +30,7 @@ func (s *Service) sendPrivateUnReadMsg(key, uid string) error {
 	for _, m := range records {
 		eveP := &xproto.Common{
 			ChannelType: xproto.Channel_ToUser,
-			Mid:         util.ToInt64(m.Mid),
+			Mid:         util.MustToInt64(m.Mid),
 			Seq:         m.Seq,
 			From:        m.SenderId,
 			Target:      m.ReceiverId,
@@ -72,7 +72,7 @@ func (s *Service) sendGroupUnReadMsg(key, uid string) error {
 	for _, m := range records {
 		eveP := &xproto.Common{
 			ChannelType: xproto.Channel_ToGroup,
-			Mid:         util.ToInt64(m.Mid),
+			Mid:         util.MustToInt64(m.Mid),
 			Seq:         m.Seq,
 			From:        m.SenderId,
 			Target:      m.ReceiverId,
