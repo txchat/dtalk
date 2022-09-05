@@ -1,8 +1,8 @@
 Name: version.rpc
-ListenOn: 127.0.0.1:13001
+ListenOn: 127.0.0.1:17022
 Etcd:
   Hosts:
-  - 127.0.0.1:2379
+    - 127.0.0.1:2379
   Key: version.rpc
 MySQL:
   Host: "localhost"

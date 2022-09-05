@@ -1,6 +1,17 @@
 Name: device.rpc
-ListenOn: 127.0.0.1:8080
+ListenOn: 127.0.0.1:17004
 Etcd:
   Hosts:
-  - 127.0.0.1:2379
+    - 127.0.0.1:2379
   Key: device.rpc
+RedisDB:
+  Network: "tcp"
+  Addr: "127.0.0.1:6379"
+  Auth: ""
+  Active: 60000
+  Idle: 1024
+  DialTimeout: "200ms"
+  ReadTimeout: "500ms"
+  WriteTimeout: "500ms"
+  IdleTimeout: "120s"
+  Expire: "30m"

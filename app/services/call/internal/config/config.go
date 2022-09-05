@@ -7,9 +7,10 @@ import (
 
 type Config struct {
 	zrpc.RpcServerConf
-	RedisDB  xredis.Config
-	RTC      RTCConfig
-	IDGenRPC zrpc.RpcClientConf
+	RedisDB   xredis.Config
+	IDGenRPC  zrpc.RpcClientConf
+	AnswerRPC zrpc.RpcClientConf
+	RTC       RTCConfig
 }
 
 type RTCConfig struct {
