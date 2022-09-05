@@ -5,16 +5,17 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/pkg/errors"
+	"github.com/txchat/dtalk/app/services/answer/answer"
+	"github.com/txchat/dtalk/app/services/answer/answerclient"
 	xcall "github.com/txchat/dtalk/pkg/call"
-	answer "github.com/txchat/dtalk/service/record/answer/api"
 	xproto "github.com/txchat/imparse/proto"
 )
 
 type CallNotifyClient struct {
-	answerClient *answer.Client
+	answerClient answerclient.Answer
 }
 
-func NewCallNotifyClient(rpcCli *answer.Client) *CallNotifyClient {
+func NewCallNotifyClient(rpcCli answerclient.Answer) *CallNotifyClient {
 	return &CallNotifyClient{
 		answerClient: rpcCli,
 	}
@@ -29,7 +30,12 @@ func (s *CallNotifyClient) SendStartCallSignal(ctx context.Context, target strin
 		return errors.WithMessagef(err, "proto.Marshal, action=%+v", action)
 	}
 
-	return s.answerClient.UniCastSignal(ctx, xproto.SignalType_StartCall, target, body)
+	_, err = s.answerClient.UniCastSignal(ctx, &answerclient.UniCastSignalReq{
+		Type:   answer.SignalType_StartCall,
+		Target: target,
+		Body:   body,
+	})
+	return err
 }
 
 func (s *CallNotifyClient) SendAcceptCallSignal(ctx context.Context, target string, traceId int64, ticket xcall.Ticket) error {
@@ -46,7 +52,12 @@ func (s *CallNotifyClient) SendAcceptCallSignal(ctx context.Context, target stri
 		return errors.WithMessagef(err, "proto.Marshal, action=%+v", action)
 	}
 
-	return s.answerClient.UniCastSignal(ctx, xproto.SignalType_AcceptCall, target, body)
+	_, err = s.answerClient.UniCastSignal(ctx, &answerclient.UniCastSignalReq{
+		Type:   answer.SignalType_AcceptCall,
+		Target: target,
+		Body:   body,
+	})
+	return err
 }
 
 func (s *CallNotifyClient) SendStopCallSignal(ctx context.Context, Target string, TraceId int64, stopType xcall.StopType) error {
@@ -74,5 +85,10 @@ func (s *CallNotifyClient) SendStopCallSignal(ctx context.Context, Target string
 		return errors.WithMessagef(err, "proto.Marshal, action=%+v", action)
 	}
 
-	return s.answerClient.UniCastSignal(ctx, xproto.SignalType_StopCall, Target, body)
+	_, err = s.answerClient.UniCastSignal(ctx, &answerclient.UniCastSignalReq{
+		Type:   answer.SignalType_StopCall,
+		Target: Target,
+		Body:   body,
+	})
+	return err
 }
