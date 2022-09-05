@@ -1,0 +1,70 @@
+syntax = "proto3";
+
+package answer;
+option go_package = "./answer";
+
+enum SignalType {
+  Received = 0;
+  Revoke = 1;
+  SignInGroup = 10;
+  SignOutGroup = 11;
+  DeleteGroup = 12;
+  FocusMessage = 13;
+  EndpointLogin = 14;
+  //
+  UpdateGroupJoinType = 20;
+  UpdateGroupFriendType = 21;
+  UpdateGroupMuteType = 22;
+  UpdateGroupMemberType = 23;
+  UpdateGroupMemberMuteTime = 24;
+  UpdateGroupName = 25;
+  UpdateGroupAvatar = 26;
+  //
+  StartCall = 31;
+  AcceptCall = 32;
+  StopCall = 33;
+}
+
+message PushCommonMsgReq {
+  string key = 1;
+  string from = 2;
+  bytes body = 3;
+}
+
+message PushCommonMsgReply {
+  int64 mid = 1;
+  uint64 time = 2;
+}
+
+message PushNoticeMsgReq {
+  string seq = 1;
+  int32 channelType = 2;
+  string from = 3;
+  string target = 4;
+  bytes data = 5;
+}
+
+message PushNoticeMsgReply { int64 mid = 1; }
+
+message UniCastSignalReq {
+  SignalType type = 1;
+  string target = 2;
+  bytes body = 3;
+}
+
+message UniCastSignalReply { int64 mid = 1; }
+
+message GroupCastSignalReq {
+  SignalType type = 1;
+  string target = 2;
+  bytes body = 3;
+}
+
+message GroupCastSignalReply { int64 mid = 1; }
+
+service Answer {
+  rpc PushCommonMsg(PushCommonMsgReq) returns (PushCommonMsgReply);
+  rpc PushNoticeMsg(PushNoticeMsgReq) returns (PushNoticeMsgReply);
+  rpc UniCastSignal(UniCastSignalReq) returns (UniCastSignalReply);
+  rpc GroupCastSignal(GroupCastSignalReq) returns (GroupCastSignalReply);
+}
