@@ -42,11 +42,11 @@ func main() {
 	for i := 0; i < number; i++ {
 		go func(index int) {
 			for j := start; j < end; j++ {
-				_, _, err := p.Publish("", fmt.Sprintf("%d-%d", index, j))
+				_, _, err := p.Publish("", []byte(fmt.Sprintf("%d-%d", index, j)))
 				if err != nil {
 					log.Error("publish failed", "err", err)
 				}
-				time.Sleep(time.Millisecond * 100)
+				time.Sleep(time.Millisecond * 1000)
 			}
 		}(i)
 	}

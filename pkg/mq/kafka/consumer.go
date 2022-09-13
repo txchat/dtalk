@@ -3,8 +3,9 @@ package kafka
 import (
 	"context"
 	"errors"
-	"fmt"
+	"io"
 	"strings"
+	"sync/atomic"
 	"time"
 
 	"github.com/Shopify/sarama"
@@ -16,6 +17,7 @@ type ConsumerConfig struct {
 	Brokers        []string
 	Group          string
 	Topic          string
+	CacheCapacity  int
 	ConnectTimeout time.Duration
 	realVersion    sarama.KafkaVersion
 }
@@ -28,7 +30,8 @@ type Consumer struct {
 	client sarama.ConsumerGroup
 	queue  chan *sarama.ConsumerMessage
 
-	ready chan bool
+	ready    chan bool
+	isClosed int32
 }
 
 func ensureConsumerConfig(cfg *ConsumerConfig) {
@@ -45,6 +48,9 @@ func ensureConsumerConfig(cfg *ConsumerConfig) {
 	if cfg.Topic == "" {
 		panic(errors.New("topic is empty"))
 	}
+	if cfg.CacheCapacity < 1 {
+		cfg.CacheCapacity = 100
+	}
 }
 
 func NewConsumer(cfg ConsumerConfig, logger log15.Logger) *Consumer {
@@ -58,13 +64,12 @@ func NewConsumer(cfg ConsumerConfig, logger log15.Logger) *Consumer {
 		logger = log15.New()
 	}
 
-	//ctx, _ := context.WithTimeout(context.Background(), cfg.ConnectTimeout)
 	consumer := &Consumer{
 		log:    logger,
 		cfg:    cfg,
 		ctx:    context.Background(),
 		client: nil,
-		queue:  make(chan *sarama.ConsumerMessage, 100),
+		queue:  make(chan *sarama.ConsumerMessage, cfg.CacheCapacity),
 		ready:  make(chan bool),
 	}
 
@@ -80,20 +85,25 @@ func NewConsumer(cfg ConsumerConfig, logger log15.Logger) *Consumer {
 			// server-side rebalance happens, the consumer session will need to be
 			// recreated to get the new claims
 			if err := client.Consume(consumer.ctx, []string{cfg.Topic}, consumer); err != nil {
-				panic(fmt.Errorf("error from consumer: %v", err))
+				consumer.log.Error("error from consumer", "err", err)
+				return
 			}
 			// check if context was cancelled, signaling that the consumer should stop
 			if consumer.ctx.Err() != nil {
+				consumer.log.Error("error from consumer cancel", "err", consumer.ctx.Err())
 				return
 			}
-			//consumer.ready = make(chan bool)
+			//consumer.log.Info("consumer rebalanced", "member id", session.MemberID(), "id", session.GenerationID())
+			consumer.ready = make(chan bool)
 		}
 	}()
 
+	ctx, cancel := context.WithTimeout(context.Background(), cfg.ConnectTimeout)
+	defer cancel()
 	//block create with timeout
 	select {
-	case <-consumer.ctx.Done():
-		panic(consumer.ctx.Err())
+	case <-ctx.Done():
+		panic(ctx.Err())
 	case <-consumer.ready:
 	}
 	return consumer
@@ -101,11 +111,19 @@ func NewConsumer(cfg ConsumerConfig, logger log15.Logger) *Consumer {
 
 // FetchMessage 读取并返回message
 func (c *Consumer) FetchMessage(ctx context.Context) (message *sarama.ConsumerMessage, err error) {
-	return <-c.queue, nil
+	data, ok := <-c.queue
+	if c.isClosed == 1 && !ok {
+		return data, io.EOF
+	}
+	return data, nil
 }
 
 func (c *Consumer) Close() error {
-	return c.client.Close()
+	var err error
+	if atomic.CompareAndSwapInt32(&c.isClosed, 0, 1) {
+		err = c.client.Close()
+	}
+	return err
 }
 
 // Setup is run at the beginning of a new session, before ConsumeClaim.
@@ -117,8 +135,7 @@ func (c *Consumer) Setup(sarama.ConsumerGroupSession) error {
 // Cleanup is run at the end of a session, once all ConsumeClaim goroutines have exited
 // but before the offsets are committed for the very last time.
 func (c *Consumer) Cleanup(session sarama.ConsumerGroupSession) error {
-	c.log.Info("consumer rebalanced", "member id", session.MemberID(), "id", session.GenerationID())
-	c.ready = make(chan bool)
+	close(c.queue)
 	return nil
 }
 

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"os"
 	"os/signal"
@@ -12,46 +13,60 @@ import (
 )
 
 var (
-	topic, group string
-	broker       string
-	Consumers    int
-	Processors   int
+	topic, group          string
+	broker                string
+	Consumers             int
+	Processors            int
+	connTimeout           int
+	batchCacheCapacity    int
+	consumerCacheCapacity int
+	graceful              bool
 )
 
 func init() {
 	flag.IntVar(&Consumers, "cons", 1, "")
 	flag.IntVar(&Processors, "pros", 1, "")
+	flag.IntVar(&connTimeout, "cto", 7000, "连接超时时间，单位ms")
+	flag.IntVar(&batchCacheCapacity, "bcc", 0, "缓冲区大小")
+	flag.IntVar(&consumerCacheCapacity, "ccc", 0, "缓冲区大小")
 	flag.StringVar(&topic, "topic", "test-mytest-topic", "")
 	flag.StringVar(&group, "group", "", "")
 	flag.StringVar(&broker, "broker", "127.0.0.1:9092", "")
+	flag.BoolVar(&graceful, "graceful", true, "")
 }
 
 //
 func main() {
 	flag.Parse()
-	log.Info("service start", "broker", broker, "topic", topic, "group", group, "Consumers", Consumers, "Processors", Processors)
+	log.Info("service start", "broker", broker, "topic", topic, "group", group)
+	log.Info("configs",
+		"Consumers", Consumers, "Processors", Processors,
+		"connTimeout", connTimeout,
+		"batchCacheCapacity", batchCacheCapacity,
+		"consumerCacheCapacity", consumerCacheCapacity,
+		"graceful", graceful,
+	)
 
 	consumer := xkafka.NewConsumer(xkafka.ConsumerConfig{
 		Version:        "",
 		Brokers:        []string{broker},
 		Group:          group,
 		Topic:          topic,
-		ConnectTimeout: time.Second * 20,
+		CacheCapacity:  consumerCacheCapacity,
+		ConnectTimeout: time.Millisecond * time.Duration(connTimeout),
 	}, nil)
 	log.Info("dial kafka broker success")
 	bc := xkafka.NewBatchConsumer(xkafka.BatchConsumerConf{
-		CacheCapacity: 0,
+		CacheCapacity: batchCacheCapacity,
 		Consumers:     Consumers,
 		Processors:    Processors,
-	}, xkafka.WithHandle(func(key, value string) error {
-		log.Info("receive msg:", "value", value)
-		time.Sleep(time.Millisecond * 300)
+	}, xkafka.WithHandle(func(key string, data []byte) error {
+		log.Info("receive msg:", "value", data)
+		time.Sleep(time.Millisecond * 500)
 		return nil
 	}), consumer)
 
-	go func() {
-		bc.Start()
-	}()
+	bc.Start()
 
 	// init signal
 	c := make(chan os.Signal, 1)
@@ -60,7 +75,11 @@ func main() {
 		s := <-c
 		switch s {
 		case syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT:
-			bc.Stop()
+			if graceful {
+				bc.GracefulStop(context.Background())
+			} else {
+				bc.Stop()
+			}
 			time.Sleep(time.Second * 2)
 			return
 		case syscall.SIGHUP:

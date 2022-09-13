@@ -38,14 +38,12 @@ func main() {
 		CacheCapacity: 0,
 		Consumers:     Consumers,
 		Processors:    Processors,
-	}, xkafka.WithHandle(func(key, value string) error {
-		log.Info("receive msg:", "value", value)
+	}, xkafka.WithHandle(func(key string, data []byte) error {
+		log.Info("receive msg:", "value", data)
 		return nil
 	}), consumer)
 
-	go func() {
-		bc.Start()
-	}()
+	bc.Start()
 
 	// init signal
 	c := make(chan os.Signal, 1)

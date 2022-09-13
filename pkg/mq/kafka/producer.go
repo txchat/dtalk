@@ -58,7 +58,7 @@ func NewProducer(cfg ProducerConfig) *Producer {
 	}
 }
 
-func (p *Producer) Publish(k, v string) (int32, int64, error) {
+func (p *Producer) Publish(k string, v []byte) (int32, int64, error) {
 	if k == "" {
 		k = strconv.FormatInt(time.Now().UnixNano(), 10)
 	}

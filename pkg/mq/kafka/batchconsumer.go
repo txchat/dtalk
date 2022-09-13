@@ -3,6 +3,7 @@ package kafka
 import (
 	"context"
 	"io"
+	"sync/atomic"
 
 	"github.com/Shopify/sarama"
 	"github.com/gammazero/workerpool"
@@ -14,10 +15,10 @@ type IConsumer interface {
 	Close() error
 }
 
-type ConsumeHandle func(key, value string) error
+type ConsumeHandle func(key string, data []byte) error
 
 type ConsumeHandler interface {
-	Consume(key, value string) error
+	Consume(key string, data []byte) error
 }
 
 const (
@@ -44,6 +45,7 @@ type (
 		handler         ConsumeHandler
 		producerWorkers *workerpool.WorkerPool
 		consumerWorkers *workerpool.WorkerPool
+		isClosed        int32
 	}
 )
 
@@ -83,13 +85,15 @@ func NewBatchConsumer(cfg BatchConsumerConf, handler ConsumeHandler, consumer IC
 func (bc *BatchConsumer) startProducers() {
 	for i := 0; i < bc.cfg.Consumers; i++ {
 		bc.producerWorkers.Submit(func() {
+			defer bc.close()
+
 			for {
 				msg, err := bc.consumer.FetchMessage(context.TODO())
-				bc.log.Debug("fetchMessage", "msg", string(msg.Value), "err", err)
 				// io.EOF means consumer closed
 				// io.ErrClosedPipe means committing messages on the consumer,
 				// kafka will refire the messages on uncommitted messages, ignore
 				if err == io.EOF || err == io.ErrClosedPipe {
+					bc.log.Debug("fetchMessage io.EOF or io.ErrClosedPipe")
 					return
 				}
 				if err != nil {
@@ -99,6 +103,7 @@ func (bc *BatchConsumer) startProducers() {
 				if msg == nil {
 					continue
 				}
+				bc.log.Debug("fetchMessage", "msg", string(msg.Value))
 				bc.channel <- msg
 			}
 		})
@@ -109,7 +114,7 @@ func (bc *BatchConsumer) startConsumers() {
 	for i := 0; i < bc.cfg.Processors; i++ {
 		bc.consumerWorkers.Submit(func() {
 			for msg := range bc.channel {
-				if err := bc.consumeOne(string(msg.Key), string(msg.Value)); err != nil {
+				if err := bc.consumeOne(string(msg.Key), msg.Value); err != nil {
 					bc.log.Error("Error on consuming message", "msg", string(msg.Value), "err", err)
 				}
 			}
@@ -117,21 +122,40 @@ func (bc *BatchConsumer) startConsumers() {
 	}
 }
 
-func (bc *BatchConsumer) consumeOne(key, val string) error {
-	return bc.handler.Consume(key, val)
+func (bc *BatchConsumer) consumeOne(key string, data []byte) error {
+	return bc.handler.Consume(key, data)
+}
+
+func (bc *BatchConsumer) close() {
+	if atomic.CompareAndSwapInt32(&bc.isClosed, 0, 1) {
+		close(bc.channel)
+	}
 }
 
 func (bc *BatchConsumer) Start() {
 	bc.startConsumers()
 	bc.startProducers()
-
-	bc.producerWorkers.StopWait()
-	close(bc.channel)
-	bc.consumerWorkers.StopWait()
 }
 
 func (bc *BatchConsumer) Stop() {
 	bc.consumer.Close()
+	bc.close()
+}
+
+func (bc *BatchConsumer) GracefulStop(ctx context.Context) {
+	down := make(chan struct{})
+	go func() {
+		bc.consumer.Close()
+		bc.consumerWorkers.StopWait()
+		close(down)
+	}()
+
+	select {
+	case <-ctx.Done():
+		return
+	case <-down:
+		return
+	}
 }
 
 func WithLogger(logger log15.Logger) BatchConsumerOption {
@@ -150,6 +174,6 @@ type innerConsumeHandler struct {
 	handle ConsumeHandle
 }
 
-func (ch innerConsumeHandler) Consume(k, v string) error {
+func (ch innerConsumeHandler) Consume(k string, v []byte) error {
 	return ch.handle(k, v)
 }
