@@ -107,6 +107,61 @@ services:
 #      - backend
 #      - call
 
+  zookeeper:
+    image: wurstmeister/zookeeper
+    container_name: ${ZOOKEEPER_CONTAINER_NAME}
+    restart: unless-stopped
+    volumes:
+      - zookeeper_data:/data
+    networks:
+      - components
+    ports:
+      - "2181:2181"
+  # kafka version: 1.1.0
+  # scala version: 2.12
+  kafka:
+    image: wurstmeister/kafka
+    container_name: ${KAFKA_CONTAINER_NAME}
+    restart: unless-stopped
+    ports:
+      - "9092:9092"
+    # kafka connectivity: https://github.com/wurstmeister/kafka-docker/wiki/Connectivity#internal-versus-advertised
+    environment:
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://${HOST_ETH0_NAME}:9092
+      #      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      #      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://host.docker.internal:9092
+      #      KAFKA_ADVERTISED_HOST_NAME: localhost
+      KAFKA_ZOOKEEPER_CONNECT: "${ZOOKEEPER_CONTAINER_NAME}:2181"
+      KAFKA_BROKER_ID: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CREATE_TOPICS: "stream-in:1:1,stream-out:1:1"
+    volumes:
+      - kafka_data:/kafka
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - components
+    depends_on:
+      - zookeeper
+    healthcheck:
+      test: [ "CMD", "kafka-topics.sh", "--list", "--zookeeper", "txchat-zookeeper:2181" ]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+  kafka-manager:
+    container_name: ${KAFKA_MANAGER_CONTAINER_NAME}
+    image: sheepkiller/kafka-manager
+    environment:
+      ZK_HOSTS: ${ZOOKEEPER_CONTAINER_NAME}:2181
+    networks:
+      - components
+    ports:
+      - "9020:9000"
+    depends_on:
+      zookeeper:
+        condition: service_started
+#      kafka: # this feature is removed at compose version 3.x
+#        condition: service_healthy
 volumes:
   redis_data:
     name: ${REDIS_DATA_VOLUME}
@@ -140,6 +195,12 @@ volumes:
     external: false
   nginx_log:
     name: ${NGINX_LOG_VOLUME}
+    external: false
+  zookeeper_data:
+    name: ${ZOOKEEPER_DATA_VOLUME}
+    external: false
+  kafka_data:
+    name: ${KAFKA_DATA_VOLUME}
     external: false
 networks:
   components:

@@ -5,7 +5,7 @@ go 1.15
 require (
 	github.com/33cn/chain33 v1.65.3
 	github.com/BurntSushi/toml v0.3.1
-	github.com/Shopify/sarama v1.30.0
+	github.com/Shopify/sarama v1.36.0
 	github.com/Terry-Mao/goim v0.0.0-20210523140626-e742c99ad76e
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/aliyun/alibaba-cloud-sdk-go v1.61.948
@@ -23,13 +23,13 @@ require (
 	github.com/golang/protobuf v1.5.2
 	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/google/uuid v1.3.0
-	github.com/gorilla/context v1.1.1
 	github.com/haltingstate/secp256k1-go v0.0.0-20151224084235-572209b26df6
 	github.com/huaweicloud/huaweicloud-sdk-go-obs v3.21.1+incompatible
 	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.0.35-rc
 	github.com/inconshreveable/log15 v0.0.0-20201112154412-8562bdadbbac
 	github.com/jinzhu/gorm v1.9.16
 	github.com/minio/minio-go/v7 v7.0.12
+	github.com/nsqio/go-nsq v1.1.0
 	github.com/oofpgDLD/u-push v0.0.2
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/pkg/errors v0.9.1
@@ -51,7 +51,7 @@ require (
 	github.com/zeromicro/go-zero v1.4.0
 	go.etcd.io/etcd/api/v3 v3.5.4
 	go.etcd.io/etcd/client/v3 v3.5.4
-	golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d
+	golang.org/x/crypto v0.0.0-20220722155217-630584e8d5aa
 	google.golang.org/grpc v1.48.0
 	google.golang.org/protobuf v1.28.1
 	gopkg.in/Shopify/sarama.v1 v1.19.0
