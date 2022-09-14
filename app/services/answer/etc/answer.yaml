@@ -1,3 +1,4 @@
+AppID: dtalk
 Name: answer.rpc
 ListenOn: 127.0.0.1:17001
 Etcd:
@@ -15,3 +16,33 @@ RedisDB:
   WriteTimeout: "500ms"
   IdleTimeout: "120s"
   Expire: "30m"
+Producer:
+  Version: ""
+  Brokers: ["127.0.0.1:9092"]
+ConsumerConfig:
+  Version: ""
+  Brokers: ["127.0.0.1:9092"]
+  CacheCapacity: 0
+  ConnectTimeout: ""
+BatchConsumerConf:
+  CacheCapacity: 0
+  Consumers: 0
+  Processors: 0
+IDGenRPC:
+  Etcd:
+    Hosts:
+      - "localhost:2379"
+    Key: "version.rpc"
+    Timeout: 60000 # 60s
+LogicRPCClient:
+  RegAddrs: "127.0.0.1:2379"
+  Schema: "im"
+  SrvName: "logic"
+  Dial: "1s"
+  Timeout: "1s"
+GroupRPCClient:
+  RegAddrs: "127.0.0.1:2379"
+  Schema: "dtalk"
+  SrvName: "group"
+  Dial: "1s"
+  Timeout: "1s"

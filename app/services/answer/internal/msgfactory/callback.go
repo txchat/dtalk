@@ -11,22 +11,22 @@ import (
 	"github.com/txchat/imparse"
 )
 
-// send msg callback
-type withCometLevelAckCallback struct {
+// WithCometLevelAckCallback send msg callback
+type WithCometLevelAckCallback struct {
 	appId       string
 	mqPub       *xkafka.Producer
 	logicClient logic.LogicClient
 }
 
-func NewWithCometLevelAckCallback(appId string, mqPub *xkafka.Producer, logicClient logic.LogicClient) *withCometLevelAckCallback {
-	return &withCometLevelAckCallback{
+func NewWithCometLevelAckCallback(appId string, mqPub *xkafka.Producer, logicClient logic.LogicClient) *WithCometLevelAckCallback {
+	return &WithCometLevelAckCallback{
 		appId:       appId,
 		mqPub:       mqPub,
 		logicClient: logicClient,
 	}
 }
 
-func (e *withCometLevelAckCallback) Transport(ctx context.Context, mid int64, key, from, target string, ch imparse.Channel, frameType imparse.FrameType, data []byte) error {
+func (e *WithCometLevelAckCallback) Transport(ctx context.Context, mid int64, key, from, target string, ch imparse.Channel, frameType imparse.FrameType, data []byte) error {
 	pushMsg := &record.PushMsg{
 		AppId:     e.appId,
 		FromId:    from,
@@ -46,7 +46,7 @@ func (e *withCometLevelAckCallback) Transport(ctx context.Context, mid int64, ke
 	return err
 }
 
-func (e *withCometLevelAckCallback) RevAck(ctx context.Context, id int64, keys []string, data []byte) error {
+func (e *WithCometLevelAckCallback) RevAck(ctx context.Context, id int64, keys []string, data []byte) error {
 	keysMsg := &logic.KeysMsg{
 		AppId:  e.appId,
 		ToKeys: keys,
@@ -57,20 +57,20 @@ func (e *withCometLevelAckCallback) RevAck(ctx context.Context, id int64, keys [
 	return err
 }
 
-// inner send msg callback
-type withoutAckCallback struct {
+// WithoutAckCallback inner send msg callback
+type WithoutAckCallback struct {
 	appId string
 	mqPub *xkafka.Producer
 }
 
-func NewWithoutAckCallback(appId string, mqPub *xkafka.Producer) *withoutAckCallback {
-	return &withoutAckCallback{
+func NewWithoutAckCallback(appId string, mqPub *xkafka.Producer) *WithoutAckCallback {
+	return &WithoutAckCallback{
 		appId: appId,
 		mqPub: mqPub,
 	}
 }
 
-func (e *withoutAckCallback) Transport(ctx context.Context, mid int64, key, from, target string, ch imparse.Channel, frameType imparse.FrameType, data []byte) error {
+func (e *WithoutAckCallback) Transport(ctx context.Context, mid int64, key, from, target string, ch imparse.Channel, frameType imparse.FrameType, data []byte) error {
 	pushMsg := &record.PushMsg{
 		AppId:     e.appId,
 		FromId:    from,
@@ -90,6 +90,6 @@ func (e *withoutAckCallback) Transport(ctx context.Context, mid int64, key, from
 	return err
 }
 
-func (e *withoutAckCallback) RevAck(ctx context.Context, id int64, keys []string, data []byte) error {
+func (e *WithoutAckCallback) RevAck(ctx context.Context, id int64, keys []string, data []byte) error {
 	return nil
 }

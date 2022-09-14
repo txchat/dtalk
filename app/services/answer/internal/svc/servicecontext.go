@@ -52,6 +52,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	msgCache := msgfactory.NewMsgCache(svc.Repo, svc.IDGenRPC)
 	trace := msgfactory.NewTrace()
 	fs := msgfactory.NewFilters(svc.GroupRPC)
+	c.Producer.Topic = fmt.Sprintf("received-%s-topic", c.AppID)
 	pub := xkafka.NewProducer(c.Producer)
 	withoutAckCB := msgfactory.NewWithoutAckCallback(c.AppID, pub)
 	withCometAckCB := msgfactory.NewWithCometLevelAckCallback(c.AppID, pub, svc.LogicRPC)

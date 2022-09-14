@@ -2,6 +2,7 @@ package mq
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/golang/protobuf/proto"
 	"github.com/txchat/dtalk/app/services/answer/internal/config"
@@ -27,6 +28,9 @@ func NewService(cfg config.Config, svcCtx *svc.ServiceContext) *Service {
 		Config: cfg,
 		svcCtx: svcCtx,
 	}
+	//topic config
+	cfg.ConsumerConfig.Topic = fmt.Sprintf("goim-%s-topic", cfg.AppID)
+	cfg.ConsumerConfig.Group = fmt.Sprintf("goim-%s-group", cfg.AppID)
 	//new batch consumer
 	consumer := xkafka.NewConsumer(cfg.ConsumerConfig, nil)
 	logx.Info("dial kafka broker success")
