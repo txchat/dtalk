@@ -3,8 +3,9 @@ package msgfactory
 import (
 	"context"
 
+	xkafka "github.com/txchat/dtalk/pkg/mq/kafka"
+
 	"github.com/golang/protobuf/proto"
-	"github.com/txchat/dtalk/app/services/answer/internal/dao"
 	record "github.com/txchat/dtalk/service/record/proto"
 	logic "github.com/txchat/im/api/logic/grpc"
 	"github.com/txchat/imparse"
@@ -13,12 +14,16 @@ import (
 // send msg callback
 type withCometLevelAckCallback struct {
 	appId       string
-	dao         dao.AnswerRepository
+	mqPub       *xkafka.Producer
 	logicClient logic.LogicClient
 }
 
-func NewWithCometLevelAckCallback() *withCometLevelAckCallback {
-	return &withCometLevelAckCallback{}
+func NewWithCometLevelAckCallback(appId string, mqPub *xkafka.Producer, logicClient logic.LogicClient) *withCometLevelAckCallback {
+	return &withCometLevelAckCallback{
+		appId:       appId,
+		mqPub:       mqPub,
+		logicClient: logicClient,
+	}
 }
 
 func (e *withCometLevelAckCallback) Transport(ctx context.Context, mid int64, key, from, target string, ch imparse.Channel, frameType imparse.FrameType, data []byte) error {
@@ -36,7 +41,9 @@ func (e *withCometLevelAckCallback) Transport(ctx context.Context, mid int64, ke
 	if err != nil {
 		return err
 	}
-	return e.dao.PublishToSend(ctx, from, b)
+
+	_, _, err = e.mqPub.Publish(from, b)
+	return err
 }
 
 func (e *withCometLevelAckCallback) RevAck(ctx context.Context, id int64, keys []string, data []byte) error {
@@ -52,13 +59,15 @@ func (e *withCometLevelAckCallback) RevAck(ctx context.Context, id int64, keys [
 
 // inner send msg callback
 type withoutAckCallback struct {
-	appId       string
-	dao         *dao.Dao
-	logicClient logic.LogicClient
+	appId string
+	mqPub *xkafka.Producer
 }
 
-func NewWithoutAckCallback() *withoutAckCallback {
-	return &withoutAckCallback{}
+func NewWithoutAckCallback(appId string, mqPub *xkafka.Producer) *withoutAckCallback {
+	return &withoutAckCallback{
+		appId: appId,
+		mqPub: mqPub,
+	}
 }
 
 func (e *withoutAckCallback) Transport(ctx context.Context, mid int64, key, from, target string, ch imparse.Channel, frameType imparse.FrameType, data []byte) error {
@@ -76,7 +85,9 @@ func (e *withoutAckCallback) Transport(ctx context.Context, mid int64, key, from
 	if err != nil {
 		return err
 	}
-	return e.dao.PublishToSend(ctx, from, b)
+
+	_, _, err = e.mqPub.Publish(from, b)
+	return err
 }
 
 func (e *withoutAckCallback) RevAck(ctx context.Context, id int64, keys []string, data []byte) error {

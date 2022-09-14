@@ -8,10 +8,10 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/Shopify/sarama"
 	cluster "github.com/bsm/sarama-cluster"
 	"github.com/inconshreveable/log15"
-	"github.com/txchat/dtalk/service/offline-push/service/kafka"
-	logic "github.com/txchat/im/api/logic/grpc"
+	"github.com/txchat/dtalk/service/record/kafka/consumer"
 )
 
 var log = log15.New("test main", "model", "kafka consume")
@@ -21,7 +21,7 @@ func main() {
 	p := &process{}
 	for i, c := range store {
 		log.Debug(fmt.Sprintf("accept %v", i))
-		go c.Listen(p)
+		go c.Listen(p.Deal)
 	}
 
 	// init signal
@@ -55,11 +55,11 @@ func newKafkaSub() *cluster.Consumer {
 	return consumer
 }
 
-func newKafkaConsumers() map[string]*kafka.Consumer {
-	store := make(map[string]*kafka.Consumer)
+func newKafkaConsumers() map[string]*consumer.Consumer {
+	store := make(map[string]*consumer.Consumer)
 	num := 1
 	for i := 0; i < num; i++ {
-		store[strconv.Itoa(i)] = &kafka.Consumer{Consumer: newKafkaSub()}
+		store[strconv.Itoa(i)] = &consumer.Consumer{Consumer: newKafkaSub()}
 	}
 	return store
 }
@@ -67,7 +67,7 @@ func newKafkaConsumers() map[string]*kafka.Consumer {
 type process struct {
 }
 
-func (p *process) Deal(m *logic.BizMsg) error {
-	fmt.Println(m)
+func (p *process) Deal(msg *sarama.ConsumerMessage) error {
+	fmt.Println(msg)
 	return nil
 }
