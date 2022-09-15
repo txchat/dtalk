@@ -1,0 +1,68 @@
+AppID: dtalk
+Name: pusher.rpc
+ListenOn: 127.0.0.1:8080
+Etcd:
+  Hosts:
+  - 127.0.0.1:2379
+  Key: pusher.rpc
+RedisDB:
+  Network: "tcp"
+  Addr: "127.0.0.1:6379"
+  Auth: ""
+  Active: 60000
+  Idle: 1024
+  DialTimeout: "200ms"
+  ReadTimeout: "500ms"
+  WriteTimeout: "500ms"
+  IdleTimeout: "120s"
+  Expire: "30m"
+DeviceRPC:
+  Etcd:
+    Hosts:
+      - "localhost:2379"
+    Key: "device.rpc"
+    Timeout: 60000 # 60s
+AnswerRPC:
+  Etcd:
+    Hosts:
+      - "localhost:2379"
+    Key: "answer.rpc"
+    Timeout: 60000 # 60s
+OffPushEnabled: true
+ProducerStorage:
+  Version: ""
+  Brokers: ["127.0.0.1:9092"]
+ProducerOffPush:
+  Version: ""
+  Brokers: ["127.0.0.1:9092"]
+ConnDealConsumerConfig:
+  Version: ""
+  Brokers: ["127.0.0.1:9092"]
+  CacheCapacity: 0
+  ConnectTimeout: ""
+ConnDealBatchConsumerConf:
+  CacheCapacity: 0
+  Consumers: 0
+  Processors: 0
+PushDealConsumerConfig:
+  Version: ""
+  Brokers: ["127.0.0.1:9092"]
+  CacheCapacity: 0
+  ConnectTimeout: ""
+PushDealBatchConsumerConf:
+  CacheCapacity: 0
+  Consumers: 0
+  Processors: 0
+
+LogicRPCClient:
+  RegAddrs: "127.0.0.1:2379"
+  Schema: "im"
+  SrvName: "logic"
+  Dial: "1s"
+  Timeout: "1s"
+GroupRPCClient:
+  RegAddrs: "127.0.0.1:2379"
+  Schema: "dtalk"
+  SrvName: "group"
+  Dial: "1s"
+  Timeout: "1s"
