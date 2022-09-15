@@ -6,7 +6,10 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"sync"
 	"syscall"
+
+	"github.com/txchat/dtalk/app/services/pusher/rmq/rdmq"
 
 	"github.com/txchat/dtalk/app/services/pusher/internal/config"
 	"github.com/txchat/dtalk/app/services/pusher/internal/svc"
@@ -31,7 +34,7 @@ var (
 	// isShowVersion 是否显示项目版本信息
 	isShowVersion = flag.Bool("v", false, "show project version")
 	// configFile 配置文件路径
-	configFile = flag.String("f", "etc/answer-rmq.yaml", "the config file")
+	configFile = flag.String("f", "etc/pusher-rmq.yaml", "the config file")
 )
 
 func main() {
@@ -42,8 +45,11 @@ func main() {
 	conf.MustLoad(*configFile, &c)
 	ctx := svc.NewServiceContext(c)
 
-	mqSvc := connmq.NewService(c, ctx)
-	mqSvc.Serve()
+	connMQSvc := connmq.NewService(c, ctx)
+	connMQSvc.Serve()
+
+	rdMQSvc := rdmq.NewService(c, ctx)
+	rdMQSvc.Serve()
 
 	// init signal
 	sc := make(chan os.Signal, 1)
@@ -53,7 +59,14 @@ func main() {
 		logx.Info("service get a signal", "signal", s.String())
 		switch s {
 		case syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT:
-			mqSvc.Shutdown(context.Background())
+			wg := sync.WaitGroup{}
+			go func() {
+				defer wg.Done()
+				wg.Add(1)
+				connMQSvc.Shutdown(context.Background())
+			}()
+			rdMQSvc.Shutdown(context.Background())
+			wg.Wait()
 			logx.Info("server exit")
 			return
 		case syscall.SIGHUP:

@@ -1,4 +1,4 @@
-package connmq
+package rdmq
 
 import (
 	"context"
