@@ -29,7 +29,6 @@ require (
 	github.com/inconshreveable/log15 v0.0.0-20201112154412-8562bdadbbac
 	github.com/jinzhu/gorm v1.9.16
 	github.com/minio/minio-go/v7 v7.0.12
-	github.com/nsqio/go-nsq v1.1.0
 	github.com/oofpgDLD/u-push v0.0.2
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/pkg/errors v0.9.1
@@ -43,10 +42,10 @@ require (
 	github.com/swaggo/swag v1.7.9
 	github.com/tencentyun/tls-sig-api-v2-golang v1.2.0
 	github.com/txchat/im v0.0.1
-	//github.com/txchat/imparse v0.0.0-00010101000000-000000000000
-	//github.com/txchat/im-pkg v0.0.0-00010101000000-000000000000
+	//github.com/txchat/im-pkg v0.0.0-incompatible
 	github.com/txchat/im-pkg v0.0.1
-	github.com/txchat/imparse v0.0.2
+	github.com/txchat/imparse v0.0.1
+	//github.com/txchat/imparse v0.0.2
 	github.com/uber/jaeger-client-go v2.30.0+incompatible
 	github.com/zeromicro/go-zero v1.4.0
 	go.etcd.io/etcd/api/v3 v3.5.4
@@ -56,5 +55,6 @@ require (
 	google.golang.org/protobuf v1.28.1
 	gopkg.in/Shopify/sarama.v1 v1.19.0
 	gopkg.in/go-playground/validator.v8 v8.18.2
-	gopkg.in/yaml.v2 v2.4.0
 )
+
+replace github.com/txchat/imparse => ../imparse

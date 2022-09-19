@@ -4,46 +4,46 @@ import (
 	"github.com/txchat/dtalk/app/services/answer/internal/model"
 	"github.com/txchat/imparse"
 	"github.com/txchat/imparse/chat"
-	xproto "github.com/txchat/imparse/proto"
+	"github.com/txchat/imparse/proto/common"
 )
 
-func isChTypeOk(t xproto.Channel) bool {
+func isChTypeOk(t common.Channel) bool {
 	switch t {
-	case xproto.Channel_ToUser:
+	case common.Channel_ToUser:
 		return true
-	case xproto.Channel_ToGroup:
+	case common.Channel_ToGroup:
 		return true
 	}
 	return false
 }
 
-func isMsgTypeOk(t xproto.MsgType) bool {
+func isMsgTypeOk(t common.MsgType) bool {
 	switch t {
-	case xproto.MsgType_System:
+	case common.MsgType_System:
 		return false
-	case xproto.MsgType_Text:
+	case common.MsgType_Text:
 		return true
-	case xproto.MsgType_Audio:
+	case common.MsgType_Audio:
 		return true
-	case xproto.MsgType_Image:
+	case common.MsgType_Image:
 		return true
-	case xproto.MsgType_Video:
+	case common.MsgType_Video:
 		return true
-	case xproto.MsgType_File:
+	case common.MsgType_File:
 		return true
-	case xproto.MsgType_Card:
+	case common.MsgType_Card:
 		return true
-	case xproto.MsgType_Notice:
+	case common.MsgType_Notice:
 		return false
-	case xproto.MsgType_Forward:
+	case common.MsgType_Forward:
 		return true
-	case xproto.MsgType_Transfer:
+	case common.MsgType_Transfer:
 		return true
-	case xproto.MsgType_Collect:
+	case common.MsgType_Collect:
 		return false
-	case xproto.MsgType_RedPacket:
+	case common.MsgType_RedPacket:
 		return true
-	case xproto.MsgType_ContactCard:
+	case common.MsgType_ContactCard:
 		return true
 	}
 	return false

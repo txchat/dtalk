@@ -7,7 +7,7 @@ import (
 	"github.com/txchat/dtalk/app/services/answer/answer"
 	"github.com/txchat/dtalk/app/services/answer/answerclient"
 	"github.com/txchat/dtalk/app/services/pusher/internal/recordhelper"
-	xproto "github.com/txchat/imparse/proto"
+	"github.com/txchat/imparse/proto/signal"
 )
 
 type Signal struct {
@@ -19,7 +19,7 @@ func NewSignal(conn answerclient.Answer) *Signal {
 }
 
 func (s *Signal) UniCastReceived(ctx context.Context, item *recordhelper.ConnSeqItem) error {
-	actionProto := &xproto.SignalReceived{
+	actionProto := &signal.SignalReceived{
 		Logs: item.Logs,
 	}
 	actionData, err := proto.Marshal(actionProto)
@@ -37,7 +37,7 @@ func (s *Signal) UniCastReceived(ctx context.Context, item *recordhelper.ConnSeq
 	return nil
 }
 
-func (s *Signal) UniCastEndpointLogin(ctx context.Context, uid string, actionProto *xproto.SignalEndpointLogin) error {
+func (s *Signal) UniCastEndpointLogin(ctx context.Context, uid string, actionProto *signal.SignalEndpointLogin) error {
 	actionData, err := proto.Marshal(actionProto)
 	if err != nil {
 		return err

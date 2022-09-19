@@ -9,7 +9,7 @@ import (
 	"github.com/txchat/dtalk/service/record/answer/model"
 	"github.com/txchat/imparse"
 	"github.com/txchat/imparse/chat"
-	xproto "github.com/txchat/imparse/proto"
+	"github.com/txchat/imparse/proto/common"
 )
 
 type Filters struct {
@@ -29,7 +29,7 @@ func (fs *Filters) GetFilters() map[imparse.FrameType][]imparse.Filter {
 			func(ctx context.Context, frame imparse.Frame) error {
 				fm := frame.(*chat.GroupFrame)
 				//判断群聊拦截
-				if fm.GetMsgType() != xproto.MsgType_Notice {
+				if fm.GetMsgType() != common.MsgType_Notice {
 					if ok, err := fs.checkInGroup(ctx, fm.GetFrom(), util.MustToInt64(fm.GetTarget())); !ok {
 						if err != nil {
 							return err

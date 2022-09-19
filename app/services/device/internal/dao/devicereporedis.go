@@ -7,7 +7,7 @@ import (
 	"github.com/gomodule/redigo/redis"
 	"github.com/txchat/dtalk/app/services/device/internal/model"
 	xredis "github.com/txchat/dtalk/pkg/redis"
-	xproto "github.com/txchat/imparse/proto"
+	"github.com/txchat/imparse/proto/auth"
 )
 
 const (
@@ -81,10 +81,10 @@ func (repo *DeviceRepositoryRedis) setExpire(device *model.Device) error {
 			return err
 		}
 		if item.ConnectId != device.ConnectId {
-			switch xproto.Device(item.DeviceType) {
-			case xproto.Device_IOS, xproto.Device_Android:
-				if xproto.Device(device.DeviceType) != xproto.Device_Android &&
-					xproto.Device(device.DeviceType) != xproto.Device_IOS {
+			switch auth.Device(item.DeviceType) {
+			case auth.Device_IOS, auth.Device_Android:
+				if auth.Device(device.DeviceType) != auth.Device_Android &&
+					auth.Device(device.DeviceType) != auth.Device_IOS {
 					continue
 				}
 			default:

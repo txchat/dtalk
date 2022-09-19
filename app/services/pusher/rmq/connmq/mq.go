@@ -18,7 +18,8 @@ import (
 	logic "github.com/txchat/im/api/logic/grpc"
 	"github.com/txchat/imparse"
 	"github.com/txchat/imparse/chat"
-	xproto "github.com/txchat/imparse/proto"
+	"github.com/txchat/imparse/proto/auth"
+	"github.com/txchat/imparse/proto/signal"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -100,7 +101,7 @@ func (s *Service) DealConn(ctx context.Context, m *logic.BizMsg) error {
 				s.Error("AddDeviceInfo failed", "err", err)
 			}
 			//发送登录通知
-			err = s.svcCtx.SignalNotice.UniCastEndpointLogin(ctx, m.GetFromId(), &xproto.SignalEndpointLogin{
+			err = s.svcCtx.SignalNotice.UniCastEndpointLogin(ctx, m.GetFromId(), &signal.SignalEndpointLogin{
 				Uuid:       dev.GetUuid(),
 				Device:     dev.Device,
 				DeviceName: dev.GetDeviceName(),
@@ -111,7 +112,7 @@ func (s *Service) DealConn(ctx context.Context, m *logic.BizMsg) error {
 				return err
 			}
 		}
-		if dev != nil && (dev.Device == xproto.Device_Android || dev.Device == xproto.Device_IOS) {
+		if dev != nil && (dev.Device == auth.Device_Android || dev.Device == auth.Device_IOS) {
 			err = s.svcCtx.StoragePublish.BatchPush(ctx, m.Key, m.GetFromId())
 			if err != nil {
 				s.Error("BatchPushPublish failed", "err", err)
@@ -164,7 +165,7 @@ func (s *Service) DealConn(ctx context.Context, m *logic.BizMsg) error {
 				"connID", m.GetKey(),
 			)
 		}
-		if xproto.Device(dev.GetDeviceType()) == xproto.Device_Android || xproto.Device(dev.GetDeviceType()) == xproto.Device_IOS {
+		if auth.Device(dev.GetDeviceType()) == auth.Device_Android || auth.Device(dev.GetDeviceType()) == auth.Device_IOS {
 			err = s.svcCtx.StoragePublish.MarkRead(ctx, m.Key, m.GetFromId(), imparse.FrameType(item.Type), item.Logs)
 			if err != nil {
 				s.Error("MarkReadPublish failed",
@@ -217,22 +218,22 @@ func (s *Service) DealConn(ctx context.Context, m *logic.BizMsg) error {
 	return nil
 }
 
-func parseDevice(m *logic.BizMsg) (*xproto.Login, error) {
+func parseDevice(m *logic.BizMsg) (*auth.Login, error) {
 	var p comet.Proto
 	err := proto.Unmarshal(m.Msg, &p)
 	if err != nil {
 		return nil, err
 	}
-	var auth comet.AuthMsg
-	err = proto.Unmarshal(p.Body, &auth)
+	var authMsg comet.AuthMsg
+	err = proto.Unmarshal(p.Body, &authMsg)
 	if err != nil {
 		return nil, err
 	}
-	if len(auth.Ext) == 0 {
+	if len(authMsg.Ext) == 0 {
 		return nil, errors.New("ext is nil")
 	}
-	var device xproto.Login
-	err = proto.Unmarshal(auth.Ext, &device)
+	var device auth.Login
+	err = proto.Unmarshal(authMsg.Ext, &device)
 	if err != nil {
 		return nil, err
 	}

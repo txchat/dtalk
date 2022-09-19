@@ -13,7 +13,7 @@ import (
 	record "github.com/txchat/dtalk/service/record/proto"
 	comet "github.com/txchat/im/api/comet/grpc"
 	logic "github.com/txchat/im/api/logic/grpc"
-	xproto "github.com/txchat/imparse/proto"
+	"github.com/txchat/imparse/proto/common"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -222,7 +222,7 @@ func (l *PusherLogic) pushAllDevice(m *record.PushMsg, nickname, mid string) err
 				Title:       nickname,
 				Content:     "[你收到一条消息]",
 				Token:       dev.DeviceToken,
-				ChannelType: int32(xproto.Channel_ToUser),
+				ChannelType: int32(common.Channel_ToUser),
 				Target:      m.GetFromId(),
 				Timeout:     time.Now().Add(time.Minute * 7).Unix(),
 			}
