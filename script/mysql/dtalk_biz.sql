@@ -222,4 +222,26 @@ CREATE TABLE `dtalk_ver_backend` (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
+-- ----------------------------
+-- Table structure for dtalk_nft_group_condition
+-- ----------------------------
+DROP TABLE IF EXISTS `dtalk_nft_group_condition`;
+CREATE TABLE `dtalk_nft_group_condition` (
+    `group_id` bigint NOT NULL COMMENT '群id',
+    `nft_type` tinyint DEFAULT NULL COMMENT '藏品类型',
+    `nft_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '藏品id',
+    `nft_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '藏品名称',
+    PRIMARY KEY (`group_id`,`nft_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- ----------------------------
+-- Table structure for dtalk_nft_group_info_ext
+-- ----------------------------
+DROP TABLE IF EXISTS `dtalk_nft_group_info_ext`;
+CREATE TABLE `dtalk_nft_group_info_ext` (
+    `group_id` bigint NOT NULL COMMENT '群id',
+    `condition_type` tinyint DEFAULT NULL COMMENT '持有条件：0->其中之一；1->全部持有',
+    PRIMARY KEY (`group_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 SET FOREIGN_KEY_CHECKS = 1;
