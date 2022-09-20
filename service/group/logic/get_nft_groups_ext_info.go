@@ -27,6 +27,9 @@ func (l *GetNFTGroupsExtInfoLogic) GetNFTGroupsExtInfo(req *pb.GetNFTGroupsExtIn
 	}
 	pbConditions := make([]*pb.GetNFTGroupsExtInfoResp_ConditionUnionGroupId, 0)
 	for i, condition := range conditions {
+		if condition == nil {
+			continue
+		}
 		nfts := make([]*pb.Condition_NFT, len(condition.NFT))
 		for i, nft := range condition.NFT {
 			nfts[i] = &pb.Condition_NFT{
