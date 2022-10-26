@@ -57,4 +57,7 @@ require (
 	gopkg.in/go-playground/validator.v8 v8.18.2
 )
 
-replace github.com/txchat/imparse => ../imparse
+replace (
+	github.com/txchat/imparse => ../imparse
+	github.com/txchat/im => ../im
+)
