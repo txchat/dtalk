@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/txchat/dtalk/pkg/util"
-	record "github.com/txchat/dtalk/service/record/proto"
+	record "github.com/txchat/dtalk/proto/record"
 
 	"github.com/txchat/dtalk/app/services/pusher/internal/svc"
 	"github.com/txchat/dtalk/app/services/pusher/pusher"

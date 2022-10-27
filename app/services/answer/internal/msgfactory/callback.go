@@ -6,7 +6,7 @@ import (
 	xkafka "github.com/txchat/dtalk/pkg/mq/kafka"
 
 	"github.com/golang/protobuf/proto"
-	record "github.com/txchat/dtalk/service/record/proto"
+	record "github.com/txchat/dtalk/proto/record"
 	logic "github.com/txchat/im/api/logic/grpc"
 	"github.com/txchat/imparse"
 )

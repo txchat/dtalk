@@ -1,0 +1,28 @@
+Name: offline.rpc
+ListenOn: 127.0.0.1:8080
+AppID: "dtalk"
+Etcd:
+  Hosts:
+  - 127.0.0.1:2379
+  Key: offline.rpc
+DealConsumerConfig:
+  Version: ""
+  Brokers: ["127.0.0.1:9092"]
+  CacheCapacity: 0
+  ConnectTimeout: ""
+DealBatchConsumerConf:
+  CacheCapacity: 0
+  Consumers: 0
+  Processors: 0
+# 友盟离线推送物料
+Pushers:
+  - Android:
+      Env: "debug"
+      AppKey: ""
+      AppMasterSecret: ""
+      MiActivity: ""
+  - iOS:
+      Env: "debug"
+      AppKey: ""
+      AppMasterSecret: ""
+      MiActivity: ""
