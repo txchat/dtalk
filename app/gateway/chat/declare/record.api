@@ -1,0 +1,100 @@
+syntax = "v2"
+
+info(
+    title: "record api declare"
+    desc: ""
+    author: "dld"
+    email: "oofpgdld@gmail.com"
+    version: "v1.0.0"
+)
+// goctl api format -dir .
+
+type RevokeReq {
+	Type  int   `json:"type,optional" enums:"0,1"`
+	Mid int64   `json:"logId"`
+}
+
+type RevokeResp {
+}
+
+type FocusReq {
+	Type  int   `json:"type,optional" enums:"0,1"`
+	Mid int64   `json:"logId"`
+}
+
+type FocusResp {
+}
+
+type SyncReq {
+	// 消息数量
+    MaxCount int64 `json:"count,range=[1:1000]"`
+    // 消息 ID
+    StartMid int64 `json:"start,optional"`
+}
+
+type SyncResp {
+    // 聊天记录数量
+	RecordCount int `json:"record_count"`
+	// 聊天记录 base64 encoding
+	Records []string `json:"records"`
+}
+
+type PrivateRecordReq {
+    FromId      string `json:"-"`
+    TargetId    string `json:"targetId"`
+    RecordCount int64  `json:"count,range=[1:100]"`
+    Mid         string `json:"logId"`
+}
+
+type PrivateRecordResp {
+    // 聊天记录数量
+   	RecordCount int   `json:"record_count"`
+   	// 聊天记录
+   	Records []*Record `json:"records"`
+}
+
+type Record {
+	// log id
+	Mid string `json:"logId"`
+	// msg id (uuid)
+	Seq string `json:"msgId"`
+	// 发送者 id
+	FromId string `json:"fromId"`
+	// 接收者 id
+	TargetId string `json:"targetId"`
+	// 消息类型
+	MsgType int32 `json:"msgType"`
+	// 消息内容
+	Content interface{} `json:"content"`
+	// 消息发送时间
+	CreateTime uint64 `json:"createTime"`
+}
+
+type PushReq {
+    File string `form:"file"`
+}
+
+type PushResp {
+    Mid int64 `json:"logId"`
+    Datetime uint64 `json:"datetime"`
+}
+
+@server(
+    group: record
+    middleware: AppAuthMiddleware
+)
+service chat-api {
+    @handler Revoke
+    post /app/record/revoke (RevokeReq) returns (RevokeResp)
+    @handler Focus
+    post /app/record/focus (FocusReq) returns (FocusResp)
+    @handler Sync
+    post /app/record/sync-record (SyncReq) returns (SyncResp)
+    @handler PrivateRecord
+    post /app/record/pri-chat-record (PrivateRecordReq) returns (PrivateRecordResp)
+
+    @handler Push
+    post /record/push (PushReq) returns (PushResp)
+    @handler Push2
+    post /record/push2 (PushReq) returns (PushResp)
+}

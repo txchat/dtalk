@@ -3,27 +3,7 @@ syntax = "proto3";
 package answer;
 option go_package = "./answer";
 
-enum SignalType {
-  Received = 0;
-  Revoke = 1;
-  SignInGroup = 10;
-  SignOutGroup = 11;
-  DeleteGroup = 12;
-  FocusMessage = 13;
-  EndpointLogin = 14;
-  //
-  UpdateGroupJoinType = 20;
-  UpdateGroupFriendType = 21;
-  UpdateGroupMuteType = 22;
-  UpdateGroupMemberType = 23;
-  UpdateGroupMemberMuteTime = 24;
-  UpdateGroupName = 25;
-  UpdateGroupAvatar = 26;
-  //
-  StartCall = 31;
-  AcceptCall = 32;
-  StopCall = 33;
-}
+import "github.com/txchat/imparse/proto/signal.proto";
 
 message PushCommonMsgReq {
   string key = 1;
@@ -47,7 +27,7 @@ message PushNoticeMsgReq {
 message PushNoticeMsgReply { int64 mid = 1; }
 
 message UniCastSignalReq {
-  SignalType type = 1;
+  imparse.proto.SignalType type = 1;
   string target = 2;
   bytes body = 3;
 }
@@ -55,7 +35,7 @@ message UniCastSignalReq {
 message UniCastSignalReply { int64 mid = 1; }
 
 message GroupCastSignalReq {
-  SignalType type = 1;
+  imparse.proto.SignalType type = 1;
   string target = 2;
   bytes body = 3;
 }

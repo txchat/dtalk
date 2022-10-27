@@ -1,7 +1,7 @@
 syntax = "v2"
 
 info(
-    title: "backend api declare"
+    title: "call api declare"
     desc: ""
     author: "dld"
     email: "oofpgdld@gmail.com"

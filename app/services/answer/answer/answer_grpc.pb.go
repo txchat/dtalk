@@ -206,5 +206,5 @@ var Answer_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "answer.proto",
+	Metadata: "github.com/txchat/dtalk/app/services/answer/answer.proto",
 }

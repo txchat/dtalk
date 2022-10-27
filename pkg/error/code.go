@@ -82,6 +82,8 @@ var (
 	ErrExportAddressPhoneInconsistent = NewError(-10400, "账号与绑定手机不一致")
 	ErrExportAddressEmailInconsistent = NewError(-10401, "账号与绑定邮箱不一致")
 	ErrUserAccountOrPWD               = NewError(-10402, "用户名或密码错误")
+
+	ErrSendMsgFailed = NewError(-10500, "发送失败")
 )
 
 const (

@@ -56,3 +56,60 @@ type HandleCallResp struct {
 	PrivateMapKey string `json:"privateMapKey"`
 	SDKAppId      int32  `json:"sdkAppId"`
 }
+
+type RevokeReq struct {
+	Type int   `json:"type,optional" enums:"0,1"`
+	Mid  int64 `json:"logId"`
+}
+
+type RevokeResp struct {
+}
+
+type FocusReq struct {
+	Type int   `json:"type,optional" enums:"0,1"`
+	Mid  int64 `json:"logId"`
+}
+
+type FocusResp struct {
+}
+
+type SyncReq struct {
+	MaxCount int64 `json:"count,range=[1:1000]"`
+	StartMid int64 `json:"start,optional"`
+}
+
+type SyncResp struct {
+	RecordCount int      `json:"record_count"`
+	Records     []string `json:"records"`
+}
+
+type PrivateRecordReq struct {
+	FromId      string `json:"-"`
+	TargetId    string `json:"targetId"`
+	RecordCount int64  `json:"count,range=[1:100]"`
+	Mid         string `json:"logId"`
+}
+
+type PrivateRecordResp struct {
+	RecordCount int       `json:"record_count"`
+	Records     []*Record `json:"records"`
+}
+
+type Record struct {
+	Mid        string      `json:"logId"`
+	Seq        string      `json:"msgId"`
+	FromId     string      `json:"fromId"`
+	TargetId   string      `json:"targetId"`
+	MsgType    int32       `json:"msgType"`
+	Content    interface{} `json:"content"`
+	CreateTime uint64      `json:"createTime"`
+}
+
+type PushReq struct {
+	File string `form:"file"`
+}
+
+type PushResp struct {
+	Mid      int64  `json:"logId"`
+	Datetime uint64 `json:"datetime"`
+}
