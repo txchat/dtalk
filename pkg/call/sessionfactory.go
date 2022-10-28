@@ -25,7 +25,7 @@ func NewSessionCreator(callingTimeout int64, taskIDGen IDGenerator, roomIDGen ID
 
 func (sc *SessionCreator) InitSession(ctx context.Context, RTCType RTCType, caller string, invitees []string, groupID int64) (*Session, error) {
 	//traceId
-	traceID, err := sc.taskIDGen.GetID(ctx)
+	taskID, err := sc.taskIDGen.GetID(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -37,15 +37,15 @@ func (sc *SessionCreator) InitSession(ctx context.Context, RTCType RTCType, call
 
 	session := &Session{
 		RTCType:    RTCType,
-		TraceId:    traceID,
-		RoomId:     roomID,
+		TaskID:     taskID,
+		RoomID:     roomID,
 		Timeout:    sc.callingTimeout * 1000,
 		Deadline:   time.Now().Add(time.Duration(sc.callingTimeout) * time.Second).UnixMilli(),
 		Status:     READY,
 		Invitees:   invitees,
 		Caller:     caller,
 		CreateTime: time.Now().UnixMilli(),
-		GroupId:    groupID,
+		GroupID:    groupID,
 	}
 	return session, nil
 }

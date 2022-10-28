@@ -31,7 +31,7 @@ import (
 //
 //	nowTime := s.getNowTime()
 //	newMember := &db.GroupMember{
-//		GroupId:               groupId,
+//		GroupID:               groupId,
 //		GroupMemberId:         personId,
 //		GroupMemberName:       "",
 //		GroupMemberType:       0,
@@ -39,7 +39,7 @@ import (
 //		GroupMemberUpdateTime: nowTime,
 //	}
 //
-//	if err = s.AddGroupMembers(ctx, group.GroupId, []*db.GroupMember{newMember}, group.GroupOwnerId); err != nil {
+//	if err = s.AddGroupMembers(ctx, group.GroupID, []*db.GroupMember{newMember}, group.GroupOwnerId); err != nil {
 //		return nil, err
 //	}
 //

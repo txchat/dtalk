@@ -13,7 +13,7 @@ const (
 )
 
 type SignalNotify interface {
-	SendStartCallSignal(ctx context.Context, target string, traceId int64) error
-	SendAcceptCallSignal(ctx context.Context, target string, traceId int64, ticket Ticket) error
-	SendStopCallSignal(ctx context.Context, target string, traceId int64, stopType StopType) error
+	SendStartCallSignal(ctx context.Context, target string, taskID int64) error
+	SendAcceptCallSignal(ctx context.Context, target string, taskID int64, sdp Ticket) error
+	SendStopCallSignal(ctx context.Context, target string, taskID int64, stopType StopType) error
 }

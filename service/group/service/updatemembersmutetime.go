@@ -62,7 +62,7 @@ func (s *Service) UpdateMembersMuteTimeSvc(ctx context.Context, req *types.Updat
 	//groupMemberMute := make([]*db.GroupMemberMute, len(memberIds), len(memberIds))
 	//for i, memberId := range memberIds {
 	//	groupMemberMute[i] = &db.GroupMemberMute{
-	//		GroupId:                   groupId,
+	//		GroupID:                   groupId,
 	//		GroupMemberId:             memberId,
 	//		GroupMemberMuteTime:       muteTime,
 	//		GroupMemberMuteUpdateTime: nowTime,

@@ -10,7 +10,7 @@ import (
 	"github.com/txchat/dtalk/service/group/model/db"
 )
 
-// GetGroupInfoByGroupId 根据 GroupId 查询群信息
+// GetGroupInfoByGroupId 根据 GroupID 查询群信息
 func (s *Service) GetGroupInfoByGroupId(ctx context.Context, groupId int64) (*biz.GroupInfo, error) {
 	groupInfo, err := s.dao.GetGroupInfoByGroupId(ctx, groupId)
 	if err != nil {

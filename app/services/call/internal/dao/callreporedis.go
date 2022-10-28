@@ -55,7 +55,7 @@ func (repo *CallRepositoryRedis) GetSession(traceId int64) (*model.Session, erro
 }
 
 func (repo *CallRepositoryRedis) SaveSession(session model.Session) error {
-	key := keySession(session.TraceId)
+	key := keySession(session.TaskID)
 
 	data, err := json.Marshal(session)
 	if err != nil {

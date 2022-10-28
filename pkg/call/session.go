@@ -17,8 +17,8 @@ const (
 )
 
 type Session struct {
-	TraceId int64
-	RoomId  int64
+	TaskID  int64
+	RoomID  int64
 	RTCType RTCType
 	//Deadline 超出后对方未接就结束通话
 	Deadline int64
@@ -28,8 +28,8 @@ type Session struct {
 	Caller     string
 	Timeout    int64
 	CreateTime int64
-	//GroupId 0=私聊，^0=群id
-	GroupId int64
+	//GroupID 0=私聊，^0=群id
+	GroupID int64
 }
 
 func (s *Session) IsReady() bool {
@@ -49,7 +49,7 @@ func (s *Session) Processing() {
 }
 
 func (s *Session) IsPrivate() bool {
-	return s.GroupId == 0
+	return s.GroupID == 0
 }
 
 func (s *Session) GetPrivateInvitee() string {

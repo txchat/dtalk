@@ -40,21 +40,19 @@ func (l *RejectLogic) Reject(in *call.RejectReq) (*call.RejectResp, error) {
 	if session.Caller == in.GetOperator() {
 		target = session.GetPrivateInvitee()
 	}
-	pt := xcall.NewPrivateTask(l.ctx, l.svcCtx.SessionCreator, l.svcCtx.SignalNotify, l.svcCtx.RTC, in.GetOperator(), target, session.RTCType)
-	pt.SetSession(&session)
+	pt := xcall.NewPrivateTask(l.ctx, l.svcCtx.SignalNotify, in.GetOperator(), target)
 	switch in.GetRejectType() {
 	case call.RejectType_Reject:
-		err = pt.Reject()
+		err = pt.Reject(&session)
 		if err != nil {
 			return nil, err
 		}
 	case call.RejectType_Occupied:
-		err = pt.Occupied()
+		err = pt.Occupied(&session)
 		if err != nil {
 			return nil, err
 		}
 	}
-	session = pt.GetSession()
 	err = l.svcCtx.Repo.SaveSession(model.Session(session))
 	if err != nil {
 		return nil, err

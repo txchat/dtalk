@@ -22,7 +22,7 @@ type ServiceContext struct {
 	AnswerRPC      answerclient.Answer
 	SessionCreator *xcall.SessionCreator
 	SignalNotify   xcall.SignalNotify
-	RTC            sign.TLSSig
+	TicketCreator  xcall.TicketCreator
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -36,6 +36,6 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		IDGenRPC:       idGenRPC,
 		SessionCreator: xcall.NewSessionCreator(c.RTC.CallingTimeout, rpcidgen.NewIDGenerator(idGenRPC), roomidgen.NewRoomIDGen(0)), // TODO roomid gen object
 		SignalNotify:   rpcnotify.NewCallNotifyClient(answerRPC),                                                                    // TODO answer rpc object
-		RTC:            tencentyun.NewTCTLSSig(c.RTC.SDKAppId, c.RTC.SecretKey, c.RTC.Expire),
+		TicketCreator:  sign.NewCloudSDK(tencentyun.NewTCTLSSig(c.RTC.SDKAppId, c.RTC.SecretKey, c.RTC.Expire)).GetTicket,
 	}
 }

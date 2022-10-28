@@ -73,7 +73,7 @@ func (d *Dao) DeleteGroupCache(groupId int64) error {
 //}
 //
 //func (d *Dao) SaveGroupMemberWithMuteTime(member *db.GroupMemberWithMute, duration time.Duration) error {
-//	key := keyGroup(member.GroupId)
+//	key := keyGroup(member.GroupID)
 //	if err := d.redis.Write(key, member, int(duration)); err != nil {
 //		return err
 //	}

@@ -3,6 +3,8 @@ package logic
 import (
 	"context"
 
+	"github.com/txchat/dtalk/pkg/call/sign"
+
 	xerror "github.com/txchat/dtalk/pkg/error"
 
 	"github.com/txchat/dtalk/app/services/call/call"
@@ -40,21 +42,23 @@ func (l *AcceptLogic) Accept(in *call.AcceptReq) (*call.AcceptResp, error) {
 	if session.Caller == in.GetOperator() {
 		target = session.GetPrivateInvitee()
 	}
-	pt := xcall.NewPrivateTask(l.ctx, l.svcCtx.SessionCreator, l.svcCtx.SignalNotify, l.svcCtx.RTC, in.GetOperator(), target, session.RTCType)
-	pt.SetSession(&session)
-	inviteeTicket, err := pt.Accept()
+	pt := xcall.NewPrivateTask(l.ctx, l.svcCtx.SignalNotify, in.GetOperator(), target)
+	inviteeTicket, err := pt.Accept(l.svcCtx.TicketCreator, &session)
 	if err != nil {
 		return nil, err
 	}
-	session = pt.GetSession()
 	err = l.svcCtx.Repo.SaveSession(model.Session(session))
 	if err != nil {
 		return nil, err
 	}
+	cloudTicket, err := sign.FromBytes(inviteeTicket)
+	if err != nil {
+		return nil, err
+	}
 	return &call.AcceptResp{
-		RoomId:        inviteeTicket.RoomId,
-		UserSign:      inviteeTicket.UserSig,
-		PrivateMapKey: inviteeTicket.PrivateMapKey,
-		SDKAppID:      inviteeTicket.SDKAppID,
+		RoomId:        cloudTicket.RoomId,
+		UserSign:      cloudTicket.UserSig,
+		PrivateMapKey: cloudTicket.PrivateMapKey,
+		SDKAppID:      cloudTicket.SDKAppID,
 	}, nil
 }

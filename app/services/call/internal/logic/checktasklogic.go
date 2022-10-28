@@ -47,8 +47,8 @@ func (l *CheckTaskLogic) CheckTask(in *call.CheckTaskReq) (*call.CheckTaskResp, 
 
 	return &call.CheckTaskResp{
 		Session: &call.Session{
-			TraceId:    session.TraceId,
-			RoomId:     session.RoomId,
+			TraceId:    session.TaskID,
+			RoomId:     session.RoomID,
 			RTCType:    util.MustToInt32(session.RTCType),
 			Deadline:   session.Deadline,
 			Status:     util.MustToInt32(session.Status),
@@ -56,7 +56,7 @@ func (l *CheckTaskLogic) CheckTask(in *call.CheckTaskReq) (*call.CheckTaskResp, 
 			Caller:     session.Caller,
 			Timeout:    util.MustToInt32(session.Timeout),
 			CreateTime: session.CreateTime,
-			GroupId:    session.GroupId,
+			GroupId:    session.GroupID,
 		},
 	}, nil
 }

@@ -5,10 +5,10 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/pkg/errors"
-	"github.com/txchat/dtalk/app/services/answer/answer"
 	"github.com/txchat/dtalk/app/services/answer/answerclient"
 	xcall "github.com/txchat/dtalk/pkg/call"
-	xproto "github.com/txchat/imparse/proto"
+	"github.com/txchat/dtalk/pkg/call/sign"
+	"github.com/txchat/imparse/proto/signal"
 )
 
 type CallNotifyClient struct {
@@ -22,7 +22,7 @@ func NewCallNotifyClient(rpcCli answerclient.Answer) *CallNotifyClient {
 }
 
 func (s *CallNotifyClient) SendStartCallSignal(ctx context.Context, target string, traceId int64) error {
-	action := &xproto.SignalStartCall{
+	action := &signal.SignalStartCall{
 		TraceId: traceId,
 	}
 	body, err := proto.Marshal(action)
@@ -31,7 +31,7 @@ func (s *CallNotifyClient) SendStartCallSignal(ctx context.Context, target strin
 	}
 
 	_, err = s.answerClient.UniCastSignal(ctx, &answerclient.UniCastSignalReq{
-		Type:   answer.SignalType_StartCall,
+		Type:   signal.SignalType_StartCall,
 		Target: target,
 		Body:   body,
 	})
@@ -39,13 +39,17 @@ func (s *CallNotifyClient) SendStartCallSignal(ctx context.Context, target strin
 }
 
 func (s *CallNotifyClient) SendAcceptCallSignal(ctx context.Context, target string, traceId int64, ticket xcall.Ticket) error {
-	action := &xproto.SignalAcceptCall{
+	cloudTicket, err := sign.FromBytes(ticket)
+	if err != nil {
+		return err
+	}
+	action := &signal.SignalAcceptCall{
 		TraceId:       traceId,
-		RoomId:        int32(ticket.RoomId),
+		RoomId:        int32(cloudTicket.RoomId),
 		Uid:           target,
-		UserSig:       ticket.UserSig,
-		PrivateMapKey: ticket.PrivateMapKey,
-		SkdAppId:      ticket.SDKAppID,
+		UserSig:       cloudTicket.UserSig,
+		PrivateMapKey: cloudTicket.PrivateMapKey,
+		SkdAppId:      cloudTicket.SDKAppID,
 	}
 	body, err := proto.Marshal(action)
 	if err != nil {
@@ -53,7 +57,7 @@ func (s *CallNotifyClient) SendAcceptCallSignal(ctx context.Context, target stri
 	}
 
 	_, err = s.answerClient.UniCastSignal(ctx, &answerclient.UniCastSignalReq{
-		Type:   answer.SignalType_AcceptCall,
+		Type:   signal.SignalType_AcceptCall,
 		Target: target,
 		Body:   body,
 	})
@@ -61,21 +65,21 @@ func (s *CallNotifyClient) SendAcceptCallSignal(ctx context.Context, target stri
 }
 
 func (s *CallNotifyClient) SendStopCallSignal(ctx context.Context, Target string, TraceId int64, stopType xcall.StopType) error {
-	var StopCallType xproto.StopCallType
-	switch xproto.StopCallType(stopType) {
-	case xproto.StopCallType_Busy:
-		StopCallType = xproto.StopCallType_Busy
-	case xproto.StopCallType_Timeout:
-		StopCallType = xproto.StopCallType_Timeout
-	case xproto.StopCallType_Reject:
-		StopCallType = xproto.StopCallType_Reject
-	case xproto.StopCallType_Hangup:
-		StopCallType = xproto.StopCallType_Hangup
-	case xproto.StopCallType_Cancel:
-		StopCallType = xproto.StopCallType_Cancel
+	var StopCallType signal.StopCallType
+	switch signal.StopCallType(stopType) {
+	case signal.StopCallType_Busy:
+		StopCallType = signal.StopCallType_Busy
+	case signal.StopCallType_Timeout:
+		StopCallType = signal.StopCallType_Timeout
+	case signal.StopCallType_Reject:
+		StopCallType = signal.StopCallType_Reject
+	case signal.StopCallType_Hangup:
+		StopCallType = signal.StopCallType_Hangup
+	case signal.StopCallType_Cancel:
+		StopCallType = signal.StopCallType_Cancel
 
 	}
-	action := &xproto.SignalStopCall{
+	action := &signal.SignalStopCall{
 		TraceId: TraceId,
 		Reason:  StopCallType,
 	}
@@ -86,7 +90,7 @@ func (s *CallNotifyClient) SendStopCallSignal(ctx context.Context, Target string
 	}
 
 	_, err = s.answerClient.UniCastSignal(ctx, &answerclient.UniCastSignalReq{
-		Type:   answer.SignalType_StopCall,
+		Type:   signal.SignalType_StopCall,
 		Target: Target,
 		Body:   body,
 	})
