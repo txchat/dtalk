@@ -6,6 +6,7 @@ import (
 
 	call "github.com/txchat/dtalk/app/gateway/chat/internal/handler/call"
 	record "github.com/txchat/dtalk/app/gateway/chat/internal/handler/record"
+	user "github.com/txchat/dtalk/app/gateway/chat/internal/handler/user"
 	"github.com/txchat/dtalk/app/gateway/chat/internal/svc"
 
 	"github.com/zeromicro/go-zero/rest"
@@ -73,6 +74,19 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 					Method:  http.MethodPost,
 					Path:    "/record/push2",
 					Handler: record.Push2Handler(serverCtx),
+				},
+			}...,
+		),
+	)
+
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.AppAuthMiddleware},
+			[]rest.Route{
+				{
+					Method:  http.MethodPost,
+					Path:    "/app/user/login",
+					Handler: user.LoginHandler(serverCtx),
 				},
 			}...,
 		),

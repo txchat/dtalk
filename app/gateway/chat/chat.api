@@ -1,6 +1,7 @@
 import(
 	"declare/call.api"
 	"declare/record.api"
+	"declare/user.api"
 )
 
 info(

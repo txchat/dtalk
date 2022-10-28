@@ -1,0 +1,27 @@
+syntax = "v2"
+
+info(
+    title: "user api declare"
+    desc: ""
+    author: "dld"
+    email: "oofpgdld@gmail.com"
+    version: "v1.0.0"
+)
+// goctl api format -dir .
+
+type LoginReq {
+	ConnType int32 `json:"connType"`
+}
+
+type LoginResp {
+    Address string `json:"address"`
+}
+
+@server(
+    group: user
+    middleware: AppAuthMiddleware
+)
+service chat-api {
+    @handler Login
+    post /app/user/login (LoginReq) returns (LoginResp)
+}

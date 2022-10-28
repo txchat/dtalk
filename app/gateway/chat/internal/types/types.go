@@ -113,3 +113,11 @@ type PushResp struct {
 	Mid      int64  `json:"logId"`
 	Datetime uint64 `json:"datetime"`
 }
+
+type LoginReq struct {
+	ConnType int32 `json:"connType"`
+}
+
+type LoginResp struct {
+	Address string `json:"address"`
+}
