@@ -8,7 +8,7 @@ import (
 
 	push "github.com/oofpgDLD/u-push"
 	ios_push "github.com/oofpgDLD/u-push/ios"
-	"github.com/txchat/dtalk/service/offline-push/pusher"
+	pusher "github.com/txchat/dtalk/pkg/third-part-push"
 )
 
 type iOSPusher struct {

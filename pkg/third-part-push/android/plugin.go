@@ -1,6 +1,6 @@
 package android
 
-import "github.com/txchat/dtalk/service/offline-push/pusher"
+import pusher "github.com/txchat/dtalk/pkg/third-part-push"
 
 const Name = "Android"
 

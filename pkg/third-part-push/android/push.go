@@ -8,7 +8,7 @@ import (
 
 	push "github.com/oofpgDLD/u-push"
 	android_push "github.com/oofpgDLD/u-push/android"
-	"github.com/txchat/dtalk/service/offline-push/pusher"
+	pusher "github.com/txchat/dtalk/pkg/third-part-push"
 )
 
 type androidPusher struct {
