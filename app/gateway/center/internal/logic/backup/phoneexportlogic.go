@@ -3,6 +3,8 @@ package backup
 import (
 	"context"
 
+	"github.com/txchat/dtalk/pkg/notify"
+
 	xerror "github.com/txchat/dtalk/pkg/error"
 
 	"github.com/txchat/dtalk/app/gateway/center/internal/svc"
@@ -26,7 +28,18 @@ func NewPhoneExportLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Phone
 }
 
 func (l *PhoneExportLogic) PhoneExport(req *types.PhoneExportReq) (resp *types.PhoneExportResp, err error) {
-	// todo: 通过短信服务验证
+	// 通过短信服务验证
+	params := map[string]string{
+		notify.ParamMobile:   req.Phone,
+		notify.ParamCode:     req.Code,
+		notify.ParamCodeType: l.svcCtx.Config.SMS.CodeTypes[notify.Export],
+	}
+	err = l.svcCtx.SmsValidate.ValidateCode(params)
+	if err != nil {
+		err = xerror.ErrCodeError
+		return
+	}
+
 	var b bool
 	if !b {
 		err = xerror.ErrExportAddressEmailInconsistent

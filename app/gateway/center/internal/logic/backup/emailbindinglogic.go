@@ -4,6 +4,9 @@ import (
 	"context"
 	"time"
 
+	xerror "github.com/txchat/dtalk/pkg/error"
+	"github.com/txchat/dtalk/pkg/notify"
+
 	"github.com/txchat/dtalk/app/services/backup/backup"
 	"github.com/txchat/dtalk/app/services/backup/backupclient"
 	xhttp "github.com/txchat/dtalk/pkg/net/http"
@@ -35,7 +38,17 @@ func NewEmailBindingLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Emai
 }
 
 func (l *EmailBindingLogic) EmailBinding(req *types.EmailBindingReq) (resp *types.EmailBindingResp, err error) {
-	// todo: 通过短信服务验证
+	// 通过邮箱验证
+	params := map[string]string{
+		notify.ParamEmail:    req.Email,
+		notify.ParamCode:     req.Code,
+		notify.ParamCodeType: l.svcCtx.Config.Email.CodeTypes[notify.Quick],
+	}
+	err = l.svcCtx.EmailValidate.ValidateCode(params)
+	if err != nil {
+		err = xerror.ErrCodeError
+		return
+	}
 	_, err = l.svcCtx.BackupRPC.UpdateAddressBackup(l.ctx, &backupclient.UpdateAddressBackupReq{
 		Type: backup.BackupType_Email,
 		Stub: &backupclient.AddressInfo{

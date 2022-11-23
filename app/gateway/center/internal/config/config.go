@@ -2,6 +2,7 @@ package config
 
 import (
 	"github.com/txchat/dtalk/app/gateway/center/internal/types"
+	"github.com/txchat/dtalk/pkg/notify"
 	"github.com/zeromicro/go-zero/rest"
 	"github.com/zeromicro/go-zero/zrpc"
 )
@@ -21,6 +22,9 @@ type Config struct {
 		AccessSecret string
 		AccessExpire int64
 	}
+	SMS       notify.Config
+	Email     notify.Config
+	Whitelist []notify.Whitelist
 }
 
 type Module struct {

@@ -3,6 +3,8 @@ package backup
 import (
 	"context"
 
+	"github.com/txchat/dtalk/pkg/notify"
+
 	"github.com/txchat/dtalk/app/services/backup/backup"
 	"github.com/txchat/dtalk/app/services/backup/backupclient"
 	xerror "github.com/txchat/dtalk/pkg/error"
@@ -28,7 +30,18 @@ func NewPhoneRetrieveLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Pho
 }
 
 func (l *PhoneRetrieveLogic) PhoneRetrieve(req *types.PhoneRetrieveReq) (resp *types.PhoneRetrieveResp, err error) {
-	// todo: 通过短信服务验证
+	// 通过短信服务验证
+	params := map[string]string{
+		notify.ParamMobile:   req.Phone,
+		notify.ParamCode:     req.Code,
+		notify.ParamCodeType: l.svcCtx.Config.SMS.CodeTypes[notify.Quick],
+	}
+	err = l.svcCtx.SmsValidate.ValidateCode(params)
+	if err != nil {
+		err = xerror.ErrCodeError
+		return
+	}
+
 	var queryBindResp *backupclient.QueryBindResp
 	var queryRelatedResp *backupclient.QueryRelatedResp
 	queryBindResp, err = l.svcCtx.BackupRPC.QueryBind(l.ctx, &backupclient.QueryBindReq{

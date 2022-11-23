@@ -4,6 +4,7 @@ import (
 	"context"
 
 	xerror "github.com/txchat/dtalk/pkg/error"
+	"github.com/txchat/dtalk/pkg/notify"
 
 	"github.com/txchat/dtalk/app/gateway/center/internal/svc"
 	"github.com/txchat/dtalk/app/gateway/center/internal/types"
@@ -26,7 +27,17 @@ func NewEmailExportLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Email
 }
 
 func (l *EmailExportLogic) EmailExport(req *types.EmailExportReq) (resp *types.EmailExportResp, err error) {
-	// todo: 通过短信服务验证
+	// 通过邮箱验证
+	params := map[string]string{
+		notify.ParamEmail:    req.Email,
+		notify.ParamCode:     req.Code,
+		notify.ParamCodeType: l.svcCtx.Config.Email.CodeTypes[notify.Export],
+	}
+	err = l.svcCtx.EmailValidate.ValidateCode(params)
+	if err != nil {
+		err = xerror.ErrCodeError
+		return
+	}
 	var b bool
 	if !b {
 		err = xerror.ErrExportAddressEmailInconsistent

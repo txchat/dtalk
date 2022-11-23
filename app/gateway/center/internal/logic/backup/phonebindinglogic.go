@@ -4,6 +4,9 @@ import (
 	"context"
 	"time"
 
+	xerror "github.com/txchat/dtalk/pkg/error"
+	"github.com/txchat/dtalk/pkg/notify"
+
 	"github.com/txchat/dtalk/app/services/backup/backup"
 	"github.com/txchat/dtalk/app/services/backup/backupclient"
 	xhttp "github.com/txchat/dtalk/pkg/net/http"
@@ -35,7 +38,18 @@ func NewPhoneBindingLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Phon
 }
 
 func (l *PhoneBindingLogic) PhoneBinding(req *types.PhoneBindingReq) (resp *types.PhoneBindingResp, err error) {
-	// todo: 通过短信服务验证
+	// 通过短信服务验证
+	params := map[string]string{
+		notify.ParamMobile:   req.Phone,
+		notify.ParamCode:     req.Code,
+		notify.ParamCodeType: l.svcCtx.Config.SMS.CodeTypes[notify.Quick],
+	}
+	err = l.svcCtx.SmsValidate.ValidateCode(params)
+	if err != nil {
+		err = xerror.ErrCodeError
+		return
+	}
+
 	_, err = l.svcCtx.BackupRPC.UpdateAddressBackup(l.ctx, &backupclient.UpdateAddressBackupReq{
 		Type: backup.BackupType_Phone,
 		Stub: &backupclient.AddressInfo{
