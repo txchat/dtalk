@@ -121,3 +121,239 @@ type LoginReq struct {
 type LoginResp struct {
 	Address string `json:"address"`
 }
+
+type GroupInfo struct {
+	Id         int64        `json:"id" form:"id"`
+	IdStr      string       `json:"idStr"`
+	MarkId     string       `json:"markId" form:"markId"`
+	Name       string       `json:"name" form:"name"`
+	PublicName string       `json:"publicName"`
+	Avatar     string       `json:"avatar" form:"avatar"`
+	Introduce  string       `json:"introduce" form:"introduce"`
+	Owner      *GroupMember `json:"owner" form:"owner"`
+	Person     *GroupMember `json:"person" form:"person"`
+	MemberNum  int32        `json:"memberNum" form:"memberNum"`
+	Maximum    int32        `json:"maximum" form:"maximum"`
+	Status     int32        `json:"status" form:"status"`
+	CreateTime int64        `json:"createTime" form:"createTime"`
+	JoinType   int32        `json:"joinType" form:"joinType"`
+	MuteType   int32        `json:"muteType" form:"muteType"`
+	FriendType int32        `json:"friendType"`
+	MuteNum    int32        `json:"muteNum"`
+	AdminNum   int32        `json:"adminNum"`
+	AESKey     string       `json:"key"`
+	GroupType  int32        `json:"groupType"`
+}
+
+type GroupMember struct {
+	MemberId       string `json:"memberId" form:"memberId"`
+	MemberName     string `json:"memberName" form:"memberName"`
+	MemberType     int32  `json:"memberType" form:"memberType"`
+	MemberMuteTime int64  `json:"memberMuteTime"`
+}
+
+type ChangeOwnerReq struct {
+	ID       int64  `json:"id,optional"`
+	IdStr    string `json:"idStr,optional"`
+	MemberId int64  `json:"memberId"`
+}
+
+type ChangeOwnerResp struct {
+}
+
+type CreateGroupReq struct {
+	Name      string   `json:"name" form:"name"`
+	Avatar    string   `json:"avatar" form:"avatar"`
+	Introduce string   `json:"introduce" form:"introduce"`
+	MemberIds []string `json:"memberIds" form:"memberIds"`
+}
+
+type CreateGroupResp struct {
+	GroupInfo
+	Members []*GroupMember `json:"members" form:"members"`
+}
+
+type GetGroupInfoReq struct {
+	Id    int64  `json:"id" uri:"id"`
+	IdStr string `json:"idStr"`
+}
+
+type GetGroupInfoResp struct {
+	GroupInfo
+	Members []*GroupMember `json:"members" form:"members"`
+}
+
+type GetGroupListReq struct {
+	Id    int64  `json:"id" uri:"id"`
+	IdStr string `json:"idStr"`
+}
+
+type GetGroupListResp struct {
+	Groups []*GroupInfo `json:"groups"`
+}
+
+type GetGroupMemberInfoReq struct {
+	Id       int64  `json:"id" uri:"id"`
+	IdStr    string `json:"idStr"`
+	MemberId string `json:"memberId" uri:"memberId" binding:"required"`
+}
+
+type GetGroupMemberInfoResp struct {
+	GroupMember
+}
+
+type GetGroupMemberListReq struct {
+	Id    int64  `json:"id" uri:"id"`
+	IdStr string `json:"idStr"`
+}
+
+type GetGroupMemberListResp struct {
+	Id      int64          `json:"id"`
+	IdStr   string         `json:"idStr"`
+	Members []*GroupMember `json:"members"`
+}
+
+type GetMuteListReq struct {
+	Id    int64  `json:"id"`
+	IdStr string `json:"idStr"`
+}
+
+type GetMuteListResp struct {
+	Members []*GroupMember `json:"members"`
+}
+
+type GetGroupPubInfoReq struct {
+	Id    int64  `json:"id"`
+	IdStr string `json:"idStr"`
+}
+
+type GetGroupPubInfoResp struct {
+	GroupInfo
+}
+
+type GroupDisbandReq struct {
+	Id    int64  `json:"id"`
+	IdStr string `json:"idStr"`
+}
+
+type GroupDisbandResp struct {
+}
+
+type GroupExitReq struct {
+	Id    int64  `json:"id"`
+	IdStr string `json:"idStr"`
+}
+
+type GroupExitResp struct {
+}
+
+type GroupRemoveReq struct {
+	Id        int64    `json:"id"`
+	IdStr     string   `json:"idStr"`
+	MemberIds []string `json:"memberIds" binding:"required"`
+}
+
+type GroupRemoveResp struct {
+	MemberNum int32    `json:"memberNum" form:"memberNum"`
+	MemberIds []string `json:"memberIds"`
+}
+
+type InviteGroupMembersReq struct {
+	Id           int64    `json:"id"`
+	IdStr        string   `json:"idStr"`
+	NewMemberIds []string `json:"newMemberIds" form:"newMemberIds" binding:"required"`
+}
+
+type InviteGroupMembersResp struct {
+	Id        int64  `json:"id" form:"id" example:"123821199217135616"`
+	IdStr     string `json:"idStr"`
+	MemberNum int32  `json:"memberNum" form:"memberNum" example:"5"`
+}
+
+type JoinGroupReq struct {
+	Id        int64  `json:"id"`
+	IdStr     string `json:"idStr"`
+	InviterId string `json:"inviterId"`
+}
+
+type JoinGroupResp struct {
+	Id    int64  `json:"id"`
+	IdStr string `json:"idStr"`
+}
+
+type SetAdminReq struct {
+	Id         int64  `json:"id"`
+	IdStr      string `json:"idStr"`
+	MemberId   string `json:"memberId" binding:"required"`
+	PersonId   string `json:"-"`
+	MemberType int32  `json:"memberType" binding:"oneof=0 1"`
+}
+
+type SetAdminResp struct {
+}
+
+type UpdateGroupAvatarReq struct {
+	Id     int64  `json:"id"`
+	IdStr  string `json:"idStr"`
+	Avatar string `json:"avatar"`
+}
+
+type UpdateGroupAvatarResp struct {
+}
+
+type UpdateGroupFriendTypeReq struct {
+	Id         int64  `json:"id"`
+	IdStr      string `json:"idStr"`
+	FriendType int32  `json:"friendType"  binding:"oneof=0 1"`
+}
+
+type UpdateGroupFriendTypeResp struct {
+}
+
+type UpdateGroupJoinTypeReq struct {
+	Id       int64  `json:"id"`
+	IdStr    string `json:"idStr"`
+	JoinType int32  `json:"joinType"  binding:"oneof=0 1 2"`
+}
+
+type UpdateGroupJoinTypeResp struct {
+}
+
+type UpdateGroupMemberMuteTimeReq struct {
+	Id        int64    `json:"id"`
+	IdStr     string   `json:"idStr"`
+	MemberIds []string `json:"memberIds" binding:"required"`
+	MuteTime  int64    `json:"muteTime"`
+}
+
+type UpdateGroupMemberMuteTimeResp struct {
+	Members []*GroupMember `json:"members"`
+}
+
+type UpdateGroupMemberNameReq struct {
+	Id         int64  `json:"id"`
+	IdStr      string `json:"idStr"`
+	MemberName string `json:"memberName"`
+}
+
+type UpdateGroupMemberNameResp struct {
+}
+
+type UpdateGroupMuteTypeReq struct {
+	Id       int64  `json:"id"`
+	IdStr    string `json:"idStr"`
+	MuteType int32  `json:"muteType" binding:"oneof=0 1"`
+}
+
+type UpdateGroupMuteTypeResp struct {
+}
+
+type UpdateGroupNameReq struct {
+	Id         int64  `json:"id"`
+	IdStr      string `json:"idStr"`
+	Name       string `json:"name"`
+	PublicName string `json:"publicName"`
+}
+
+type UpdateGroupNameResp struct {
+}

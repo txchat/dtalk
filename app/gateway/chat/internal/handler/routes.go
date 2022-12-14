@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	call "github.com/txchat/dtalk/app/gateway/chat/internal/handler/call"
+	group "github.com/txchat/dtalk/app/gateway/chat/internal/handler/group"
 	record "github.com/txchat/dtalk/app/gateway/chat/internal/handler/record"
 	user "github.com/txchat/dtalk/app/gateway/chat/internal/handler/user"
 	"github.com/txchat/dtalk/app/gateway/chat/internal/svc"
@@ -87,6 +88,119 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 					Method:  http.MethodPost,
 					Path:    "/app/user/login",
 					Handler: user.LoginHandler(serverCtx),
+				},
+			}...,
+		),
+	)
+
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.AppAuthMiddleware},
+			[]rest.Route{
+				{
+					Method:  http.MethodPost,
+					Path:    "/group/app/change-owner",
+					Handler: group.ChangeOwnerHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/group/app/create-group",
+					Handler: group.CreateGroupHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/group/app/group-info",
+					Handler: group.GetGroupInfoHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/group/app/group-list",
+					Handler: group.GetGroupListHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/group/app/group-member-info",
+					Handler: group.GetGroupMemberInfoHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/group/app/group-member-list",
+					Handler: group.GetGroupMemberListHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/group/app/mute-list",
+					Handler: group.GetMuteListHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/group/app/group-pub-info",
+					Handler: group.GetGroupPubInfoHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/group/app/group-disband",
+					Handler: group.GroupDisbandHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/group/app/group-exit",
+					Handler: group.GroupExitHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/group/app/group-remove",
+					Handler: group.GroupRemoveHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/group/app/invite-group-members",
+					Handler: group.InviteGroupMembersHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/group/app/join-group",
+					Handler: group.JoinGroupHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/group/app/member/type",
+					Handler: group.SetAdminHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/group/app/avatar",
+					Handler: group.UpdateGroupAvatarHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/group/app/friendType",
+					Handler: group.UpdateGroupFriendTypeHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/group/app/joinType",
+					Handler: group.UpdateGroupJoinTypeHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/group/app/member/muteTime",
+					Handler: group.UpdateGroupMemberMuteTimeHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/group/app/member/name",
+					Handler: group.UpdateGroupMemberNameHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/group/app/muteType",
+					Handler: group.UpdateGroupMuteTypeHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/group/app/name",
+					Handler: group.UpdateGroupNameHandler(serverCtx),
 				},
 			}...,
 		),

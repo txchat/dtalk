@@ -1,0 +1,356 @@
+syntax = "v2"
+
+info(
+    title: "group api declare"
+    desc: ""
+    author: "dld"
+    email: "oofpgdld@gmail.com"
+    version: "v1.0.0"
+)
+// goctl api format -dir .
+
+type GroupInfo {
+	// 群 ID
+	Id    int64  `json:"id" form:"id"`
+	IdStr string `json:"idStr"`
+	// 群显示的 ID
+	MarkId string `json:"markId" form:"markId"`
+	// 群名称 加密的
+	Name string `json:"name" form:"name"`
+	// 公开的群名称 不加密的
+	PublicName string `json:"publicName"`
+	// 头像 url
+	Avatar    string `json:"avatar" form:"avatar"`
+	Introduce string `json:"introduce" form:"introduce"`
+	// 群主 信息
+	Owner *GroupMember `json:"owner" form:"owner"`
+	// 本人在群内的信息
+	Person *GroupMember `json:"person" form:"person"`
+	// 群人数
+	MemberNum int32 `json:"memberNum" form:"memberNum"`
+	// 群人数上限
+	Maximum int32 `json:"maximum" form:"maximum"`
+	// 群状态，0=正常 1=封禁 2=解散
+	Status int32 `json:"status" form:"status"`
+	// 群创建时间
+	CreateTime int64 `json:"createTime" form:"createTime"`
+	// 加群方式，0=无需审批（默认），1=禁止加群，群主和管理员邀请加群, 2=普通人邀请需要审批,群主和管理员直接加群
+	JoinType int32 `json:"joinType" form:"joinType"`
+	// 禁言， 0=全员可发言， 1=全员禁言(除群主和管理员)
+	MuteType int32 `json:"muteType" form:"muteType"`
+	// 加好友限制， 0=群内可加好友，1=群内禁止加好友
+	FriendType int32 `json:"friendType"`
+	// 群内当前被禁言的人数
+	MuteNum int32 `json:"muteNum"`
+	// 群内管理员数量
+	AdminNum int32 `json:"adminNum"`
+	//
+	AESKey string `json:"key"`
+	// 群类型 (0: 普通群, 1: 全员群, 2: 部门群)
+	GroupType int32 `json:"groupType"`
+}
+
+type GroupMember struct {
+	// 用户 ID
+	MemberId string `json:"memberId" form:"memberId"`
+	// 用户群昵称
+	MemberName string `json:"memberName" form:"memberName"`
+	// 用户角色，2=群主，1=管理员，0=群员，10=退群
+	MemberType int32 `json:"memberType" form:"memberType"`
+	// 该用户被禁言结束的时间 9223372036854775807=永久禁言
+	MemberMuteTime int64 `json:"memberMuteTime"`
+}
+
+type ChangeOwnerReq {
+	ID int64 `json:"id,optional"`
+	// 如果同时填了 idStr, 则优先选择 idStr
+	IdStr string `json:"idStr,optional"`
+	MemberId int64 `json:"memberId"`
+}
+
+type ChangeOwnerResp {}
+
+type CreateGroupReq {
+	Name      string   `json:"name" form:"name"`
+    Avatar    string   `json:"avatar" form:"avatar"`
+    Introduce string   `json:"introduce" form:"introduce"`
+    MemberIds []string `json:"memberIds" form:"memberIds"`
+}
+
+type CreateGroupResp {
+    GroupInfo
+    Members []*GroupMember `json:"members" form:"members"`
+}
+
+type GetGroupInfoReq {
+	Id int64 `json:"id" uri:"id"`
+    // 如果同时填了 idStr, 则优先选择 idStr
+    IdStr      string `json:"idStr"`
+}
+
+type GetGroupInfoResp {
+    GroupInfo
+    Members []*GroupMember `json:"members" form:"members"`
+}
+
+type GetGroupListReq {
+	Id int64 `json:"id" uri:"id"`
+    // 如果同时填了 idStr, 则优先选择 idStr
+    IdStr      string `json:"idStr"`
+}
+
+type GetGroupListResp {
+    Groups []*GroupInfo `json:"groups"`
+}
+
+type GetGroupMemberInfoReq {
+    Id int64 `json:"id" uri:"id"`
+    // 如果同时填了 idStr, 则优先选择 idStr
+    IdStr    string `json:"idStr"`
+    MemberId string `json:"memberId" uri:"memberId" binding:"required"`
+}
+
+type GetGroupMemberInfoResp {
+    GroupMember
+}
+
+type GetGroupMemberListReq {
+   	Id int64 `json:"id" uri:"id"`
+   	// 如果同时填了 idStr, 则优先选择 idStr
+   	IdStr    string `json:"idStr"`
+}
+
+type GetGroupMemberListResp {
+    Id int64 `json:"id"`
+    // 如果同时填了 idStr, 则优先选择 idStr
+    IdStr   string         `json:"idStr"`
+    Members []*GroupMember `json:"members"`
+}
+
+type GetMuteListReq {
+    // 群 ID
+    Id int64 `json:"id"`
+    // 如果同时填了 idStr, 则优先选择 idStr
+    IdStr    string `json:"idStr"`
+}
+
+type GetMuteListResp {
+    Members []*GroupMember `json:"members"`
+}
+
+type GetGroupPubInfoReq {
+    // 群 ID
+    Id int64 `json:"id"`
+    // 如果同时填了 idStr, 则优先选择 idStr
+    IdStr    string `json:"idStr"`
+}
+
+type GetGroupPubInfoResp {
+    GroupInfo
+}
+
+type GroupDisbandReq {
+    // 群 ID
+    Id int64 `json:"id"`
+    // 如果同时填了 idStr, 则优先选择 idStr
+    IdStr    string `json:"idStr"`
+}
+
+type GroupDisbandResp {
+}
+
+type GroupExitReq {
+    // 群 ID
+    Id int64 `json:"id"`
+    // 如果同时填了 idStr, 则优先选择 idStr
+    IdStr    string `json:"idStr"`
+}
+
+type GroupExitResp {
+}
+
+type GroupRemoveReq {
+    // 群 ID
+    Id int64 `json:"id"`
+    // 如果同时填了 idStr, 则优先选择 idStr
+    IdStr    string `json:"idStr"`
+    MemberIds []string `json:"memberIds" binding:"required"`
+}
+
+type GroupRemoveResp {
+	// 群人数
+	MemberNum int32 `json:"memberNum" form:"memberNum"`
+	// 成功被踢的成员列表
+	MemberIds []string `json:"memberIds"`
+}
+
+type InviteGroupMembersReq {
+    // 群 ID
+    Id int64 `json:"id"`
+    // 如果同时填了 idStr, 则优先选择 idStr
+    IdStr    string `json:"idStr"`
+    NewMemberIds []string      `json:"newMemberIds" form:"newMemberIds" binding:"required"`
+}
+
+type InviteGroupMembersResp {
+	Id        int64  `json:"id" form:"id" example:"123821199217135616"`
+    IdStr     string `json:"idStr"`
+    MemberNum int32  `json:"memberNum" form:"memberNum" example:"5"`
+}
+
+type JoinGroupReq {
+    Id        int64  `json:"id"`
+   	IdStr     string `json:"idStr"`
+   	InviterId string `json:"inviterId"`
+}
+
+type JoinGroupResp {
+	Id    int64  `json:"id"`
+    IdStr string `json:"idStr"`
+}
+
+type SetAdminReq {
+    // 群 ID
+    Id int64 `json:"id"`
+    // 如果同时填了 idStr, 则优先选择 idStr
+    IdStr string `json:"idStr"`
+    // 被设置的群成员 ID
+    MemberId string `json:"memberId" binding:"required"`
+    PersonId string `json:"-"`
+    // 用户角色 0=群员, 1=管理员
+    MemberType int32 `json:"memberType" binding:"oneof=0 1"`
+}
+
+type SetAdminResp {
+}
+
+type UpdateGroupAvatarReq {
+    Id int64 `json:"id"`
+    // 如果同时填了 idStr, 则优先选择 idStr
+    IdStr    string `json:"idStr"`
+    Avatar   string `json:"avatar"`
+}
+
+type UpdateGroupAvatarResp {
+}
+
+type UpdateGroupFriendTypeReq {
+    // 群 ID
+   	Id int64 `json:"id"`
+   	// 如果同时填了 idStr, 则优先选择 idStr
+   	IdStr    string `json:"idStr"`
+   	// 加好友限制， 0=群内可加好友，1=群内禁止加好友
+   	FriendType int32 `json:"friendType"  binding:"oneof=0 1"`
+}
+
+type UpdateGroupFriendTypeResp {
+}
+
+type UpdateGroupJoinTypeReq {
+    // 群 ID
+    Id int64 `json:"id"`
+    // 如果同时填了 idStr, 则优先选择 idStr
+    IdStr    string `json:"idStr"`
+    // 加群方式，0=无需审批（默认），1=禁止加群，群主和管理员邀请加群, 2=普通人邀请需要审批,群主和管理员直接加群
+    JoinType int32 `json:"joinType"  binding:"oneof=0 1 2"`
+}
+
+type UpdateGroupJoinTypeResp {
+}
+
+type UpdateGroupMemberMuteTimeReq {
+    // 群 ID
+    Id int64 `json:"id"`
+    // 如果同时填了 idStr, 则优先选择 idStr
+    IdStr string `json:"idStr"`
+    // 被禁言的群员 ID
+    MemberIds []string `json:"memberIds" binding:"required"`
+    // 禁言持续时间, 传9223372036854775807=永久禁言, 0=解除禁言
+    MuteTime int64  `json:"muteTime"`
+}
+
+type UpdateGroupMemberMuteTimeResp {
+    Members []*GroupMember `json:"members"`
+}
+
+type UpdateGroupMemberNameReq {
+    Id int64 `json:"id"`
+    // 如果同时填了 idStr, 则优先选择 idStr
+    IdStr      string `json:"idStr"`
+    MemberName string `json:"memberName"`
+}
+
+type UpdateGroupMemberNameResp {
+}
+
+type UpdateGroupMuteTypeReq {
+    // 群 ID
+    Id int64 `json:"id"`
+    // 如果同时填了 idStr, 则优先选择 idStr
+    IdStr string `json:"idStr"`
+    // 禁言， 0=全员可发言， 1=全员禁言(除群主和管理员)
+    MuteType int32  `json:"muteType" binding:"oneof=0 1"`
+}
+
+type UpdateGroupMuteTypeResp {
+}
+
+type UpdateGroupNameReq {
+    Id int64 `json:"id"`
+    // 如果同时填了 idStr, 则优先选择 idStr
+    IdStr      string `json:"idStr"`
+    Name       string `json:"name"`
+    PublicName string `json:"publicName"`
+}
+
+type UpdateGroupNameResp {
+}
+
+@server(
+    group: group
+    middleware: AppAuthMiddleware
+)
+service chat-api {
+    @handler ChangeOwner
+    post /group/app/change-owner (ChangeOwnerReq) returns (ChangeOwnerResp)
+    @handler CreateGroup
+    post /group/app/create-group (CreateGroupReq) returns (CreateGroupResp)
+    @handler GetGroupInfo
+    post /group/app/group-info (GetGroupInfoReq) returns (GetGroupInfoResp)
+    @handler GetGroupList
+    post /group/app/group-list (GetGroupListReq) returns (GetGroupListResp)
+    @handler GetGroupMemberInfo
+    post /group/app/group-member-info (GetGroupMemberInfoReq) returns (GetGroupMemberInfoResp)
+    @handler GetGroupMemberList
+    post /group/app/group-member-list (GetGroupMemberListReq) returns (GetGroupMemberListResp)
+    @handler GetMuteList
+    post /group/app/mute-list (GetMuteListReq) returns (GetMuteListResp)
+    @handler GetGroupPubInfo
+    post /group/app/group-pub-info (GetGroupPubInfoReq) returns (GetGroupPubInfoResp)
+    @handler GroupDisband
+    post /group/app/group-disband (GroupDisbandReq) returns (GroupDisbandResp)
+    @handler GroupExit
+    post /group/app/group-exit (GroupExitReq) returns (GroupExitResp)
+    @handler GroupRemove
+    post /group/app/group-remove (GroupRemoveReq) returns (GroupRemoveResp)
+    @handler InviteGroupMembers
+    post /group/app/invite-group-members (InviteGroupMembersReq) returns (InviteGroupMembersResp)
+    @handler JoinGroup
+    post /group/app/join-group (JoinGroupReq) returns (JoinGroupResp)
+    @handler SetAdmin
+    post /group/app/member/type (SetAdminReq) returns (SetAdminResp)
+    @handler UpdateGroupAvatar
+    post /group/app/avatar (UpdateGroupAvatarReq) returns (UpdateGroupAvatarResp)
+    @handler UpdateGroupFriendType
+    post /group/app/friendType (UpdateGroupFriendTypeReq) returns (UpdateGroupFriendTypeResp)
+    @handler UpdateGroupJoinType
+    post /group/app/joinType (UpdateGroupJoinTypeReq) returns (UpdateGroupJoinTypeResp)
+    @handler UpdateGroupMemberMuteTime
+    post /group/app/member/muteTime (UpdateGroupMemberMuteTimeReq) returns (UpdateGroupMemberMuteTimeResp)
+    @handler UpdateGroupMemberName
+    post /group/app/member/name (UpdateGroupMemberNameReq) returns (UpdateGroupMemberNameResp)
+    @handler UpdateGroupMuteType
+    post /group/app/muteType (UpdateGroupMuteTypeReq) returns (UpdateGroupMuteTypeResp)
+    @handler UpdateGroupName
+    post /group/app/name (UpdateGroupNameReq) returns (UpdateGroupNameResp)
+}
