@@ -94,9 +94,6 @@ type GetGroupInfoResp {
 }
 
 type GetGroupListReq {
-	Id int64 `json:"id" uri:"id"`
-    // 如果同时填了 idStr, 则优先选择 idStr
-    IdStr      string `json:"idStr"`
 }
 
 type GetGroupListResp {

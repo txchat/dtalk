@@ -3,88 +3,60 @@ package group
 type RoleType int
 
 const (
-	Normal RoleType = 0
-	Admin  RoleType = 1
-	Owner  RoleType = 2
-	Out    RoleType = 10
+	Normal  RoleType = 0
+	Manager RoleType = 1
+	Owner   RoleType = 2
+	Out     RoleType = 10
 )
 
 const (
-	UnMute = 0
+	UnMute      = 0
 	MuteForever = 9223372036854775807
 )
 
+type Members []*Member
+
+func (ms Members) ToArray() []string {
+	members := []*Member(ms)
+	mid := make([]string, len(members))
+	for i, member := range members {
+		mid[i] = member.Id()
+	}
+	return mid
+}
+
 type Member struct {
-	id string
-	group *Group
-	role RoleType
+	id       string
+	nickname string
+	group    *Group
+	role     RoleType
 	muteTime int64
 }
 
-func (m *Member) AdminOrOwner() bool{
-	return m.role == Admin || m.role == Owner
+func (m *Member) SetRole(role RoleType) {
+	m.role = role
 }
 
-
-
-type GMManager struct {
-	dbExec DBExec
-	signalHub SignalHub
-	noticeHub 	NoticeHub
+func (m *Member) Id() string {
+	return m.id
 }
 
-func (gmm *GMManager) Mute(operator, target *Member, muteTime int64) error{
-	if !operator.AdminOrOwner() {
-		return ErrPermissionDenied
-	}
-	// can not mute admin
-	if target.AdminOrOwner() {
-		return ErrPermissionDenied
-	}
-
-	target.muteTime = muteTime
-	err := gmm.dbExec.SetGroupMemberMuteInfo(target)
-	if err != nil {
-		return err
-	}
-
-	// send signal
-	err = gmm.signalHub.UpdateMembersMuteTime(target.group.GetID(), []string{target.id}, target.muteTime)
-	if err != nil {
-		return err
-	}
-	// send notify
-	err = gmm.noticeHub.UpdateMembersMuteTime(target.group.GetID(), operator.id, []string{target.id})
-	if err != nil {
-		return err
-	}
-	return nil
+func (m *Member) Nickname() string {
+	return m.nickname
 }
 
-func (gmm *GMManager) UnMute(operator, target *Member) error{
-	if !operator.AdminOrOwner() {
-		return ErrPermissionDenied
-	}
+func (m *Member) Group() *Group {
+	return m.group
+}
 
-	if target.muteTime == UnMute {
-		return nil
-	}
+func (m *Member) Role() RoleType {
+	return m.role
+}
 
-	target.muteTime = UnMute
-	err := gmm.dbExec.SetGroupMemberMuteInfo(target)
-	if err != nil {
-		return err
-	}
+func (m *Member) MuteTime() int64 {
+	return m.muteTime
+}
 
-	// send signal
-	err = gmm.signalHub.UpdateMembersMuteTime(target.group.GetID(), []string{target.id}, target.muteTime)
-	if err != nil {
-		return err
-	}
-	// send notify
-	err = gmm.noticeHub.UpdateMembersMuteTime(target.group.GetID(), operator.id, []string{target.id})
-	if err != nil {
-		return err
-	}
-	return nil
+func (m *Member) AdminOrOwner() bool {
+	return m.role == Manager || m.role == Owner
 }

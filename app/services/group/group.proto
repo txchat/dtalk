@@ -1,0 +1,199 @@
+syntax = "proto3";
+
+package group;
+option go_package = "./group";
+
+enum GroupStatus {
+  Serving = 0; // 正常
+  Blocked = 1; // 封禁
+  Disband = 2; // 解散
+}
+
+// 群类型
+enum GroupType {
+  Normal = 0;     // 普通群
+  Enterprise = 1; // 企业群
+  Department = 2; // 部门群
+}
+
+// 群内加群设置
+enum GroupJoinType {
+  AnybodyCanJoinGroup = 0;  // 无需审批（默认）
+  JustManagerCanInvite = 1; // 禁止加群，群主和管理员邀请加群
+  NormalMemberCanInvite = 2; // 普通人邀请需要审批,群主和管理员直接加群
+}
+
+// 群内发言设置
+enum GroupMuteType {
+  NotLimited = 0;            // 全员可发言
+  AllMutedExceptManager = 1; // 全员禁言(除群主和管理员)
+}
+
+// 群内加好友设置
+enum GroupFriendlyType {
+  AllowedGroupFriendship = 0; // 群内可加好友
+  DeniedGroupFriendship = 1;  // 群内禁止加好友
+}
+
+// 群成员类型
+enum RoleType {
+  NormalMember = 0; // 群员
+  Manager = 1;      // 管理员
+  Owner = 2;        // 群主
+  Out = 10;         // 退群
+}
+
+message GroupInfo {
+  int64 id = 1;
+  string markId = 2;
+  string name = 3;
+  string avatar = 4;
+  int32 memberCount = 5;
+  int32 maxMembersLimit = 6;
+  string introduce = 7;
+  GroupStatus status = 8;
+  string ownerId = 9;
+  int64 createTime = 10;
+  int64 updateTime = 11;
+  // 加群方式，0=无需审批（默认），1=禁止加群，群主和管理员邀请加群,
+  // 2=普通人邀请需要审批,群主和管理员直接加群
+  GroupJoinType join_type = 12;
+  // 禁言， 0=全员可发言， 1=全员禁言(除群主和管理员)
+  GroupMuteType mute_type = 13;
+  // 加好友限制， 0=群内可加好友，1=群内禁止加好友
+  GroupFriendlyType friend_type = 14;
+  // 群内当前被禁言的人数
+  int32 mutedNumbers = 15;
+  // 群内管理员数量
+  int32 managerNumbers = 16;
+  string AESKey = 17;
+  string maskName = 18;
+  // 群类型 (0: 普通群, 1: 全员群, 2: 部门群)
+  GroupType type = 19;
+}
+
+message MemberInfo {
+  int64 gid = 1;
+  string uid = 2;
+  string nickname = 3;
+  RoleType role = 4;
+  int64 mutedTime = 5;
+  int64 joinedTime = 6;
+}
+
+// 创建群聊
+message CreateGroupReq {
+  string name = 1;
+  GroupType type = 2;
+  string owner = 3;
+  message MemberMinData {
+    // 成员 id
+    string id = 1;
+    // 成员在群里的名字
+    string name = 2;
+  }
+  repeated MemberMinData members = 4;
+}
+
+message CreateGroupResp {
+  int64 id = 1;
+  int64 createTime = 2;
+}
+
+message GroupInfoReq { int64 gid = 1; }
+
+message GroupInfoResp { GroupInfo group = 1; }
+
+message MemberInfoReq {
+  int64 gid = 1;
+  repeated string uid = 2;
+}
+
+message MemberInfoResp { repeated MemberInfo members = 1; }
+
+message GroupLimitedMembersReq {
+  int64 gid = 1;
+  int64 num = 2;
+}
+
+message GroupLimitedMembersResp { repeated MemberInfo members = 1; }
+
+message JoinedGroupsReq { string uid = 1; }
+
+message JoinedGroupsResp { repeated int64 gid = 1; }
+
+message ChangeOwnerReq {
+  int64 gid = 1;
+  string operator = 2;
+  string new = 3;
+}
+
+message ChangeOwnerResp {}
+
+message DisbandGroupReq {
+  int64 gid = 1;
+  string operator = 2;
+}
+
+message DisbandGroupResp {}
+
+message UpdateGroupNameReq {
+  int64 gid = 1;
+  string operator = 2;
+  string name = 3;
+  string maskName = 4;
+}
+
+message UpdateGroupNameResp {}
+
+message UpdateGroupAvatarReq {
+  int64 gid = 1;
+  string operator = 2;
+  string avatar = 3;
+}
+
+message UpdateGroupAvatarResp {}
+
+message UpdateGroupJoinTypeReq {
+  int64 gid = 1;
+  string operator = 2;
+  GroupJoinType type = 3;
+}
+
+message UpdateGroupJoinTypeResp {}
+
+message UpdateGroupFriendlyTypeReq {
+  int64 gid = 1;
+  string operator = 2;
+  GroupFriendlyType type = 3;
+}
+
+message UpdateGroupFriendlyTypeResp {}
+
+message UpdateGroupMuteTypeReq {
+  int64 gid = 1;
+  string operator = 2;
+  GroupMuteType type = 3;
+}
+
+message UpdateGroupMuteTypeResp {}
+
+service Group {
+  rpc GroupInfo(GroupInfoReq) returns (GroupInfoResp);
+  rpc MemberInfo(MemberInfoReq) returns (MemberInfoResp);
+  rpc GroupLimitedMembers(GroupLimitedMembersReq)
+      returns (GroupLimitedMembersResp);
+
+  rpc CreateGroup(CreateGroupReq) returns (CreateGroupResp);
+  rpc JoinedGroups(JoinedGroupsReq) returns (JoinedGroupsResp);
+  rpc ChangeOwner(ChangeOwnerReq) returns (ChangeOwnerResp);
+  rpc DisbandGroup(DisbandGroupReq) returns (DisbandGroupResp);
+  rpc UpdateGroupName(UpdateGroupNameReq) returns (UpdateGroupNameResp);
+  rpc UpdateGroupAvatar(UpdateGroupAvatarReq) returns (UpdateGroupAvatarResp);
+  rpc UpdateGroupJoinType(UpdateGroupJoinTypeReq)
+      returns (UpdateGroupJoinTypeResp);
+  rpc UpdateGroupFriendlyType(UpdateGroupFriendlyTypeReq)
+      returns (UpdateGroupFriendlyTypeResp);
+  rpc UpdateGroupMuteType(UpdateGroupMuteTypeReq)
+      returns (UpdateGroupMuteTypeResp);
+}
