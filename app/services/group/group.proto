@@ -178,6 +178,55 @@ message UpdateGroupMuteTypeReq {
 
 message UpdateGroupMuteTypeResp {}
 
+message InviteMembersReq {
+  int64 gid = 1;
+  string operator = 2;
+  repeated string mid = 3;
+}
+
+message InviteMembersResp {}
+
+message KickOutMembersReq {
+  int64 gid = 1;
+  string operator = 2;
+  repeated string mid = 3;
+}
+
+message KickOutMembersResp {}
+
+message MemberExitReq {
+  int64 gid = 1;
+  string operator = 2;
+}
+
+message MemberExitResp {}
+
+message ChangeMemberRoleReq {
+  int64 gid = 1;
+  string operator = 2;
+  string mid = 3;
+  RoleType role = 4;
+}
+
+message ChangeMemberRoleResp {}
+
+message MuteMembersReq {
+  int64 gid = 1;
+  string operator = 2;
+  repeated string mid = 3;
+  int64 deadline = 4;
+}
+
+message MuteMembersResp {}
+
+message UnMuteMembersReq {
+  int64 gid = 1;
+  string operator = 2;
+  repeated string mid = 3;
+}
+
+message UnMuteMembersResp {}
+
 service Group {
   rpc GroupInfo(GroupInfoReq) returns (GroupInfoResp);
   rpc MemberInfo(MemberInfoReq) returns (MemberInfoResp);
@@ -196,4 +245,11 @@ service Group {
       returns (UpdateGroupFriendlyTypeResp);
   rpc UpdateGroupMuteType(UpdateGroupMuteTypeReq)
       returns (UpdateGroupMuteTypeResp);
+
+  rpc InviteMembers(InviteMembersReq) returns (InviteMembersResp);
+  rpc KickOutMembers(KickOutMembersReq) returns (KickOutMembersResp);
+  rpc MemberExit(MemberExitReq) returns (MemberExitResp);
+  rpc ChangeMemberRole(ChangeMemberRoleReq) returns (ChangeMemberRoleResp);
+  rpc MuteMembers(MuteMembersReq) returns (MuteMembersResp);
+  rpc UnMuteMembers(UnMuteMembersReq) returns (UnMuteMembersResp);
 }

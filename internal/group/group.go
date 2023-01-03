@@ -28,13 +28,14 @@ const (
 )
 
 type Group struct {
-	id         int64
-	name       string
-	avatar     string
-	markId     string
-	owner      string
-	maxMembers int
-	createTime int64
+	id             int64
+	name           string
+	avatar         string
+	markId         string
+	owner          string
+	maxMembers     int
+	currentMembers int
+	createTime     int64
 	//permission
 	joinPermission       JoinGroupPermission
 	mutePermission       MuteTypeOfGroup
@@ -42,6 +43,30 @@ type Group struct {
 	aesKey               string
 
 	members []*Member
+}
+
+func (g *Group) SetJoinPermission(joinPermission JoinGroupPermission) {
+	g.joinPermission = joinPermission
+}
+
+func (g *Group) SetMutePermission(mutePermission MuteTypeOfGroup) {
+	g.mutePermission = mutePermission
+}
+
+func (g *Group) SetFriendshipPermission(friendshipPermission FriendshipOfGroupPermission) {
+	g.friendshipPermission = friendshipPermission
+}
+
+func (g *Group) SetName(name string) {
+	g.name = name
+}
+
+func (g *Group) SetAvatar(avatar string) {
+	g.avatar = avatar
+}
+
+func (g *Group) SetMarkId(markId string) {
+	g.markId = markId
 }
 
 func (g *Group) Members() []*Member {
@@ -92,20 +117,26 @@ func (g *Group) AesKey() string {
 	return g.aesKey
 }
 
-func NewGroup() *Group {
+func NewGroup(gid int64, owner string, maxMembers, currentMembers int, createTime int64) *Group {
 	return &Group{
-		id:      0,
-		markId:  "",
-		owner:   "",
-		members: make([]*Member, 0),
+		id:             gid,
+		owner:          owner,
+		maxMembers:     maxMembers,
+		currentMembers: currentMembers,
+		createTime:     createTime,
+		members:        make([]*Member, 0),
 	}
 }
 
 func (g *Group) MemberCount() int {
-	return len(g.members)
+	return g.currentMembers
 }
 
-func (g *Group) Invite(id, nickname string) {
+func (g *Group) Invite(id, nickname string) error {
+	if g.currentMembers >= g.maxMembers {
+		return ErrGroupMaxMembersLimit
+	}
+
 	role := Normal
 	if id == g.owner {
 		role = Owner
@@ -117,7 +148,8 @@ func (g *Group) Invite(id, nickname string) {
 		role:     role,
 		muteTime: 0,
 	})
-	return
+	g.currentMembers++
+	return nil
 }
 
 func (g *Group) ChangeOwner(operator, newOwner *Member, mmg *GMManager) error {

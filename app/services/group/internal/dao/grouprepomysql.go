@@ -267,3 +267,7 @@ func (repo *GroupRepositoryMysql) UpdateGroupMuteType(group *model.GroupInfo) (i
 func (repo *GroupRepositoryMysql) UpdateGroupName(group *model.GroupInfo) (int64, int64, error) {
 	return repo.conn.Exec(_UpdateGroupInfoName, group.GroupName, group.GroupPubName, group.GroupUpdateTime, group.GroupId)
 }
+
+func (repo *GroupRepositoryMysql) UpdateGroupMembersNumber(tx *mysql.MysqlTx, group *model.GroupInfo) (int64, int64, error) {
+	return tx.Exec(_UpdateGroupInfoGroupNum, group.GroupMemberNum, group.GroupUpdateTime, group.GroupId)
+}

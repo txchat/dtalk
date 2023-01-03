@@ -6,7 +6,6 @@ import (
 )
 
 type GroupManager struct {
-	gmm *GMManager
 }
 
 func (mg *GroupManager) ChangeOwner(operator, newOwner *Member, group *Group) error {

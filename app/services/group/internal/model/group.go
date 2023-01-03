@@ -8,6 +8,12 @@ const (
 	GroupStatusDisBand = 2 // 解散
 )
 
+const (
+	AnybodyCanJoinGroup   = 0 // 无需审批（默认）
+	JustManagerCanInvite  = 1 // 禁止加群，群主和管理员邀请加群
+	NormalMemberCanInvite = 2 // 普通人邀请需要审批,群主和管理员直接加群
+)
+
 type GroupInfo struct {
 	GroupId     int64  `json:"groupId" form:"groupId"`
 	GroupMarkId string `json:"groupMarkId" form:"groupMarkId"`

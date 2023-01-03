@@ -81,3 +81,33 @@ func (s *GroupServer) UpdateGroupMuteType(ctx context.Context, in *group.UpdateG
 	l := logic.NewUpdateGroupMuteTypeLogic(ctx, s.svcCtx)
 	return l.UpdateGroupMuteType(in)
 }
+
+func (s *GroupServer) InviteMembers(ctx context.Context, in *group.InviteMembersReq) (*group.InviteMembersResp, error) {
+	l := logic.NewInviteMembersLogic(ctx, s.svcCtx)
+	return l.InviteMembers(in)
+}
+
+func (s *GroupServer) KickOutMembers(ctx context.Context, in *group.KickOutMembersReq) (*group.KickOutMembersResp, error) {
+	l := logic.NewKickOutMembersLogic(ctx, s.svcCtx)
+	return l.KickOutMembers(in)
+}
+
+func (s *GroupServer) MemberExit(ctx context.Context, in *group.MemberExitReq) (*group.MemberExitResp, error) {
+	l := logic.NewMemberExitLogic(ctx, s.svcCtx)
+	return l.MemberExit(in)
+}
+
+func (s *GroupServer) ChangeMemberRole(ctx context.Context, in *group.ChangeMemberRoleReq) (*group.ChangeMemberRoleResp, error) {
+	l := logic.NewChangeMemberRoleLogic(ctx, s.svcCtx)
+	return l.ChangeMemberRole(in)
+}
+
+func (s *GroupServer) MuteMembers(ctx context.Context, in *group.MuteMembersReq) (*group.MuteMembersResp, error) {
+	l := logic.NewMuteMembersLogic(ctx, s.svcCtx)
+	return l.MuteMembers(in)
+}
+
+func (s *GroupServer) UnMuteMembers(ctx context.Context, in *group.UnMuteMembersReq) (*group.UnMuteMembersResp, error) {
+	l := logic.NewUnMuteMembersLogic(ctx, s.svcCtx)
+	return l.UnMuteMembers(in)
+}

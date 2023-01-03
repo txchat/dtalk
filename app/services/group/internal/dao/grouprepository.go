@@ -25,4 +25,5 @@ type GroupRepository interface {
 	UpdateGroupJoinType(group *model.GroupInfo) (int64, int64, error)
 	UpdateGroupMuteType(group *model.GroupInfo) (int64, int64, error)
 	UpdateGroupName(group *model.GroupInfo) (int64, int64, error)
+	UpdateGroupMembersNumber(tx *mysql.MysqlTx, group *model.GroupInfo) (int64, int64, error)
 }

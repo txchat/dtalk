@@ -31,6 +31,12 @@ type GroupClient interface {
 	UpdateGroupJoinType(ctx context.Context, in *UpdateGroupJoinTypeReq, opts ...grpc.CallOption) (*UpdateGroupJoinTypeResp, error)
 	UpdateGroupFriendlyType(ctx context.Context, in *UpdateGroupFriendlyTypeReq, opts ...grpc.CallOption) (*UpdateGroupFriendlyTypeResp, error)
 	UpdateGroupMuteType(ctx context.Context, in *UpdateGroupMuteTypeReq, opts ...grpc.CallOption) (*UpdateGroupMuteTypeResp, error)
+	InviteMembers(ctx context.Context, in *InviteMembersReq, opts ...grpc.CallOption) (*InviteMembersResp, error)
+	KickOutMembers(ctx context.Context, in *KickOutMembersReq, opts ...grpc.CallOption) (*KickOutMembersResp, error)
+	MemberExit(ctx context.Context, in *MemberExitReq, opts ...grpc.CallOption) (*MemberExitResp, error)
+	ChangeMemberRole(ctx context.Context, in *ChangeMemberRoleReq, opts ...grpc.CallOption) (*ChangeMemberRoleResp, error)
+	MuteMembers(ctx context.Context, in *MuteMembersReq, opts ...grpc.CallOption) (*MuteMembersResp, error)
+	UnMuteMembers(ctx context.Context, in *UnMuteMembersReq, opts ...grpc.CallOption) (*UnMuteMembersResp, error)
 }
 
 type groupClient struct {
@@ -149,6 +155,60 @@ func (c *groupClient) UpdateGroupMuteType(ctx context.Context, in *UpdateGroupMu
 	return out, nil
 }
 
+func (c *groupClient) InviteMembers(ctx context.Context, in *InviteMembersReq, opts ...grpc.CallOption) (*InviteMembersResp, error) {
+	out := new(InviteMembersResp)
+	err := c.cc.Invoke(ctx, "/group.Group/InviteMembers", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *groupClient) KickOutMembers(ctx context.Context, in *KickOutMembersReq, opts ...grpc.CallOption) (*KickOutMembersResp, error) {
+	out := new(KickOutMembersResp)
+	err := c.cc.Invoke(ctx, "/group.Group/KickOutMembers", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *groupClient) MemberExit(ctx context.Context, in *MemberExitReq, opts ...grpc.CallOption) (*MemberExitResp, error) {
+	out := new(MemberExitResp)
+	err := c.cc.Invoke(ctx, "/group.Group/MemberExit", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *groupClient) ChangeMemberRole(ctx context.Context, in *ChangeMemberRoleReq, opts ...grpc.CallOption) (*ChangeMemberRoleResp, error) {
+	out := new(ChangeMemberRoleResp)
+	err := c.cc.Invoke(ctx, "/group.Group/ChangeMemberRole", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *groupClient) MuteMembers(ctx context.Context, in *MuteMembersReq, opts ...grpc.CallOption) (*MuteMembersResp, error) {
+	out := new(MuteMembersResp)
+	err := c.cc.Invoke(ctx, "/group.Group/MuteMembers", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *groupClient) UnMuteMembers(ctx context.Context, in *UnMuteMembersReq, opts ...grpc.CallOption) (*UnMuteMembersResp, error) {
+	out := new(UnMuteMembersResp)
+	err := c.cc.Invoke(ctx, "/group.Group/UnMuteMembers", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // GroupServer is the server API for Group service.
 // All implementations must embed UnimplementedGroupServer
 // for forward compatibility
@@ -165,6 +225,12 @@ type GroupServer interface {
 	UpdateGroupJoinType(context.Context, *UpdateGroupJoinTypeReq) (*UpdateGroupJoinTypeResp, error)
 	UpdateGroupFriendlyType(context.Context, *UpdateGroupFriendlyTypeReq) (*UpdateGroupFriendlyTypeResp, error)
 	UpdateGroupMuteType(context.Context, *UpdateGroupMuteTypeReq) (*UpdateGroupMuteTypeResp, error)
+	InviteMembers(context.Context, *InviteMembersReq) (*InviteMembersResp, error)
+	KickOutMembers(context.Context, *KickOutMembersReq) (*KickOutMembersResp, error)
+	MemberExit(context.Context, *MemberExitReq) (*MemberExitResp, error)
+	ChangeMemberRole(context.Context, *ChangeMemberRoleReq) (*ChangeMemberRoleResp, error)
+	MuteMembers(context.Context, *MuteMembersReq) (*MuteMembersResp, error)
+	UnMuteMembers(context.Context, *UnMuteMembersReq) (*UnMuteMembersResp, error)
 	mustEmbedUnimplementedGroupServer()
 }
 
@@ -207,6 +273,24 @@ func (UnimplementedGroupServer) UpdateGroupFriendlyType(context.Context, *Update
 }
 func (UnimplementedGroupServer) UpdateGroupMuteType(context.Context, *UpdateGroupMuteTypeReq) (*UpdateGroupMuteTypeResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateGroupMuteType not implemented")
+}
+func (UnimplementedGroupServer) InviteMembers(context.Context, *InviteMembersReq) (*InviteMembersResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method InviteMembers not implemented")
+}
+func (UnimplementedGroupServer) KickOutMembers(context.Context, *KickOutMembersReq) (*KickOutMembersResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method KickOutMembers not implemented")
+}
+func (UnimplementedGroupServer) MemberExit(context.Context, *MemberExitReq) (*MemberExitResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MemberExit not implemented")
+}
+func (UnimplementedGroupServer) ChangeMemberRole(context.Context, *ChangeMemberRoleReq) (*ChangeMemberRoleResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ChangeMemberRole not implemented")
+}
+func (UnimplementedGroupServer) MuteMembers(context.Context, *MuteMembersReq) (*MuteMembersResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MuteMembers not implemented")
+}
+func (UnimplementedGroupServer) UnMuteMembers(context.Context, *UnMuteMembersReq) (*UnMuteMembersResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UnMuteMembers not implemented")
 }
 func (UnimplementedGroupServer) mustEmbedUnimplementedGroupServer() {}
 
@@ -437,6 +521,114 @@ func _Group_UpdateGroupMuteType_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Group_InviteMembers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(InviteMembersReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GroupServer).InviteMembers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/group.Group/InviteMembers",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GroupServer).InviteMembers(ctx, req.(*InviteMembersReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Group_KickOutMembers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(KickOutMembersReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GroupServer).KickOutMembers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/group.Group/KickOutMembers",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GroupServer).KickOutMembers(ctx, req.(*KickOutMembersReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Group_MemberExit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MemberExitReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GroupServer).MemberExit(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/group.Group/MemberExit",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GroupServer).MemberExit(ctx, req.(*MemberExitReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Group_ChangeMemberRole_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChangeMemberRoleReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GroupServer).ChangeMemberRole(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/group.Group/ChangeMemberRole",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GroupServer).ChangeMemberRole(ctx, req.(*ChangeMemberRoleReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Group_MuteMembers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MuteMembersReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GroupServer).MuteMembers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/group.Group/MuteMembers",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GroupServer).MuteMembers(ctx, req.(*MuteMembersReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Group_UnMuteMembers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UnMuteMembersReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GroupServer).UnMuteMembers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/group.Group/UnMuteMembers",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GroupServer).UnMuteMembers(ctx, req.(*UnMuteMembersReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Group_ServiceDesc is the grpc.ServiceDesc for Group service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -491,6 +683,30 @@ var Group_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateGroupMuteType",
 			Handler:    _Group_UpdateGroupMuteType_Handler,
+		},
+		{
+			MethodName: "InviteMembers",
+			Handler:    _Group_InviteMembers_Handler,
+		},
+		{
+			MethodName: "KickOutMembers",
+			Handler:    _Group_KickOutMembers_Handler,
+		},
+		{
+			MethodName: "MemberExit",
+			Handler:    _Group_MemberExit_Handler,
+		},
+		{
+			MethodName: "ChangeMemberRole",
+			Handler:    _Group_ChangeMemberRole_Handler,
+		},
+		{
+			MethodName: "MuteMembers",
+			Handler:    _Group_MuteMembers_Handler,
+		},
+		{
+			MethodName: "UnMuteMembers",
+			Handler:    _Group_UnMuteMembers_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

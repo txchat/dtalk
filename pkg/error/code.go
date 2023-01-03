@@ -28,6 +28,7 @@ var (
 	ErrInvalidHeader       = NewError(-1014, "请求头部错误")
 	ErrUnsupportedDevice   = NewError(-1015, "不支持该设备类型")
 	ErrReconnectRejected   = NewError(-1016, "设备重连不被允许")
+	ErrPermissionDenied    = NewError(-1019, "权限不足")
 	ErrFeaturesUnSupported = NewError(-2000, "未支持该功能")
 
 	ErrGroupCreateFailed           = NewError(-10000, "群创建失败")
