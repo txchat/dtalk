@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion7
 type GroupClient interface {
 	GroupInfo(ctx context.Context, in *GroupInfoReq, opts ...grpc.CallOption) (*GroupInfoResp, error)
 	MemberInfo(ctx context.Context, in *MemberInfoReq, opts ...grpc.CallOption) (*MemberInfoResp, error)
+	MembersInfo(ctx context.Context, in *MembersInfoReq, opts ...grpc.CallOption) (*MembersInfoResp, error)
 	GroupLimitedMembers(ctx context.Context, in *GroupLimitedMembersReq, opts ...grpc.CallOption) (*GroupLimitedMembersResp, error)
 	CreateGroup(ctx context.Context, in *CreateGroupReq, opts ...grpc.CallOption) (*CreateGroupResp, error)
 	JoinedGroups(ctx context.Context, in *JoinedGroupsReq, opts ...grpc.CallOption) (*JoinedGroupsResp, error)
@@ -31,12 +32,14 @@ type GroupClient interface {
 	UpdateGroupJoinType(ctx context.Context, in *UpdateGroupJoinTypeReq, opts ...grpc.CallOption) (*UpdateGroupJoinTypeResp, error)
 	UpdateGroupFriendlyType(ctx context.Context, in *UpdateGroupFriendlyTypeReq, opts ...grpc.CallOption) (*UpdateGroupFriendlyTypeResp, error)
 	UpdateGroupMuteType(ctx context.Context, in *UpdateGroupMuteTypeReq, opts ...grpc.CallOption) (*UpdateGroupMuteTypeResp, error)
+	GetMuteList(ctx context.Context, in *GetMuteListReq, opts ...grpc.CallOption) (*GetMuteListResp, error)
 	InviteMembers(ctx context.Context, in *InviteMembersReq, opts ...grpc.CallOption) (*InviteMembersResp, error)
 	KickOutMembers(ctx context.Context, in *KickOutMembersReq, opts ...grpc.CallOption) (*KickOutMembersResp, error)
 	MemberExit(ctx context.Context, in *MemberExitReq, opts ...grpc.CallOption) (*MemberExitResp, error)
 	ChangeMemberRole(ctx context.Context, in *ChangeMemberRoleReq, opts ...grpc.CallOption) (*ChangeMemberRoleResp, error)
 	MuteMembers(ctx context.Context, in *MuteMembersReq, opts ...grpc.CallOption) (*MuteMembersResp, error)
 	UnMuteMembers(ctx context.Context, in *UnMuteMembersReq, opts ...grpc.CallOption) (*UnMuteMembersResp, error)
+	UpdateGroupMemberName(ctx context.Context, in *UpdateGroupMemberNameReq, opts ...grpc.CallOption) (*UpdateGroupMemberNameResp, error)
 }
 
 type groupClient struct {
@@ -59,6 +62,15 @@ func (c *groupClient) GroupInfo(ctx context.Context, in *GroupInfoReq, opts ...g
 func (c *groupClient) MemberInfo(ctx context.Context, in *MemberInfoReq, opts ...grpc.CallOption) (*MemberInfoResp, error) {
 	out := new(MemberInfoResp)
 	err := c.cc.Invoke(ctx, "/group.Group/MemberInfo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *groupClient) MembersInfo(ctx context.Context, in *MembersInfoReq, opts ...grpc.CallOption) (*MembersInfoResp, error) {
+	out := new(MembersInfoResp)
+	err := c.cc.Invoke(ctx, "/group.Group/MembersInfo", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -155,6 +167,15 @@ func (c *groupClient) UpdateGroupMuteType(ctx context.Context, in *UpdateGroupMu
 	return out, nil
 }
 
+func (c *groupClient) GetMuteList(ctx context.Context, in *GetMuteListReq, opts ...grpc.CallOption) (*GetMuteListResp, error) {
+	out := new(GetMuteListResp)
+	err := c.cc.Invoke(ctx, "/group.Group/GetMuteList", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *groupClient) InviteMembers(ctx context.Context, in *InviteMembersReq, opts ...grpc.CallOption) (*InviteMembersResp, error) {
 	out := new(InviteMembersResp)
 	err := c.cc.Invoke(ctx, "/group.Group/InviteMembers", in, out, opts...)
@@ -209,12 +230,22 @@ func (c *groupClient) UnMuteMembers(ctx context.Context, in *UnMuteMembersReq, o
 	return out, nil
 }
 
+func (c *groupClient) UpdateGroupMemberName(ctx context.Context, in *UpdateGroupMemberNameReq, opts ...grpc.CallOption) (*UpdateGroupMemberNameResp, error) {
+	out := new(UpdateGroupMemberNameResp)
+	err := c.cc.Invoke(ctx, "/group.Group/UpdateGroupMemberName", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // GroupServer is the server API for Group service.
 // All implementations must embed UnimplementedGroupServer
 // for forward compatibility
 type GroupServer interface {
 	GroupInfo(context.Context, *GroupInfoReq) (*GroupInfoResp, error)
 	MemberInfo(context.Context, *MemberInfoReq) (*MemberInfoResp, error)
+	MembersInfo(context.Context, *MembersInfoReq) (*MembersInfoResp, error)
 	GroupLimitedMembers(context.Context, *GroupLimitedMembersReq) (*GroupLimitedMembersResp, error)
 	CreateGroup(context.Context, *CreateGroupReq) (*CreateGroupResp, error)
 	JoinedGroups(context.Context, *JoinedGroupsReq) (*JoinedGroupsResp, error)
@@ -225,12 +256,14 @@ type GroupServer interface {
 	UpdateGroupJoinType(context.Context, *UpdateGroupJoinTypeReq) (*UpdateGroupJoinTypeResp, error)
 	UpdateGroupFriendlyType(context.Context, *UpdateGroupFriendlyTypeReq) (*UpdateGroupFriendlyTypeResp, error)
 	UpdateGroupMuteType(context.Context, *UpdateGroupMuteTypeReq) (*UpdateGroupMuteTypeResp, error)
+	GetMuteList(context.Context, *GetMuteListReq) (*GetMuteListResp, error)
 	InviteMembers(context.Context, *InviteMembersReq) (*InviteMembersResp, error)
 	KickOutMembers(context.Context, *KickOutMembersReq) (*KickOutMembersResp, error)
 	MemberExit(context.Context, *MemberExitReq) (*MemberExitResp, error)
 	ChangeMemberRole(context.Context, *ChangeMemberRoleReq) (*ChangeMemberRoleResp, error)
 	MuteMembers(context.Context, *MuteMembersReq) (*MuteMembersResp, error)
 	UnMuteMembers(context.Context, *UnMuteMembersReq) (*UnMuteMembersResp, error)
+	UpdateGroupMemberName(context.Context, *UpdateGroupMemberNameReq) (*UpdateGroupMemberNameResp, error)
 	mustEmbedUnimplementedGroupServer()
 }
 
@@ -243,6 +276,9 @@ func (UnimplementedGroupServer) GroupInfo(context.Context, *GroupInfoReq) (*Grou
 }
 func (UnimplementedGroupServer) MemberInfo(context.Context, *MemberInfoReq) (*MemberInfoResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MemberInfo not implemented")
+}
+func (UnimplementedGroupServer) MembersInfo(context.Context, *MembersInfoReq) (*MembersInfoResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MembersInfo not implemented")
 }
 func (UnimplementedGroupServer) GroupLimitedMembers(context.Context, *GroupLimitedMembersReq) (*GroupLimitedMembersResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GroupLimitedMembers not implemented")
@@ -274,6 +310,9 @@ func (UnimplementedGroupServer) UpdateGroupFriendlyType(context.Context, *Update
 func (UnimplementedGroupServer) UpdateGroupMuteType(context.Context, *UpdateGroupMuteTypeReq) (*UpdateGroupMuteTypeResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateGroupMuteType not implemented")
 }
+func (UnimplementedGroupServer) GetMuteList(context.Context, *GetMuteListReq) (*GetMuteListResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMuteList not implemented")
+}
 func (UnimplementedGroupServer) InviteMembers(context.Context, *InviteMembersReq) (*InviteMembersResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method InviteMembers not implemented")
 }
@@ -291,6 +330,9 @@ func (UnimplementedGroupServer) MuteMembers(context.Context, *MuteMembersReq) (*
 }
 func (UnimplementedGroupServer) UnMuteMembers(context.Context, *UnMuteMembersReq) (*UnMuteMembersResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UnMuteMembers not implemented")
+}
+func (UnimplementedGroupServer) UpdateGroupMemberName(context.Context, *UpdateGroupMemberNameReq) (*UpdateGroupMemberNameResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateGroupMemberName not implemented")
 }
 func (UnimplementedGroupServer) mustEmbedUnimplementedGroupServer() {}
 
@@ -337,6 +379,24 @@ func _Group_MemberInfo_Handler(srv interface{}, ctx context.Context, dec func(in
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(GroupServer).MemberInfo(ctx, req.(*MemberInfoReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Group_MembersInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MembersInfoReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GroupServer).MembersInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/group.Group/MembersInfo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GroupServer).MembersInfo(ctx, req.(*MembersInfoReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -521,6 +581,24 @@ func _Group_UpdateGroupMuteType_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Group_GetMuteList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetMuteListReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GroupServer).GetMuteList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/group.Group/GetMuteList",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GroupServer).GetMuteList(ctx, req.(*GetMuteListReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Group_InviteMembers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(InviteMembersReq)
 	if err := dec(in); err != nil {
@@ -629,6 +707,24 @@ func _Group_UnMuteMembers_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Group_UpdateGroupMemberName_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateGroupMemberNameReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GroupServer).UpdateGroupMemberName(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/group.Group/UpdateGroupMemberName",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GroupServer).UpdateGroupMemberName(ctx, req.(*UpdateGroupMemberNameReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Group_ServiceDesc is the grpc.ServiceDesc for Group service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -643,6 +739,10 @@ var Group_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "MemberInfo",
 			Handler:    _Group_MemberInfo_Handler,
+		},
+		{
+			MethodName: "MembersInfo",
+			Handler:    _Group_MembersInfo_Handler,
 		},
 		{
 			MethodName: "GroupLimitedMembers",
@@ -685,6 +785,10 @@ var Group_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Group_UpdateGroupMuteType_Handler,
 		},
 		{
+			MethodName: "GetMuteList",
+			Handler:    _Group_GetMuteList_Handler,
+		},
+		{
 			MethodName: "InviteMembers",
 			Handler:    _Group_InviteMembers_Handler,
 		},
@@ -707,6 +811,10 @@ var Group_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UnMuteMembers",
 			Handler:    _Group_UnMuteMembers_Handler,
+		},
+		{
+			MethodName: "UpdateGroupMemberName",
+			Handler:    _Group_UpdateGroupMemberName_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

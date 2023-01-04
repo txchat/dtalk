@@ -45,15 +45,12 @@ func (l *UpdateGroupFriendTypeLogic) UpdateGroupFriendType(req *types.UpdateGrou
 
 	memInfoResp, err := l.svcCtx.GroupRPC.MemberInfo(l.ctx, &groupclient.MemberInfoReq{
 		Gid: gid,
-		Uid: []string{uid},
+		Uid: uid,
 	})
 	if err != nil {
 		return nil, err
 	}
-	if len(memInfoResp.GetMembers()) < 1 {
-		return nil, xerror.ErrGroupPersonNotExist
-	}
-	operator := memInfoResp.GetMembers()[0]
+	operator := memInfoResp.GetMember()
 	if operator.GetRole() < group.RoleType_Manager {
 		return nil, xerror.ErrGroupHigherPermission
 	}

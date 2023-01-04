@@ -3,6 +3,9 @@ package logic
 import (
 	"context"
 
+	"github.com/txchat/dtalk/app/services/group/internal/model"
+	"github.com/txchat/dtalk/pkg/util"
+
 	"github.com/txchat/dtalk/app/services/group/group"
 	"github.com/txchat/dtalk/app/services/group/internal/svc"
 
@@ -24,7 +27,42 @@ func NewMemberExitLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Member
 }
 
 func (l *MemberExitLogic) MemberExit(in *group.MemberExitReq) (*group.MemberExitResp, error) {
-	// todo: add your logic here and delete this line
+	nowTs := util.TimeNowUnixMilli()
 
-	return &group.MemberExitResp{}, nil
+	gInfo, err := l.svcCtx.Repo.GetGroupById(in.GetGid())
+	if err != nil {
+		return nil, err
+	}
+
+	tx, err := l.svcCtx.Repo.NewTx()
+	if err != nil {
+		return nil, err
+	}
+	defer tx.RollBack()
+
+	_, _, err = l.svcCtx.Repo.UpdateGroupMemberRole(tx, &model.GroupMember{
+		GroupId:               in.GetGid(),
+		GroupMemberId:         in.GetOperator(),
+		GroupMemberUpdateTime: nowTs,
+		GroupMemberType:       model.GroupMemberTypeOther,
+	})
+
+	if _, _, err = l.svcCtx.Repo.UpdateGroupMembersNumber(tx, &model.GroupInfo{
+		GroupId:         in.GetGid(),
+		GroupMemberNum:  gInfo.GroupMemberNum - 1,
+		GroupUpdateTime: nowTs,
+	}); err != nil {
+		return nil, err
+	}
+
+	if err = tx.Commit(); err != nil {
+		return nil, err
+	}
+
+	err = l.svcCtx.NoticeHub.GroupSignOut(l.ctx, in.GetGid(), in.GetOperator())
+	err = l.svcCtx.SignalHub.GroupRemoveMembers(l.ctx, in.GetGid(), []string{in.GetOperator()})
+	err = l.svcCtx.UnRegisterGroupMembers(l.ctx, in.GetGid(), []string{in.GetOperator()})
+	return &group.MemberExitResp{
+		Number: gInfo.GroupMemberNum - 1,
+	}, nil
 }

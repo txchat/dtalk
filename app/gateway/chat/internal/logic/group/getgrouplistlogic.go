@@ -60,10 +60,10 @@ func (l *GetGroupListLogic) GetGroupList(req *types.GetGroupListReq) (resp *type
 		var owner, person *types.GroupMember
 		ownerResp, err := l.svcCtx.GroupRPC.MemberInfo(l.ctx, &groupclient.MemberInfoReq{
 			Gid: gid,
-			Uid: []string{groupInfo.GetOwnerId()},
+			Uid: groupInfo.GetOwnerId(),
 		})
-		if err == nil && len(ownerResp.GetMembers()) > 0 {
-			m := ownerResp.GetMembers()[0]
+		if err == nil {
+			m := ownerResp.GetMember()
 			owner = &types.GroupMember{
 				MemberId:       m.GetUid(),
 				MemberName:     m.GetNickname(),
@@ -74,10 +74,10 @@ func (l *GetGroupListLogic) GetGroupList(req *types.GetGroupListReq) (resp *type
 
 		personResp, err := l.svcCtx.GroupRPC.MemberInfo(l.ctx, &groupclient.MemberInfoReq{
 			Gid: gid,
-			Uid: []string{uid},
+			Uid: uid,
 		})
-		if err == nil && len(personResp.GetMembers()) > 0 {
-			m := personResp.GetMembers()[0]
+		if err == nil {
+			m := personResp.GetMember()
 			person = &types.GroupMember{
 				MemberId:       m.GetUid(),
 				MemberName:     m.GetNickname(),

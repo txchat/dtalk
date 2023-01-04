@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/txchat/dtalk/app/services/group/groupclient"
-	xerror "github.com/txchat/dtalk/pkg/error"
 	xhttp "github.com/txchat/dtalk/pkg/net/http"
 	"github.com/txchat/dtalk/pkg/util"
 
@@ -44,15 +43,12 @@ func (l *GetGroupMemberInfoLogic) GetGroupMemberInfo(req *types.GetGroupMemberIn
 
 	memInfoResp, err := l.svcCtx.GroupRPC.MemberInfo(l.ctx, &groupclient.MemberInfoReq{
 		Gid: gid,
-		Uid: []string{uid},
+		Uid: uid,
 	})
 	if err != nil {
 		return nil, err
 	}
-	if len(memInfoResp.GetMembers()) < 1 {
-		return nil, xerror.ErrGroupMemberNotExist
-	}
-	memInfo := memInfoResp.GetMembers()[0]
+	memInfo := memInfoResp.GetMember()
 
 	resp = &types.GetGroupMemberInfoResp{
 		GroupMember: types.GroupMember{

@@ -36,6 +36,13 @@ func (l *InviteMembersLogic) InviteMembers(in *group.InviteMembersReq) (*group.I
 
 	g := xgroup.NewGroup(gInfo.GroupId, gInfo.GroupOwnerId, int(gInfo.GroupMaximum), int(gInfo.GroupMemberNum), gInfo.GroupCreateTime)
 
+	for _, mid := range in.GetMid() {
+		err = g.Invite(mid, "")
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	members := make([]*model.GroupMember, 0, g.MemberCount())
 	for _, member := range g.Members() {
 		members = append(members, &model.GroupMember{
@@ -72,11 +79,13 @@ func (l *InviteMembersLogic) InviteMembers(in *group.InviteMembersReq) (*group.I
 	//signal and notice
 	membersId := xgroup.Members(g.Members()).ToArray()
 
-	err = l.svcCtx.RegisterGroup(l.ctx, g.Id(), membersId)
+	err = l.svcCtx.RegisterGroupMembers(l.ctx, g.Id(), membersId)
 
 	err = l.svcCtx.SignalHub.GroupAddNewMembers(l.ctx, g.Id(), membersId)
 
 	err = l.svcCtx.NoticeHub.GroupAddNewMembers(l.ctx, g.Id(), in.GetOperator(), membersId)
 
-	return &group.InviteMembersResp{}, nil
+	return &group.InviteMembersResp{
+		Number: int32(g.MemberCount()),
+	}, nil
 }

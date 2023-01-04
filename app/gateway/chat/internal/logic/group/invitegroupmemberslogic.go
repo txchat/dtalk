@@ -37,7 +37,6 @@ func NewInviteGroupMembersLogic(ctx context.Context, svcCtx *svc.ServiceContext)
 }
 
 func (l *InviteGroupMembersLogic) InviteGroupMembers(req *types.InviteGroupMembersReq) (resp *types.InviteGroupMembersResp, err error) {
-	// todo: add your logic here and delete this line
 	uid := l.custom.UID
 	gid, err := util.ToInt64(req.IdStr)
 	if err != nil {
@@ -53,20 +52,20 @@ func (l *InviteGroupMembersLogic) InviteGroupMembers(req *types.InviteGroupMembe
 
 	mInfo, err := l.svcCtx.GroupRPC.MemberInfo(l.ctx, &groupclient.MemberInfoReq{
 		Gid: gid,
-		Uid: []string{uid},
+		Uid: uid,
 	})
 	if err != nil {
 		return nil, err
 	}
-	if len(mInfo.GetMembers()) < 1 {
-		return nil, xerror.ErrGroupInvitePermissionDenied
-	}
 
-	inviter := mInfo.GetMembers()[0]
+	inviter := mInfo.GetMember()
+
+	var memberNum int32 = 0
+	var inviteResp *groupclient.InviteMembersResp
 
 	switch gInfo.GetGroup().GetJoinType() {
 	case group.GroupJoinType_AnybodyCanJoinGroup:
-		_, err = l.svcCtx.GroupRPC.InviteMembers(l.ctx, &groupclient.InviteMembersReq{
+		inviteResp, err = l.svcCtx.GroupRPC.InviteMembers(l.ctx, &groupclient.InviteMembersReq{
 			Gid:      gid,
 			Operator: uid,
 			Mid:      req.NewMemberIds,
@@ -78,7 +77,7 @@ func (l *InviteGroupMembersLogic) InviteGroupMembers(req *types.InviteGroupMembe
 		if inviter.GetRole() < group.RoleType_Manager || inviter.GetRole() == group.RoleType_Out {
 			return nil, xerror.ErrGroupInvitePermissionDenied
 		}
-		_, err = l.svcCtx.GroupRPC.InviteMembers(l.ctx, &groupclient.InviteMembersReq{
+		inviteResp, err = l.svcCtx.GroupRPC.InviteMembers(l.ctx, &groupclient.InviteMembersReq{
 			Gid:      gid,
 			Operator: uid,
 			Mid:      req.NewMemberIds,
@@ -87,12 +86,15 @@ func (l *InviteGroupMembersLogic) InviteGroupMembers(req *types.InviteGroupMembe
 			return nil, err
 		}
 	case group.GroupJoinType_NormalMemberCanInvite:
-		//todo apply rpc call
+		return nil, xerror.ErrFeaturesUnSupported
+	}
+	if inviteResp != nil {
+		memberNum = inviteResp.GetNumber()
 	}
 	resp = &types.InviteGroupMembersResp{
-		Id:        0,
-		IdStr:     "",
-		MemberNum: 0,
+		Id:        gid,
+		IdStr:     util.MustToString(gid),
+		MemberNum: memberNum,
 	}
 	return
 }

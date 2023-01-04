@@ -22,6 +22,8 @@ type (
 	CreateGroupResp              = group.CreateGroupResp
 	DisbandGroupReq              = group.DisbandGroupReq
 	DisbandGroupResp             = group.DisbandGroupResp
+	GetMuteListReq               = group.GetMuteListReq
+	GetMuteListResp              = group.GetMuteListResp
 	GroupInfo                    = group.GroupInfo
 	GroupInfoReq                 = group.GroupInfoReq
 	GroupInfoResp                = group.GroupInfoResp
@@ -38,6 +40,8 @@ type (
 	MemberInfo                   = group.MemberInfo
 	MemberInfoReq                = group.MemberInfoReq
 	MemberInfoResp               = group.MemberInfoResp
+	MembersInfoReq               = group.MembersInfoReq
+	MembersInfoResp              = group.MembersInfoResp
 	MuteMembersReq               = group.MuteMembersReq
 	MuteMembersResp              = group.MuteMembersResp
 	UnMuteMembersReq             = group.UnMuteMembersReq
@@ -48,6 +52,8 @@ type (
 	UpdateGroupFriendlyTypeResp  = group.UpdateGroupFriendlyTypeResp
 	UpdateGroupJoinTypeReq       = group.UpdateGroupJoinTypeReq
 	UpdateGroupJoinTypeResp      = group.UpdateGroupJoinTypeResp
+	UpdateGroupMemberNameReq     = group.UpdateGroupMemberNameReq
+	UpdateGroupMemberNameResp    = group.UpdateGroupMemberNameResp
 	UpdateGroupMuteTypeReq       = group.UpdateGroupMuteTypeReq
 	UpdateGroupMuteTypeResp      = group.UpdateGroupMuteTypeResp
 	UpdateGroupNameReq           = group.UpdateGroupNameReq
@@ -56,6 +62,7 @@ type (
 	Group interface {
 		GroupInfo(ctx context.Context, in *GroupInfoReq, opts ...grpc.CallOption) (*GroupInfoResp, error)
 		MemberInfo(ctx context.Context, in *MemberInfoReq, opts ...grpc.CallOption) (*MemberInfoResp, error)
+		MembersInfo(ctx context.Context, in *MembersInfoReq, opts ...grpc.CallOption) (*MembersInfoResp, error)
 		GroupLimitedMembers(ctx context.Context, in *GroupLimitedMembersReq, opts ...grpc.CallOption) (*GroupLimitedMembersResp, error)
 		CreateGroup(ctx context.Context, in *CreateGroupReq, opts ...grpc.CallOption) (*CreateGroupResp, error)
 		JoinedGroups(ctx context.Context, in *JoinedGroupsReq, opts ...grpc.CallOption) (*JoinedGroupsResp, error)
@@ -66,12 +73,14 @@ type (
 		UpdateGroupJoinType(ctx context.Context, in *UpdateGroupJoinTypeReq, opts ...grpc.CallOption) (*UpdateGroupJoinTypeResp, error)
 		UpdateGroupFriendlyType(ctx context.Context, in *UpdateGroupFriendlyTypeReq, opts ...grpc.CallOption) (*UpdateGroupFriendlyTypeResp, error)
 		UpdateGroupMuteType(ctx context.Context, in *UpdateGroupMuteTypeReq, opts ...grpc.CallOption) (*UpdateGroupMuteTypeResp, error)
+		GetMuteList(ctx context.Context, in *GetMuteListReq, opts ...grpc.CallOption) (*GetMuteListResp, error)
 		InviteMembers(ctx context.Context, in *InviteMembersReq, opts ...grpc.CallOption) (*InviteMembersResp, error)
 		KickOutMembers(ctx context.Context, in *KickOutMembersReq, opts ...grpc.CallOption) (*KickOutMembersResp, error)
 		MemberExit(ctx context.Context, in *MemberExitReq, opts ...grpc.CallOption) (*MemberExitResp, error)
 		ChangeMemberRole(ctx context.Context, in *ChangeMemberRoleReq, opts ...grpc.CallOption) (*ChangeMemberRoleResp, error)
 		MuteMembers(ctx context.Context, in *MuteMembersReq, opts ...grpc.CallOption) (*MuteMembersResp, error)
 		UnMuteMembers(ctx context.Context, in *UnMuteMembersReq, opts ...grpc.CallOption) (*UnMuteMembersResp, error)
+		UpdateGroupMemberName(ctx context.Context, in *UpdateGroupMemberNameReq, opts ...grpc.CallOption) (*UpdateGroupMemberNameResp, error)
 	}
 
 	defaultGroup struct {
@@ -93,6 +102,11 @@ func (m *defaultGroup) GroupInfo(ctx context.Context, in *GroupInfoReq, opts ...
 func (m *defaultGroup) MemberInfo(ctx context.Context, in *MemberInfoReq, opts ...grpc.CallOption) (*MemberInfoResp, error) {
 	client := group.NewGroupClient(m.cli.Conn())
 	return client.MemberInfo(ctx, in, opts...)
+}
+
+func (m *defaultGroup) MembersInfo(ctx context.Context, in *MembersInfoReq, opts ...grpc.CallOption) (*MembersInfoResp, error) {
+	client := group.NewGroupClient(m.cli.Conn())
+	return client.MembersInfo(ctx, in, opts...)
 }
 
 func (m *defaultGroup) GroupLimitedMembers(ctx context.Context, in *GroupLimitedMembersReq, opts ...grpc.CallOption) (*GroupLimitedMembersResp, error) {
@@ -145,6 +159,11 @@ func (m *defaultGroup) UpdateGroupMuteType(ctx context.Context, in *UpdateGroupM
 	return client.UpdateGroupMuteType(ctx, in, opts...)
 }
 
+func (m *defaultGroup) GetMuteList(ctx context.Context, in *GetMuteListReq, opts ...grpc.CallOption) (*GetMuteListResp, error) {
+	client := group.NewGroupClient(m.cli.Conn())
+	return client.GetMuteList(ctx, in, opts...)
+}
+
 func (m *defaultGroup) InviteMembers(ctx context.Context, in *InviteMembersReq, opts ...grpc.CallOption) (*InviteMembersResp, error) {
 	client := group.NewGroupClient(m.cli.Conn())
 	return client.InviteMembers(ctx, in, opts...)
@@ -173,4 +192,9 @@ func (m *defaultGroup) MuteMembers(ctx context.Context, in *MuteMembersReq, opts
 func (m *defaultGroup) UnMuteMembers(ctx context.Context, in *UnMuteMembersReq, opts ...grpc.CallOption) (*UnMuteMembersResp, error) {
 	client := group.NewGroupClient(m.cli.Conn())
 	return client.UnMuteMembers(ctx, in, opts...)
+}
+
+func (m *defaultGroup) UpdateGroupMemberName(ctx context.Context, in *UpdateGroupMemberNameReq, opts ...grpc.CallOption) (*UpdateGroupMemberNameResp, error) {
+	client := group.NewGroupClient(m.cli.Conn())
+	return client.UpdateGroupMemberName(ctx, in, opts...)
 }

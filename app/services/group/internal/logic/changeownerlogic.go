@@ -3,6 +3,8 @@ package logic
 import (
 	"context"
 
+	xgroup "github.com/txchat/dtalk/internal/group"
+
 	"github.com/txchat/dtalk/app/services/group/group"
 	"github.com/txchat/dtalk/app/services/group/internal/model"
 	"github.com/txchat/dtalk/app/services/group/internal/svc"
@@ -26,12 +28,10 @@ func NewChangeOwnerLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Chang
 }
 
 func (l *ChangeOwnerLogic) ChangeOwner(in *group.ChangeOwnerReq) (*group.ChangeOwnerResp, error) {
-	// todo: add your logic here and delete this line
-
 	nowTS := util.TimeNowUnixMilli()
 	gid := in.GetGid()
 
-	g, err := l.svcCtx.Repo.GetGroupById(gid)
+	gInfo, err := l.svcCtx.Repo.GetGroupById(gid)
 	if err != nil {
 		return nil, err
 	}
@@ -52,7 +52,7 @@ func (l *ChangeOwnerLogic) ChangeOwner(in *group.ChangeOwnerReq) (*group.ChangeO
 	}
 	_, _, err = l.svcCtx.Repo.UpdateGroupMemberRole(tx, &model.GroupMember{
 		GroupId:               gid,
-		GroupMemberId:         g.GroupOwnerId,
+		GroupMemberId:         gInfo.GroupOwnerId,
 		GroupMemberType:       model.GroupMemberTypeNormal,
 		GroupMemberUpdateTime: nowTS,
 	})
@@ -72,5 +72,9 @@ func (l *ChangeOwnerLogic) ChangeOwner(in *group.ChangeOwnerReq) (*group.ChangeO
 	if err = tx.Commit(); err != nil {
 		return nil, err
 	}
+
+	err = l.svcCtx.SignalHub.UpdateGroupMemberRole(l.ctx, gid, in.GetNew(), xgroup.Owner)
+	err = l.svcCtx.SignalHub.UpdateGroupMemberRole(l.ctx, gid, in.GetOperator(), xgroup.Normal)
+	err = l.svcCtx.NoticeHub.UpdateGroupMemberRole(l.ctx, gid, in.GetOperator(), in.GetNew(), xgroup.Owner)
 	return &group.ChangeOwnerResp{}, nil
 }

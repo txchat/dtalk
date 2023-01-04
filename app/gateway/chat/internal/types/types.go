@@ -153,9 +153,9 @@ type GroupMember struct {
 }
 
 type ChangeOwnerReq struct {
-	ID       int64  `json:"id,optional"`
+	Id       int64  `json:"id,optional"`
 	IdStr    string `json:"idStr,optional"`
-	MemberId int64  `json:"memberId"`
+	MemberId string `json:"memberId"`
 }
 
 type ChangeOwnerResp struct {
@@ -174,8 +174,8 @@ type CreateGroupResp struct {
 }
 
 type GetGroupInfoReq struct {
-	Id    int64  `json:"id" uri:"id"`
-	IdStr string `json:"idStr"`
+	Id    int64  `json:"id,optional"`
+	IdStr string `json:"idStr,optional"`
 }
 
 type GetGroupInfoResp struct {
@@ -184,8 +184,6 @@ type GetGroupInfoResp struct {
 }
 
 type GetGroupListReq struct {
-	Id    int64  `json:"id" uri:"id"`
-	IdStr string `json:"idStr"`
 }
 
 type GetGroupListResp struct {
@@ -193,9 +191,9 @@ type GetGroupListResp struct {
 }
 
 type GetGroupMemberInfoReq struct {
-	Id       int64  `json:"id" uri:"id"`
-	IdStr    string `json:"idStr"`
-	MemberId string `json:"memberId" uri:"memberId" binding:"required"`
+	Id       int64  `json:"id,optional"`
+	IdStr    string `json:"idStr,optional"`
+	MemberId string `json:"memberId" uri:"memberId"`
 }
 
 type GetGroupMemberInfoResp struct {
@@ -203,19 +201,19 @@ type GetGroupMemberInfoResp struct {
 }
 
 type GetGroupMemberListReq struct {
-	Id    int64  `json:"id" uri:"id"`
-	IdStr string `json:"idStr"`
+	Id    int64  `json:"id,optional"`
+	IdStr string `json:"idStr,optional"`
 }
 
 type GetGroupMemberListResp struct {
-	Id      int64          `json:"id"`
-	IdStr   string         `json:"idStr"`
+	Id      int64          `json:"id,optional"`
+	IdStr   string         `json:"idStr,optional"`
 	Members []*GroupMember `json:"members"`
 }
 
 type GetMuteListReq struct {
-	Id    int64  `json:"id"`
-	IdStr string `json:"idStr"`
+	Id    int64  `json:"id,optional"`
+	IdStr string `json:"idStr,optional"`
 }
 
 type GetMuteListResp struct {
@@ -223,8 +221,8 @@ type GetMuteListResp struct {
 }
 
 type GetGroupPubInfoReq struct {
-	Id    int64  `json:"id"`
-	IdStr string `json:"idStr"`
+	Id    int64  `json:"id,optional"`
+	IdStr string `json:"idStr,optional"`
 }
 
 type GetGroupPubInfoResp struct {
@@ -232,25 +230,25 @@ type GetGroupPubInfoResp struct {
 }
 
 type GroupDisbandReq struct {
-	Id    int64  `json:"id"`
-	IdStr string `json:"idStr"`
+	Id    int64  `json:"id,optional"`
+	IdStr string `json:"idStr,optional"`
 }
 
 type GroupDisbandResp struct {
 }
 
 type GroupExitReq struct {
-	Id    int64  `json:"id"`
-	IdStr string `json:"idStr"`
+	Id    int64  `json:"id,optional"`
+	IdStr string `json:"idStr,optional"`
 }
 
 type GroupExitResp struct {
 }
 
 type GroupRemoveReq struct {
-	Id        int64    `json:"id"`
-	IdStr     string   `json:"idStr"`
-	MemberIds []string `json:"memberIds" binding:"required"`
+	Id        int64    `json:"id,optional"`
+	IdStr     string   `json:"idStr,optional"`
+	MemberIds []string `json:"memberIds"`
 }
 
 type GroupRemoveResp struct {
@@ -259,14 +257,14 @@ type GroupRemoveResp struct {
 }
 
 type InviteGroupMembersReq struct {
-	Id           int64    `json:"id"`
-	IdStr        string   `json:"idStr"`
-	NewMemberIds []string `json:"newMemberIds" form:"newMemberIds" binding:"required"`
+	Id           int64    `json:"id,optional"`
+	IdStr        string   `json:"idStr,optional"`
+	NewMemberIds []string `json:"newMemberIds" form:"newMemberIds"`
 }
 
 type InviteGroupMembersResp struct {
-	Id        int64  `json:"id" form:"id" example:"123821199217135616"`
-	IdStr     string `json:"idStr"`
+	Id        int64  `json:"id,optional" form:"id,optional" example:"123821199217135616"`
+	IdStr     string `json:"idStr,optional"`
 	MemberNum int32  `json:"memberNum" form:"memberNum" example:"5"`
 }
 
@@ -282,19 +280,18 @@ type JoinGroupResp struct {
 }
 
 type SetAdminReq struct {
-	Id         int64  `json:"id"`
-	IdStr      string `json:"idStr"`
-	MemberId   string `json:"memberId" binding:"required"`
-	PersonId   string `json:"-"`
-	MemberType int32  `json:"memberType" binding:"oneof=0 1"`
+	Id         int64  `json:"id,optional"`
+	IdStr      string `json:"idStr,optional"`
+	MemberId   string `json:"memberId"`
+	MemberType int32  `json:"memberType" enums:"0,1"`
 }
 
 type SetAdminResp struct {
 }
 
 type UpdateGroupAvatarReq struct {
-	Id     int64  `json:"id"`
-	IdStr  string `json:"idStr"`
+	Id     int64  `json:"id,optional"`
+	IdStr  string `json:"idStr,optional"`
 	Avatar string `json:"avatar"`
 }
 
@@ -302,28 +299,28 @@ type UpdateGroupAvatarResp struct {
 }
 
 type UpdateGroupFriendTypeReq struct {
-	Id         int64  `json:"id"`
-	IdStr      string `json:"idStr"`
-	FriendType int32  `json:"friendType"  binding:"oneof=0 1"`
+	Id         int64  `json:"id,optional"`
+	IdStr      string `json:"idStr,optional"`
+	FriendType int32  `json:"friendType"  enums:"0,1"`
 }
 
 type UpdateGroupFriendTypeResp struct {
 }
 
 type UpdateGroupJoinTypeReq struct {
-	Id       int64  `json:"id"`
-	IdStr    string `json:"idStr"`
-	JoinType int32  `json:"joinType"  binding:"oneof=0 1 2"`
+	Id       int64  `json:"id,optional"`
+	IdStr    string `json:"idStr,optional"`
+	JoinType int32  `json:"joinType"  enums:"0,1,2"`
 }
 
 type UpdateGroupJoinTypeResp struct {
 }
 
 type UpdateGroupMemberMuteTimeReq struct {
-	Id        int64    `json:"id"`
-	IdStr     string   `json:"idStr"`
-	MemberIds []string `json:"memberIds" binding:"required"`
-	MuteTime  int64    `json:"muteTime"`
+	Id        int64    `json:"id,optional"`
+	IdStr     string   `json:"idStr,optional"`
+	MemberIds []string `json:"memberIds"`
+	MuteTime  int64    `json:"muteTime"` // 禁言持续时间, 传9223372036854775807=永久禁言, 0=解除禁言
 }
 
 type UpdateGroupMemberMuteTimeResp struct {
@@ -331,8 +328,8 @@ type UpdateGroupMemberMuteTimeResp struct {
 }
 
 type UpdateGroupMemberNameReq struct {
-	Id         int64  `json:"id"`
-	IdStr      string `json:"idStr"`
+	Id         int64  `json:"id,optional"`
+	IdStr      string `json:"idStr,optional"`
 	MemberName string `json:"memberName"`
 }
 
@@ -340,20 +337,28 @@ type UpdateGroupMemberNameResp struct {
 }
 
 type UpdateGroupMuteTypeReq struct {
-	Id       int64  `json:"id"`
-	IdStr    string `json:"idStr"`
-	MuteType int32  `json:"muteType" binding:"oneof=0 1"`
+	Id       int64  `json:"id,optional"`
+	IdStr    string `json:"idStr,optional"`
+	MuteType int32  `json:"muteType" enums:"0,1"` //0=全员可发言， 1=全员禁言(除群主和管理员)
 }
 
 type UpdateGroupMuteTypeResp struct {
 }
 
 type UpdateGroupNameReq struct {
-	Id         int64  `json:"id"`
-	IdStr      string `json:"idStr"`
+	Id         int64  `json:"id,optional"`
+	IdStr      string `json:"idStr,optional"`
 	Name       string `json:"name"`
 	PublicName string `json:"publicName"`
 }
 
 type UpdateGroupNameResp struct {
+}
+
+type CreateJoinGroupApplyReq struct {
+	Id        string `json:"id,omitempty" binding:"required"`
+	ApplyNote string `json:"applyNote,omitempty"`
+}
+
+type CreateJoinGroupApplyResp struct {
 }

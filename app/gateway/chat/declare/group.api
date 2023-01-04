@@ -62,10 +62,10 @@ type GroupMember struct {
 }
 
 type ChangeOwnerReq {
-	ID int64 `json:"id,optional"`
-	// 如果同时填了 idStr, 则优先选择 idStr
-	IdStr string `json:"idStr,optional"`
-	MemberId int64 `json:"memberId"`
+    // 群 ID, 如果同时填了 idStr, 则优先选择 idStr
+    Id int64 `json:"id,optional"`
+    IdStr    string `json:"idStr,optional"`
+	MemberId string `json:"memberId"`
 }
 
 type ChangeOwnerResp {}
@@ -83,9 +83,9 @@ type CreateGroupResp {
 }
 
 type GetGroupInfoReq {
-	Id int64 `json:"id" uri:"id"`
-    // 如果同时填了 idStr, 则优先选择 idStr
-    IdStr      string `json:"idStr"`
+    // 群 ID, 如果同时填了 idStr, 则优先选择 idStr
+    Id int64 `json:"id,optional"`
+    IdStr    string `json:"idStr,optional"`
 }
 
 type GetGroupInfoResp {
@@ -101,10 +101,10 @@ type GetGroupListResp {
 }
 
 type GetGroupMemberInfoReq {
-    Id int64 `json:"id" uri:"id"`
-    // 如果同时填了 idStr, 则优先选择 idStr
-    IdStr    string `json:"idStr"`
-    MemberId string `json:"memberId" uri:"memberId" binding:"required"`
+    // 群 ID, 如果同时填了 idStr, 则优先选择 idStr
+    Id int64 `json:"id,optional"`
+    IdStr    string `json:"idStr,optional"`
+    MemberId string `json:"memberId" uri:"memberId"`
 }
 
 type GetGroupMemberInfoResp {
@@ -112,23 +112,22 @@ type GetGroupMemberInfoResp {
 }
 
 type GetGroupMemberListReq {
-   	Id int64 `json:"id" uri:"id"`
-   	// 如果同时填了 idStr, 则优先选择 idStr
-   	IdStr    string `json:"idStr"`
+    // 群 ID, 如果同时填了 idStr, 则优先选择 idStr
+    Id int64 `json:"id,optional"`
+    IdStr    string `json:"idStr,optional"`
 }
 
 type GetGroupMemberListResp {
-    Id int64 `json:"id"`
-    // 如果同时填了 idStr, 则优先选择 idStr
-    IdStr   string         `json:"idStr"`
+    // 群 ID, 如果同时填了 idStr, 则优先选择 idStr
+    Id int64 `json:"id,optional"`
+    IdStr    string `json:"idStr,optional"`
     Members []*GroupMember `json:"members"`
 }
 
 type GetMuteListReq {
-    // 群 ID
-    Id int64 `json:"id"`
-    // 如果同时填了 idStr, 则优先选择 idStr
-    IdStr    string `json:"idStr"`
+    // 群 ID, 如果同时填了 idStr, 则优先选择 idStr
+    Id int64 `json:"id,optional"`
+    IdStr    string `json:"idStr,optional"`
 }
 
 type GetMuteListResp {
@@ -136,10 +135,9 @@ type GetMuteListResp {
 }
 
 type GetGroupPubInfoReq {
-    // 群 ID
-    Id int64 `json:"id"`
-    // 如果同时填了 idStr, 则优先选择 idStr
-    IdStr    string `json:"idStr"`
+    // 群 ID, 如果同时填了 idStr, 则优先选择 idStr
+    Id int64 `json:"id,optional"`
+    IdStr    string `json:"idStr,optional"`
 }
 
 type GetGroupPubInfoResp {
@@ -147,31 +145,28 @@ type GetGroupPubInfoResp {
 }
 
 type GroupDisbandReq {
-    // 群 ID
-    Id int64 `json:"id"`
-    // 如果同时填了 idStr, 则优先选择 idStr
-    IdStr    string `json:"idStr"`
+    // 群 ID, 如果同时填了 idStr, 则优先选择 idStr
+    Id int64 `json:"id,optional"`
+    IdStr    string `json:"idStr,optional"`
 }
 
 type GroupDisbandResp {
 }
 
 type GroupExitReq {
-    // 群 ID
-    Id int64 `json:"id"`
-    // 如果同时填了 idStr, 则优先选择 idStr
-    IdStr    string `json:"idStr"`
+    // 群 ID, 如果同时填了 idStr, 则优先选择 idStr
+    Id int64 `json:"id,optional"`
+    IdStr    string `json:"idStr,optional"`
 }
 
 type GroupExitResp {
 }
 
 type GroupRemoveReq {
-    // 群 ID
-    Id int64 `json:"id"`
-    // 如果同时填了 idStr, 则优先选择 idStr
-    IdStr    string `json:"idStr"`
-    MemberIds []string `json:"memberIds" binding:"required"`
+    // 群 ID, 如果同时填了 idStr, 则优先选择 idStr
+    Id int64 `json:"id,optional"`
+    IdStr    string `json:"idStr,optional"`
+    MemberIds []string `json:"memberIds"`
 }
 
 type GroupRemoveResp {
@@ -182,16 +177,16 @@ type GroupRemoveResp {
 }
 
 type InviteGroupMembersReq {
-    // 群 ID
-    Id int64 `json:"id"`
-    // 如果同时填了 idStr, 则优先选择 idStr
-    IdStr    string `json:"idStr"`
-    NewMemberIds []string      `json:"newMemberIds" form:"newMemberIds" binding:"required"`
+    // 群 ID, 如果同时填了 idStr, 则优先选择 idStr
+    Id int64 `json:"id,optional"`
+    IdStr    string `json:"idStr,optional"`
+    NewMemberIds []string      `json:"newMemberIds" form:"newMemberIds"`
 }
 
 type InviteGroupMembersResp {
-	Id        int64  `json:"id" form:"id" example:"123821199217135616"`
-    IdStr     string `json:"idStr"`
+    // 群 ID, 如果同时填了 idStr, 则优先选择 idStr
+	Id        int64  `json:"id,optional" form:"id,optional" example:"123821199217135616"`
+    IdStr     string `json:"idStr,optional"`
     MemberNum int32  `json:"memberNum" form:"memberNum" example:"5"`
 }
 
@@ -207,24 +202,22 @@ type JoinGroupResp {
 }
 
 type SetAdminReq {
-    // 群 ID
-    Id int64 `json:"id"`
-    // 如果同时填了 idStr, 则优先选择 idStr
-    IdStr string `json:"idStr"`
+    // 群 ID, 如果同时填了 idStr, 则优先选择 idStr
+    Id int64 `json:"id,optional"`
+    IdStr string `json:"idStr,optional"`
     // 被设置的群成员 ID
-    MemberId string `json:"memberId" binding:"required"`
-    PersonId string `json:"-"`
+    MemberId string `json:"memberId"`
     // 用户角色 0=群员, 1=管理员
-    MemberType int32 `json:"memberType" binding:"oneof=0 1"`
+    MemberType int32 `json:"memberType" enums:"0,1"`
 }
 
 type SetAdminResp {
 }
 
 type UpdateGroupAvatarReq {
-    Id int64 `json:"id"`
-    // 如果同时填了 idStr, 则优先选择 idStr
-    IdStr    string `json:"idStr"`
+    // 群 ID, 如果同时填了 idStr, 则优先选择 idStr
+    Id int64 `json:"id,optional"`
+    IdStr    string `json:"idStr,optional"`
     Avatar   string `json:"avatar"`
 }
 
@@ -232,38 +225,33 @@ type UpdateGroupAvatarResp {
 }
 
 type UpdateGroupFriendTypeReq {
-    // 群 ID
-   	Id int64 `json:"id"`
-   	// 如果同时填了 idStr, 则优先选择 idStr
-   	IdStr    string `json:"idStr"`
+    // 群 ID, 如果同时填了 idStr, 则优先选择 idStr
+   	Id int64 `json:"id,optional"`
+   	IdStr    string `json:"idStr,optional"`
    	// 加好友限制， 0=群内可加好友，1=群内禁止加好友
-   	FriendType int32 `json:"friendType"  binding:"oneof=0 1"`
+   	FriendType int32 `json:"friendType"  enums:"0,1"`
 }
 
 type UpdateGroupFriendTypeResp {
 }
 
 type UpdateGroupJoinTypeReq {
-    // 群 ID
-    Id int64 `json:"id"`
-    // 如果同时填了 idStr, 则优先选择 idStr
-    IdStr    string `json:"idStr"`
+    // 群 ID, 如果同时填了 idStr, 则优先选择 idStr
+    Id int64 `json:"id,optional"`
+    IdStr    string `json:"idStr,optional"`
     // 加群方式，0=无需审批（默认），1=禁止加群，群主和管理员邀请加群, 2=普通人邀请需要审批,群主和管理员直接加群
-    JoinType int32 `json:"joinType"  binding:"oneof=0 1 2"`
+    JoinType int32 `json:"joinType"  enums:"0,1,2"`
 }
 
 type UpdateGroupJoinTypeResp {
 }
 
 type UpdateGroupMemberMuteTimeReq {
-    // 群 ID
-    Id int64 `json:"id"`
-    // 如果同时填了 idStr, 则优先选择 idStr
-    IdStr string `json:"idStr"`
-    // 被禁言的群员 ID
-    MemberIds []string `json:"memberIds" binding:"required"`
-    // 禁言持续时间, 传9223372036854775807=永久禁言, 0=解除禁言
-    MuteTime int64  `json:"muteTime"`
+    // 群 ID, 如果同时填了 idStr, 则优先选择 idStr
+    Id int64 `json:"id,optional"`
+    IdStr string `json:"idStr,optional"`
+    MemberIds []string `json:"memberIds"`
+    MuteTime int64  `json:"muteTime"` // 禁言持续时间, 传9223372036854775807=永久禁言, 0=解除禁言
 }
 
 type UpdateGroupMemberMuteTimeResp {
@@ -271,9 +259,9 @@ type UpdateGroupMemberMuteTimeResp {
 }
 
 type UpdateGroupMemberNameReq {
-    Id int64 `json:"id"`
-    // 如果同时填了 idStr, 则优先选择 idStr
-    IdStr      string `json:"idStr"`
+    // 群 ID, 如果同时填了 idStr, 则优先选择 idStr
+    Id int64 `json:"id,optional"`
+    IdStr      string `json:"idStr,optional"`
     MemberName string `json:"memberName"`
 }
 
@@ -281,26 +269,34 @@ type UpdateGroupMemberNameResp {
 }
 
 type UpdateGroupMuteTypeReq {
-    // 群 ID
-    Id int64 `json:"id"`
-    // 如果同时填了 idStr, 则优先选择 idStr
-    IdStr string `json:"idStr"`
-    // 禁言， 0=全员可发言， 1=全员禁言(除群主和管理员)
-    MuteType int32  `json:"muteType" binding:"oneof=0 1"`
+    // 群 ID, 如果同时填了 idStr, 则优先选择 idStr
+    Id int64 `json:"id,optional"`
+    IdStr string `json:"idStr,optional"`
+    MuteType int32  `json:"muteType" enums:"0,1"`    //0=全员可发言， 1=全员禁言(除群主和管理员)
 }
 
 type UpdateGroupMuteTypeResp {
 }
 
 type UpdateGroupNameReq {
-    Id int64 `json:"id"`
-    // 如果同时填了 idStr, 则优先选择 idStr
-    IdStr      string `json:"idStr"`
+    // 群 ID, 如果同时填了 idStr, 则优先选择 idStr
+    Id int64 `json:"id,optional"`
+    IdStr      string `json:"idStr,optional"`
     Name       string `json:"name"`
     PublicName string `json:"publicName"`
 }
 
 type UpdateGroupNameResp {
+}
+
+type CreateJoinGroupApplyReq {
+    // 群 ID
+    Id string `json:"id,omitempty" binding:"required"`
+    // 申请备注
+    ApplyNote string `json:"applyNote,omitempty"`
+}
+
+type CreateJoinGroupApplyResp {
 }
 
 @server(

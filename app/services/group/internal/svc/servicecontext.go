@@ -43,7 +43,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	}
 }
 
-func (s *ServiceContext) RegisterGroup(ctx context.Context, gid int64, members []string) error {
+func (s *ServiceContext) RegisterGroupMembers(ctx context.Context, gid int64, members []string) error {
 	reply, err := s.logicClient.JoinGroupsByMids(ctx, &logic.GroupsMid{
 		AppId: s.Config.AppID,
 		Gid:   []string{util.MustToString(gid)},
@@ -65,6 +65,24 @@ func (s *ServiceContext) UnRegisterGroup(ctx context.Context, gid int64) error {
 	reply, err := s.logicClient.DelGroups(ctx, &logic.DelGroupsReq{
 		AppId: s.Config.AppID,
 		Gid:   []string{util.MustToString(gid)},
+	})
+	if err != nil || reply.IsOk == false {
+		if err.Error() == model.ErrPushMsgArg.Error() {
+			return nil
+		}
+		if err == nil {
+			err = errors.New(fmt.Sprintf("reply=%+v", reply))
+		}
+		return err
+	}
+	return nil
+}
+
+func (s *ServiceContext) UnRegisterGroupMembers(ctx context.Context, gid int64, members []string) error {
+	reply, err := s.logicClient.LeaveGroupsByMids(ctx, &logic.GroupsMid{
+		AppId: s.Config.AppID,
+		Gid:   []string{util.MustToString(gid)},
+		Mids:  members,
 	})
 	if err != nil || reply.IsOk == false {
 		if err.Error() == model.ErrPushMsgArg.Error() {

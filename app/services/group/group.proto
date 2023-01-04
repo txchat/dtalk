@@ -106,10 +106,17 @@ message GroupInfoResp { GroupInfo group = 1; }
 
 message MemberInfoReq {
   int64 gid = 1;
+  string uid = 2;
+}
+
+message MemberInfoResp { MemberInfo member = 1; }
+
+message MembersInfoReq {
+  int64 gid = 1;
   repeated string uid = 2;
 }
 
-message MemberInfoResp { repeated MemberInfo members = 1; }
+message MembersInfoResp { repeated MemberInfo members = 1; }
 
 message GroupLimitedMembersReq {
   int64 gid = 1;
@@ -184,7 +191,7 @@ message InviteMembersReq {
   repeated string mid = 3;
 }
 
-message InviteMembersResp {}
+message InviteMembersResp { int32 number = 1; }
 
 message KickOutMembersReq {
   int64 gid = 1;
@@ -192,14 +199,14 @@ message KickOutMembersReq {
   repeated string mid = 3;
 }
 
-message KickOutMembersResp {}
+message KickOutMembersResp { int32 number = 1; }
 
 message MemberExitReq {
   int64 gid = 1;
   string operator = 2;
 }
 
-message MemberExitResp {}
+message MemberExitResp { int32 number = 1; }
 
 message ChangeMemberRoleReq {
   int64 gid = 1;
@@ -227,9 +234,25 @@ message UnMuteMembersReq {
 
 message UnMuteMembersResp {}
 
+message UpdateGroupMemberNameReq {
+  int64 gid = 1;
+  string operator = 2;
+  string name = 3;
+}
+
+message UpdateGroupMemberNameResp {}
+
+message GetMuteListReq {
+  int64 gid = 1;
+  string operator = 2;
+}
+
+message GetMuteListResp { repeated MemberInfo members = 1; }
+
 service Group {
   rpc GroupInfo(GroupInfoReq) returns (GroupInfoResp);
   rpc MemberInfo(MemberInfoReq) returns (MemberInfoResp);
+  rpc MembersInfo(MembersInfoReq) returns (MembersInfoResp);
   rpc GroupLimitedMembers(GroupLimitedMembersReq)
       returns (GroupLimitedMembersResp);
 
@@ -246,10 +269,13 @@ service Group {
   rpc UpdateGroupMuteType(UpdateGroupMuteTypeReq)
       returns (UpdateGroupMuteTypeResp);
 
+  rpc GetMuteList(GetMuteListReq) returns (GetMuteListResp);
   rpc InviteMembers(InviteMembersReq) returns (InviteMembersResp);
   rpc KickOutMembers(KickOutMembersReq) returns (KickOutMembersResp);
   rpc MemberExit(MemberExitReq) returns (MemberExitResp);
   rpc ChangeMemberRole(ChangeMemberRoleReq) returns (ChangeMemberRoleResp);
   rpc MuteMembers(MuteMembersReq) returns (MuteMembersResp);
   rpc UnMuteMembers(UnMuteMembersReq) returns (UnMuteMembersResp);
+  rpc UpdateGroupMemberName(UpdateGroupMemberNameReq)
+      returns (UpdateGroupMemberNameResp);
 }

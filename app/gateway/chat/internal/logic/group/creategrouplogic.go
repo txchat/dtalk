@@ -67,7 +67,7 @@ func (l *CreateGroupLogic) CreateGroup(req *types.CreateGroupReq) (resp *types.C
 		return nil, err
 	}
 
-	membersResp, err := l.svcCtx.GroupRPC.MemberInfo(l.ctx, &groupclient.MemberInfoReq{
+	membersResp, err := l.svcCtx.GroupRPC.MembersInfo(l.ctx, &groupclient.MembersInfoReq{
 		Gid: groupResp.GetGroup().GetId(),
 		Uid: membersId,
 	})

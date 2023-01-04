@@ -32,6 +32,11 @@ func (s *GroupServer) MemberInfo(ctx context.Context, in *group.MemberInfoReq) (
 	return l.MemberInfo(in)
 }
 
+func (s *GroupServer) MembersInfo(ctx context.Context, in *group.MembersInfoReq) (*group.MembersInfoResp, error) {
+	l := logic.NewMembersInfoLogic(ctx, s.svcCtx)
+	return l.MembersInfo(in)
+}
+
 func (s *GroupServer) GroupLimitedMembers(ctx context.Context, in *group.GroupLimitedMembersReq) (*group.GroupLimitedMembersResp, error) {
 	l := logic.NewGroupLimitedMembersLogic(ctx, s.svcCtx)
 	return l.GroupLimitedMembers(in)
@@ -82,6 +87,11 @@ func (s *GroupServer) UpdateGroupMuteType(ctx context.Context, in *group.UpdateG
 	return l.UpdateGroupMuteType(in)
 }
 
+func (s *GroupServer) GetMuteList(ctx context.Context, in *group.GetMuteListReq) (*group.GetMuteListResp, error) {
+	l := logic.NewGetMuteListLogic(ctx, s.svcCtx)
+	return l.GetMuteList(in)
+}
+
 func (s *GroupServer) InviteMembers(ctx context.Context, in *group.InviteMembersReq) (*group.InviteMembersResp, error) {
 	l := logic.NewInviteMembersLogic(ctx, s.svcCtx)
 	return l.InviteMembers(in)
@@ -110,4 +120,9 @@ func (s *GroupServer) MuteMembers(ctx context.Context, in *group.MuteMembersReq)
 func (s *GroupServer) UnMuteMembers(ctx context.Context, in *group.UnMuteMembersReq) (*group.UnMuteMembersResp, error) {
 	l := logic.NewUnMuteMembersLogic(ctx, s.svcCtx)
 	return l.UnMuteMembers(in)
+}
+
+func (s *GroupServer) UpdateGroupMemberName(ctx context.Context, in *group.UpdateGroupMemberNameReq) (*group.UpdateGroupMemberNameResp, error) {
+	l := logic.NewUpdateGroupMemberNameLogic(ctx, s.svcCtx)
+	return l.UpdateGroupMemberName(in)
 }

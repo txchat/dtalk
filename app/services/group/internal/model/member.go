@@ -12,7 +12,8 @@ const (
 )
 
 type GroupMemberMute struct {
-	GroupMemberMuteTime int64 `json:"groupMemberMuteTime" form:"groupMemberMuteTime"`
+	GroupMemberMuteTime       int64 `json:"groupMemberMuteTime" form:"groupMemberMuteTime"`
+	GroupMemberMuteUpdateTime int64 `json:"groupMemberMuteUpdateTime" form:"groupMemberMuteUpdateTime"`
 }
 
 type GroupMember struct {
@@ -38,7 +39,8 @@ func ConvertGroupMember(res map[string]string) *GroupMember {
 		GroupMemberJoinTime:   util.MustToInt64(res["group_member_join_time"]),
 		GroupMemberUpdateTime: util.MustToInt64(res["group_member_update_time"]),
 		GroupMemberMute: GroupMemberMute{
-			GroupMemberMuteTime: util.MustToInt64(res["group_member_mute_time"]),
+			GroupMemberMuteTime:       util.MustToInt64(res["group_member_mute_time"]),
+			GroupMemberMuteUpdateTime: util.MustToInt64(res["group_member_mute_update_time"]),
 		},
 	}
 }

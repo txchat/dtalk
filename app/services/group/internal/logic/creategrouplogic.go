@@ -52,7 +52,10 @@ func (l *CreateGroupLogic) CreateGroup(in *group.CreateGroupReq) (*group.CreateG
 			return nil, xerror.ErrInvalidParams
 		}
 		member.Id = mid
-		g.Invite(mid, member.GetName())
+		err = g.Invite(mid, member.GetName())
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	groupInfo := &model.GroupInfo{
@@ -105,7 +108,7 @@ func (l *CreateGroupLogic) CreateGroup(in *group.CreateGroupReq) (*group.CreateG
 
 	//signal and notice
 	membersId := xgroup.Members(g.Members()).ToArray()
-	err = l.svcCtx.RegisterGroup(l.ctx, gid, membersId)
+	err = l.svcCtx.RegisterGroupMembers(l.ctx, gid, membersId)
 
 	err = l.svcCtx.SignalHub.GroupAddNewMembers(l.ctx, gid, membersId)
 

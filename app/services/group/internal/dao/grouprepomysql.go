@@ -224,6 +224,18 @@ func (repo *GroupRepositoryMysql) GetLimitedMembers(gid, start, num int64) ([]*m
 	return members, nil
 }
 
+func (repo *GroupRepositoryMysql) GetMutedMembers(gid, time int64) ([]*model.GroupMember, error) {
+	maps, err := repo.conn.Query(_GetGroupMembersMuted, gid, model.GroupMemberTypeOther, time)
+	if err != nil {
+		return nil, err
+	}
+	res := make([]*model.GroupMember, 0, len(maps))
+	for _, m := range maps {
+		res = append(res, model.ConvertGroupMember(m))
+	}
+	return res, nil
+}
+
 func (repo *GroupRepositoryMysql) JoinedGroups(uid string) ([]int64, error) {
 	maps, err := repo.conn.Query(_GetGroupIdsByMemberId, uid, model.GroupMemberTypeOther)
 	if err != nil {
@@ -242,6 +254,23 @@ func (repo *GroupRepositoryMysql) UpdateGroupStatus(tx *mysql.MysqlTx, group *mo
 
 func (repo *GroupRepositoryMysql) UpdateGroupMemberRole(tx *mysql.MysqlTx, member *model.GroupMember) (int64, int64, error) {
 	return tx.Exec(_UpdateGroupMemberType, member.GroupMemberType, member.GroupMemberUpdateTime, member.GroupId, member.GroupMemberId)
+}
+
+func (repo *GroupRepositoryMysql) UpdateGroupMembersMuteTime(tx *mysql.MysqlTx, members []*model.GroupMember) (int64, int64, error) {
+	var params []interface{}
+	cases := ""
+	for i, m := range members {
+		if i == 0 {
+			cases += "(?,?,?,?)"
+		} else {
+			cases += ",(?,?,?,?)"
+		}
+		params = append(params, m.GroupId, m.GroupMemberId, m.GroupMemberMuteTime, m.GroupMemberMuteUpdateTime)
+	}
+	SQL := _UpdateGroupMemberMuteTime + cases
+
+	num, lastId, err := tx.Exec(SQL, params...)
+	return num, lastId, err
 }
 
 func (repo *GroupRepositoryMysql) UpdateGroupOwner(tx *mysql.MysqlTx, group *model.GroupInfo) (int64, int64, error) {
@@ -270,4 +299,8 @@ func (repo *GroupRepositoryMysql) UpdateGroupName(group *model.GroupInfo) (int64
 
 func (repo *GroupRepositoryMysql) UpdateGroupMembersNumber(tx *mysql.MysqlTx, group *model.GroupInfo) (int64, int64, error) {
 	return tx.Exec(_UpdateGroupInfoGroupNum, group.GroupMemberNum, group.GroupUpdateTime, group.GroupId)
+}
+
+func (repo *GroupRepositoryMysql) UpdateGroupMemberName(member *model.GroupMember) (int64, int64, error) {
+	return repo.conn.Exec(_UpdateGroupMemberName, member.GroupMemberName, member.GroupMemberUpdateTime, member.GroupId, member.GroupMemberId)
 }

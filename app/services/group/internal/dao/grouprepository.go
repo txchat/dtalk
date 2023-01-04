@@ -16,9 +16,11 @@ type GroupRepository interface {
 	GetGroupManagerNumbers(gid int64) (int32, error)
 	GetMemberById(gid int64, mid string) (*model.GroupMember, error)
 	GetLimitedMembers(gid, start, num int64) ([]*model.GroupMember, error)
+	GetMutedMembers(gid, time int64) ([]*model.GroupMember, error)
 	JoinedGroups(uid string) ([]int64, error)
 	UpdateGroupStatus(tx *mysql.MysqlTx, group *model.GroupInfo) (int64, int64, error)
 	UpdateGroupMemberRole(tx *mysql.MysqlTx, member *model.GroupMember) (int64, int64, error)
+	UpdateGroupMembersMuteTime(tx *mysql.MysqlTx, members []*model.GroupMember) (int64, int64, error)
 	UpdateGroupOwner(tx *mysql.MysqlTx, group *model.GroupInfo) (int64, int64, error)
 	UpdateGroupAvatar(group *model.GroupInfo) (int64, int64, error)
 	UpdateGroupFriendlyType(group *model.GroupInfo) (int64, int64, error)
@@ -26,4 +28,5 @@ type GroupRepository interface {
 	UpdateGroupMuteType(group *model.GroupInfo) (int64, int64, error)
 	UpdateGroupName(group *model.GroupInfo) (int64, int64, error)
 	UpdateGroupMembersNumber(tx *mysql.MysqlTx, group *model.GroupInfo) (int64, int64, error)
+	UpdateGroupMemberName(member *model.GroupMember) (int64, int64, error)
 }
