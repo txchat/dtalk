@@ -40,7 +40,6 @@ func (l *GetGroupMemberListLogic) GetGroupMemberList(req *types.GetGroupMemberLi
 	}
 	membersResp, err := l.svcCtx.GroupRPC.GroupLimitedMembers(l.ctx, &groupclient.GroupLimitedMembersReq{
 		Gid: gid,
-		Num: -1,
 	})
 	if err != nil {
 		return nil, err

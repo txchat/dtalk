@@ -4,8 +4,9 @@ import (
 	"context"
 	"time"
 
+	"github.com/txchat/dtalk/app/services/group/groupclient"
+
 	"github.com/txchat/dtalk/pkg/util"
-	groupApi "github.com/txchat/dtalk/service/group/api"
 	"github.com/txchat/dtalk/service/record/answer/model"
 	"github.com/txchat/imparse"
 	"github.com/txchat/imparse/chat"
@@ -13,10 +14,10 @@ import (
 )
 
 type Filters struct {
-	groupRPCClient groupApi.GroupClient
+	groupRPCClient groupclient.Group
 }
 
-func NewFilters(groupRPCClient groupApi.GroupClient) *Filters {
+func NewFilters(groupRPCClient groupclient.Group) *Filters {
 	return &Filters{
 		groupRPCClient: groupRPCClient,
 	}
@@ -44,18 +45,15 @@ func (fs *Filters) GetFilters() map[imparse.FrameType][]imparse.Filter {
 }
 
 func (fs *Filters) checkInGroup(ctx context.Context, uid string, gid int64) (isOk bool, err error) {
-	var (
-		req   groupApi.CheckInGroupRequest
-		reply *groupApi.CheckInGroupReply
-	)
-	req.MemberId = uid
-	req.GroupId = gid
 	ctx, cancel := context.WithDeadline(ctx, time.Now().Add(time.Second*3))
 	defer cancel()
-	reply, err = fs.groupRPCClient.CheckInGroup(ctx, &req)
+	reply, err := fs.groupRPCClient.CheckMemberInGroup(ctx, &groupclient.CheckMemberInGroupReq{
+		Gid: gid,
+		Mid: uid,
+	})
 	if err != nil {
 		return
 	}
 
-	return reply.IsOk, nil
+	return reply.GetOk(), nil
 }

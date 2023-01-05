@@ -5,8 +5,9 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/txchat/dtalk/app/services/group/groupclient"
+
 	"github.com/txchat/dtalk/app/services/pusher/internal/svc"
-	groupApi "github.com/txchat/dtalk/service/group/api"
 	logic "github.com/txchat/im/api/logic/grpc"
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -26,19 +27,16 @@ func NewJoinGroupsLogic(ctx context.Context, svcCtx *svc.ServiceContext) *JoinGr
 }
 
 func (l *JoinGroupsLogic) getAllJoinedGroups(uid string) (groups []int64, err error) {
-	var (
-		req   groupApi.GetGroupIdsRequest
-		reply *groupApi.GetGroupIdsReply
-	)
-	req.MemberId = uid
 	ctx, cancel := context.WithDeadline(l.ctx, time.Now().Add(time.Second*15))
 	defer cancel()
-	reply, err = l.svcCtx.GroupRPC.GetGroupIds(ctx, &req)
+	reply, err := l.svcCtx.GroupRPC.JoinedGroups(ctx, &groupclient.JoinedGroupsReq{
+		Uid: uid,
+	})
 	if err != nil {
 		return
 	}
 
-	return reply.GroupIds, nil
+	return reply.GetGid(), nil
 }
 
 func (l *JoinGroupsLogic) JoinGroups(uid, key string) error {

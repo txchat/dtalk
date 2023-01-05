@@ -202,19 +202,23 @@ func (repo *GroupRepositoryMysql) GetMemberById(gid int64, mid string) (*model.G
 	return model.ConvertGroupMember(maps[0]), nil
 }
 
+func (repo *GroupRepositoryMysql) GetUnLimitedMembers(gid int64) ([]*model.GroupMember, error) {
+	maps, err := repo.conn.Query(_GetMembersByGroupId, gid, model.GroupMemberTypeOther)
+	if err != nil {
+		return nil, err
+	}
+
+	members := make([]*model.GroupMember, 0, len(maps))
+	for _, m := range maps {
+		members = append(members, model.ConvertGroupMember(m))
+	}
+	return members, nil
+}
+
 func (repo *GroupRepositoryMysql) GetLimitedMembers(gid, start, num int64) ([]*model.GroupMember, error) {
-	var maps []map[string]string
-	var err error
-	if num == model.UnLimitedNumbers {
-		maps, err = repo.conn.Query(_GetMembersByGroupId, gid, model.GroupMemberTypeOther)
-		if err != nil {
-			return nil, err
-		}
-	} else {
-		maps, err = repo.conn.Query(_GetMembersByGroupIdWithLimit, gid, model.GroupMemberTypeOther, start, num)
-		if err != nil {
-			return nil, err
-		}
+	maps, err := repo.conn.Query(_GetMembersByGroupIdWithLimit, gid, model.GroupMemberTypeOther, start, num)
+	if err != nil {
+		return nil, err
 	}
 
 	members := make([]*model.GroupMember, 0, len(maps))

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/txchat/dtalk/app/services/group/group"
+	"github.com/txchat/dtalk/app/services/group/internal/model"
 	"github.com/txchat/dtalk/app/services/group/internal/svc"
 
 	"github.com/zeromicro/go-zero/core/logx"
@@ -25,7 +26,14 @@ func NewGroupLimitedMembersLogic(ctx context.Context, svcCtx *svc.ServiceContext
 
 func (l *GroupLimitedMembersLogic) GroupLimitedMembers(in *group.GroupLimitedMembersReq) (*group.GroupLimitedMembersResp, error) {
 	gid := in.GetGid()
-	membersRepo, err := l.svcCtx.Repo.GetLimitedMembers(gid, 0, in.GetNum())
+
+	var membersRepo []*model.GroupMember
+	var err error
+	if in.Num == nil {
+		membersRepo, err = l.svcCtx.Repo.GetUnLimitedMembers(gid)
+	} else {
+		membersRepo, err = l.svcCtx.Repo.GetLimitedMembers(gid, 0, in.GetNum())
+	}
 	if err != nil {
 		return nil, err
 	}

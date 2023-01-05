@@ -32,6 +32,7 @@ type GroupClient interface {
 	UpdateGroupJoinType(ctx context.Context, in *UpdateGroupJoinTypeReq, opts ...grpc.CallOption) (*UpdateGroupJoinTypeResp, error)
 	UpdateGroupFriendlyType(ctx context.Context, in *UpdateGroupFriendlyTypeReq, opts ...grpc.CallOption) (*UpdateGroupFriendlyTypeResp, error)
 	UpdateGroupMuteType(ctx context.Context, in *UpdateGroupMuteTypeReq, opts ...grpc.CallOption) (*UpdateGroupMuteTypeResp, error)
+	CheckMemberInGroup(ctx context.Context, in *CheckMemberInGroupReq, opts ...grpc.CallOption) (*CheckMemberInGroupResp, error)
 	GetMuteList(ctx context.Context, in *GetMuteListReq, opts ...grpc.CallOption) (*GetMuteListResp, error)
 	InviteMembers(ctx context.Context, in *InviteMembersReq, opts ...grpc.CallOption) (*InviteMembersResp, error)
 	KickOutMembers(ctx context.Context, in *KickOutMembersReq, opts ...grpc.CallOption) (*KickOutMembersResp, error)
@@ -167,6 +168,15 @@ func (c *groupClient) UpdateGroupMuteType(ctx context.Context, in *UpdateGroupMu
 	return out, nil
 }
 
+func (c *groupClient) CheckMemberInGroup(ctx context.Context, in *CheckMemberInGroupReq, opts ...grpc.CallOption) (*CheckMemberInGroupResp, error) {
+	out := new(CheckMemberInGroupResp)
+	err := c.cc.Invoke(ctx, "/group.Group/CheckMemberInGroup", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *groupClient) GetMuteList(ctx context.Context, in *GetMuteListReq, opts ...grpc.CallOption) (*GetMuteListResp, error) {
 	out := new(GetMuteListResp)
 	err := c.cc.Invoke(ctx, "/group.Group/GetMuteList", in, out, opts...)
@@ -256,6 +266,7 @@ type GroupServer interface {
 	UpdateGroupJoinType(context.Context, *UpdateGroupJoinTypeReq) (*UpdateGroupJoinTypeResp, error)
 	UpdateGroupFriendlyType(context.Context, *UpdateGroupFriendlyTypeReq) (*UpdateGroupFriendlyTypeResp, error)
 	UpdateGroupMuteType(context.Context, *UpdateGroupMuteTypeReq) (*UpdateGroupMuteTypeResp, error)
+	CheckMemberInGroup(context.Context, *CheckMemberInGroupReq) (*CheckMemberInGroupResp, error)
 	GetMuteList(context.Context, *GetMuteListReq) (*GetMuteListResp, error)
 	InviteMembers(context.Context, *InviteMembersReq) (*InviteMembersResp, error)
 	KickOutMembers(context.Context, *KickOutMembersReq) (*KickOutMembersResp, error)
@@ -309,6 +320,9 @@ func (UnimplementedGroupServer) UpdateGroupFriendlyType(context.Context, *Update
 }
 func (UnimplementedGroupServer) UpdateGroupMuteType(context.Context, *UpdateGroupMuteTypeReq) (*UpdateGroupMuteTypeResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateGroupMuteType not implemented")
+}
+func (UnimplementedGroupServer) CheckMemberInGroup(context.Context, *CheckMemberInGroupReq) (*CheckMemberInGroupResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckMemberInGroup not implemented")
 }
 func (UnimplementedGroupServer) GetMuteList(context.Context, *GetMuteListReq) (*GetMuteListResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMuteList not implemented")
@@ -581,6 +595,24 @@ func _Group_UpdateGroupMuteType_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Group_CheckMemberInGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CheckMemberInGroupReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GroupServer).CheckMemberInGroup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/group.Group/CheckMemberInGroup",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GroupServer).CheckMemberInGroup(ctx, req.(*CheckMemberInGroupReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Group_GetMuteList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetMuteListReq)
 	if err := dec(in); err != nil {
@@ -783,6 +815,10 @@ var Group_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateGroupMuteType",
 			Handler:    _Group_UpdateGroupMuteType_Handler,
+		},
+		{
+			MethodName: "CheckMemberInGroup",
+			Handler:    _Group_CheckMemberInGroup_Handler,
 		},
 		{
 			MethodName: "GetMuteList",

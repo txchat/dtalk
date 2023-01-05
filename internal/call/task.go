@@ -3,6 +3,18 @@ package call
 import (
 	"context"
 	"errors"
+
+	"github.com/txchat/dtalk/internal/signal"
+)
+
+type StopType int32
+
+const (
+	Busy    StopType = 0
+	Timeout StopType = 1
+	Reject  StopType = 2
+	Hangup  StopType = 3
+	Cancel  StopType = 4
 )
 
 var (
@@ -10,18 +22,18 @@ var (
 )
 
 type PrivateTask struct {
-	ctx      context.Context
-	notify   SignalNotify
-	operator string
-	target   string
+	ctx       context.Context
+	signalHub signal.Signal
+	operator  string
+	target    string
 }
 
-func NewPrivateTask(ctx context.Context, notify SignalNotify, operator, target string) *PrivateTask {
+func NewPrivateTask(ctx context.Context, signalHub signal.Signal, operator, target string) *PrivateTask {
 	return &PrivateTask{
-		ctx:      ctx,
-		notify:   notify,
-		operator: operator,
-		target:   target,
+		ctx:       ctx,
+		signalHub: signalHub,
+		operator:  operator,
+		target:    target,
 	}
 }
 
@@ -32,7 +44,7 @@ func (t *PrivateTask) Offer(sc *SessionCreator, rtcType RTCType) (*Session, erro
 		return nil, err
 	}
 	//给B发送Start Call通知
-	err = t.notify.SendStartCallSignal(t.ctx, t.target, session.TaskID)
+	err = t.signalHub.StartCall(t.ctx, t.target, session.TaskID)
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +53,7 @@ func (t *PrivateTask) Offer(sc *SessionCreator, rtcType RTCType) (*Session, erro
 
 func (t *PrivateTask) Occupied(session *Session) error {
 	stopType := Busy
-	err := t.notify.SendStopCallSignal(t.ctx, t.target, session.TaskID, stopType)
+	err := t.signalHub.StopCall(t.ctx, t.target, session.TaskID, stopType)
 	if err != nil {
 		return err
 	}
@@ -59,7 +71,7 @@ func (t *PrivateTask) Reject(session *Session) error {
 			stopType = Cancel
 		}
 	}
-	err := t.notify.SendStopCallSignal(t.ctx, t.target, session.TaskID, stopType)
+	err := t.signalHub.StopCall(t.ctx, t.target, session.TaskID, stopType)
 	if err != nil {
 		return err
 	}
@@ -85,7 +97,7 @@ func (t *PrivateTask) Accept(createTicket TicketCreator, session *Session) (Tick
 	if err != nil {
 		return nil, err
 	}
-	return inviteeTicket, t.notify.SendAcceptCallSignal(t.ctx, session.Caller, session.TaskID, callerTicket)
+	return inviteeTicket, t.signalHub.AcceptCall(t.ctx, session.Caller, session.TaskID, callerTicket)
 }
 
 //

@@ -15,6 +15,7 @@ type GroupRepository interface {
 	GetGroupMutedNumbers(gid int64, now int64) (int32, error)
 	GetGroupManagerNumbers(gid int64) (int32, error)
 	GetMemberById(gid int64, mid string) (*model.GroupMember, error)
+	GetUnLimitedMembers(gid int64) ([]*model.GroupMember, error)
 	GetLimitedMembers(gid, start, num int64) ([]*model.GroupMember, error)
 	GetMutedMembers(gid, time int64) ([]*model.GroupMember, error)
 	JoinedGroups(uid string) ([]int64, error)

@@ -8,7 +8,7 @@ import (
 	"github.com/txchat/dtalk/app/services/call/call"
 	"github.com/txchat/dtalk/app/services/call/internal/model"
 	"github.com/txchat/dtalk/app/services/call/internal/svc"
-	xcall "github.com/txchat/dtalk/pkg/call"
+	xcall "github.com/txchat/dtalk/internal/call"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -40,7 +40,7 @@ func (l *RejectLogic) Reject(in *call.RejectReq) (*call.RejectResp, error) {
 	if session.Caller == in.GetOperator() {
 		target = session.GetPrivateInvitee()
 	}
-	pt := xcall.NewPrivateTask(l.ctx, l.svcCtx.SignalNotify, in.GetOperator(), target)
+	pt := xcall.NewPrivateTask(l.ctx, l.svcCtx.SignalHub, in.GetOperator(), target)
 	switch in.GetRejectType() {
 	case call.RejectType_Reject:
 		err = pt.Reject(&session)

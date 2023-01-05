@@ -13,6 +13,7 @@ type Config struct {
 	RedisDB   xredis.Config
 	DeviceRPC zrpc.RpcClientConf
 	AnswerRPC zrpc.RpcClientConf
+	GroupRPC  zrpc.RpcClientConf
 
 	ProducerStorage           xkafka.ProducerConfig
 	OffPushEnabled            bool
@@ -23,5 +24,4 @@ type Config struct {
 	PushDealBatchConsumerConf xkafka.BatchConsumerConf
 
 	LogicRPCClient xgrpc.RPCClient
-	GroupRPCClient xgrpc.RPCClient
 }

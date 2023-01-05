@@ -13,21 +13,6 @@ func (gmm *GMManager) Mute(operator, target *Member, muteTime int64) error {
 	}
 
 	target.muteTime = muteTime
-	err := gmm.dbExec.SetGroupMemberMuteInfo(target)
-	if err != nil {
-		return err
-	}
-
-	// send signal
-	err = gmm.signalHub.UpdateMembersMuteTime(target.group.GetID(), []string{target.id}, target.muteTime)
-	if err != nil {
-		return err
-	}
-	// send notify
-	err = gmm.noticeHub.UpdateMembersMuteTime(target.group.GetID(), operator.id, []string{target.id})
-	if err != nil {
-		return err
-	}
 	return nil
 }
 

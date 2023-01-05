@@ -87,6 +87,11 @@ func (s *GroupServer) UpdateGroupMuteType(ctx context.Context, in *group.UpdateG
 	return l.UpdateGroupMuteType(in)
 }
 
+func (s *GroupServer) CheckMemberInGroup(ctx context.Context, in *group.CheckMemberInGroupReq) (*group.CheckMemberInGroupResp, error) {
+	l := logic.NewCheckMemberInGroupLogic(ctx, s.svcCtx)
+	return l.CheckMemberInGroup(in)
+}
+
 func (s *GroupServer) GetMuteList(ctx context.Context, in *group.GetMuteListReq) (*group.GetMuteListResp, error) {
 	l := logic.NewGetMuteListLogic(ctx, s.svcCtx)
 	return l.GetMuteList(in)

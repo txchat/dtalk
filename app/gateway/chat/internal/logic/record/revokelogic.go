@@ -4,18 +4,16 @@ import (
 	"context"
 	"time"
 
-	xproto "github.com/golang/protobuf/proto"
-	"github.com/pkg/errors"
+	"github.com/txchat/dtalk/app/services/group/group"
+	"github.com/txchat/dtalk/app/services/group/groupclient"
+
 	"github.com/txchat/dtalk/app/gateway/chat/internal/model"
 	"github.com/txchat/dtalk/app/gateway/chat/internal/svc"
 	"github.com/txchat/dtalk/app/gateway/chat/internal/types"
-	"github.com/txchat/dtalk/app/services/answer/answerclient"
 	"github.com/txchat/dtalk/app/services/storage/storageclient"
 	xerror "github.com/txchat/dtalk/pkg/error"
 	xhttp "github.com/txchat/dtalk/pkg/net/http"
 	"github.com/txchat/dtalk/pkg/util"
-	groupApi "github.com/txchat/dtalk/service/group/api"
-	"github.com/txchat/dtalk/service/group/model/biz"
 	"github.com/txchat/imparse/proto/common"
 	"github.com/txchat/imparse/proto/signal"
 	"github.com/zeromicro/go-zero/core/logx"
@@ -42,7 +40,6 @@ func NewRevokeLogic(ctx context.Context, svcCtx *svc.ServiceContext) *RevokeLogi
 }
 
 func (l *RevokeLogic) Revoke(req *types.RevokeReq) (resp *types.RevokeResp, err error) {
-	// todo: add your logic here and delete this line
 	operator := l.custom.UID
 	switch req.Type {
 	case model.Private:
@@ -69,38 +66,24 @@ func (l *RevokeLogic) revokePersonal(operator string, mid int64) error {
 	if record.SenderId != operator || time.Since(util.UnixToTime(int64(record.CreateTime))) > time.Duration(l.svcCtx.Config.Revoke.Expire) {
 		return model.ErrPermission
 	}
-	action := &signal.SignalRevoke{
-		Mid:      mid,
-		Operator: operator,
-		Self:     record.SenderId == operator,
-	}
-	body, err := xproto.Marshal(action)
-	if err != nil {
-		return errors.WithMessagef(err, "proto.Marshal, action=%+v", action)
-	}
-	_, err = l.svcCtx.AnswerRPC.UniCastSignal(l.ctx, &answerclient.UniCastSignalReq{
-		Type:   signal.SignalType_Revoke,
-		Target: target,
-		Body:   body,
-	})
-	if err != nil {
-		return err
-	}
+
 	if _, err := l.svcCtx.StorageRPC.DelRecord(l.ctx, &storageclient.DelRecordReq{
 		Tp:  common.Channel_ToUser,
 		Mid: mid,
 	}); err != nil {
 		return err
 	}
-	_, err = l.svcCtx.AnswerRPC.UniCastSignal(l.ctx, &answerclient.UniCastSignalReq{
-		Type:   signal.SignalType_Revoke,
-		Target: operator,
-		Body:   body,
-	})
+
+	action := &signal.SignalRevoke{
+		Mid:      mid,
+		Operator: operator,
+		Self:     record.SenderId == operator,
+	}
+	err = l.svcCtx.SignalHub.RevokePrivateMessage(l.ctx, []string{operator, target}, action)
 	return err
 }
 
-func (l *RevokeLogic) revokeGroup(Operator string, mid int64) error {
+func (l *RevokeLogic) revokeGroup(operator string, mid int64) error {
 	//查找消息
 	record, err := l.svcCtx.StorageRPC.GetRecord(l.ctx, &storageclient.GetRecordReq{
 		Tp:  common.Channel_ToGroup,
@@ -110,44 +93,36 @@ func (l *RevokeLogic) revokeGroup(Operator string, mid int64) error {
 		return err
 	}
 	target := record.ReceiverId
-	if record.SenderId == Operator && time.Since(util.UnixToTime(int64(record.CreateTime))) > time.Duration(l.svcCtx.Config.Revoke.Expire) {
+	if record.SenderId == operator && time.Since(util.UnixToTime(int64(record.CreateTime))) > time.Duration(l.svcCtx.Config.Revoke.Expire) {
 		return model.ErrPermission
 	}
-	if record.SenderId != Operator {
+	gid := util.MustToInt64(target)
+	if record.SenderId != operator {
 		//执行者
-		memOpt, err := l.svcCtx.GroupRPC.GetMember(l.ctx, &groupApi.GetMemberReq{
-			MemberId: Operator,
-			GroupId:  util.MustToInt64(target),
+		memOpt, err := l.svcCtx.GroupRPC.MemberInfo(l.ctx, &groupclient.MemberInfoReq{
+			Gid: gid,
+			Uid: operator,
 		})
-		if err != nil || memOpt == nil {
+		if err != nil || memOpt.GetMember() == nil {
 			return err
 		}
 		//消息所有者
-		memOwn, err := l.svcCtx.GroupRPC.GetMember(l.ctx, &groupApi.GetMemberReq{
-			MemberId: record.SenderId,
-			GroupId:  util.MustToInt64(target),
+		memOwn, err := l.svcCtx.GroupRPC.MemberInfo(l.ctx, &groupclient.MemberInfoReq{
+			Gid: gid,
+			Uid: record.SenderId,
 		})
-		if err != nil || memOwn == nil {
+		if err != nil || memOwn.GetMember() == nil {
 			return err
 		}
-		switch memOpt.GroupMemberType {
-		case biz.GroupMemberTypeOwner:
-		case biz.GroupMemberTypeAdmin:
-			if memOwn.GroupMemberType == biz.GroupMemberTypeOwner {
+		switch memOpt.GetMember().GetRole() {
+		case group.RoleType_Owner:
+		case group.RoleType_Manager:
+			if memOwn.GetMember().GetRole() == group.RoleType_Owner {
 				return model.ErrPermission
 			}
 		default:
 			return model.ErrPermission
 		}
-	}
-	action := &signal.SignalRevoke{
-		Mid:      mid,
-		Operator: Operator,
-		Self:     record.SenderId == Operator,
-	}
-	body, err := xproto.Marshal(action)
-	if err != nil {
-		return errors.WithMessagef(err, "proto.Marshal, action=%+v", action)
 	}
 	if _, err := l.svcCtx.StorageRPC.DelRecord(l.ctx, &storageclient.DelRecordReq{
 		Tp:  common.Channel_ToGroup,
@@ -155,10 +130,12 @@ func (l *RevokeLogic) revokeGroup(Operator string, mid int64) error {
 	}); err != nil {
 		return err
 	}
-	_, err = l.svcCtx.AnswerRPC.GroupCastSignal(l.ctx, &answerclient.GroupCastSignalReq{
-		Type:   signal.SignalType_Revoke,
-		Target: target,
-		Body:   body,
-	})
+
+	action := &signal.SignalRevoke{
+		Mid:      mid,
+		Operator: operator,
+		Self:     record.SenderId == operator,
+	}
+	err = l.svcCtx.SignalHub.RevokeGroupMessage(l.ctx, gid, action)
 	return err
 }

@@ -29,7 +29,7 @@ func (l *DisbandGroupLogic) DisbandGroup(in *group.DisbandGroupReq) (*group.Disb
 	gid := in.GetGid()
 	nowTS := util.TimeNowUnixMilli()
 
-	members, err := l.svcCtx.Repo.GetLimitedMembers(gid, 0, model.UnLimitedNumbers)
+	members, err := l.svcCtx.Repo.GetUnLimitedMembers(gid)
 	if err != nil {
 		return nil, err
 	}

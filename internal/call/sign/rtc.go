@@ -3,7 +3,7 @@ package sign
 import (
 	"encoding/json"
 
-	xcall "github.com/txchat/dtalk/pkg/call"
+	"github.com/txchat/dtalk/internal/call"
 	"github.com/txchat/dtalk/pkg/util"
 )
 
@@ -14,7 +14,7 @@ type Ticket struct {
 	SDKAppID      int32
 }
 
-func (t *Ticket) ToBytes() (xcall.Ticket, error) {
+func (t *Ticket) ToBytes() (call.Ticket, error) {
 	data, err := json.Marshal(t)
 	if err != nil {
 		return nil, err
@@ -38,7 +38,7 @@ func NewCloudSDK(rtc TLSSig) *CloudSDK {
 	}
 }
 
-func (t *CloudSDK) GetTicket(user string, roomId int64) (xcall.Ticket, error) {
+func (t *CloudSDK) GetTicket(user string, roomId int64) (call.Ticket, error) {
 	sdkAppId := t.rtc.GetAppId()
 
 	// 生成接收方的 userSig 和 privateMapKey

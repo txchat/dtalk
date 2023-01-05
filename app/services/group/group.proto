@@ -120,7 +120,7 @@ message MembersInfoResp { repeated MemberInfo members = 1; }
 
 message GroupLimitedMembersReq {
   int64 gid = 1;
-  int64 num = 2;
+  optional int64 num = 2;
 }
 
 message GroupLimitedMembersResp { repeated MemberInfo members = 1; }
@@ -242,6 +242,13 @@ message UpdateGroupMemberNameReq {
 
 message UpdateGroupMemberNameResp {}
 
+message CheckMemberInGroupReq {
+  int64 gid = 1;
+  string mid = 2;
+}
+
+message CheckMemberInGroupResp { bool ok = 1; }
+
 message GetMuteListReq {
   int64 gid = 1;
   string operator = 2;
@@ -269,6 +276,8 @@ service Group {
   rpc UpdateGroupMuteType(UpdateGroupMuteTypeReq)
       returns (UpdateGroupMuteTypeResp);
 
+  rpc CheckMemberInGroup(CheckMemberInGroupReq)
+      returns (CheckMemberInGroupResp);
   rpc GetMuteList(GetMuteListReq) returns (GetMuteListResp);
   rpc InviteMembers(InviteMembersReq) returns (InviteMembersResp);
   rpc KickOutMembers(KickOutMembersReq) returns (KickOutMembersResp);

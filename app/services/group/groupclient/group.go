@@ -17,6 +17,8 @@ type (
 	ChangeMemberRoleResp         = group.ChangeMemberRoleResp
 	ChangeOwnerReq               = group.ChangeOwnerReq
 	ChangeOwnerResp              = group.ChangeOwnerResp
+	CheckMemberInGroupReq        = group.CheckMemberInGroupReq
+	CheckMemberInGroupResp       = group.CheckMemberInGroupResp
 	CreateGroupReq               = group.CreateGroupReq
 	CreateGroupReq_MemberMinData = group.CreateGroupReq_MemberMinData
 	CreateGroupResp              = group.CreateGroupResp
@@ -73,6 +75,7 @@ type (
 		UpdateGroupJoinType(ctx context.Context, in *UpdateGroupJoinTypeReq, opts ...grpc.CallOption) (*UpdateGroupJoinTypeResp, error)
 		UpdateGroupFriendlyType(ctx context.Context, in *UpdateGroupFriendlyTypeReq, opts ...grpc.CallOption) (*UpdateGroupFriendlyTypeResp, error)
 		UpdateGroupMuteType(ctx context.Context, in *UpdateGroupMuteTypeReq, opts ...grpc.CallOption) (*UpdateGroupMuteTypeResp, error)
+		CheckMemberInGroup(ctx context.Context, in *CheckMemberInGroupReq, opts ...grpc.CallOption) (*CheckMemberInGroupResp, error)
 		GetMuteList(ctx context.Context, in *GetMuteListReq, opts ...grpc.CallOption) (*GetMuteListResp, error)
 		InviteMembers(ctx context.Context, in *InviteMembersReq, opts ...grpc.CallOption) (*InviteMembersResp, error)
 		KickOutMembers(ctx context.Context, in *KickOutMembersReq, opts ...grpc.CallOption) (*KickOutMembersResp, error)
@@ -157,6 +160,11 @@ func (m *defaultGroup) UpdateGroupFriendlyType(ctx context.Context, in *UpdateGr
 func (m *defaultGroup) UpdateGroupMuteType(ctx context.Context, in *UpdateGroupMuteTypeReq, opts ...grpc.CallOption) (*UpdateGroupMuteTypeResp, error) {
 	client := group.NewGroupClient(m.cli.Conn())
 	return client.UpdateGroupMuteType(ctx, in, opts...)
+}
+
+func (m *defaultGroup) CheckMemberInGroup(ctx context.Context, in *CheckMemberInGroupReq, opts ...grpc.CallOption) (*CheckMemberInGroupResp, error) {
+	client := group.NewGroupClient(m.cli.Conn())
+	return client.CheckMemberInGroup(ctx, in, opts...)
 }
 
 func (m *defaultGroup) GetMuteList(ctx context.Context, in *GetMuteListReq, opts ...grpc.CallOption) (*GetMuteListResp, error) {

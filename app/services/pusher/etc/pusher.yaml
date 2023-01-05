@@ -28,6 +28,12 @@ AnswerRPC:
       - "localhost:2379"
     Key: "answer.rpc"
     Timeout: 60000 # 60s
+GroupRPC:
+  Etcd:
+    Hosts:
+      - "localhost:2379"
+    Key: "group.rpc"
+    Timeout: 60000 # 60s
 OffPushEnabled: true
 ProducerStorage:
   Version: ""
@@ -58,11 +64,5 @@ LogicRPCClient:
   RegAddrs: "127.0.0.1:2379"
   Schema: "im"
   SrvName: "logic"
-  Dial: "1s"
-  Timeout: "1s"
-GroupRPCClient:
-  RegAddrs: "127.0.0.1:2379"
-  Schema: "dtalk"
-  SrvName: "group"
   Dial: "1s"
   Timeout: "1s"

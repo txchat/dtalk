@@ -13,7 +13,7 @@ type Config struct {
 	IDGenRPC          zrpc.RpcClientConf
 	AppID             string
 	LogicRPCClient    xgrpc.RPCClient
-	GroupRPCClient    xgrpc.RPCClient
+	GroupRPC          zrpc.RpcClientConf
 	Producer          xkafka.ProducerConfig
 	ConsumerConfig    xkafka.ConsumerConfig
 	BatchConsumerConf xkafka.BatchConsumerConf

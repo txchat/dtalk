@@ -2,7 +2,7 @@ package tencentyun
 
 import (
 	"github.com/tencentyun/tls-sig-api-v2-golang/tencentyun"
-	"github.com/txchat/dtalk/pkg/call/sign"
+	"github.com/txchat/dtalk/internal/call/sign"
 )
 
 // TCTLSSig 腾讯音视频签名实例

@@ -7,9 +7,9 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/txchat/dtalk/app/services/device/deviceclient"
-	"github.com/txchat/dtalk/app/services/pusher/internal/recordhelper"
 	"github.com/txchat/dtalk/app/services/pusher/internal/svc"
-	record "github.com/txchat/dtalk/proto/record"
+	"github.com/txchat/dtalk/internal/recordhelper"
+	"github.com/txchat/dtalk/proto/record"
 	offlinepush "github.com/txchat/dtalk/service/offline-push/api"
 	comet "github.com/txchat/im/api/comet/grpc"
 	logic "github.com/txchat/im/api/logic/grpc"

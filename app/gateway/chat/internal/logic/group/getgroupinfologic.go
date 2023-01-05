@@ -3,6 +3,8 @@ package group
 import (
 	"context"
 
+	"github.com/golang/protobuf/proto"
+
 	"github.com/txchat/dtalk/app/services/group/groupclient"
 	xerror "github.com/txchat/dtalk/pkg/error"
 	xhttp "github.com/txchat/dtalk/pkg/net/http"
@@ -84,7 +86,7 @@ func (l *GetGroupInfoLogic) GetGroupInfo(req *types.GetGroupInfoReq) (resp *type
 
 	membersResp, err := l.svcCtx.GroupRPC.GroupLimitedMembers(l.ctx, &groupclient.GroupLimitedMembersReq{
 		Gid: gid,
-		Num: 10,
+		Num: proto.Int64(10),
 	})
 	if err != nil {
 		return

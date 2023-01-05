@@ -7,10 +7,11 @@ import (
 
 type Config struct {
 	zrpc.RpcServerConf
-	MySQL    xmysql.Config
-	IDGenRPC zrpc.RpcClientConf
-	Group    Group
-	AppID    string
+	MySQL     xmysql.Config
+	IDGenRPC  zrpc.RpcClientConf
+	AnswerRPC zrpc.RpcClientConf
+	Group     Group
+	AppID     string
 }
 
 type Group struct {

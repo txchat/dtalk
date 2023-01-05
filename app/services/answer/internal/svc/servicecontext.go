@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/txchat/dtalk/app/services/group/groupclient"
+
 	"github.com/txchat/dtalk/app/services/answer/internal/config"
 	"github.com/txchat/dtalk/app/services/answer/internal/dao"
 	"github.com/txchat/dtalk/app/services/answer/internal/msgfactory"
@@ -12,7 +14,6 @@ import (
 	xkafka "github.com/txchat/dtalk/pkg/mq/kafka"
 	"github.com/txchat/dtalk/pkg/naming"
 	"github.com/txchat/dtalk/pkg/net/grpc"
-	groupApi "github.com/txchat/dtalk/service/group/api"
 	logic "github.com/txchat/im/api/logic/grpc"
 	"github.com/txchat/imparse"
 	"github.com/txchat/imparse/chat"
@@ -31,12 +32,13 @@ type ServiceContext struct {
 	//need not init
 	Parser chat.StandardParse
 
-	// will deprecate
+	//todo will deprecate
 	LogicRPC logic.LogicClient
-	GroupRPC groupApi.GroupClient
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
+	groupRPC := groupclient.NewGroup(zrpc.MustNewClient(c.GroupRPC,
+		zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor)))
 	idGenRPC := generatorclient.NewGenerator(zrpc.MustNewClient(c.IDGenRPC,
 		zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor)))
 	svc := &ServiceContext{
@@ -46,12 +48,11 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		MsgChecker: msgfactory.NewChecker(),
 		// will deprecate
 		LogicRPC: newLogicClient(c),
-		GroupRPC: newGroupClient(c),
 	}
 	// answerInter components
 	msgCache := msgfactory.NewMsgCache(svc.Repo, svc.IDGenRPC)
 	trace := msgfactory.NewTrace()
-	fs := msgfactory.NewFilters(svc.GroupRPC)
+	fs := msgfactory.NewFilters(groupRPC)
 	c.Producer.Topic = fmt.Sprintf("received-%s-topic", c.AppID)
 	pub := xkafka.NewProducer(c.Producer)
 	withoutAckCB := msgfactory.NewWithoutAckCallback(c.AppID, pub)
@@ -74,18 +75,4 @@ func newLogicClient(cfg config.Config) logic.LogicClient {
 		panic(err)
 	}
 	return logic.NewLogicClient(conn)
-}
-
-func newGroupClient(cfg config.Config) groupApi.GroupClient {
-	rb := naming.NewResolver(cfg.GroupRPCClient.RegAddrs, cfg.GroupRPCClient.Schema)
-	resolver.Register(rb)
-
-	addr := fmt.Sprintf("%s:///%s", cfg.GroupRPCClient.Schema, cfg.GroupRPCClient.SrvName) // "schema://[authority]/service"
-	fmt.Println("rpc client call addr:", addr)
-
-	conn, err := grpc.NewGRPCConn(addr, time.Duration(cfg.GroupRPCClient.Dial))
-	if err != nil {
-		panic(err)
-	}
-	return groupApi.NewGroupClient(conn)
 }

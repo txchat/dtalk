@@ -5,12 +5,13 @@ import (
 	"github.com/txchat/dtalk/app/services/call/internal/config"
 	"github.com/txchat/dtalk/app/services/call/internal/dao"
 	"github.com/txchat/dtalk/app/services/generator/generatorclient"
-	xcall "github.com/txchat/dtalk/pkg/call"
-	"github.com/txchat/dtalk/pkg/call/roomidgen"
-	"github.com/txchat/dtalk/pkg/call/rpcidgen"
-	"github.com/txchat/dtalk/pkg/call/rpcnotify"
-	"github.com/txchat/dtalk/pkg/call/sign"
-	"github.com/txchat/dtalk/pkg/call/sign/tencentyun"
+	xcall "github.com/txchat/dtalk/internal/call"
+	"github.com/txchat/dtalk/internal/call/roomidgen"
+	"github.com/txchat/dtalk/internal/call/rpcidgen"
+	"github.com/txchat/dtalk/internal/call/sign"
+	"github.com/txchat/dtalk/internal/call/sign/tencentyun"
+	"github.com/txchat/dtalk/internal/signal"
+	txchatSignalApi "github.com/txchat/dtalk/internal/signal/txchat"
 	xerror "github.com/txchat/dtalk/pkg/error"
 	"github.com/zeromicro/go-zero/zrpc"
 )
@@ -18,10 +19,8 @@ import (
 type ServiceContext struct {
 	Config         config.Config
 	Repo           dao.CallRepository
-	IDGenRPC       generatorclient.Generator
-	AnswerRPC      answerclient.Answer
 	SessionCreator *xcall.SessionCreator
-	SignalNotify   xcall.SignalNotify
+	SignalHub      signal.Signal
 	TicketCreator  xcall.TicketCreator
 }
 
@@ -33,9 +32,8 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	return &ServiceContext{
 		Config:         c,
 		Repo:           dao.NewCallRepositoryRedis(c.RedisDB),
-		IDGenRPC:       idGenRPC,
-		SessionCreator: xcall.NewSessionCreator(c.RTC.CallingTimeout, rpcidgen.NewIDGenerator(idGenRPC), roomidgen.NewRoomIDGen(0)), // TODO roomid gen object
-		SignalNotify:   rpcnotify.NewCallNotifyClient(answerRPC),                                                                    // TODO answer rpc object
+		SessionCreator: xcall.NewSessionCreator(c.RTC.CallingTimeout, rpcidgen.NewIDGenerator(idGenRPC), roomidgen.NewRoomIDGen(0)),
+		SignalHub:      txchatSignalApi.NewSignalHub(answerRPC),
 		TicketCreator:  sign.NewCloudSDK(tencentyun.NewTCTLSSig(c.RTC.SDKAppId, c.RTC.SecretKey, c.RTC.Expire)).GetTicket,
 	}
 }

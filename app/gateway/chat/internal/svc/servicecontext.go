@@ -8,6 +8,8 @@ import (
 	"github.com/txchat/dtalk/app/services/call/callclient"
 	"github.com/txchat/dtalk/app/services/group/groupclient"
 	"github.com/txchat/dtalk/app/services/storage/storageclient"
+	"github.com/txchat/dtalk/internal/signal"
+	txchatSignalApi "github.com/txchat/dtalk/internal/signal/txchat"
 	xerror "github.com/txchat/dtalk/pkg/error"
 	"github.com/zeromicro/go-zero/rest"
 	"github.com/zeromicro/go-zero/zrpc"
@@ -21,20 +23,23 @@ type ServiceContext struct {
 	GroupRPC                 groupclient.Group
 	AppParseHeaderMiddleware rest.Middleware
 	AppAuthMiddleware        rest.Middleware
+	SignalHub                signal.Signal
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
+	answerRPC := answerclient.NewAnswer(zrpc.MustNewClient(c.AnswerRPC,
+		zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor)))
 	return &ServiceContext{
-		Config:                   c,
-		AppParseHeaderMiddleware: middleware.NewAppParseHeaderMiddleware().Handle,
-		AppAuthMiddleware:        middleware.NewAppAuthMiddleware(authmock.NewKVMock()).Handle,
+		Config: c,
 		CallRPC: callclient.NewCall(zrpc.MustNewClient(c.CallRPC,
 			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor))),
-		AnswerRPC: answerclient.NewAnswer(zrpc.MustNewClient(c.AnswerRPC,
-			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor))),
+		AnswerRPC: answerRPC,
 		StorageRPC: storageclient.NewStorage(zrpc.MustNewClient(c.StorageRPC,
 			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor))),
 		GroupRPC: groupclient.NewGroup(zrpc.MustNewClient(c.GroupRPC,
 			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor))),
+		AppParseHeaderMiddleware: middleware.NewAppParseHeaderMiddleware().Handle,
+		AppAuthMiddleware:        middleware.NewAppAuthMiddleware(authmock.NewKVMock()).Handle,
+		SignalHub:                txchatSignalApi.NewSignalHub(answerRPC),
 	}
 }

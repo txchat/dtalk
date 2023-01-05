@@ -5,12 +5,15 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/txchat/dtalk/app/services/answer/answerclient"
 	"github.com/txchat/dtalk/app/services/generator/generatorclient"
 	"github.com/txchat/dtalk/app/services/group/internal/config"
 	"github.com/txchat/dtalk/app/services/group/internal/dao"
 	"github.com/txchat/dtalk/internal/group"
 	"github.com/txchat/dtalk/internal/notice"
+	txchatNoticeApi "github.com/txchat/dtalk/internal/notice/txchat"
 	"github.com/txchat/dtalk/internal/signal"
+	txchatSignalApi "github.com/txchat/dtalk/internal/signal/txchat"
 	xerror "github.com/txchat/dtalk/pkg/error"
 	"github.com/txchat/dtalk/pkg/mysql"
 	"github.com/txchat/dtalk/pkg/util"
@@ -35,11 +38,17 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	if err != nil {
 		panic(err)
 	}
+	answerClient := answerclient.NewAnswer(zrpc.MustNewClient(c.AnswerRPC,
+		zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor)))
 	return &ServiceContext{
-		Config: c,
-		Repo:   dao.NewGroupRepositoryMysql(conn),
+		Config:       c,
+		Repo:         dao.NewGroupRepositoryMysql(conn),
+		GroupManager: group.NewGroupManager(),
 		IDGenRPC: generatorclient.NewGenerator(zrpc.MustNewClient(c.IDGenRPC,
 			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor))),
+		SignalHub:   txchatSignalApi.NewSignalHub(answerClient),
+		NoticeHub:   txchatNoticeApi.NewNoticeHub(answerClient),
+		logicClient: nil,
 	}
 }
 

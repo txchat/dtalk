@@ -3,14 +3,14 @@ package logic
 import (
 	"context"
 
-	"github.com/txchat/dtalk/pkg/call/sign"
+	"github.com/txchat/dtalk/internal/call/sign"
 
 	xerror "github.com/txchat/dtalk/pkg/error"
 
 	"github.com/txchat/dtalk/app/services/call/call"
 	"github.com/txchat/dtalk/app/services/call/internal/model"
 	"github.com/txchat/dtalk/app/services/call/internal/svc"
-	xcall "github.com/txchat/dtalk/pkg/call"
+	xcall "github.com/txchat/dtalk/internal/call"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -42,7 +42,7 @@ func (l *AcceptLogic) Accept(in *call.AcceptReq) (*call.AcceptResp, error) {
 	if session.Caller == in.GetOperator() {
 		target = session.GetPrivateInvitee()
 	}
-	pt := xcall.NewPrivateTask(l.ctx, l.svcCtx.SignalNotify, in.GetOperator(), target)
+	pt := xcall.NewPrivateTask(l.ctx, l.svcCtx.SignalHub, in.GetOperator(), target)
 	inviteeTicket, err := pt.Accept(l.svcCtx.TicketCreator, &session)
 	if err != nil {
 		return nil, err

@@ -4,8 +4,12 @@ import (
 	"context"
 
 	"github.com/golang/protobuf/proto"
+	"github.com/pkg/errors"
 	"github.com/txchat/dtalk/app/services/answer/answerclient"
+	"github.com/txchat/dtalk/internal/call"
+	"github.com/txchat/dtalk/internal/call/sign"
 	"github.com/txchat/dtalk/internal/group"
+	"github.com/txchat/dtalk/internal/recordhelper"
 	"github.com/txchat/dtalk/pkg/util"
 	"github.com/txchat/imparse/proto/signal"
 )
@@ -203,6 +207,181 @@ func (hub *SignalHub) UpdateMembersMuteTime(ctx context.Context, gid, muteTime i
 
 	_, err = hub.answerClient.GroupCastSignal(ctx, &answerclient.GroupCastSignalReq{
 		Type:   signal.SignalType_UpdateGroupMemberMuteTime,
+		Target: util.MustToString(gid),
+		Body:   body,
+	})
+	return err
+}
+
+func (hub *SignalHub) StartCall(ctx context.Context, target string, traceId int64) error {
+	action := &signal.SignalStartCall{
+		TraceId: traceId,
+	}
+	body, err := proto.Marshal(action)
+	if err != nil {
+		return errors.WithMessagef(err, "proto.Marshal, action=%+v", action)
+	}
+
+	_, err = hub.answerClient.UniCastSignal(ctx, &answerclient.UniCastSignalReq{
+		Type:   signal.SignalType_StartCall,
+		Target: target,
+		Body:   body,
+	})
+	return err
+}
+
+func (hub *SignalHub) AcceptCall(ctx context.Context, target string, traceId int64, ticket call.Ticket) error {
+	cloudTicket, err := sign.FromBytes(ticket)
+	if err != nil {
+		return err
+	}
+	action := &signal.SignalAcceptCall{
+		TraceId:       traceId,
+		RoomId:        int32(cloudTicket.RoomId),
+		Uid:           target,
+		UserSig:       cloudTicket.UserSig,
+		PrivateMapKey: cloudTicket.PrivateMapKey,
+		SkdAppId:      cloudTicket.SDKAppID,
+	}
+	body, err := proto.Marshal(action)
+	if err != nil {
+		return errors.WithMessagef(err, "proto.Marshal, action=%+v", action)
+	}
+
+	_, err = hub.answerClient.UniCastSignal(ctx, &answerclient.UniCastSignalReq{
+		Type:   signal.SignalType_AcceptCall,
+		Target: target,
+		Body:   body,
+	})
+	return err
+}
+
+func (hub *SignalHub) StopCall(ctx context.Context, Target string, TraceId int64, stopType call.StopType) error {
+	var StopCallType signal.StopCallType
+	switch signal.StopCallType(stopType) {
+	case signal.StopCallType_Busy:
+		StopCallType = signal.StopCallType_Busy
+	case signal.StopCallType_Timeout:
+		StopCallType = signal.StopCallType_Timeout
+	case signal.StopCallType_Reject:
+		StopCallType = signal.StopCallType_Reject
+	case signal.StopCallType_Hangup:
+		StopCallType = signal.StopCallType_Hangup
+	case signal.StopCallType_Cancel:
+		StopCallType = signal.StopCallType_Cancel
+
+	}
+	action := &signal.SignalStopCall{
+		TraceId: TraceId,
+		Reason:  StopCallType,
+	}
+
+	body, err := proto.Marshal(action)
+	if err != nil {
+		return errors.WithMessagef(err, "proto.Marshal, action=%+v", action)
+	}
+
+	_, err = hub.answerClient.UniCastSignal(ctx, &answerclient.UniCastSignalReq{
+		Type:   signal.SignalType_StopCall,
+		Target: Target,
+		Body:   body,
+	})
+	return err
+}
+
+func (hub *SignalHub) MessageReceived(ctx context.Context, item *recordhelper.ConnSeqItem) error {
+	actionProto := &signal.SignalReceived{
+		Logs: item.Logs,
+	}
+	actionData, err := proto.Marshal(actionProto)
+	if err != nil {
+		return err
+	}
+	_, err = hub.answerClient.UniCastSignal(ctx, &answerclient.UniCastSignalReq{
+		Type:   signal.SignalType_Received,
+		Target: item.Sender,
+		Body:   actionData,
+	})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (hub *SignalHub) EndpointLogin(ctx context.Context, uid string, action *signal.SignalEndpointLogin) error {
+	actionData, err := proto.Marshal(action)
+	if err != nil {
+		return err
+	}
+	_, err = hub.answerClient.UniCastSignal(ctx, &answerclient.UniCastSignalReq{
+		Type:   signal.SignalType_EndpointLogin,
+		Target: uid,
+		Body:   actionData,
+	})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (hub *SignalHub) FocusPrivateMessage(ctx context.Context, users []string, action *signal.SignalFocusMessage) error {
+	body, err := proto.Marshal(action)
+	if err != nil {
+		return err
+	}
+
+	for _, user := range users {
+		_, err = hub.answerClient.UniCastSignal(ctx, &answerclient.UniCastSignalReq{
+			Type:   signal.SignalType_FocusMessage,
+			Target: user,
+			Body:   body,
+		})
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (hub *SignalHub) FocusGroupMessage(ctx context.Context, gid int64, action *signal.SignalFocusMessage) error {
+	body, err := proto.Marshal(action)
+	if err != nil {
+		return err
+	}
+	_, err = hub.answerClient.GroupCastSignal(ctx, &answerclient.GroupCastSignalReq{
+		Type:   signal.SignalType_FocusMessage,
+		Target: util.MustToString(gid),
+		Body:   body,
+	})
+	return err
+}
+
+func (hub *SignalHub) RevokePrivateMessage(ctx context.Context, users []string, action *signal.SignalRevoke) error {
+	body, err := proto.Marshal(action)
+	if err != nil {
+		return errors.WithMessagef(err, "proto.Marshal, action=%+v", action)
+	}
+
+	for _, user := range users {
+		_, err = hub.answerClient.UniCastSignal(ctx, &answerclient.UniCastSignalReq{
+			Type:   signal.SignalType_Revoke,
+			Target: user,
+			Body:   body,
+		})
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (hub *SignalHub) RevokeGroupMessage(ctx context.Context, gid int64, action *signal.SignalRevoke) error {
+	body, err := proto.Marshal(action)
+	if err != nil {
+		return errors.WithMessagef(err, "proto.Marshal, action=%+v", action)
+	}
+	_, err = hub.answerClient.GroupCastSignal(ctx, &answerclient.GroupCastSignalReq{
+		Type:   signal.SignalType_Revoke,
 		Target: util.MustToString(gid),
 		Body:   body,
 	})

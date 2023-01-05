@@ -4,18 +4,16 @@ import (
 	"context"
 	"time"
 
-	xproto "github.com/golang/protobuf/proto"
-	"github.com/pkg/errors"
+	"github.com/txchat/dtalk/app/services/group/group"
+	"github.com/txchat/dtalk/app/services/group/groupclient"
+
 	"github.com/txchat/dtalk/app/gateway/chat/internal/model"
 	"github.com/txchat/dtalk/app/gateway/chat/internal/svc"
 	"github.com/txchat/dtalk/app/gateway/chat/internal/types"
-	"github.com/txchat/dtalk/app/services/answer/answerclient"
 	"github.com/txchat/dtalk/app/services/storage/storageclient"
 	xerror "github.com/txchat/dtalk/pkg/error"
 	xhttp "github.com/txchat/dtalk/pkg/net/http"
 	"github.com/txchat/dtalk/pkg/util"
-	groupApi "github.com/txchat/dtalk/service/group/api"
-	"github.com/txchat/dtalk/service/group/model/biz"
 	"github.com/txchat/imparse/proto/common"
 	"github.com/txchat/imparse/proto/signal"
 	"github.com/zeromicro/go-zero/core/logx"
@@ -84,23 +82,7 @@ func (l *FocusLogic) focusPersonal(operator string, mid int64) error {
 		CurrentNum: addFocusResp.GetCurrentNum(),
 		Time:       now,
 	}
-	body, err := xproto.Marshal(action)
-	if err != nil {
-		return errors.WithMessagef(err, "proto.Marshal, action=%+v", action)
-	}
-	_, err = l.svcCtx.AnswerRPC.UniCastSignal(l.ctx, &answerclient.UniCastSignalReq{
-		Type:   signal.SignalType_FocusMessage,
-		Target: sender,
-		Body:   body,
-	})
-	if err != nil {
-		return err
-	}
-	_, err = l.svcCtx.AnswerRPC.UniCastSignal(l.ctx, &answerclient.UniCastSignalReq{
-		Type:   signal.SignalType_FocusMessage,
-		Target: target,
-		Body:   body,
-	})
+	err = l.svcCtx.SignalHub.FocusPrivateMessage(l.ctx, []string{sender, target}, action)
 	return err
 }
 
@@ -118,18 +100,18 @@ func (l *FocusLogic) focusGroup(operator string, mid int64) error {
 	if operator == sender {
 		return model.ErrPermission
 	}
+	gid := util.MustToInt64(target)
+
 	//群成员判断
-	memOpt, err := l.svcCtx.GroupRPC.GetMember(l.ctx, &groupApi.GetMemberReq{
-		MemberId: operator,
-		GroupId:  util.MustToInt64(target),
+	memOpt, err := l.svcCtx.GroupRPC.MemberInfo(l.ctx, &groupclient.MemberInfoReq{
+		Gid: gid,
+		Uid: operator,
 	})
-	if err != nil || memOpt == nil {
+	if err != nil || memOpt.GetMember() == nil {
 		return err
 	}
-	switch memOpt.GroupMemberType {
-	case biz.GroupMemberTypeOwner:
-	case biz.GroupMemberTypeAdmin:
-	case biz.GroupMemberTypeNormal:
+	switch memOpt.GetMember().GetRole() {
+	case group.RoleType_Owner, group.RoleType_Manager, group.RoleType_NormalMember:
 	default:
 		return model.ErrPermission
 	}
@@ -149,14 +131,6 @@ func (l *FocusLogic) focusGroup(operator string, mid int64) error {
 		CurrentNum: addFocusResp.GetCurrentNum(),
 		Time:       now,
 	}
-	body, err := xproto.Marshal(action)
-	if err != nil {
-		return errors.WithMessagef(err, "proto.Marshal, action=%+v", action)
-	}
-	_, err = l.svcCtx.AnswerRPC.GroupCastSignal(l.ctx, &answerclient.GroupCastSignalReq{
-		Type:   signal.SignalType_FocusMessage,
-		Target: target,
-		Body:   body,
-	})
+	err = l.svcCtx.SignalHub.FocusGroupMessage(l.ctx, gid, action)
 	return err
 }

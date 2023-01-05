@@ -8,7 +8,7 @@ import (
 	"github.com/txchat/dtalk/app/services/call/call"
 	"github.com/txchat/dtalk/app/services/call/internal/model"
 	"github.com/txchat/dtalk/app/services/call/internal/svc"
-	xcall "github.com/txchat/dtalk/pkg/call"
+	xcall "github.com/txchat/dtalk/internal/call"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -27,7 +27,7 @@ func NewPrivateOfferLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Priv
 }
 
 func (l *PrivateOfferLogic) PrivateOffer(in *call.PrivateOfferReq) (*call.PrivateOfferResp, error) {
-	pt := xcall.NewPrivateTask(l.ctx, l.svcCtx.SignalNotify, in.GetOperator(), in.GetInvitee())
+	pt := xcall.NewPrivateTask(l.ctx, l.svcCtx.SignalHub, in.GetOperator(), in.GetInvitee())
 	session, err := pt.Offer(l.svcCtx.SessionCreator, xcall.RTCType(in.GetRTCType()))
 	if err != nil {
 		return nil, err

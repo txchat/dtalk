@@ -2,8 +2,6 @@ package model
 
 import "github.com/txchat/dtalk/pkg/util"
 
-const UnLimitedNumbers = -1
-
 const (
 	GroupMemberTypeOwner   = 2  // 群主
 	GroupMemberTypeManager = 1  // 管理员

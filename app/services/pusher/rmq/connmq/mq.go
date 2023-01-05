@@ -101,7 +101,7 @@ func (s *Service) DealConn(ctx context.Context, m *logic.BizMsg) error {
 				s.Error("AddDeviceInfo failed", "err", err)
 			}
 			//发送登录通知
-			err = s.svcCtx.SignalNotice.UniCastEndpointLogin(ctx, m.GetFromId(), &signal.SignalEndpointLogin{
+			err = s.svcCtx.SignalHub.EndpointLogin(ctx, m.GetFromId(), &signal.SignalEndpointLogin{
 				Uuid:       dev.GetUuid(),
 				Device:     dev.Device,
 				DeviceName: dev.GetDeviceName(),
@@ -175,7 +175,7 @@ func (s *Service) DealConn(ctx context.Context, m *logic.BizMsg) error {
 			}
 			switch item.Type {
 			case string(chat.PrivateFrameType):
-				err := s.svcCtx.SignalNotice.UniCastReceived(ctx, item)
+				err := s.svcCtx.SignalHub.MessageReceived(ctx, item)
 				if err != nil {
 					s.Error("UniCastSignalReceived failed",
 						"err", err,
