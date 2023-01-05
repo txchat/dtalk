@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/gomodule/redigo/redis"
-	"github.com/txchat/dtalk/app/services/pusher/internal/recordhelper"
+	"github.com/txchat/dtalk/internal/recordhelper"
 	xredis "github.com/txchat/dtalk/pkg/redis"
 )
 
