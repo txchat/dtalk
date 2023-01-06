@@ -23,11 +23,16 @@ func NewError(code int64, msg string) *Error {
 type Error struct {
 	code int64
 	// message
-	msg string
+	msg  string
+	data interface{}
 }
 
 func (e *Error) Code() int64 {
 	return e.code
+}
+
+func (e *Error) Data() interface{} {
+	return e.data
 }
 
 func (e *Error) Error() string {

@@ -14,6 +14,7 @@ type Config struct {
 	StorageRPC zrpc.RpcClientConf
 	GroupRPC   zrpc.RpcClientConf
 	OssRPC     zrpc.RpcClientConf
+	DeviceRPC  zrpc.RpcClientConf
 }
 
 type Revoke struct {
