@@ -57,7 +57,7 @@ func main() {
 			logx.Info("server exit")
 			return
 		case syscall.SIGHUP:
-			// TODO reload
+			conf.MustLoad(*configFile, &c)
 			logx.Info("server hangup")
 		default:
 			return
