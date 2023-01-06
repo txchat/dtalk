@@ -10,7 +10,7 @@ func NewRecordHelper(e Engine) *RecordHelper {
 }
 
 func (lh *RecordHelper) sessionToSeq(session string) int32 {
-	//TODO
+	//TODO session seq mapping
 	return 0
 }
 

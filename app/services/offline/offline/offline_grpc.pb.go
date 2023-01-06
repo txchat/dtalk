@@ -3,11 +3,7 @@
 package offline
 
 import (
-	context "context"
-
 	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -19,7 +15,6 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type OfflineClient interface {
-	Ping(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error)
 }
 
 type offlineClient struct {
@@ -30,20 +25,10 @@ func NewOfflineClient(cc grpc.ClientConnInterface) OfflineClient {
 	return &offlineClient{cc}
 }
 
-func (c *offlineClient) Ping(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error) {
-	out := new(Response)
-	err := c.cc.Invoke(ctx, "/offline.Offline/Ping", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // OfflineServer is the server API for Offline service.
 // All implementations must embed UnimplementedOfflineServer
 // for forward compatibility
 type OfflineServer interface {
-	Ping(context.Context, *Request) (*Response, error)
 	mustEmbedUnimplementedOfflineServer()
 }
 
@@ -51,9 +36,6 @@ type OfflineServer interface {
 type UnimplementedOfflineServer struct {
 }
 
-func (UnimplementedOfflineServer) Ping(context.Context, *Request) (*Response, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
-}
 func (UnimplementedOfflineServer) mustEmbedUnimplementedOfflineServer() {}
 
 // UnsafeOfflineServer may be embedded to opt out of forward compatibility for this service.
@@ -67,36 +49,13 @@ func RegisterOfflineServer(s grpc.ServiceRegistrar, srv OfflineServer) {
 	s.RegisterService(&Offline_ServiceDesc, srv)
 }
 
-func _Offline_Ping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Request)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(OfflineServer).Ping(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/offline.Offline/Ping",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(OfflineServer).Ping(ctx, req.(*Request))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // Offline_ServiceDesc is the grpc.ServiceDesc for Offline service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Offline_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "offline.Offline",
 	HandlerType: (*OfflineServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "Ping",
-			Handler:    _Offline_Ping_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "offline.proto",
+	Methods:     []grpc.MethodDesc{},
+	Streams:     []grpc.StreamDesc{},
+	Metadata:    "offline.proto",
 }

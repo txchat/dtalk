@@ -150,7 +150,7 @@ func (s *Service) DealConn(ctx context.Context, m *logic.BizMsg) error {
 			return err
 		}
 		if item == nil {
-			//TODO print err
+			s.Error("message not find", "key", m.Key, "ack", p.Ack)
 			return nil
 		}
 		dev, err := s.svcCtx.DeviceRPC.GetDeviceByConnId(ctx, &deviceclient.GetDeviceByConnIdRequest{

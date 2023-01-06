@@ -4,9 +4,6 @@
 package server
 
 import (
-	"context"
-
-	"github.com/txchat/dtalk/app/services/offline/internal/logic"
 	"github.com/txchat/dtalk/app/services/offline/internal/svc"
 	"github.com/txchat/dtalk/app/services/offline/offline"
 )
@@ -20,9 +17,4 @@ func NewOfflineServer(svcCtx *svc.ServiceContext) *OfflineServer {
 	return &OfflineServer{
 		svcCtx: svcCtx,
 	}
-}
-
-func (s *OfflineServer) Ping(ctx context.Context, in *offline.Request) (*offline.Response, error) {
-	l := logic.NewPingLogic(ctx, s.svcCtx)
-	return l.Ping(in)
 }

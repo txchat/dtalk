@@ -3,8 +3,4 @@ syntax = "proto3";
 package offline;
 option go_package = "./offline";
 
-message Request { string ping = 1; }
-
-message Response { string pong = 1; }
-
-service Offline { rpc Ping(Request) returns (Response); }
+service Offline {}

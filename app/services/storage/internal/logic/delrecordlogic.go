@@ -25,7 +25,6 @@ func NewDelRecordLogic(ctx context.Context, svcCtx *svc.ServiceContext) *DelReco
 }
 
 func (l *DelRecordLogic) DelRecord(in *storage.DelRecordReq) (*storage.DelRecordReply, error) {
-	// todo: add your logic here and delete this line
 	var err error
 	switch in.GetTp() {
 	case common.Channel_ToUser:
