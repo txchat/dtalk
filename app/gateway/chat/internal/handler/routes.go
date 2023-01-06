@@ -6,6 +6,7 @@ import (
 
 	call "github.com/txchat/dtalk/app/gateway/chat/internal/handler/call"
 	group "github.com/txchat/dtalk/app/gateway/chat/internal/handler/group"
+	oss "github.com/txchat/dtalk/app/gateway/chat/internal/handler/oss"
 	record "github.com/txchat/dtalk/app/gateway/chat/internal/handler/record"
 	user "github.com/txchat/dtalk/app/gateway/chat/internal/handler/user"
 	"github.com/txchat/dtalk/app/gateway/chat/internal/svc"
@@ -201,6 +202,54 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 					Method:  http.MethodPost,
 					Path:    "/group/app/name",
 					Handler: group.UpdateGroupNameHandler(serverCtx),
+				},
+			}...,
+		),
+	)
+
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.AppAuthMiddleware},
+			[]rest.Route{
+				{
+					Method:  http.MethodPost,
+					Path:    "/oss/get-token",
+					Handler: oss.GetTokenHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/oss/get-huaweiyun-token",
+					Handler: oss.GetHWCloudTokenHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/oss/upload",
+					Handler: oss.UploadHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/oss/init-multipart-upload",
+					Handler: oss.InitMultiUploadHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/oss/upload-part",
+					Handler: oss.UploadPartHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/oss/complete-multipart-upload",
+					Handler: oss.CompleteMultiUploadHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/oss/abort-multipart-upload",
+					Handler: oss.AbortMultiUploadHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/oss/get-host",
+					Handler: oss.GetHostHandler(serverCtx),
 				},
 			}...,
 		),

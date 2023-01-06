@@ -9,12 +9,129 @@ info(
 )
 // goctl api format -dir .
 
-type LoginReq {
-	ConnType int32 `json:"connType"`
+
+// Credentials is a nested struct in sts response
+type Credentials {
+	AccessKeySecret string `json:"AccessKeySecret" xml:"AccessKeySecret"`
+	Expiration      string `json:"Expiration" xml:"Expiration"`
+	AccessKeyId     string `json:"AccessKeyId" xml:"AccessKeyId"`
+	SecurityToken   string `json:"SecurityToken" xml:"SecurityToken"`
 }
 
-type LoginResp {
-    Address string `json:"address"`
+// AssumedRoleUser is a nested struct in sts response
+type AssumedRoleUser {
+	AssumedRoleId string `json:"AssumedRoleId" xml:"AssumedRoleId"`
+	Arn           string `json:"Arn" xml:"Arn"`
+}
+
+type GetTokenReq {
+}
+
+type GetTokenResp {
+    RequestId       string          `json:"RequestId" xml:"RequestId"`
+    Credentials     Credentials     `json:"Credentials" xml:"Credentials"`
+    AssumedRoleUser AssumedRoleUser `json:"AssumedRoleUser" xml:"AssumedRoleUser"`
+}
+
+type GetHWCloudTokenReq {
+}
+
+type GetHWCloudTokenResp {
+    RequestId       string          `json:"RequestId" xml:"RequestId"`
+    Credentials     Credentials     `json:"Credentials" xml:"Credentials"`
+    AssumedRoleUser AssumedRoleUser `json:"AssumedRoleUser" xml:"AssumedRoleUser"`
+}
+
+type OssBase {
+	// 应用 ID
+	AppId string `json:"appId" form:"appId" binding:"required"`
+	// 云服务商, 可不填, 会选择默认服务商, 目前可选huaweiyun,aliyun,minio(不支持临时角色)
+	OssType string `json:"ossType,optional" form:"ossType,optional"`
+}
+
+type Part {
+	// 段数据的MD5值
+	ETag string `json:"ETag" form:"ETag"`
+	// 分段序号, 范围是1~10000
+	PartNumber int32 `json:"partNumber" form:"partNumber"`
+}
+
+type UploadReq {
+    OssBase
+
+    // 文件名(包含路径)
+    Key string `json:"key" form:"key" binding:"required"`
+}
+
+type UploadResp {
+    Url string `json:"url"`
+    Uri string `json:"uri"`
+}
+
+type InitMultiUploadReq {
+    OssBase
+    // 文件名(包含路径)
+    Key string `json:"key" form:"key"`
+}
+
+type InitMultiUploadResp {
+    // 分段上传任务全局唯一标识
+    UploadId string `json:"uploadId"`
+    // 文件名(包含路径)
+    Key string `json:"key"`
+}
+
+type UploadPartReq {
+    OssBase
+
+    // 文件名(包含路径)
+	Key string `json:"key" form:"key"`
+	// 分段上传任务全局唯一标识
+	UploadId string `json:"uploadId" form:"uploadId"`
+	// 分段序号, 范围是1~10000
+	PartNumber int32 `json:"partNumber" form:"partNumber"`
+}
+
+type UploadPartResp {
+ 	Part
+
+ 	// 分段上传任务全局唯一标识
+ 	UploadId string `json:"uploadId"`
+ 	// 文件名(包含路径)
+ 	Key string `json:"key"`
+}
+
+type CompleteMultiUploadReq {
+    OssBase
+    // 文件名(包含路径)
+    Key string `json:"key" form:"key"`
+    // 分段上传任务全局唯一标识
+    UploadId string `json:"uploadId" form:"uploadId"`
+    Parts []Part `json:"parts"`
+}
+
+type CompleteMultiUploadResp {
+    Url string `json:"url"`
+    Uri string `json:"uri"`
+}
+
+type AbortMultiUploadReq {
+    OssBase
+   	// 文件名(包含路径)
+   	Key string `json:"key" form:"key"`
+   	// 分段上传任务全局唯一标识
+   	UploadId string `json:"uploadId" form:"uploadId"`
+}
+
+type AbortMultiUploadResp {
+}
+
+type GetHostReq {
+    OssBase
+}
+
+type GetHostResp {
+	Host string `json:"host"`
 }
 
 @server(
@@ -22,6 +139,20 @@ type LoginResp {
     middleware: AppAuthMiddleware
 )
 service chat-api {
-    @handler Login
-    post /app/user/login (LoginReq) returns (LoginResp)
+    @handler GetToken
+    post /oss/get-token (GetTokenReq) returns (GetTokenResp)
+    @handler GetHWCloudToken
+    post /oss/get-huaweiyun-token (GetHWCloudTokenReq) returns (GetHWCloudTokenResp)
+    @handler Upload
+    post /oss/upload (UploadReq) returns (UploadResp)
+    @handler InitMultiUpload
+    post /oss/init-multipart-upload (InitMultiUploadReq) returns (InitMultiUploadResp)
+    @handler UploadPart
+    post /oss/upload-part (UploadPartReq) returns (UploadPartResp)
+    @handler CompleteMultiUpload
+    post /oss/complete-multipart-upload (CompleteMultiUploadReq) returns (CompleteMultiUploadResp)
+    @handler AbortMultiUpload
+    post /oss/abort-multipart-upload (AbortMultiUploadReq) returns (AbortMultiUploadResp)
+    @handler GetHost
+    post /oss/get-host (GetHostReq) returns (GetHostResp)
 }

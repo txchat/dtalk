@@ -52,7 +52,7 @@ func Upload(c *gin.Context) {
 	req.Size = file.Size
 	req.Body = fileOpen
 
-	if file.Size > model.MaxPartSize {
+	if file.Size > model.MaxPretartSize {
 		c.Set(api.ReqError, xerror.NewError(xerror.OssFileTooBig))
 		return
 	}

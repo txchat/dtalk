@@ -1,0 +1,100 @@
+syntax = "proto3";
+
+package oss;
+option go_package = "./oss";
+
+message BaseInfo {
+  string appId = 1;
+  string ossType = 2;
+}
+
+message PartInfo {
+  string eTag = 1;
+  int32 partNumber = 2;
+}
+
+message Credentials {
+  string accessKeySecret = 1;
+  string expiration = 2;
+  string accessKeyId = 3;
+  string securityToken = 4;
+}
+
+message AssumedRoleUser {
+  string assumedRoleId = 1;
+  string arn = 2;
+}
+
+message AssumeRoleReq { BaseInfo base = 1; }
+
+message AssumeRoleResp {
+  string requestId = 1;
+  Credentials credentials = 2;
+  AssumedRoleUser assumedRoleUser = 3;
+}
+
+message EngineHostReq { BaseInfo base = 1; }
+
+message EngineHostResp { string host = 1; }
+
+message UploadReq {
+  BaseInfo base = 1;
+  string key = 2;
+  bytes body = 3;
+  int64 size = 4;
+}
+
+message UploadResp {
+  string url = 1;
+  string uri = 2;
+}
+
+message InitUploadMultiPartReq {
+  BaseInfo base = 1;
+  string key = 2;
+}
+
+message InitUploadMultiPartResp { string taskId = 1; }
+
+message UploadMultiPartReq {
+  BaseInfo base = 1;
+  string key = 2;
+  bytes body = 3;
+  string taskId = 4;
+  int32 partNumber = 5;
+}
+
+message UploadMultiPartResp { PartInfo part = 1; }
+
+message CompleteUploadMultiPartReq {
+  BaseInfo base = 1;
+  string key = 2;
+  string taskId = 3;
+  repeated PartInfo parts = 4;
+}
+
+message CompleteUploadMultiPartResp {
+  string url = 1;
+  string uri = 2;
+}
+
+message AbortUploadMultiPartReq {
+  BaseInfo base = 1;
+  string key = 2;
+  string taskId = 3;
+}
+
+message AbortUploadMultiPartResp {}
+
+service Oss {
+  rpc AssumeRole(AssumeRoleReq) returns (AssumeRoleResp);
+  rpc EngineHost(EngineHostReq) returns (EngineHostResp);
+  rpc Upload(UploadReq) returns (UploadResp);
+  rpc InitUploadMultiPart(InitUploadMultiPartReq)
+      returns (InitUploadMultiPartResp);
+  rpc UploadMultiPart(UploadMultiPartReq) returns (UploadMultiPartResp);
+  rpc CompleteUploadMultiPart(CompleteUploadMultiPartReq)
+      returns (CompleteUploadMultiPartResp);
+  rpc AbortUploadMultiPart(AbortUploadMultiPartReq)
+      returns (AbortUploadMultiPartResp);
+}

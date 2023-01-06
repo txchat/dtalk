@@ -7,6 +7,7 @@ import (
 	"github.com/txchat/dtalk/app/services/answer/answerclient"
 	"github.com/txchat/dtalk/app/services/call/callclient"
 	"github.com/txchat/dtalk/app/services/group/groupclient"
+	"github.com/txchat/dtalk/app/services/oss/ossclient"
 	"github.com/txchat/dtalk/app/services/storage/storageclient"
 	"github.com/txchat/dtalk/internal/signal"
 	txchatSignalApi "github.com/txchat/dtalk/internal/signal/txchat"
@@ -21,6 +22,7 @@ type ServiceContext struct {
 	AnswerRPC                answerclient.Answer
 	StorageRPC               storageclient.Storage
 	GroupRPC                 groupclient.Group
+	OssRPC                   ossclient.Oss
 	AppParseHeaderMiddleware rest.Middleware
 	AppAuthMiddleware        rest.Middleware
 	SignalHub                signal.Signal
@@ -37,6 +39,8 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		StorageRPC: storageclient.NewStorage(zrpc.MustNewClient(c.StorageRPC,
 			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor))),
 		GroupRPC: groupclient.NewGroup(zrpc.MustNewClient(c.GroupRPC,
+			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor))),
+		OssRPC: ossclient.NewOss(zrpc.MustNewClient(c.OssRPC,
 			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor))),
 		AppParseHeaderMiddleware: middleware.NewAppParseHeaderMiddleware().Handle,
 		AppAuthMiddleware:        middleware.NewAppAuthMiddleware(authmock.NewKVMock()).Handle,

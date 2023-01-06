@@ -13,6 +13,7 @@ type Config struct {
 	AnswerRPC  zrpc.RpcClientConf
 	StorageRPC zrpc.RpcClientConf
 	GroupRPC   zrpc.RpcClientConf
+	OssRPC     zrpc.RpcClientConf
 }
 
 type Revoke struct {

@@ -362,3 +362,105 @@ type CreateJoinGroupApplyReq struct {
 
 type CreateJoinGroupApplyResp struct {
 }
+
+type Credentials struct {
+	AccessKeySecret string `json:"AccessKeySecret" xml:"AccessKeySecret"`
+	Expiration      string `json:"Expiration" xml:"Expiration"`
+	AccessKeyId     string `json:"AccessKeyId" xml:"AccessKeyId"`
+	SecurityToken   string `json:"SecurityToken" xml:"SecurityToken"`
+}
+
+type AssumedRoleUser struct {
+	AssumedRoleId string `json:"AssumedRoleId" xml:"AssumedRoleId"`
+	Arn           string `json:"Arn" xml:"Arn"`
+}
+
+type GetTokenReq struct {
+}
+
+type GetTokenResp struct {
+	RequestId       string          `json:"RequestId" xml:"RequestId"`
+	Credentials     Credentials     `json:"Credentials" xml:"Credentials"`
+	AssumedRoleUser AssumedRoleUser `json:"AssumedRoleUser" xml:"AssumedRoleUser"`
+}
+
+type GetHWCloudTokenReq struct {
+}
+
+type GetHWCloudTokenResp struct {
+	RequestId       string          `json:"RequestId" xml:"RequestId"`
+	Credentials     Credentials     `json:"Credentials" xml:"Credentials"`
+	AssumedRoleUser AssumedRoleUser `json:"AssumedRoleUser" xml:"AssumedRoleUser"`
+}
+
+type OssBase struct {
+	AppId   string `json:"appId" form:"appId" binding:"required"`
+	OssType string `json:"ossType,optional" form:"ossType,optional"`
+}
+
+type Part struct {
+	ETag       string `json:"ETag" form:"ETag"`
+	PartNumber int32  `json:"partNumber" form:"partNumber"`
+}
+
+type UploadReq struct {
+	OssBase
+	Key string `json:"key" form:"key" binding:"required"`
+}
+
+type UploadResp struct {
+	Url string `json:"url"`
+	Uri string `json:"uri"`
+}
+
+type InitMultiUploadReq struct {
+	OssBase
+	Key string `json:"key" form:"key"`
+}
+
+type InitMultiUploadResp struct {
+	UploadId string `json:"uploadId"`
+	Key      string `json:"key"`
+}
+
+type UploadPartReq struct {
+	OssBase
+	Key        string `json:"key" form:"key"`
+	UploadId   string `json:"uploadId" form:"uploadId"`
+	PartNumber int32  `json:"partNumber" form:"partNumber"`
+}
+
+type UploadPartResp struct {
+	Part
+	UploadId string `json:"uploadId"`
+	Key      string `json:"key"`
+}
+
+type CompleteMultiUploadReq struct {
+	OssBase
+	Key      string `json:"key" form:"key"`
+	UploadId string `json:"uploadId" form:"uploadId"`
+	Parts    []Part `json:"parts"`
+}
+
+type CompleteMultiUploadResp struct {
+	Url string `json:"url"`
+	Uri string `json:"uri"`
+}
+
+type AbortMultiUploadReq struct {
+	OssBase
+	Key      string `json:"key" form:"key"`
+	UploadId string `json:"uploadId" form:"uploadId"`
+}
+
+type AbortMultiUploadResp struct {
+}
+
+type GetHostReq struct {
+	OssBase
+}
+
+type GetHostResp struct {
+	Host string `json:"host"`
+}
