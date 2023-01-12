@@ -3,8 +3,9 @@ package logic
 import (
 	"context"
 
+	"github.com/txchat/dtalk/internal/recordutil"
+
 	"github.com/golang/protobuf/proto"
-	"github.com/txchat/dtalk/app/services/storage/internal/model"
 	"github.com/txchat/dtalk/app/services/storage/internal/svc"
 	"github.com/txchat/dtalk/app/services/storage/storage"
 	"github.com/txchat/dtalk/pkg/util"
@@ -72,9 +73,9 @@ func (l *GetSyncRecordsAfterMidLogic) getSyncMsgJustBizLevel(key, uid string, st
 			From:        m.SenderId,
 			Target:      m.ReceiverId,
 			MsgType:     common.MsgType(m.MsgType),
-			Msg:         model.ConvertMsg(m.MsgType, []byte(m.Content)),
-			Source:      model.ConvertSource([]byte(m.Source)),
-			Reference:   model.ConvertReference([]byte(m.Reference)),
+			Msg:         recordutil.CommonMsgJSONDataToProtobufData(m.MsgType, []byte(m.Content)),
+			Source:      recordutil.SourceJSONUnmarshal([]byte(m.Source)),
+			Reference:   recordutil.ReferenceJSONUnmarshal([]byte(m.Reference)),
 			Datetime:    m.CreateTime,
 		}
 		bizP.Body, err = proto.Marshal(eveP)
@@ -95,9 +96,9 @@ func (l *GetSyncRecordsAfterMidLogic) getSyncMsgJustBizLevel(key, uid string, st
 			From:        m.SenderId,
 			Target:      m.ReceiverId,
 			MsgType:     common.MsgType(m.MsgType),
-			Msg:         model.ConvertMsg(m.MsgType, []byte(m.Content)),
-			Source:      model.ConvertSource([]byte(m.Source)),
-			Reference:   model.ConvertReference([]byte(m.Reference)),
+			Msg:         recordutil.CommonMsgJSONDataToProtobufData(m.MsgType, []byte(m.Content)),
+			Source:      recordutil.SourceJSONUnmarshal([]byte(m.Source)),
+			Reference:   recordutil.ReferenceJSONUnmarshal([]byte(m.Reference)),
 			Datetime:    m.CreateTime,
 		}
 		bizP.Body, err = proto.Marshal(eveP)

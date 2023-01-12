@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/txchat/dtalk/app/services/group/internal/model"
+
 	"github.com/txchat/dtalk/app/services/answer/answerclient"
 	"github.com/txchat/dtalk/app/services/generator/generatorclient"
 	"github.com/txchat/dtalk/app/services/group/internal/config"
@@ -17,7 +19,6 @@ import (
 	xerror "github.com/txchat/dtalk/pkg/error"
 	"github.com/txchat/dtalk/pkg/mysql"
 	"github.com/txchat/dtalk/pkg/util"
-	"github.com/txchat/dtalk/service/group/model"
 	logic "github.com/txchat/im/api/logic/grpc"
 	"github.com/zeromicro/go-zero/zrpc"
 )

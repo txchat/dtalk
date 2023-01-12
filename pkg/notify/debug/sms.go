@@ -6,15 +6,15 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/txchat/dtalk/service/backup/model"
+	"github.com/txchat/dtalk/pkg/notify"
 )
 
 type DebugValidate struct {
 	mockCode string
-	real     model.Validate
+	real     notify.Validate
 }
 
-func NewDebugValidate(code string, v model.Validate) *DebugValidate {
+func NewDebugValidate(code string, v notify.Validate) *DebugValidate {
 	return &DebugValidate{
 		mockCode: code,
 		real:     v,
@@ -46,7 +46,7 @@ func (v *DebugValidate) Send(params map[string]string) (interface{}, error) {
 }
 
 func (v *DebugValidate) ValidateCode(param map[string]string) error {
-	code := param[model.ParamCode]
+	code := param[notify.ParamCode]
 	if v.mockCode == code {
 		return nil
 	}

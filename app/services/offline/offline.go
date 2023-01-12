@@ -11,6 +11,7 @@ import (
 
 	"github.com/txchat/dtalk/app/services/offline/internal/config"
 	"github.com/txchat/dtalk/app/services/offline/internal/svc"
+	"github.com/txchat/dtalk/app/services/offline/mq"
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -42,7 +43,7 @@ func main() {
 	conf.MustLoad(*configFile, &c)
 	ctx := svc.NewServiceContext(c)
 
-	mqSvc := NewService(c, ctx)
+	mqSvc := mq.NewService(c, ctx)
 	mqSvc.Serve()
 
 	// init signal

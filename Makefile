@@ -5,7 +5,8 @@ projectVersion=$(shell git describe --abbrev=8 --tags)
 gitCommit=$(shell git rev-parse --short=8 HEAD)
 
 pkgCommitName=${projectVersion}_${gitCommit}
-servers=answer backend backup call device discovery gateway generator group offline-push oss pusher store
+servers=answer backup call device generator group offline oss pusher storage version
+gateways=center chat
 
 help: ## Display this help screen
 	@printf "Help doc:\nUsage: make [command]\n"
@@ -13,10 +14,10 @@ help: ## Display this help screen
 	@grep -h -E '^([a-zA-Z_-]|\%)+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 build: clean ## 编译本机系统和指令集的可执行文件
-	./script/builder/builder.sh ${TARGETDIR} "" "${servers}"
+	./script/builder/builder.sh ${TARGETDIR} "" "${servers}" "${gateways}"
 
 build_%: clean ## 编译目标机器的可执行文件（例如: make build_linux_amd64）
-	./script/builder/builder.sh ${TARGETDIR} $* "${servers}"
+	./script/builder/builder.sh ${TARGETDIR} $* "${servers}" "${gateways}"
 
 pkg: build ## 编译并打包本机系统和指令集的可执行文件
 	tar -zcvf ${TARGETDIR}_'host'_${pkgCommitName}.tar.gz ${TARGETDIR}/

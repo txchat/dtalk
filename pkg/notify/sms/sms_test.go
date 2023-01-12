@@ -3,7 +3,7 @@ package sms
 import (
 	"testing"
 
-	"github.com/txchat/dtalk/service/backup/model"
+	"github.com/txchat/dtalk/pkg/notify"
 )
 
 /*
@@ -20,8 +20,8 @@ func Test_Send(t *testing.T) {
 
 	sms := NewSMS(url, appkey, secretKey, msg)
 	params := map[string]string{
-		model.ParamMobile:   "15763946517",
-		model.ParamCodeType: "bind_policebook",
+		notify.ParamMobile:   "15763946517",
+		notify.ParamCodeType: "bind_policebook",
 	}
 	rlt, err := sms.Send(params)
 	if err != nil {
@@ -39,9 +39,9 @@ func Test_ValidateCode(t *testing.T) {
 
 	sms := NewSMS(url, appkey, secretKey, msg)
 	params := map[string]string{
-		model.ParamMobile:   "15763946517",
-		model.ParamCode:     "04037",
-		model.ParamCodeType: "bind_policebook",
+		notify.ParamMobile:   "15763946517",
+		notify.ParamCode:     "04037",
+		notify.ParamCodeType: "bind_policebook",
 	}
 	err := sms.ValidateCode(params)
 	if err != nil {

@@ -9,10 +9,11 @@ import (
 	"github.com/txchat/dtalk/app/services/device/deviceclient"
 	"github.com/txchat/dtalk/app/services/pusher/internal/svc"
 	"github.com/txchat/dtalk/internal/recordhelper"
+	"github.com/txchat/dtalk/proto/offline"
 	"github.com/txchat/dtalk/proto/record"
-	offlinepush "github.com/txchat/dtalk/service/offline-push/api"
 	comet "github.com/txchat/im/api/comet/grpc"
 	logic "github.com/txchat/im/api/logic/grpc"
+	"github.com/txchat/imparse/proto/auth"
 	"github.com/txchat/imparse/proto/common"
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -216,9 +217,9 @@ func (l *PusherLogic) pushAllDevice(m *record.PushMsg, nickname, mid string) err
 	for _, dev := range resp.Devices {
 		if dev.IsEnabled && dev.DTUid == dev.Uid {
 			//需要推送
-			pushMsg := &offlinepush.OffPushMsg{
+			pushMsg := &offline.OffPushMsg{
 				AppId:       m.GetAppId(),
-				Device:      offlinepush.Device(dev.DeviceType),
+				Device:      auth.Device(dev.DeviceType),
 				Title:       nickname,
 				Content:     "[你收到一条消息]",
 				Token:       dev.DeviceToken,

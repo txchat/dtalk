@@ -4,6 +4,8 @@ import (
 	"context"
 	"strconv"
 
+	"github.com/txchat/dtalk/internal/recordutil"
+
 	"github.com/txchat/dtalk/app/services/storage/internal/model"
 	"github.com/txchat/dtalk/app/services/storage/internal/svc"
 	"github.com/txchat/imparse/proto/auth"
@@ -71,10 +73,10 @@ func (l *StoreGroupMsgLogic) appendMsg(isSelfRead bool, p *common.Common) error 
 		SenderId:   p.From,
 		ReceiverId: p.Target,
 		MsgType:    uint32(p.MsgType),
-		Content:    string(model.ParseCommonMsg(p)),
+		Content:    string(recordutil.CommonMsgProtobufDataToJSONData(p)),
 		CreateTime: p.Datetime,
-		Source:     string(model.ParseSource(p)),
-		Reference:  string(model.ParseReference(p)),
+		Source:     string(recordutil.SourceJSONMarshal(p)),
+		Reference:  string(recordutil.ReferenceJSONMarshal(p)),
 	})
 	if err != nil {
 		tx.RollBack()

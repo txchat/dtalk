@@ -3,7 +3,7 @@ package email
 import (
 	"testing"
 
-	"github.com/txchat/dtalk/service/backup/model"
+	"github.com/txchat/dtalk/pkg/notify"
 )
 
 /*
@@ -20,8 +20,8 @@ func Test_Send(t *testing.T) {
 
 	email := NewEmail(url, appkey, secretKey, msg)
 	params := map[string]string{
-		model.ParamEmail:    "815904261@qq.com",
-		model.ParamCodeType: "bind_policebook",
+		notify.ParamEmail:    "815904261@qq.com",
+		notify.ParamCodeType: "bind_policebook",
 	}
 	rlt, err := email.Send(params)
 	if err != nil {
@@ -39,9 +39,9 @@ func Test_ValidateCode(t *testing.T) {
 
 	email := NewEmail(url, appkey, secretKey, msg)
 	params := map[string]string{
-		model.ParamEmail:    "815904261@qq.com",
-		model.ParamCode:     "17091",
-		model.ParamCodeType: "bind_policebook",
+		notify.ParamEmail:    "815904261@qq.com",
+		notify.ParamCode:     "17091",
+		notify.ParamCodeType: "bind_policebook",
 	}
 	err := email.ValidateCode(params)
 	if err != nil {

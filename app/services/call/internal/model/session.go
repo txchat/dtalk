@@ -1,6 +1,6 @@
 package model
 
-import xcall "github.com/txchat/dtalk/pkg/call"
+import xcall "github.com/txchat/dtalk/internal/call"
 
 const (
 	// SessionTimeout session 在 redis 中过期的时间

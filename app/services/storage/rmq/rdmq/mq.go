@@ -5,6 +5,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/txchat/dtalk/app/services/storage/internal/exec"
+
 	"github.com/golang/protobuf/proto"
 	"github.com/txchat/dtalk/app/services/device/deviceclient"
 	"github.com/txchat/dtalk/app/services/storage/internal/config"
@@ -23,13 +25,16 @@ type Service struct {
 	Config        config.Config
 	svcCtx        *svc.ServiceContext
 	batchConsumer *xkafka.BatchConsumer
+	storageExec   imparse.Storage
+	parser        chat.StandardParse
 }
 
 func NewService(cfg config.Config, svcCtx *svc.ServiceContext) *Service {
 	s := &Service{
-		Logger: logx.WithContext(context.TODO()),
-		Config: cfg,
-		svcCtx: svcCtx,
+		Logger:      logx.WithContext(context.TODO()),
+		Config:      cfg,
+		svcCtx:      svcCtx,
+		storageExec: imparse.NewStandardStorage(exec.NewStorageExec(svcCtx)),
 	}
 	//topic config
 	cfg.StoreDealConsumerConfig.Topic = fmt.Sprintf("received-%s-topic", cfg.AppID)
@@ -67,7 +72,7 @@ func (s *Service) handleFunc(key string, data []byte) error {
 }
 
 func (s *Service) DealStore(ctx context.Context, m *record.PushMsg) error {
-	frame, err := s.svcCtx.Parser.NewFrame(m.GetKey(), m.GetFromId(), bytes.NewReader(m.GetMsg()), chat.WithMid(m.GetMid()), chat.WithTarget(m.GetTarget()), chat.WithTransmissionMethod(imparse.Channel(m.GetType())))
+	frame, err := s.parser.NewFrame(m.GetKey(), m.GetFromId(), bytes.NewReader(m.GetMsg()), chat.WithMid(m.GetMid()), chat.WithTarget(m.GetTarget()), chat.WithTransmissionMethod(imparse.Channel(m.GetType())))
 	if err != nil {
 		s.Error("NewFrame error", "key", m.Key, "from", m.FromId, "err", err)
 		return err
@@ -81,7 +86,7 @@ func (s *Service) DealStore(ctx context.Context, m *record.PushMsg) error {
 	if dev != nil {
 		devType = auth.Device(dev.GetDeviceType())
 	}
-	if err := s.svcCtx.StorageExec.SaveMsg(ctx, devType, frame); err != nil {
+	if err := s.storageExec.SaveMsg(ctx, devType, frame); err != nil {
 		s.Error("Store error", "key", m.Key, "from", m.FromId, "err", err)
 		return err
 	}

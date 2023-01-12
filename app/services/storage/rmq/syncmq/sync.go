@@ -4,9 +4,10 @@ import (
 	"context"
 	"strconv"
 
+	"github.com/txchat/dtalk/internal/recordutil"
+
 	"github.com/golang/protobuf/proto"
 	"github.com/txchat/dtalk/app/services/pusher/pusherclient"
-	"github.com/txchat/dtalk/app/services/storage/internal/model"
 	"github.com/txchat/dtalk/pkg/util"
 	comet "github.com/txchat/im/api/comet/grpc"
 	"github.com/txchat/imparse"
@@ -49,9 +50,9 @@ func (s *Service) sendPrivateUnReadMsg(key, uid string) error {
 			From:        m.SenderId,
 			Target:      m.ReceiverId,
 			MsgType:     common.MsgType(m.MsgType),
-			Msg:         model.ConvertMsg(m.MsgType, []byte(m.Content)),
-			Source:      model.ConvertSource([]byte(m.Source)),
-			Reference:   model.ConvertReference([]byte(m.Reference)),
+			Msg:         recordutil.CommonMsgJSONDataToProtobufData(m.MsgType, []byte(m.Content)),
+			Source:      recordutil.SourceJSONUnmarshal([]byte(m.Source)),
+			Reference:   recordutil.ReferenceJSONUnmarshal([]byte(m.Reference)),
 			Datetime:    m.CreateTime,
 		}
 		bizP.Body, err = proto.Marshal(eveP)
@@ -91,9 +92,9 @@ func (s *Service) sendGroupUnReadMsg(key, uid string) error {
 			From:        m.SenderId,
 			Target:      m.ReceiverId,
 			MsgType:     common.MsgType(m.MsgType),
-			Msg:         model.ConvertMsg(m.MsgType, []byte(m.Content)),
-			Source:      model.ConvertSource([]byte(m.Source)),
-			Reference:   model.ConvertReference([]byte(m.Reference)),
+			Msg:         recordutil.CommonMsgJSONDataToProtobufData(m.MsgType, []byte(m.Content)),
+			Source:      recordutil.SourceJSONUnmarshal([]byte(m.Source)),
+			Reference:   recordutil.ReferenceJSONUnmarshal([]byte(m.Reference)),
 			Datetime:    m.CreateTime,
 		}
 		bizP.Body, err = proto.Marshal(eveP)
@@ -128,7 +129,7 @@ func (s *Service) sendSignalUnReadMsg(key, uid string) error {
 	for _, m := range records {
 		eveP := &signal.Signal{
 			Type: signal.SignalType(m.Type),
-			Body: model.ConvertSignal(uint32(m.Type), []byte(m.Content)),
+			Body: recordutil.SignalContentJSONDataToProtobufData(uint32(m.Type), []byte(m.Content)),
 		}
 		bizP.Body, err = proto.Marshal(eveP)
 		p.Body, err = proto.Marshal(bizP)

@@ -6,6 +6,8 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/txchat/dtalk/internal/recordutil"
+
 	"github.com/txchat/dtalk/app/services/storage/internal/logic"
 	"github.com/txchat/dtalk/app/services/storage/internal/model"
 	"github.com/txchat/dtalk/app/services/storage/internal/svc"
@@ -47,7 +49,7 @@ func (e *StorageExec) SaveMsg(deviceType auth.Device, frame imparse.Frame) error
 		if !base.GetReliable() {
 			return nil
 		}
-		data := model.ParseSignal(base)
+		data := recordutil.SignalContentToJSONData(base)
 		createTime := uint64(util.TimeNowUnixNano() / int64(time.Millisecond))
 		l := logic.NewStoreSignalLogic(context.TODO(), e.svcCtx)
 		switch pv.GetTransmissionMethod() {

@@ -9,6 +9,7 @@ work_dir=$(
 targetDir=$1
 targetOsArch=$2
 serviceList=$3
+gatewayList=$4
 
 if [ "${targetDir}" = "" ]; then
     echo "target directory is empty"
@@ -71,31 +72,20 @@ buildTargetDir="${work_dir}/${targetDir}/"
 buildService() {
     serviceName="$1"
     configPath="$2"
-    serviceMain="$3"
+    configName="$3"
+    serviceMain="$4"
 
     echo "┌ start building ${serviceName} service"
-    cp "${configPath}/${serviceName}.toml" "${buildTargetDir}/${serviceName}.toml"
+    cp "${configPath}/${configName}" "${buildTargetDir}/${configName}"
     go build -ldflags "${ldflags}" -o "${buildTargetDir}/${serviceName}" "${serviceMain}" || exit
     echo "└ building ${serviceName} service success"
 }
 
 mkdir "${buildTargetDir}"
 for sName in ${serviceList}; do
-    case ${sName} in
-        "gateway")
-            buildService "${sName}" "${work_dir}/gateway/api/v1/etc" "${work_dir}/gateway/api/v1/gateway.go"
-            ;;
-        "answer")
-            buildService "${sName}" "${work_dir}/service/record/${sName}/config" "${work_dir}/service/record/${sName}/cmd/main.go"
-            ;;
-        "pusher")
-            buildService "${sName}" "${work_dir}/service/record/${sName}/config" "${work_dir}/service/record/${sName}/cmd/main.go"
-            ;;
-        "store")
-            buildService "${sName}" "${work_dir}/service/record/${sName}/config" "${work_dir}/service/record/${sName}/cmd/main.go"
-            ;;
-        *)
-            buildService "${sName}" "${work_dir}/service/${sName}/config" "${work_dir}/service/${sName}/cmd/main.go"
-            ;;
-    esac
+    buildService "${sName}" "${work_dir}/app/services/${sName}/etc" "${sName}.yaml" "${work_dir}/app/services/${sName}/${sName}.go"
+done
+
+for sName in ${gatewayList}; do
+    buildService "${sName}" "${work_dir}/app/gateway/${sName}/etc" "${sName}-api.yaml" "${work_dir}/app/gateway/${sName}/${sName}.go"
 done

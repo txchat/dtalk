@@ -3,8 +3,6 @@ package logic
 import (
 	"context"
 
-	"github.com/txchat/dtalk/internal/call/sign"
-
 	xerror "github.com/txchat/dtalk/pkg/error"
 
 	"github.com/txchat/dtalk/app/services/call/call"
@@ -51,14 +49,10 @@ func (l *AcceptLogic) Accept(in *call.AcceptReq) (*call.AcceptResp, error) {
 	if err != nil {
 		return nil, err
 	}
-	cloudTicket, err := sign.FromBytes(inviteeTicket)
-	if err != nil {
-		return nil, err
-	}
 	return &call.AcceptResp{
-		RoomId:        cloudTicket.RoomId,
-		UserSign:      cloudTicket.UserSig,
-		PrivateMapKey: cloudTicket.PrivateMapKey,
-		SDKAppID:      cloudTicket.SDKAppID,
+		RoomId:        inviteeTicket.RoomId,
+		UserSign:      inviteeTicket.UserSig,
+		PrivateMapKey: inviteeTicket.PrivateMapKey,
+		SDKAppID:      inviteeTicket.SDKAppID,
 	}, nil
 }

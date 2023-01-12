@@ -5,9 +5,9 @@ import (
 	"fmt"
 
 	"github.com/gomodule/redigo/redis"
+	xerror "github.com/txchat/dtalk/pkg/error"
 	"github.com/txchat/dtalk/pkg/oss"
 	xredis "github.com/txchat/dtalk/pkg/redis"
-	"github.com/txchat/dtalk/service/oss/model"
 )
 
 const (
@@ -31,7 +31,7 @@ func NewOssRepositoryRedis(c xredis.Config) *OssRepositoryRedis {
 //key:name; val:json
 func (repo *OssRepositoryRedis) SaveAssumeRole(appId, ossType string, cfg *oss.Config, data *oss.AssumeRoleResp) error {
 	if cfg == nil {
-		return model.ErrNilPoint
+		return xerror.ErrOssEndpointNotExist
 	}
 	val, err := json.Marshal(data)
 	if err != nil {
@@ -57,7 +57,7 @@ func (repo *OssRepositoryRedis) SaveAssumeRole(appId, ossType string, cfg *oss.C
 
 func (repo *OssRepositoryRedis) GetAssumeRole(appId, ossType string, cfg *oss.Config) (*oss.AssumeRoleResp, error) {
 	if cfg == nil {
-		return nil, model.ErrNilPoint
+		return nil, xerror.ErrOssEndpointNotExist
 	}
 	key := keyOssConfig(appId, ossType)
 	conn := repo.redis.Get()

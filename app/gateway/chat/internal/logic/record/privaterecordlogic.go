@@ -3,10 +3,11 @@ package record
 import (
 	"context"
 
+	"github.com/txchat/dtalk/internal/recordutil"
+
 	"github.com/txchat/dtalk/app/services/storage/storageclient"
 	xhttp "github.com/txchat/dtalk/pkg/net/http"
 	"github.com/txchat/dtalk/pkg/util"
-	storeModel "github.com/txchat/dtalk/service/record/store/model"
 	"github.com/txchat/imparse/proto/common"
 
 	"github.com/txchat/dtalk/app/gateway/chat/internal/svc"
@@ -64,7 +65,7 @@ func toChatRecord(records []*storageclient.GetRecordReply) []*types.Record {
 			FromId:     msg.SenderId,
 			TargetId:   msg.ReceiverId,
 			MsgType:    int32(msg.MsgType),
-			Content:    storeModel.JsonUnmarshal(msg.MsgType, []byte(msg.Content)),
+			Content:    recordutil.CommonMsgJSONDataToProtobuf(msg.MsgType, []byte(msg.Content)),
 			CreateTime: msg.CreateTime,
 		}
 	}

@@ -1,6 +1,11 @@
 package notify
 
 const (
+	Debug   = "debug"
+	Release = "release"
+)
+
+const (
 	Phone   = 0
 	Email   = 1
 	Address = 2

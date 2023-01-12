@@ -13,11 +13,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/txchat/dtalk/service/backup/model"
-
 	"github.com/inconshreveable/log15"
 	http_tools "github.com/txchat/dtalk/pkg/net/http"
-	. "github.com/txchat/dtalk/service/backup/service/email/model"
+	"github.com/txchat/dtalk/pkg/notify"
+	. "github.com/txchat/dtalk/pkg/notify/email/model"
 )
 
 type Email struct {
@@ -37,10 +36,10 @@ func NewEmail(url, appKey, secretKey, msg string) *Email {
 }
 
 func (e *Email) Send(param map[string]string) (interface{}, error) {
-	email := param[model.ParamEmail]
-	ticket := param[model.ParamTicket]
-	businessId := param[model.ParamBizId]
-	codeType := param[model.ParamCodeType]
+	email := param[notify.ParamEmail]
+	ticket := param[notify.ParamTicket]
+	businessId := param[notify.ParamBizId]
+	codeType := param[notify.ParamCodeType]
 
 	values := map[string]string{
 		"email":      email,
@@ -148,9 +147,9 @@ func (e *Email) Send(param map[string]string) (interface{}, error) {
 }
 
 func (e *Email) ValidateCode(param map[string]string) error {
-	email := param[model.ParamEmail]
-	code := param[model.ParamCode]
-	codeType := param[model.ParamCodeType]
+	email := param[notify.ParamEmail]
+	code := param[notify.ParamCode]
+	codeType := param[notify.ParamCodeType]
 
 	values := map[string]string{
 		"t":        "email",

@@ -4,7 +4,8 @@ import (
 	"context"
 	"errors"
 
-	"github.com/txchat/dtalk/internal/signal"
+	xsignal "github.com/txchat/dtalk/internal/signal"
+	"github.com/txchat/imparse/proto/signal"
 )
 
 type StopType int32
@@ -23,12 +24,12 @@ var (
 
 type PrivateTask struct {
 	ctx       context.Context
-	signalHub signal.Signal
+	signalHub xsignal.Signal
 	operator  string
 	target    string
 }
 
-func NewPrivateTask(ctx context.Context, signalHub signal.Signal, operator, target string) *PrivateTask {
+func NewPrivateTask(ctx context.Context, signalHub xsignal.Signal, operator, target string) *PrivateTask {
 	return &PrivateTask{
 		ctx:       ctx,
 		signalHub: signalHub,
@@ -53,7 +54,12 @@ func (t *PrivateTask) Offer(sc *SessionCreator, rtcType RTCType) (*Session, erro
 
 func (t *PrivateTask) Occupied(session *Session) error {
 	stopType := Busy
-	err := t.signalHub.StopCall(t.ctx, t.target, session.TaskID, stopType)
+	action := &signal.SignalStopCall{
+		TraceId: session.TaskID,
+		Reason:  signal.StopCallType(stopType),
+	}
+
+	err := t.signalHub.StopCall(t.ctx, t.target, action)
 	if err != nil {
 		return err
 	}
@@ -71,7 +77,12 @@ func (t *PrivateTask) Reject(session *Session) error {
 			stopType = Cancel
 		}
 	}
-	err := t.signalHub.StopCall(t.ctx, t.target, session.TaskID, stopType)
+
+	action := &signal.SignalStopCall{
+		TraceId: session.TaskID,
+		Reason:  signal.StopCallType(stopType),
+	}
+	err := t.signalHub.StopCall(t.ctx, t.target, action)
 	if err != nil {
 		return err
 	}
@@ -79,7 +90,7 @@ func (t *PrivateTask) Reject(session *Session) error {
 	return nil
 }
 
-func (t *PrivateTask) Accept(createTicket TicketCreator, session *Session) (Ticket, error) {
+func (t *PrivateTask) Accept(createTicket TicketCreator, session *Session) (*Ticket, error) {
 	// TODO 判断是否在被接收方组内
 	if !session.IsReady() {
 		return nil, ErrUserBusy
@@ -97,7 +108,16 @@ func (t *PrivateTask) Accept(createTicket TicketCreator, session *Session) (Tick
 	if err != nil {
 		return nil, err
 	}
-	return inviteeTicket, t.signalHub.AcceptCall(t.ctx, session.Caller, session.TaskID, callerTicket)
+
+	action := &signal.SignalAcceptCall{
+		TraceId:       session.TaskID,
+		RoomId:        int32(session.RoomID),
+		Uid:           session.Caller,
+		UserSig:       callerTicket.UserSig,
+		PrivateMapKey: callerTicket.PrivateMapKey,
+		SkdAppId:      callerTicket.SDKAppID,
+	}
+	return inviteeTicket, t.signalHub.AcceptCall(t.ctx, session.Caller, action)
 }
 
 //

@@ -5,9 +5,8 @@ import (
 	"time"
 
 	"github.com/txchat/dtalk/app/services/group/groupclient"
-
+	xerror "github.com/txchat/dtalk/pkg/error"
 	"github.com/txchat/dtalk/pkg/util"
-	"github.com/txchat/dtalk/service/record/answer/model"
 	"github.com/txchat/imparse"
 	"github.com/txchat/imparse/chat"
 	"github.com/txchat/imparse/proto/common"
@@ -35,7 +34,7 @@ func (fs *Filters) GetFilters() map[imparse.FrameType][]imparse.Filter {
 						if err != nil {
 							return err
 						}
-						return model.ErrGroupMemberNotExists
+						return xerror.ErrGroupMemberNotExist
 					}
 				}
 				return nil

@@ -2,7 +2,7 @@ package tencentyun
 
 import (
 	"github.com/tencentyun/tls-sig-api-v2-golang/tencentyun"
-	"github.com/txchat/dtalk/internal/call/sign"
+	"github.com/txchat/dtalk/internal/call"
 )
 
 // TCTLSSig 腾讯音视频签名实例
@@ -12,7 +12,7 @@ type TCTLSSig struct {
 	expire    int
 }
 
-func NewTCTLSSig(sdkAppId int, secretKey string, expire int) sign.TLSSig {
+func NewTCTLSSig(sdkAppId int, secretKey string, expire int) call.TLSSig {
 	return &TCTLSSig{
 		sdkAppId:  sdkAppId,
 		secretKey: secretKey,

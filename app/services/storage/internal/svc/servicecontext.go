@@ -1,16 +1,12 @@
 package svc
 
 import (
-	"github.com/txchat/dtalk/app/services/group/groupclient"
-	"github.com/txchat/dtalk/app/services/storage/internal/exec"
-
 	"github.com/txchat/dtalk/app/services/device/deviceclient"
+	"github.com/txchat/dtalk/app/services/group/groupclient"
 	"github.com/txchat/dtalk/app/services/pusher/pusherclient"
 	"github.com/txchat/dtalk/app/services/storage/internal/config"
 	"github.com/txchat/dtalk/app/services/storage/internal/dao"
 	xerror "github.com/txchat/dtalk/pkg/error"
-	"github.com/txchat/imparse"
-	"github.com/txchat/imparse/chat"
 	"github.com/zeromicro/go-zero/zrpc"
 )
 
@@ -18,11 +14,9 @@ type ServiceContext struct {
 	Config config.Config
 	Repo   dao.StorageRepository
 	//need not init
-	Parser      chat.StandardParse
-	StorageExec imparse.Storage
-	DeviceRPC   deviceclient.Device
-	PusherRPC   pusherclient.Pusher
-	GroupRPC    groupclient.Group
+	DeviceRPC deviceclient.Device
+	PusherRPC pusherclient.Pusher
+	GroupRPC  groupclient.Group
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -36,6 +30,5 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		GroupRPC: groupclient.NewGroup(zrpc.MustNewClient(c.GroupRPC,
 			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor))),
 	}
-	s.StorageExec = imparse.NewStandardStorage(exec.NewStorageExec(s))
 	return s
 }

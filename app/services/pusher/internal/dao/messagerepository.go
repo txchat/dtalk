@@ -1,7 +1,7 @@
 package dao
 
 import (
-	"github.com/txchat/dtalk/app/services/pusher/internal/recordhelper"
+	"github.com/txchat/dtalk/internal/recordhelper"
 )
 
 type MessageRepository interface {

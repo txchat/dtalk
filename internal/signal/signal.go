@@ -3,12 +3,9 @@ package signal
 import (
 	"context"
 
+	"github.com/txchat/dtalk/internal/group"
 	"github.com/txchat/dtalk/internal/recordhelper"
 	"github.com/txchat/imparse/proto/signal"
-
-	"github.com/txchat/dtalk/internal/call"
-
-	"github.com/txchat/dtalk/internal/group"
 )
 
 type Signal interface {
@@ -24,8 +21,8 @@ type Signal interface {
 	UpdateMembersMuteTime(ctx context.Context, gid, muteTime int64, members []string) error
 
 	StartCall(ctx context.Context, target string, taskID int64) error
-	AcceptCall(ctx context.Context, target string, taskID int64, sdp call.Ticket) error
-	StopCall(ctx context.Context, target string, taskID int64, stopType call.StopType) error
+	AcceptCall(ctx context.Context, target string, action *signal.SignalAcceptCall) error
+	StopCall(ctx context.Context, target string, action *signal.SignalStopCall) error
 
 	MessageReceived(ctx context.Context, item *recordhelper.ConnSeqItem) error
 	EndpointLogin(ctx context.Context, uid string, actionProto *signal.SignalEndpointLogin) error

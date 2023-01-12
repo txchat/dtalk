@@ -13,7 +13,6 @@ import (
 	"github.com/txchat/dtalk/pkg/notify/email"
 	"github.com/txchat/dtalk/pkg/notify/sms"
 	"github.com/txchat/dtalk/pkg/notify/whitelist"
-	"github.com/txchat/dtalk/service/backup/model"
 	"github.com/zeromicro/go-zero/rest"
 	"github.com/zeromicro/go-zero/zrpc"
 )
@@ -31,15 +30,15 @@ type ServiceContext struct {
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
-	var smsValidate model.Validate
+	var smsValidate notify.Validate
 	smsValidate = sms.NewSMS(c.SMS.Surl, c.SMS.AppKey, c.SMS.SecretKey, c.SMS.Msg)
-	if c.SMS.Env == model.Debug {
+	if c.SMS.Env == notify.Debug {
 		smsValidate = debug.NewDebugValidate(debug.GetMockCode(c.SMS.Msg), smsValidate)
 	}
 
-	var emailValidate model.Validate
+	var emailValidate notify.Validate
 	emailValidate = email.NewEmail(c.Email.Surl, c.Email.AppKey, c.Email.SecretKey, c.Email.Msg)
-	if c.Email.Env == model.Debug {
+	if c.Email.Env == notify.Debug {
 		emailValidate = debug.NewDebugValidate(debug.GetMockCode(c.Email.Msg), emailValidate)
 	}
 

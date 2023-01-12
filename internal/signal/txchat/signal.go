@@ -6,8 +6,6 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/pkg/errors"
 	"github.com/txchat/dtalk/app/services/answer/answerclient"
-	"github.com/txchat/dtalk/internal/call"
-	"github.com/txchat/dtalk/internal/call/sign"
 	"github.com/txchat/dtalk/internal/group"
 	"github.com/txchat/dtalk/internal/recordhelper"
 	"github.com/txchat/dtalk/pkg/util"
@@ -230,19 +228,7 @@ func (hub *SignalHub) StartCall(ctx context.Context, target string, traceId int6
 	return err
 }
 
-func (hub *SignalHub) AcceptCall(ctx context.Context, target string, traceId int64, ticket call.Ticket) error {
-	cloudTicket, err := sign.FromBytes(ticket)
-	if err != nil {
-		return err
-	}
-	action := &signal.SignalAcceptCall{
-		TraceId:       traceId,
-		RoomId:        int32(cloudTicket.RoomId),
-		Uid:           target,
-		UserSig:       cloudTicket.UserSig,
-		PrivateMapKey: cloudTicket.PrivateMapKey,
-		SkdAppId:      cloudTicket.SDKAppID,
-	}
+func (hub *SignalHub) AcceptCall(ctx context.Context, target string, action *signal.SignalAcceptCall) error {
 	body, err := proto.Marshal(action)
 	if err != nil {
 		return errors.WithMessagef(err, "proto.Marshal, action=%+v", action)
@@ -256,26 +242,7 @@ func (hub *SignalHub) AcceptCall(ctx context.Context, target string, traceId int
 	return err
 }
 
-func (hub *SignalHub) StopCall(ctx context.Context, Target string, TraceId int64, stopType call.StopType) error {
-	var StopCallType signal.StopCallType
-	switch signal.StopCallType(stopType) {
-	case signal.StopCallType_Busy:
-		StopCallType = signal.StopCallType_Busy
-	case signal.StopCallType_Timeout:
-		StopCallType = signal.StopCallType_Timeout
-	case signal.StopCallType_Reject:
-		StopCallType = signal.StopCallType_Reject
-	case signal.StopCallType_Hangup:
-		StopCallType = signal.StopCallType_Hangup
-	case signal.StopCallType_Cancel:
-		StopCallType = signal.StopCallType_Cancel
-
-	}
-	action := &signal.SignalStopCall{
-		TraceId: TraceId,
-		Reason:  StopCallType,
-	}
-
+func (hub *SignalHub) StopCall(ctx context.Context, target string, action *signal.SignalStopCall) error {
 	body, err := proto.Marshal(action)
 	if err != nil {
 		return errors.WithMessagef(err, "proto.Marshal, action=%+v", action)
@@ -283,7 +250,7 @@ func (hub *SignalHub) StopCall(ctx context.Context, Target string, TraceId int64
 
 	_, err = hub.answerClient.UniCastSignal(ctx, &answerclient.UniCastSignalReq{
 		Type:   signal.SignalType_StopCall,
-		Target: Target,
+		Target: target,
 		Body:   body,
 	})
 	return err

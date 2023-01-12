@@ -66,9 +66,10 @@ var (
 	ErrCallUserBusy = NewError(-10101, "对方在忙,请稍后再试")
 	ErrCallTimeout  = NewError(-10102, "通话已过期")
 
-	ErrOssFileTooSmall = NewError(-10201, "上传分片文件太小")
-	ErrOssFileTooBig   = NewError(-10202, "上传文件太大")
-	ErrOssKeyIllegal   = NewError(-10203, "文件路径非法")
+	ErrOssFileTooSmall     = NewError(-10201, "上传分片文件太小")
+	ErrOssFileTooBig       = NewError(-10202, "上传文件太大")
+	ErrOssKeyIllegal       = NewError(-10203, "文件路径非法")
+	ErrOssEndpointNotExist = NewError(-10204, "无可用实例")
 
 	ErrCdkOutOfStock      = NewError(-10301, "兑换码数量不足")
 	ErrCdkOrderError      = NewError(-10302, "订单号错误")

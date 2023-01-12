@@ -13,11 +13,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/txchat/dtalk/service/backup/model"
-
 	"github.com/inconshreveable/log15"
 	http_tools "github.com/txchat/dtalk/pkg/net/http"
-	. "github.com/txchat/dtalk/service/backup/service/sms/model"
+	"github.com/txchat/dtalk/pkg/notify"
+	. "github.com/txchat/dtalk/pkg/notify/sms/model"
 )
 
 type SMS struct {
@@ -37,10 +36,10 @@ func NewSMS(url, appKey, secretKey, msg string) *SMS {
 }
 
 func (s *SMS) Send(param map[string]string) (interface{}, error) {
-	phone := param[model.ParamMobile]
-	ticket := param[model.ParamTicket]
-	businessId := param[model.ParamBizId]
-	codeType := param[model.ParamCodeType]
+	phone := param[notify.ParamMobile]
+	ticket := param[notify.ParamTicket]
+	businessId := param[notify.ParamBizId]
+	codeType := param[notify.ParamCodeType]
 
 	values := map[string]string{
 		"mobile":     phone,
@@ -148,9 +147,9 @@ func (s *SMS) Send(param map[string]string) (interface{}, error) {
 }
 
 func (s *SMS) ValidateCode(param map[string]string) error {
-	phone := param[model.ParamMobile]
-	code := param[model.ParamCode]
-	codeType := param[model.ParamCodeType]
+	phone := param[notify.ParamMobile]
+	code := param[notify.ParamCode]
+	codeType := param[notify.ParamCodeType]
 
 	values := map[string]string{
 		"t":        "sms",
