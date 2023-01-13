@@ -38,16 +38,16 @@ type ServiceContext struct {
 
 func NewServiceContext(c config.Config) *ServiceContext {
 	answerRPC := answerclient.NewAnswer(zrpc.MustNewClient(c.AnswerRPC,
-		zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor)))
+		zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor), zrpc.WithNonBlock()))
 	deviceRPC := deviceclient.NewDevice(zrpc.MustNewClient(c.DeviceRPC,
-		zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor)))
+		zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor), zrpc.WithNonBlock()))
 	repo := dao.NewMessageRepositoryRedis(c.RedisDB)
 	return &ServiceContext{
 		Config:    c,
 		Repo:      repo,
 		DeviceRPC: deviceRPC,
 		GroupRPC: groupclient.NewGroup(zrpc.MustNewClient(c.GroupRPC,
-			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor))),
+			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor), zrpc.WithNonBlock())),
 		SignalHub:      txchatSignalApi.NewSignalHub(answerRPC),
 		StoragePublish: publish.NewStoragePublish(c.AppID, c.ProducerStorage),
 		OffPushPublish: publish.NewOffPushPublish(c.AppID, c.ProducerOffPush),

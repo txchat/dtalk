@@ -32,20 +32,20 @@ type ServiceContext struct {
 
 func NewServiceContext(c config.Config) *ServiceContext {
 	answerRPC := answerclient.NewAnswer(zrpc.MustNewClient(c.AnswerRPC,
-		zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor)))
+		zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor), zrpc.WithNonBlock()))
 	return &ServiceContext{
 		Config: c,
 		CallRPC: callclient.NewCall(zrpc.MustNewClient(c.CallRPC,
-			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor))),
+			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor), zrpc.WithNonBlock())),
 		AnswerRPC: answerRPC,
 		StorageRPC: storageclient.NewStorage(zrpc.MustNewClient(c.StorageRPC,
-			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor))),
+			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor), zrpc.WithNonBlock())),
 		GroupRPC: groupclient.NewGroup(zrpc.MustNewClient(c.GroupRPC,
-			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor))),
+			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor), zrpc.WithNonBlock())),
 		OssRPC: ossclient.NewOss(zrpc.MustNewClient(c.OssRPC,
-			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor))),
+			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor), zrpc.WithNonBlock())),
 		DeviceRPC: deviceclient.NewDevice(zrpc.MustNewClient(c.DeviceRPC,
-			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor))),
+			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor), zrpc.WithNonBlock())),
 		AppParseHeaderMiddleware: middleware.NewAppParseHeaderMiddleware().Handle,
 		AppAuthMiddleware:        middleware.NewAppAuthMiddleware(authmock.NewKVMock()).Handle,
 		SignalHub:                txchatSignalApi.NewSignalHub(answerRPC),

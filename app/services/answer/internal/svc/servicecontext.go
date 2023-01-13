@@ -38,9 +38,9 @@ type ServiceContext struct {
 
 func NewServiceContext(c config.Config) *ServiceContext {
 	groupRPC := groupclient.NewGroup(zrpc.MustNewClient(c.GroupRPC,
-		zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor)))
+		zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor), zrpc.WithNonBlock()))
 	idGenRPC := generatorclient.NewGenerator(zrpc.MustNewClient(c.IDGenRPC,
-		zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor)))
+		zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor), zrpc.WithNonBlock()))
 	svc := &ServiceContext{
 		Config:     c,
 		Repo:       dao.NewAnswerRepositoryRedis(c.RedisDB),

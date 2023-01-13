@@ -40,13 +40,13 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		panic(err)
 	}
 	answerClient := answerclient.NewAnswer(zrpc.MustNewClient(c.AnswerRPC,
-		zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor)))
+		zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor), zrpc.WithNonBlock()))
 	return &ServiceContext{
 		Config:       c,
 		Repo:         dao.NewGroupRepositoryMysql(conn),
 		GroupManager: group.NewGroupManager(),
 		IDGenRPC: generatorclient.NewGenerator(zrpc.MustNewClient(c.IDGenRPC,
-			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor))),
+			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor), zrpc.WithNonBlock())),
 		SignalHub:   txchatSignalApi.NewSignalHub(answerClient),
 		NoticeHub:   txchatNoticeApi.NewNoticeHub(answerClient),
 		logicClient: nil,

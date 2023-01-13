@@ -24,11 +24,11 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		Config: c,
 		Repo:   dao.NewUniRepository(c.RedisDB, c.MySQL),
 		DeviceRPC: deviceclient.NewDevice(zrpc.MustNewClient(c.DeviceRPC,
-			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor))),
+			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor), zrpc.WithNonBlock())),
 		PusherRPC: pusherclient.NewPusher(zrpc.MustNewClient(c.PusherRPC,
-			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor))),
+			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor), zrpc.WithNonBlock())),
 		GroupRPC: groupclient.NewGroup(zrpc.MustNewClient(c.GroupRPC,
-			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor))),
+			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor), zrpc.WithNonBlock())),
 	}
 	return s
 }

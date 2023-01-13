@@ -48,9 +48,9 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		AppParseHeaderMiddleware: middleware.NewAppParseHeaderMiddleware().Handle,
 		AppAuthMiddleware:        middleware.NewAppAuthMiddleware(authmock.NewKVMock()).Handle,
 		VersionRPC: versionclient.NewVersion(zrpc.MustNewClient(c.VersionRPC,
-			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor))),
+			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor), zrpc.WithNonBlock())),
 		BackupRPC: backupclient.NewBackup(zrpc.MustNewClient(c.BackupRPC,
-			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor))),
+			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor), zrpc.WithNonBlock())),
 		SmsValidate:   whitelist.NewWhitelistValidate(c.Whitelist, smsValidate),
 		EmailValidate: whitelist.NewWhitelistValidate(c.Whitelist, emailValidate),
 	}

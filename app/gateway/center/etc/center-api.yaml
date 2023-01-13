@@ -53,8 +53,7 @@ Email:
     bind: "bind"
     export: "import"
 Whitelist:
-  - {
-      Account: "11111111111"
-      Code: "12345"
-      Enable: true
-  }
+  -
+    Account: "11111111111"
+    Code: "12345"
+    Enable: true
