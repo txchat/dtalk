@@ -13,13 +13,13 @@ import (
 )
 
 type ConsumerConfig struct {
-	Version        string
-	Brokers        []string
-	Group          string
-	Topic          string
-	CacheCapacity  int
-	ConnectTimeout time.Duration
-	realVersion    sarama.KafkaVersion
+	Version        string              `json:",optional"`
+	Brokers        []string            `json:",optional"`
+	Group          string              `json:",optional"`
+	Topic          string              `json:",optional"`
+	CacheCapacity  int                 `json:",optional"`
+	ConnectTimeout time.Duration       `json:",optional"`
+	realVersion    sarama.KafkaVersion `json:"-,optional"`
 }
 
 type Consumer struct {

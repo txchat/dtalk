@@ -1,31 +1,32 @@
 version: "2.4"
 services:
-  gateway:
-    image: txchat-gateway:${GATEWAY_IMAGE}
-    container_name: ${GATEWAY_CONTAINER_NAME}
-    networks:
-      - txchat-components
-      - txchat-service
-    volumes:
-      - ${GATEWAY_CONFIG_VOLUME}:/etc/txchat-gateway/config
-  backend:
-    image: txchat-backend:${BACKEND_IMAGE}
-    container_name: ${BACKEND_CONTAINER_NAME}
+  center:
+    image: txchat-center:${CENTER_IMAGE}
+    container_name: ${CENTER_CONTAINER_NAME}
     environment:
-      MYSQL_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      ETCD_HOST: txchat-etcd
     networks:
       - txchat-components
       - txchat-service
     volumes:
-      - ${BACKEND_CONFIG_VOLUME}:/etc/txchat-backend/config
-    depends_on:
-      mysql:
-        condition: service_healthy
+      - ${CENTER_CONFIG_VOLUME}:/etc/txchat-center/config
+  chat:
+    image: txchat-chat:${CHAT_IMAGE}
+    container_name: ${CHAT_CONTAINER_NAME}
+    environment:
+      ETCD_HOST: txchat-etcd
+    networks:
+      - txchat-components
+      - txchat-service
+    volumes:
+      - ${CHAT_CONFIG_VOLUME}:/etc/txchat-chat/config
   backup:
     image: txchat-backup:${BACKUP_IMAGE}
     container_name: ${BACKUP_CONTAINER_NAME}
     environment:
       MYSQL_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_HOST: txchat-mysql
+      ETCD_HOST: txchat-etcd
     networks:
       - txchat-components
       - txchat-service
@@ -37,6 +38,9 @@ services:
   call:
     image: txchat-call:${CALL_IMAGE}
     container_name: ${CALL_CONTAINER_NAME}
+    environment:
+      ETCD_HOST: txchat-etcd
+      REDIS_HOST: txchat-redis
     networks:
       - txchat-components
       - txchat-service
@@ -45,22 +49,19 @@ services:
   device:
     image: txchat-device:${DEVICE_IMAGE}
     container_name: ${DEVICE_CONTAINER_NAME}
+    environment:
+      ETCD_HOST: txchat-etcd
+      REDIS_HOST: txchat-redis
     networks:
       - txchat-components
       - txchat-service
     volumes:
       - ${DEVICE_CONFIG_VOLUME}:/etc/txchat-device/config
-  discovery:
-    image: txchat-discovery:${DISCOVERY_IMAGE}
-    container_name: ${DISCOVERY_CONTAINER_NAME}
-    networks:
-      - txchat-components
-      - txchat-service
-    volumes:
-      - ${DISCOVERY_CONFIG_VOLUME}:/etc/txchat-discovery/config
   generator:
     image: txchat-generator:${GENERATOR_IMAGE}
     container_name: ${GENERATOR_CONTAINER_NAME}
+    environment:
+      ETCD_HOST: txchat-etcd
     networks:
       - txchat-components
       - txchat-service
@@ -71,6 +72,8 @@ services:
     container_name: ${GROUP_CONTAINER_NAME}
     environment:
       MYSQL_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_HOST: txchat-mysql
+      ETCD_HOST: txchat-etcd
     networks:
       - txchat-components
       - txchat-service
@@ -79,25 +82,50 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
-  offline-push:
-    image: txchat-offline-push:${OFFLINE_PUSH_IMAGE}
-    container_name: ${OFFLINE_PUSH_CONTAINER_NAME}
+  offline:
+    image: txchat-offline:${OFFLINE_IMAGE}
+    container_name: ${OFFLINE_CONTAINER_NAME}
+    environment:
+      ETCD_HOST: txchat-etcd
+      KAFKA_HOST: txchat-kafka
     networks:
       - txchat-components
       - txchat-service
     volumes:
-      - ${OFFLINE_PUSH_CONFIG_VOLUME}:/etc/txchat-offline-push/config
+      - ${OFFLINE_CONFIG_VOLUME}:/etc/txchat-offline/config
   oss:
     image: txchat-oss:${OSS_IMAGE}
     container_name: ${OSS_CONTAINER_NAME}
+    environment:
+      ETCD_HOST: txchat-etcd
+      REDIS_HOST: txchat-redis
     networks:
       - txchat-components
       - txchat-service
     volumes:
       - ${OSS_CONFIG_VOLUME}:/etc/txchat-oss/config
+  version:
+    image: txchat-version:${VERSION_IMAGE}
+    container_name: ${VERSION_CONTAINER_NAME}
+    environment:
+      MYSQL_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_HOST: txchat-mysql
+      ETCD_HOST: txchat-etcd
+    networks:
+      - txchat-components
+      - txchat-service
+    volumes:
+      - ${VERSION_CONFIG_VOLUME}:/etc/txchat-version/config
+    depends_on:
+      mysql:
+        condition: service_healthy
   answer:
     image: txchat-answer:${ANSWER_IMAGE}
     container_name: ${ANSWER_CONTAINER_NAME}
+    environment:
+      ETCD_HOST: txchat-etcd
+      KAFKA_HOST: txchat-kafka
+      REDIS_HOST: txchat-redis
     networks:
       - txchat-components
       - txchat-service
@@ -106,29 +134,40 @@ services:
   pusher:
     image: txchat-pusher:${PUSHER_IMAGE}
     container_name: ${PUSHER_CONTAINER_NAME}
+    environment:
+      ETCD_HOST: txchat-etcd
+      KAFKA_HOST: txchat-kafka
+      REDIS_HOST: txchat-redis
     networks:
       - txchat-components
       - txchat-service
     volumes:
       - ${PUSHER_CONFIG_VOLUME}:/etc/txchat-pusher/config
     depends_on:
-      - answer
-  store:
-    image: txchat-store:${STORE_IMAGE}
-    container_name: ${STORE_CONTAINER_NAME}
+      answer:
+        condition: service_started
+  storage:
+    image: txchat-storage:${STORAGE_IMAGE}
+    container_name: ${STORAGE_CONTAINER_NAME}
     environment:
       MYSQL_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_HOST: txchat-mysql
+      ETCD_HOST: txchat-etcd
+      KAFKA_HOST: txchat-kafka
+      REDIS_HOST: txchat-redis
     networks:
       - txchat-components
       - txchat-service
     volumes:
-      - ${STORE_CONFIG_VOLUME}:/etc/txchat-store/config
+      - ${STORAGE_CONFIG_VOLUME}:/etc/txchat-storage/config
     depends_on:
       mysql:
         condition: service_healthy
-      answer:
+      device:
         condition: service_started
       pusher:
+        condition: service_started
+      group:
         condition: service_started
 networks:
   txchat-components:
@@ -136,9 +175,9 @@ networks:
   txchat-service:
     external: true
 volumes:
-  txchat-gateway-config:
+  txchat-center-config:
     external: true
-  txchat-backend-config:
+  txchat-chat-config:
     external: true
   txchat-backup-config:
     external: true
@@ -146,19 +185,19 @@ volumes:
     external: true
   txchat-device-config:
     external: true
-  txchat-discovery-config:
-    external: true
   txchat-generator-config:
     external: true
   txchat-group-config:
     external: true
-  txchat-offline-push-config:
+  txchat-offline-config:
     external: true
   txchat-oss-config:
+    external: true
+  txchat-version-config:
     external: true
   txchat-answer-config:
     external: true
   txchat-pusher-config:
     external: true
-  txchat-store-config:
+  txchat-storage-config:
     external: true

@@ -1,6 +1,28 @@
+AppID: dtalk
 Name: group.rpc
 ListenOn: 127.0.0.1:8080
 Etcd:
   Hosts:
-  - 127.0.0.1:2379
+  - ${ETCD_HOST}:2379
   Key: group.rpc
+MySQL:
+  Host: "${MYSQL_HOST}"
+  Port: 3306
+  User: "root"
+  Pwd: "${MYSQL_PASSWORD}"
+  DB: "dtalk"
+IDGenRPC:
+  Etcd:
+    Hosts:
+      - "${ETCD_HOST}:2379"
+    Key: "generator.rpc"
+    Timeout: 60000 # 60s
+AnswerRPC:
+  Etcd:
+    Hosts:
+      - "${ETCD_HOST}:2379"
+    Key: "answer.rpc"
+    Timeout: 60000 # 60s
+Group:
+  MaxMembers: 2000
+  MaxManagers: 10

@@ -14,7 +14,7 @@ WORKDIR /usr/local/bin
 COPY --from=builder /usr/local/go/lib/time/zoneinfo.zip /
 ENV ZONEINFO=/zoneinfo.zip
 COPY ${server_name} .
-COPY ${server_name}.* /etc/txchat-${server_name}/config/
+COPY ${server_name}-api.* /etc/txchat-${server_name}/config/
 ## we can then kick off our newly compiled
 ## binary exectuable!!
-CMD ["sh", "-c", "./${SERVERNAME} -f /etc/txchat-${SERVERNAME}/config/${SERVERNAME}.yaml"]
+CMD ["sh", "-c", "./${SERVERNAME} -f /etc/txchat-${SERVERNAME}/config/${SERVERNAME}-api.yaml"]

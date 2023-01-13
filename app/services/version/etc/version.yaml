@@ -2,11 +2,11 @@ Name: version.rpc
 ListenOn: 127.0.0.1:17022
 Etcd:
   Hosts:
-    - 127.0.0.1:2379
+    - ${ETCD_HOST}:2379
   Key: version.rpc
 MySQL:
-  Host: "localhost"
+  Host: "${MYSQL_HOST}"
   Port: 3306
   User: "root"
-  Pwd: "123456"
+  Pwd: "${MYSQL_PASSWORD}"
   DB: "dtalk"

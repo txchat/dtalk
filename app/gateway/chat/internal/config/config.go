@@ -1,7 +1,8 @@
 package config
 
 import (
-	xtime "github.com/txchat/dtalk/pkg/time"
+	"time"
+
 	"github.com/zeromicro/go-zero/rest"
 	"github.com/zeromicro/go-zero/zrpc"
 )
@@ -18,5 +19,5 @@ type Config struct {
 }
 
 type Revoke struct {
-	Expire xtime.Duration
+	Expire time.Duration
 }

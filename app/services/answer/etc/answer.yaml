@@ -3,11 +3,11 @@ Name: answer.rpc
 ListenOn: 127.0.0.1:17001
 Etcd:
   Hosts:
-  - 127.0.0.1:2379
+  - ${ETCD_HOST}:2379
   Key: answer.rpc
 RedisDB:
   Network: "tcp"
-  Addr: "127.0.0.1:6379"
+  Addr: "${REDIS_HOST}:6379"
   Auth: ""
   Active: 60000
   Idle: 1024
@@ -18,12 +18,12 @@ RedisDB:
   Expire: "30m"
 Producer:
   Version: ""
-  Brokers: ["127.0.0.1:9092"]
+  Brokers: ["${KAFKA_HOST}:9092"]
 ConsumerConfig:
   Version: ""
-  Brokers: ["127.0.0.1:9092"]
+  Brokers: ["${KAFKA_HOST}:9092"]
   CacheCapacity: 0
-  ConnectTimeout: ""
+  ConnectTimeout: "7s"
 BatchConsumerConf:
   CacheCapacity: 0
   Consumers: 0
@@ -31,13 +31,13 @@ BatchConsumerConf:
 IDGenRPC:
   Etcd:
     Hosts:
-      - "localhost:2379"
-    Key: "version.rpc"
+      - "${ETCD_HOST}:2379"
+    Key: "generator.rpc"
     Timeout: 60000 # 60s
 GroupRPC:
   Etcd:
     Hosts:
-      - "localhost:2379"
+      - "${ETCD_HOST}:2379"
     Key: "group.rpc"
     Timeout: 60000 # 60s
 LogicRPCClient:

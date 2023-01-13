@@ -1,6 +1,6 @@
 package grpc
 
-import xtime "github.com/txchat/dtalk/pkg/time"
+import "time"
 
 type Discovery struct {
 	Address  string
@@ -13,6 +13,6 @@ type RPCClient struct {
 	RegAddrs string
 	Schema   string
 	SrvName  string
-	Dial     xtime.Duration
-	Timeout  xtime.Duration
+	Dial     time.Duration
+	Timeout  time.Duration
 }

@@ -29,6 +29,8 @@ images: build_linux_amd64 ## 打包docker镜像
 	cp script/docker/*Dockerfile ${TARGETDIR}
 	cd ${TARGETDIR} && for i in $(servers) ; do \
 		docker build --build-arg server_name=$$i . -f server.Dockerfile -t txchat-$$i:${projectVersion}; \
+	done && for i in $(gateways) ; do \
+		docker build --build-arg server_name=$$i . -f gateway.Dockerfile -t txchat-$$i:${projectVersion}; \
 	done
 
 init-compose: images ## 使用docker compose启动
@@ -37,7 +39,7 @@ init-compose: images ## 使用docker compose启动
 	cp -R script/nginx/. run_compose/
 	cd run_compose && \
 	./envfill.sh;\
-	./initwork.sh "${servers}" "${projectVersion}"
+	./initwork.sh "${servers} ${gateways}" "${projectVersion}"
 
 docker-compose-up: ## 使用docker compose启动
 	@if [ ! -d "run_compose/" ]; then \

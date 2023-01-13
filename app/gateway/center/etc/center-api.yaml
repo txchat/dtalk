@@ -23,12 +23,38 @@ Auth:
 VersionRPC:
   Etcd:
     Hosts:
-      - "localhost:2379"
+      - "${ETCD_HOST}:2379"
     Key: "version.rpc"
     Timeout: 60000 # 60s
 BackupRPC:
   Etcd:
     Hosts:
-      - "localhost:2379"
+      - "${ETCD_HOST}:2379"
     Key: "backup.rpc"
     Timeout: 60000 # 60s
+SMS:
+  Surl: ""
+  AppKey: ""
+  SecretKey: ""
+  Msg: ""
+  Env: ""
+  CodeTypes:
+    quick: "quick"
+    bind: "bind"
+    export: "import"
+Email:
+  Surl: ""
+  AppKey: ""
+  SecretKey: ""
+  Msg: ""
+  Env: ""
+  CodeTypes:
+    quick: "quick"
+    bind: "bind"
+    export: "import"
+Whitelist:
+  - {
+      Account: "11111111111"
+      Code: "12345"
+      Enable: true
+  }

@@ -27,9 +27,9 @@ const (
 
 type (
 	BatchConsumerConf struct {
-		CacheCapacity int
-		Consumers     int
-		Processors    int
+		CacheCapacity int `json:",optional"`
+		Consumers     int `json:",optional"`
+		Processors    int `json:",optional"`
 	}
 
 	batchConsumerOptions struct {

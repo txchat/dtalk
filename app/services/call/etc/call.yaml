@@ -2,11 +2,11 @@ Name: call.rpc
 ListenOn: 127.0.0.1:17003
 Etcd:
   Hosts:
-  - 127.0.0.1:2379
+  - ${ETCD_HOST}:2379
   Key: call.rpc
 RedisDB:
   Network: "tcp"
-  Addr: "127.0.0.1:6379"
+  Addr: "${REDIS_HOST}:6379"
   Auth: ""
   Active: 60000
   Idle: 1024
@@ -18,13 +18,13 @@ RedisDB:
 IDGenRPC:
   Etcd:
     Hosts:
-      - "localhost:2379"
+      - "${ETCD_HOST}:2379"
     Key: "generator.rpc"
     Timeout: 60000 # 60s
 AnswerRPC:
   Etcd:
     Hosts:
-      - "localhost:2379"
+      - "${ETCD_HOST}:2379"
     Key: "answer.rpc"
     Timeout: 60000 # 60s
 RTC:

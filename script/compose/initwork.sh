@@ -10,6 +10,7 @@ created_network=()
 
 serviceList=$1
 projectVersion=$2
+networks="txchat-componets txchat-service"
 
 # platform adaptation
 HOST_OS=$(uname -s | tr '[:upper:]' '[:lower:]')
@@ -88,6 +89,11 @@ done
 # shellcheck disable=SC2048
 for vname in ${volumes[*]}; do
     volume_create "${vname}"
+done
+
+# shellcheck disable=SC2048
+for name in ${networks[*]}; do
+    network_create "${name}"
 done
 
 initMySQL

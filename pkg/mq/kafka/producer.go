@@ -10,11 +10,11 @@ import (
 )
 
 type ProducerConfig struct {
-	Version string
-	Brokers []string
-	Topic   string
+	Version string   `json:",optional"`
+	Brokers []string `json:",optional"`
+	Topic   string   `json:",optional"`
 
-	realVersion sarama.KafkaVersion
+	realVersion sarama.KafkaVersion `json:"-,optional"`
 }
 
 type Producer struct {

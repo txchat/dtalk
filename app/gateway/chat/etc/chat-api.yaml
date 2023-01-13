@@ -1,3 +1,41 @@
 Name: chat-api
 Host: 0.0.0.0
 Port: 8888
+Revoke:
+  Expire: "86400h" #ten years
+AnswerRPC:
+  Etcd:
+    Hosts:
+      - "${ETCD_HOST}:2379"
+    Key: "answer.rpc"
+    Timeout: 60000 # 60s
+CallRPC:
+  Etcd:
+    Hosts:
+      - "${ETCD_HOST}:2379"
+    Key: "call.rpc"
+    Timeout: 60000 # 60s
+DeviceRPC:
+  Etcd:
+    Hosts:
+      - "${ETCD_HOST}:2379"
+    Key: "device.rpc"
+    Timeout: 60000 # 60s
+GroupRPC:
+  Etcd:
+    Hosts:
+      - "${ETCD_HOST}:2379"
+    Key: "group.rpc"
+    Timeout: 60000 # 60s
+OssRPC:
+  Etcd:
+    Hosts:
+      - "${ETCD_HOST}:2379"
+    Key: "oss.rpc"
+    Timeout: 60000 # 60s
+StorageRPC:
+  Etcd:
+    Hosts:
+      - "${ETCD_HOST}:2379"
+    Key: "storage.rpc"
+    Timeout: 60000 # 60s

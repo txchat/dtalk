@@ -2,5 +2,5 @@ Name: generator.rpc
 ListenOn: 127.0.0.1:17007
 Etcd:
   Hosts:
-  - 127.0.0.1:2379
+  - ${ETCD_HOST}:2379
   Key: generator.rpc

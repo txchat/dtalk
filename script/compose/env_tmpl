@@ -44,21 +44,21 @@ NGINX_LOG_VOLUME=txchat-nginx-log
 
 ## ----------service-----------
 
-## GATEWAY
-# gateway服务镜像
-GATEWAY_IMAGE=v0.0.0
-# gateway容器名称
-GATEWAY_CONTAINER_NAME=txchat-gateway-node1
+## CENTER
+# center服务镜像
+CENTER_IMAGE=v0.0.0
+# center容器名称
+CENTER_CONTAINER_NAME=txchat-center-node1
 # gateway配置卷
-GATEWAY_CONFIG_VOLUME=txchat-gateway-config
+CENTER_CONFIG_VOLUME=txchat-center-config
 
-## BACKEND
-# backend服务镜像
-BACKEND_IMAGE=v0.0.0
-# backend容器名称
-BACKEND_CONTAINER_NAME=txchat-backend-node1
-# backend配置卷
-BACKEND_CONFIG_VOLUME=txchat-backend-config
+## CHAT
+# chat服务镜像
+CHAT_IMAGE=v0.0.0
+# chat容器名称
+CHAT_CONTAINER_NAME=txchat-chat-node1
+# chat配置卷
+CHAT_CONFIG_VOLUME=txchat-chat-config
 
 ## BACKUP
 # backup服务镜像
@@ -84,14 +84,6 @@ DEVICE_CONTAINER_NAME=txchat-device-node1
 # device配置卷
 DEVICE_CONFIG_VOLUME=txchat-device-config
 
-## DISCOVERY
-# discovery服务镜像
-DISCOVERY_IMAGE=v0.0.0
-# discovery容器名称
-DISCOVERY_CONTAINER_NAME=txchat-discovery-node1
-# discovery配置卷
-DISCOVERY_CONFIG_VOLUME=txchat-discovery-config
-
 ## GENERATOR
 # generator服务镜像
 GENERATOR_IMAGE=v0.0.0
@@ -108,13 +100,13 @@ GROUP_CONTAINER_NAME=txchat-group-node1
 # group配置卷
 GROUP_CONFIG_VOLUME=txchat-group-config
 
-## OFFLINE_PUSH
-# offline-push服务镜像
-OFFLINE_PUSH_IMAGE=v0.0.0
-# offline-push容器名称
-OFFLINE_PUSH_CONTAINER_NAME=txchat-offline-push-node1
-# offline-push配置卷
-OFFLINE_PUSH_CONFIG_VOLUME=txchat-offline-push-config
+## OFFLINE
+# offline服务镜像
+OFFLINE_IMAGE=v0.0.0
+# offline容器名称
+OFFLINE_CONTAINER_NAME=txchat-offline-node1
+# offline配置卷
+OFFLINE_CONFIG_VOLUME=txchat-offline-config
 
 ## OSS
 # oss服务镜像
@@ -123,6 +115,14 @@ OSS_IMAGE=v0.0.0
 OSS_CONTAINER_NAME=txchat-oss-node1
 # oss配置卷
 OSS_CONFIG_VOLUME=txchat-oss-config
+
+## VERSION
+# version服务镜像
+VERSION_IMAGE=v0.0.0
+# version容器名称
+VERSION_CONTAINER_NAME=txchat-version-node1
+# version配置卷
+VERSION_CONFIG_VOLUME=txchat-version-config
 
 ## ANSWER
 # answer服务镜像
@@ -140,10 +140,10 @@ PUSHER_CONTAINER_NAME=txchat-pusher-node1
 # pusher配置卷
 PUSHER_CONFIG_VOLUME=txchat-pusher-config
 
-## STORE
-# store服务镜像
-STORE_IMAGE=v0.0.0
-# store容器名称
-STORE_CONTAINER_NAME=txchat-store-node1
-# store配置卷
-STORE_CONFIG_VOLUME=txchat-store-config
+## STORAGE
+# storage服务镜像
+STORAGE_IMAGE=v0.0.0
+# storage容器名称
+STORAGE_CONTAINER_NAME=txchat-storage-node1
+# storage配置卷
+STORAGE_CONFIG_VOLUME=txchat-storage-config

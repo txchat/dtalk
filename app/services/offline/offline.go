@@ -40,7 +40,7 @@ func main() {
 	showVersion(*isShowVersion)
 
 	var c config.Config
-	conf.MustLoad(*configFile, &c)
+	conf.MustLoad(*configFile, &c, conf.UseEnv())
 	ctx := svc.NewServiceContext(c)
 
 	mqSvc := mq.NewService(c, ctx)
@@ -64,7 +64,7 @@ func main() {
 			logx.Info("server exit")
 			return
 		case syscall.SIGHUP:
-			conf.MustLoad(*configFile, &c)
+			conf.MustLoad(*configFile, &c, conf.UseEnv())
 			logx.Info("server hangup")
 		default:
 			return

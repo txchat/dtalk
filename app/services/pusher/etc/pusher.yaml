@@ -3,11 +3,11 @@ Name: pusher.rpc
 ListenOn: 127.0.0.1:8080
 Etcd:
   Hosts:
-  - 127.0.0.1:2379
+  - ${ETCD_HOST}:2379
   Key: pusher.rpc
 RedisDB:
   Network: "tcp"
-  Addr: "127.0.0.1:6379"
+  Addr: "${REDIS_HOST}:6379"
   Auth: ""
   Active: 60000
   Idle: 1024
@@ -19,49 +19,49 @@ RedisDB:
 DeviceRPC:
   Etcd:
     Hosts:
-      - "localhost:2379"
+      - "${ETCD_HOST}:2379"
     Key: "device.rpc"
     Timeout: 60000 # 60s
 AnswerRPC:
   Etcd:
     Hosts:
-      - "localhost:2379"
+      - "${ETCD_HOST}:2379"
     Key: "answer.rpc"
     Timeout: 60000 # 60s
 GroupRPC:
   Etcd:
     Hosts:
-      - "localhost:2379"
+      - "${ETCD_HOST}:2379"
     Key: "group.rpc"
     Timeout: 60000 # 60s
 OffPushEnabled: true
 ProducerStorage:
   Version: ""
-  Brokers: ["127.0.0.1:9092"]
+  Brokers: ["${KAFKA_HOST}:9092"]
 ProducerOffPush:
   Version: ""
-  Brokers: ["127.0.0.1:9092"]
+  Brokers: ["${KAFKA_HOST}:9092"]
 ConnDealConsumerConfig:
   Version: ""
-  Brokers: ["127.0.0.1:9092"]
+  Brokers: ["${KAFKA_HOST}:9092"]
   CacheCapacity: 0
-  ConnectTimeout: ""
+  ConnectTimeout: "7s"
 ConnDealBatchConsumerConf:
   CacheCapacity: 0
   Consumers: 0
   Processors: 0
 PushDealConsumerConfig:
   Version: ""
-  Brokers: ["127.0.0.1:9092"]
+  Brokers: ["${KAFKA_HOST}:9092"]
   CacheCapacity: 0
-  ConnectTimeout: ""
+  ConnectTimeout: "7s"
 PushDealBatchConsumerConf:
   CacheCapacity: 0
   Consumers: 0
   Processors: 0
 
 LogicRPCClient:
-  RegAddrs: "127.0.0.1:2379"
+  RegAddrs: "txchat-logic:2379"
   Schema: "im"
   SrvName: "logic"
   Dial: "1s"
