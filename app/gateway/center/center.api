@@ -1,8 +1,9 @@
 import(
 	"declare/discovery.api"
 	"declare/modules.api"
-	"declare/backend.api"
+	"declare/user.api"
 	"declare/backup.api"
+	"declare/version.api"
 )
 
 info(

@@ -1,11 +1,11 @@
 syntax = "v2"
 
 info(
-    title: "discovery api declare"
-    desc: ""
-    author: "dld"
-    email: "oofpgdld@gmail.com"
-    version: "v1.0.0"
+	title: "discovery api declare"
+	desc: ""
+	author: "dld"
+	email: "oofpgdld@gmail.com"
+	version: "v1.0.0"
 )
 // goctl api format -dir .
 
@@ -13,8 +13,8 @@ type GetNodesReq {
 }
 
 type GetNodesResp {
-	Servers []*ChatNode `json:"servers"`
-	Nodes []*ContractNode `json:"nodes"`
+	Servers []*ChatNode     `json:"servers"`
+	Nodes   []*ContractNode `json:"nodes"`
 }
 
 type ChatNode {
@@ -28,6 +28,7 @@ type ContractNode {
 }
 
 service center-api {
+	@doc "获取默认节点"
 	@handler GetNodes
 	post /disc/nodes (GetNodesReq) returns (GetNodesResp)
 }

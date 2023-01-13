@@ -1,62 +1,38 @@
 syntax = "v2"
 
 info(
-    title: "modules api declare"
-    desc: ""
-    author: "dld"
-    email: "oofpgdld@gmail.com"
-    version: "v1.0.0"
+	title: "modules api declare"
+	desc: ""
+	author: "dld"
+	email: "oofpgdld@gmail.com"
+	version: "v1.0.0"
 )
 // goctl api format -dir .
 
-type GetModuleResp struct {
-	Name      string   `json:"name" enums:"wallet,oa,redpacket"`
+type Module {
+	Name      string   `json:"name,options=wallet|oa|redpacket|live|shop"`
 	IsEnabled bool     `json:"isEnabled"`
 	EndPoints []string `json:"endPoints"`
 }
 
+type GetModuleResp {
+	Name      string   `json:"name,options=wallet|oa|redpacket|live|shop"`
+	IsEnabled bool     `json:"isEnabled"`
+	EndPoints []string `json:"endPoints"`
+}
 
 type GetModulesReq {
 }
 
 type GetModulesResp {
-    Name string        `json:"name" enums:"wallet,oa,redPacket,live,shop"`
-    IsEnabled bool     `json:"isEnabled"`
-	EndPoints []string `json:"endPoints"`
-}
-
-type VersionInfo {
-	Id          int64       `json:"id"`
-	Platform    string      `json:"platform"`
-	Status      int32       `json:"status"`
-	DeviceType  string      `json:"deviceType"`
-	VersionName string      `json:"versionName"`
-	VersionCode int64       `json:"versionCode"`
-	Url         string      `json:"url"`
-	Force       bool        `json:"force"`
-	Description []string    `json:"description"`
-	OpeUser     string      `json:"opeUser"`
-	Md5         string      `json:"md5"`
-	Size        int64       `json:"size"`
-	UpdateTime  int64       `json:"updateTime"`
-	CreateTime  int64       `json:"createTime"`
-}
-
-type VersionCheckReq {
-    VersionCode int64  `json:"versionCode"`
-    DeviceType  string `json:"deviceType,optional"`
-}
-
-type VersionCheckResp {
-    VersionInfo
+    Modules []Module `json:"modules"`
 }
 
 @server(
 	middleware: AppParseHeaderMiddleware
 )
 service center-api {
+	@doc "获取启用模块"
 	@handler GetModules
-	post /app/modules/all (GetModulesReq) returns ([]GetModulesResp)
-    @handler VersionCheck
-    post /app/version/check (VersionCheckReq) returns (VersionCheckResp)
+	post /app/modules/all (GetModulesReq) returns (GetModulesResp)
 }

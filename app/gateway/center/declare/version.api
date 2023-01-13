@@ -1,0 +1,120 @@
+syntax = "v2"
+
+info(
+	title: "version api declare"
+	desc: ""
+	author: "dld"
+	email: "oofpgdld@gmail.com"
+	version: "v1.0.0"
+)
+// goctl api format -dir .
+
+type VersionInfo {
+	Id          int64    `json:"id"`
+	Platform    string   `json:"platform"`
+	Status      int32    `json:"status"`
+	DeviceType  string   `json:"deviceType"`
+	VersionName string   `json:"versionName"`
+	VersionCode int64    `json:"versionCode"`
+	Url         string   `json:"url"`
+	Force       bool     `json:"force"`
+	Description []string `json:"description"`
+	OpeUser     string   `json:"opeUser"`
+	Md5         string   `json:"md5"`
+	Size        int64    `json:"size"`
+	UpdateTime  int64    `json:"updateTime"`
+	CreateTime  int64    `json:"createTime"`
+}
+
+type VersionCheckReq {
+	VersionCode int64  `json:"versionCode"`
+	DeviceType  string `json:"deviceType,optional"`
+}
+
+type VersionCheckResp {
+	VersionInfo
+}
+
+type CreateVersionReq {
+	Platform    string   `json:"platform"`
+	Description []string `json:"description"`
+	Force       bool     `json:"force"`
+	Url         string   `json:"url"`
+	VersionCode int64    `json:"versionCode"`
+	VersionName string   `json:"versionName"`
+	DeviceType  string   `json:"deviceType"`
+	OpeUser     string   `json:"opeUser"`
+	Md5         string   `json:"md5"`
+	Size        int64    `json:"size"`
+}
+
+type CreateVersionResp {
+	Version VersionInfo `json:"version"`
+}
+
+type UpdateVersionReq {
+	Description []string `json:"description"`
+	Force       bool     `json:"force"`
+	Url         string   `json:"url"`
+	VersionCode int64    `json:"versionCode"`
+	VersionName string   `json:"versionName"`
+	Id          int64    `json:"id"`
+	OpeUser     string   `json:"opeUser"`
+	Md5         string   `json:"md5"`
+	Size        int64    `json:"size"`
+}
+
+type UpdateVersionResp {
+	Version VersionInfo `json:"version"`
+}
+
+type ChangeVersionStateReq {
+	Id      int64  `json:"id"`
+	OpeUser string `json:"opeUser,optional"`
+}
+
+type ChangeVersionStateResp {
+}
+
+type ListVersionReq {
+	Page       int64  `form:"page,default=0"`
+	Platform   string `form:"platform,default=%"`
+	DeviceType string `form:"deviceType,default=%"`
+}
+
+type ListVersionResp {
+	TotalElements int64         `json:"totalElements"`
+	TotalPages    int64         `json:"totalPages"`
+	VersionList   []VersionInfo `json:"versionList"`
+}
+
+@server(
+	middleware: AppParseHeaderMiddleware
+)
+service center-api {
+	@doc "检查版本"
+	@handler VersionCheck
+	post /app/version/check (VersionCheckReq) returns (VersionCheckResp)
+}
+
+@server(
+	jwt: Auth
+	group: backend
+)
+service center-api {
+	@doc "创建新版本"
+	@handler CreateVersion
+	post /backend/version/create (CreateVersionReq) returns (CreateVersionResp)
+	
+	@doc "更新版本"
+	@handler UpdateVersion
+	put /backend/version/update (UpdateVersionReq) returns (UpdateVersionResp)
+	
+	@doc "更改版本状态"
+	@handler ChangeVersionState
+	put /backend/version/change-status (ChangeVersionStateReq) returns (ChangeVersionStateResp)
+	
+	@doc "版本列表"
+	@handler ListVersion
+	get /backend/version/list (ListVersionReq) returns (ListVersionResp)
+}

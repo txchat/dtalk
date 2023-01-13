@@ -23,15 +23,16 @@ func NewGetModulesLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetMod
 	}
 }
 
-func (l *GetModulesLogic) GetModules(req *types.GetModulesReq) (resp []types.GetModulesResp, err error) {
+func (l *GetModulesLogic) GetModules(req *types.GetModulesReq) (resp *types.GetModulesResp, err error) {
 	modules := l.svcCtx.Config.Modules
-	resp = make([]types.GetModulesResp, len(modules))
+	modulesResp := make([]types.Module, len(modules))
 	for i, module := range modules {
-		resp[i] = types.GetModulesResp{
+		modulesResp[i] = types.Module{
 			Name:      module.Name,
 			IsEnabled: module.IsEnabled,
 			EndPoints: module.EndPoints,
 		}
 	}
+	resp = &types.GetModulesResp{Modules: modulesResp}
 	return
 }

@@ -1,11 +1,11 @@
 syntax = "v2"
 
 info(
-    title: "user api declare"
-    desc: ""
-    author: "dld"
-    email: "oofpgdld@gmail.com"
-    version: "v1.0.0"
+	title: "user api declare"
+	desc: ""
+	author: "dld"
+	email: "oofpgdld@gmail.com"
+	version: "v1.0.0"
 )
 // goctl api format -dir .
 
@@ -14,14 +14,15 @@ type LoginReq {
 }
 
 type LoginResp {
-    Address string `json:"address"`
+	Address string `json:"address"`
 }
 
 @server(
-    group: user
-    middleware: AppAuthMiddleware
+	group: user
+	middleware: AppAuthMiddleware
 )
 service chat-api {
-    @handler Login
-    post /app/user/login (LoginReq) returns (LoginResp)
+	@doc "用户登录"
+	@handler Login
+	post /app/user/login (LoginReq) returns (LoginResp)
 }

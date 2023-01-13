@@ -1,16 +1,14 @@
 syntax = "v2"
 
 info(
-    title: "oss api declare"
-    desc: ""
-    author: "dld"
-    email: "oofpgdld@gmail.com"
-    version: "v1.0.0"
+	title: "oss api declare"
+	desc: ""
+	author: "dld"
+	email: "oofpgdld@gmail.com"
+	version: "v1.0.0"
 )
 // goctl api format -dir .
 
-
-// Credentials is a nested struct in sts response
 type Credentials {
 	AccessKeySecret string `json:"AccessKeySecret" xml:"AccessKeySecret"`
 	Expiration      string `json:"Expiration" xml:"Expiration"`
@@ -18,7 +16,6 @@ type Credentials {
 	SecurityToken   string `json:"SecurityToken" xml:"SecurityToken"`
 }
 
-// AssumedRoleUser is a nested struct in sts response
 type AssumedRoleUser {
 	AssumedRoleId string `json:"AssumedRoleId" xml:"AssumedRoleId"`
 	Arn           string `json:"Arn" xml:"Arn"`
@@ -28,106 +25,87 @@ type GetTokenReq {
 }
 
 type GetTokenResp {
-    RequestId       string          `json:"RequestId" xml:"RequestId"`
-    Credentials     Credentials     `json:"Credentials" xml:"Credentials"`
-    AssumedRoleUser AssumedRoleUser `json:"AssumedRoleUser" xml:"AssumedRoleUser"`
+	RequestId       string          `json:"RequestId" xml:"RequestId"`
+	Credentials     Credentials     `json:"Credentials" xml:"Credentials"`
+	AssumedRoleUser AssumedRoleUser `json:"AssumedRoleUser" xml:"AssumedRoleUser"`
 }
 
 type GetHWCloudTokenReq {
 }
 
 type GetHWCloudTokenResp {
-    RequestId       string          `json:"RequestId" xml:"RequestId"`
-    Credentials     Credentials     `json:"Credentials" xml:"Credentials"`
-    AssumedRoleUser AssumedRoleUser `json:"AssumedRoleUser" xml:"AssumedRoleUser"`
+	RequestId       string          `json:"RequestId" xml:"RequestId"`
+	Credentials     Credentials     `json:"Credentials" xml:"Credentials"`
+	AssumedRoleUser AssumedRoleUser `json:"AssumedRoleUser" xml:"AssumedRoleUser"`
 }
 
 type OssBase {
-	// 应用 ID
-	AppId string `json:"appId" form:"appId" binding:"required"`
-	// 云服务商, 可不填, 会选择默认服务商, 目前可选huaweiyun,aliyun,minio(不支持临时角色)
-	OssType string `json:"ossType,optional" form:"ossType,optional"`
+	AppId   string `json:"appId" form:"appId"`
+	OssType string `json:"ossType,optional,options=huaweiyun|aliyun|minio" form:"ossType,optional,options=huaweiyun|aliyun|minio"` //云服务商（选填）: 自动选择默认服务商, 或者指定
 }
 
 type Part {
-	// 段数据的MD5值
-	ETag string `json:"ETag" form:"ETag"`
-	// 分段序号, 范围是1~10000
-	PartNumber int32 `json:"partNumber" form:"partNumber"`
+	ETag       string `json:"ETag" form:"ETag"`                                             // 段数据的MD5值
+	PartNumber int32  `json:"partNumber,range=[1:10000]" form:"partNumber,range=[1:10000]"` //分段序号, 范围是1~10000
 }
 
 type UploadReq {
-    OssBase
-
-    // 文件名(包含路径)
-    Key string `json:"key" form:"key" binding:"required"`
+	OssBase
+	Key string `json:"key" form:"key"` // 文件名(包含路径)
 }
 
 type UploadResp {
-    Url string `json:"url"`
-    Uri string `json:"uri"`
+	Url string `json:"url"`
+	Uri string `json:"uri"`
 }
 
 type InitMultiUploadReq {
-    OssBase
-    // 文件名(包含路径)
-    Key string `json:"key" form:"key"`
+	OssBase
+	Key string `json:"key" form:"key"` // 文件名(包含路径)
 }
 
 type InitMultiUploadResp {
-    // 分段上传任务全局唯一标识
-    UploadId string `json:"uploadId"`
-    // 文件名(包含路径)
-    Key string `json:"key"`
+	UploadId string `json:"uploadId"` // 分段上传任务全局唯一标识
+	Key      string `json:"key"`      // 文件名(包含路径)
 }
 
 type UploadPartReq {
-    OssBase
+	OssBase
 
-    // 文件名(包含路径)
-	Key string `json:"key" form:"key"`
-	// 分段上传任务全局唯一标识
-	UploadId string `json:"uploadId" form:"uploadId"`
-	// 分段序号, 范围是1~10000
-	PartNumber int32 `json:"partNumber" form:"partNumber"`
+	Key        string `json:"key" form:"key"`                                               // 文件名(包含路径)
+	UploadId   string `json:"uploadId" form:"uploadId"`                                     // 分段上传任务全局唯一标识
+	PartNumber int32  `json:"partNumber,range=[1:10000]" form:"partNumber,range=[1:10000]"` // 分段序号, 范围是1~10000
 }
 
 type UploadPartResp {
- 	Part
-
- 	// 分段上传任务全局唯一标识
- 	UploadId string `json:"uploadId"`
- 	// 文件名(包含路径)
- 	Key string `json:"key"`
+	Part
+	UploadId string `json:"uploadId"` // 分段上传任务全局唯一标识
+	Key      string `json:"key"`      // 文件名(包含路径)
 }
 
 type CompleteMultiUploadReq {
-    OssBase
-    // 文件名(包含路径)
-    Key string `json:"key" form:"key"`
-    // 分段上传任务全局唯一标识
-    UploadId string `json:"uploadId" form:"uploadId"`
-    Parts []Part `json:"parts"`
+	OssBase
+	Key      string `json:"key" form:"key"`           // 文件名(包含路径)
+	UploadId string `json:"uploadId" form:"uploadId"` // 分段上传任务全局唯一标识
+	Parts    []Part `json:"parts"`
 }
 
 type CompleteMultiUploadResp {
-    Url string `json:"url"`
-    Uri string `json:"uri"`
+	Url string `json:"url"`
+	Uri string `json:"uri"`
 }
 
 type AbortMultiUploadReq {
-    OssBase
-   	// 文件名(包含路径)
-   	Key string `json:"key" form:"key"`
-   	// 分段上传任务全局唯一标识
-   	UploadId string `json:"uploadId" form:"uploadId"`
+	OssBase
+	Key      string `json:"key" form:"key"`           // 文件名(包含路径)
+	UploadId string `json:"uploadId" form:"uploadId"` // 分段上传任务全局唯一标识
 }
 
 type AbortMultiUploadResp {
 }
 
 type GetHostReq {
-    OssBase
+	OssBase
 }
 
 type GetHostResp {
@@ -135,24 +113,39 @@ type GetHostResp {
 }
 
 @server(
-    group: oss
-    middleware: AppAuthMiddleware
+	group: oss
+	middleware: AppAuthMiddleware
 )
 service chat-api {
-    @handler GetToken
-    post /oss/get-token (GetTokenReq) returns (GetTokenResp)
-    @handler GetHWCloudToken
-    post /oss/get-huaweiyun-token (GetHWCloudTokenReq) returns (GetHWCloudTokenResp)
-    @handler Upload
-    post /oss/upload (UploadReq) returns (UploadResp)
-    @handler InitMultiUpload
-    post /oss/init-multipart-upload (InitMultiUploadReq) returns (InitMultiUploadResp)
-    @handler UploadPart
-    post /oss/upload-part (UploadPartReq) returns (UploadPartResp)
-    @handler CompleteMultiUpload
-    post /oss/complete-multipart-upload (CompleteMultiUploadReq) returns (CompleteMultiUploadResp)
-    @handler AbortMultiUpload
-    post /oss/abort-multipart-upload (AbortMultiUploadReq) returns (AbortMultiUploadResp)
-    @handler GetHost
-    post /oss/get-host (GetHostReq) returns (GetHostResp)
+	@doc "获取token"
+	@handler GetToken
+	post /oss/get-token (GetTokenReq) returns (GetTokenResp)
+	
+	@doc "获取华为云token"
+	@handler GetHWCloudToken
+	post /oss/get-huaweiyun-token (GetHWCloudTokenReq) returns (GetHWCloudTokenResp)
+	
+	@doc "上传"
+	@handler Upload
+	post /oss/upload (UploadReq) returns (UploadResp)
+	
+	@doc "初始化分段上传"
+	@handler InitMultiUpload
+	post /oss/init-multipart-upload (InitMultiUploadReq) returns (InitMultiUploadResp)
+	
+	@doc "上传某一段"
+	@handler UploadPart
+	post /oss/upload-part (UploadPartReq) returns (UploadPartResp)
+	
+	@doc "完成分段上传"
+	@handler CompleteMultiUpload
+	post /oss/complete-multipart-upload (CompleteMultiUploadReq) returns (CompleteMultiUploadResp)
+	
+	@doc "终止分段上传"
+	@handler AbortMultiUpload
+	post /oss/abort-multipart-upload (AbortMultiUploadReq) returns (AbortMultiUploadResp)
+	
+	@doc "获取主机地址"
+	@handler GetHost
+	post /oss/get-host (GetHostReq) returns (GetHostResp)
 }

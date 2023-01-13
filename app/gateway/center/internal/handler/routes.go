@@ -31,11 +31,6 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 					Path:    "/app/modules/all",
 					Handler: GetModulesHandler(serverCtx),
 				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/app/version/check",
-					Handler: VersionCheckHandler(serverCtx),
-				},
 			}...,
 		),
 	)
@@ -48,32 +43,6 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Handler: backend.LoginHandler(serverCtx),
 			},
 		},
-	)
-
-	server.AddRoutes(
-		[]rest.Route{
-			{
-				Method:  http.MethodPost,
-				Path:    "/backend/version/create",
-				Handler: backend.CreateVersionHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPut,
-				Path:    "/backend/version/update",
-				Handler: backend.UpdateVersionHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPut,
-				Path:    "/backend/version/change-status",
-				Handler: backend.ChangeVersionStateHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodGet,
-				Path:    "/backend/version/list",
-				Handler: backend.ListVersionHandler(serverCtx),
-			},
-		},
-		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
 	)
 
 	server.AddRoutes(
@@ -147,5 +116,44 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				},
 			}...,
 		),
+	)
+
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.AppParseHeaderMiddleware},
+			[]rest.Route{
+				{
+					Method:  http.MethodPost,
+					Path:    "/app/version/check",
+					Handler: VersionCheckHandler(serverCtx),
+				},
+			}...,
+		),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodPost,
+				Path:    "/backend/version/create",
+				Handler: backend.CreateVersionHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPut,
+				Path:    "/backend/version/update",
+				Handler: backend.UpdateVersionHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPut,
+				Path:    "/backend/version/change-status",
+				Handler: backend.ChangeVersionStateHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/backend/version/list",
+				Handler: backend.ListVersionHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
 	)
 }
