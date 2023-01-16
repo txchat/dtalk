@@ -55,10 +55,6 @@ docker-compose-%: ## 使用docker compose 命令(服务列表：make docker-comp
     cd run_compose && \
     docker compose -f components.compose.yaml -f service.compose.yaml $*
 
-.PHONY: doc
-doc:
-	./script/doc/doc.sh v1
-
 test-init:
 	cp -R script/test/components/. test_compose/
 	cp -R script/mysql/. test_compose/
@@ -83,6 +79,18 @@ test:
 
 clean:
 	rm -rf ${TARGETDIR}
+
+.PHONY: doc swagger
+doc:
+	# ./script/doc/doc.sh v1
+	goctl -v || GO111MODULE=on GOPROXY=https://goproxy.cn/,direct go install github.com/zeromicro/go-zero/tools/goctl@latest \
+&& goctl api doc --dir app/gateway/center --o docs/api/center && goctl api doc --dir app/gateway/chat --o docs/api/chat
+
+swagger:
+	goctl -v || GO111MODULE=on GOPROXY=https://goproxy.cn/,direct go install github.com/zeromicro/go-zero/tools/goctl@latest \
+&& goctl-swagger -v || GO111MODULE=on GOPROXY=https://goproxy.cn/,direct go install github.com/zeromicro/goctl-swagger@latest \
+&& goctl api plugin -plugin goctl-swagger="swagger -filename center.json" -api app/gateway/center/center.api -dir . \
+$$ goctl api plugin -plugin goctl-swagger="swagger -filename chat.json" -api app/gateway/chat/chat.api -dir .
 
 .PHONY: fmt_proto fmt_shell fmt_go
 

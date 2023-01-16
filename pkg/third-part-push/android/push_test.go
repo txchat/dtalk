@@ -3,7 +3,7 @@ package android
 import (
 	"testing"
 
-	"github.com/txchat/dtalk/service/offline-push/pusher"
+	pusher "github.com/txchat/dtalk/pkg/third-part-push"
 )
 
 func Test_androidPusher_SinglePush(t1 *testing.T) {
