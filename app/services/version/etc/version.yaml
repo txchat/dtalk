@@ -1,5 +1,5 @@
 Name: version.rpc
-ListenOn: 127.0.0.1:17022
+ListenOn: 0.0.0.0:17022
 Etcd:
   Hosts:
     - ${ETCD_HOST}:2379

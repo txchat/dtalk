@@ -1,6 +1,6 @@
 AppID: dtalk
 Name: answer.rpc
-ListenOn: 127.0.0.1:17001
+ListenOn: 0.0.0.0:17001
 Etcd:
   Hosts:
   - ${ETCD_HOST}:2379

@@ -1,5 +1,5 @@
 Name: call.rpc
-ListenOn: 127.0.0.1:17003
+ListenOn: 0.0.0.0:17003
 Etcd:
   Hosts:
   - ${ETCD_HOST}:2379

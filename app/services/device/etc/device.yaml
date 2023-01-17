@@ -1,5 +1,5 @@
 Name: device.rpc
-ListenOn: 127.0.0.1:17004
+ListenOn: 0.0.0.0:17004
 Etcd:
   Hosts:
     - ${ETCD_HOST}:2379

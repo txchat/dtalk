@@ -1,5 +1,5 @@
 Name: offline.rpc
-ListenOn: 127.0.0.1:8080
+ListenOn: 0.0.0.0:8080
 AppID: "dtalk"
 Etcd:
   Hosts:

@@ -1,5 +1,5 @@
 Name: backup.rpc
-ListenOn: 127.0.0.1:17002
+ListenOn: 0.0.0.0:17002
 Etcd:
   Hosts:
   - ${ETCD_HOST}:2379

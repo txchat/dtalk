@@ -1,5 +1,5 @@
 Name: generator.rpc
-ListenOn: 127.0.0.1:17007
+ListenOn: 0.0.0.0:17007
 Etcd:
   Hosts:
   - ${ETCD_HOST}:2379
