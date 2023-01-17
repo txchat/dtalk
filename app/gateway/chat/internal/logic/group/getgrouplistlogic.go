@@ -54,7 +54,7 @@ func (l *GetGroupListLogic) GetGroupList(req *types.GetGroupListReq) (resp *type
 		}
 		groupInfo := gInfoResp.GetGroup()
 		if groupInfo == nil {
-			return nil, xerror.ErrGroupPersonNotExist
+			return nil, xerror.ErrGroupNotExist
 		}
 
 		var owner, person *types.GroupMember

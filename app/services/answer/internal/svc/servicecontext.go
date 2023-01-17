@@ -2,7 +2,6 @@ package svc
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/txchat/dtalk/app/services/group/groupclient"
 
@@ -70,7 +69,7 @@ func newLogicClient(cfg config.Config) logic.LogicClient {
 	addr := fmt.Sprintf("%s:///%s", cfg.LogicRPCClient.Schema, cfg.LogicRPCClient.SrvName) // "schema://[authority]/service"
 	fmt.Println("logic rpc client call addr:", addr)
 
-	conn, err := grpc.NewGRPCConn(addr, time.Duration(cfg.LogicRPCClient.Dial))
+	conn, err := grpc.NewGRPCConn(addr, cfg.LogicRPCClient.Dial)
 	if err != nil {
 		panic(err)
 	}

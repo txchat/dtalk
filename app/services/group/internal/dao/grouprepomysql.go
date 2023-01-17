@@ -157,7 +157,7 @@ func (repo *GroupRepositoryMysql) GetGroupById(gid int64) (*model.GroupInfo, err
 		return nil, err
 	}
 	if len(records) < 1 {
-		return nil, xerror.ErrNotFound
+		return nil, xerror.ErrGroupNotExist
 	}
 	record := records[0]
 	return model.ConvertGroupInfo(record), nil
@@ -169,7 +169,7 @@ func (repo *GroupRepositoryMysql) GetGroupByMarkId(markId string) (*model.GroupI
 		return nil, err
 	}
 	if len(records) < 1 {
-		return nil, xerror.ErrNotFound
+		return nil, xerror.ErrGroupNotExist
 	}
 	record := records[0]
 	return model.ConvertGroupInfo(record), nil

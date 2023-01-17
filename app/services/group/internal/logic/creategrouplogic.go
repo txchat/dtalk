@@ -68,6 +68,8 @@ func (l *CreateGroupLogic) CreateGroup(in *group.CreateGroupReq) (*group.CreateG
 		GroupIntroduce:  "",
 		GroupStatus:     model.GroupStatusServing,
 		GroupOwnerId:    g.Owner(),
+		GroupCreateTime: g.CreateTime(),
+		GroupUpdateTime: g.CreateTime(),
 		GroupJoinType:   int32(g.JoinPermission()),
 		GroupMuteType:   int32(g.MutePermission()),
 		GroupFriendType: int32(g.FriendshipPermission()),

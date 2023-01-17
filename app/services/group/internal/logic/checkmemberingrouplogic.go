@@ -36,7 +36,7 @@ func (l *CheckMemberInGroupLogic) CheckMemberInGroup(in *group.CheckMemberInGrou
 	}
 
 	if xgroup.RoleType(member.GroupMemberType) == xgroup.Out {
-		return &group.CheckMemberInGroupResp{Ok: false}, xerror.ErrGroupMemberNotExist
+		return &group.CheckMemberInGroupResp{Ok: false}, nil
 	}
 	return &group.CheckMemberInGroupResp{
 		Ok: true,

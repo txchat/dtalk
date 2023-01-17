@@ -110,5 +110,6 @@ func (l *GetGroupPubInfoLogic) GetGroupPubInfo(req *types.GetGroupPubInfoReq) (r
 			GroupType:  int32(groupInfo.GetType()),
 		},
 	}
+	err = nil
 	return
 }

@@ -31,11 +31,21 @@ func (e *Error) Code() int64 {
 	return e.code
 }
 
+func (e *Error) Msg() string {
+	return e.msg
+}
+
 func (e *Error) Data() interface{} {
+	if _, ok := e.data.(error); ok {
+		return e.Error()
+	}
 	return e.data
 }
 
 func (e *Error) Error() string {
+	if err, ok := e.data.(error); ok {
+		return fmt.Sprintf("%s with child err: %s", e.msg, err.Error())
+	}
 	return e.msg
 }
 

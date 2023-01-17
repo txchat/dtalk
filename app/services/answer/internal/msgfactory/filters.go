@@ -34,7 +34,7 @@ func (fs *Filters) GetFilters() map[imparse.FrameType][]imparse.Filter {
 						if err != nil {
 							return err
 						}
-						return xerror.ErrGroupMemberNotExist
+						return xerror.ErrPermissionDenied
 					}
 				}
 				return nil

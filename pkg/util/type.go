@@ -136,7 +136,7 @@ func ToInt64(src interface{}) (int64, error) {
 		return 0, nil
 	case string:
 		if v == "" {
-			return 0, ErrEmptyValue
+			return 0, nil
 		}
 		tmp, err := strconv.ParseInt(v, 10, 64)
 		if err != nil {
@@ -244,7 +244,7 @@ func ToUint64(src interface{}) (uint64, error) {
 		return 0, nil
 	case string:
 		if v == "" {
-			return 0, ErrEmptyValue
+			return 0, nil
 		}
 		tmp, err := strconv.ParseUint(v, 10, 64)
 		if err != nil {
@@ -303,7 +303,7 @@ func ToFloat64(src interface{}) (float64, error) {
 		return 0, nil
 	case string:
 		if v == "" {
-			return 0, ErrEmptyValue
+			return 0, nil
 		}
 		return strconv.ParseFloat(v, 64)
 	case json.Number:

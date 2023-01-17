@@ -61,7 +61,7 @@ PushDealBatchConsumerConf:
   Processors: 0
 
 LogicRPCClient:
-  RegAddrs: "txchat-logic:2379"
+  RegAddrs: "${ETCD_HOST}:2379"
   Schema: "im"
   SrvName: "logic"
   Dial: "1s"

@@ -123,33 +123,33 @@ type LoginResp struct {
 }
 
 type GroupInfo struct {
-	Id         int64        `json:"id" form:"id"`
+	Id         int64        `json:"id"`
 	IdStr      string       `json:"idStr"`
-	MarkId     string       `json:"markId" form:"markId"`
-	Name       string       `json:"name" form:"name"` //群成员可见的群名称（加密）
-	PublicName string       `json:"publicName"`       //对外公开群名称
-	Avatar     string       `json:"avatar" form:"avatar"`
-	Introduce  string       `json:"introduce" form:"introduce"`
-	Owner      *GroupMember `json:"owner" form:"owner"`
-	Person     *GroupMember `json:"person" form:"person"` //个人群内的信息
-	MemberNum  int32        `json:"memberNum" form:"memberNum"`
-	Maximum    int32        `json:"maximum" form:"maximum"`
-	Status     int32        `json:"status,options=0|1|2" form:"status"` //群状态:0->正常, 1->封禁, 2->解散
-	CreateTime int64        `json:"createTime" form:"createTime"`
-	JoinType   int32        `json:"joinType,options=0|1|2" form:"joinType"` //加群方式:0->无需审批, 1->仅群主和管理员邀请加群, 2->普通成员邀请需审批
-	MuteType   int32        `json:"muteType" form:"muteType"`               //0->全员可发言, 1->全员禁言(除群主和管理员)
-	FriendType int32        `json:"friendType"`                             //0->群内可加好友, 1->群内禁止加好友
-	MuteNum    int32        `json:"muteNum"`                                //禁言人数
-	AdminNum   int32        `json:"adminNum"`                               //管理员人数
+	MarkId     string       `json:"markId"`
+	Name       string       `json:"name"`       //群成员可见的群名称（加密）
+	PublicName string       `json:"publicName"` //对外公开群名称
+	Avatar     string       `json:"avatar"`
+	Introduce  string       `json:"introduce"`
+	Owner      *GroupMember `json:"owner"`
+	Person     *GroupMember `json:"person"` //个人群内的信息
+	MemberNum  int32        `json:"memberNum"`
+	Maximum    int32        `json:"maximum"`
+	Status     int32        `json:"status,options=0|1|2"` //群状态:0->正常, 1->封禁, 2->解散
+	CreateTime int64        `json:"createTime"`
+	JoinType   int32        `json:"joinType,options=0|1|2"` //加群方式:0->无需审批, 1->仅群主和管理员邀请加群, 2->普通成员邀请需审批
+	MuteType   int32        `json:"muteType"`               //0->全员可发言, 1->全员禁言(除群主和管理员)
+	FriendType int32        `json:"friendType"`             //0->群内可加好友, 1->群内禁止加好友
+	MuteNum    int32        `json:"muteNum"`                //禁言人数
+	AdminNum   int32        `json:"adminNum"`               //管理员人数
 	AESKey     string       `json:"key"`
 	GroupType  int32        `json:"groupType"` //群类型：0->普通群, 1->企业群, 2->部门群
 }
 
 type GroupMember struct {
-	MemberId       string `json:"memberId" form:"memberId"`
-	MemberName     string `json:"memberName" form:"memberName"`
-	MemberType     int32  `json:"memberType" form:"memberType"` //用户角色:0->群员, 1->管理员, 2->群主, 10->退群
-	MemberMuteTime int64  `json:"memberMuteTime"`               // 禁言截止时间: 9223372036854775807->永久禁言
+	MemberId       string `json:"memberId"`
+	MemberName     string `json:"memberName"`
+	MemberType     int32  `json:"memberType"`     //用户角色:0->群员, 1->管理员, 2->群主, 10->退群
+	MemberMuteTime int64  `json:"memberMuteTime"` // 禁言截止时间: 9223372036854775807->永久禁言
 }
 
 type ChangeOwnerReq struct {
@@ -162,15 +162,15 @@ type ChangeOwnerResp struct {
 }
 
 type CreateGroupReq struct {
-	Name      string   `json:"name" form:"name"`
-	Avatar    string   `json:"avatar" form:"avatar"`
-	Introduce string   `json:"introduce" form:"introduce"`
-	MemberIds []string `json:"memberIds" form:"memberIds"`
+	Name      string   `json:"name"`
+	Avatar    string   `json:"avatar,optional"`
+	Introduce string   `json:"introduce,optional"`
+	MemberIds []string `json:"memberIds,optional"`
 }
 
 type CreateGroupResp struct {
 	GroupInfo
-	Members []*GroupMember `json:"members" form:"members"`
+	Members []*GroupMember `json:"members"`
 }
 
 type GetGroupInfoReq struct {
@@ -180,7 +180,7 @@ type GetGroupInfoReq struct {
 
 type GetGroupInfoResp struct {
 	GroupInfo
-	Members []*GroupMember `json:"members" form:"members"`
+	Members []*GroupMember `json:"members"`
 }
 
 type GetGroupListReq struct {
@@ -252,20 +252,20 @@ type GroupRemoveReq struct {
 }
 
 type GroupRemoveResp struct {
-	MemberNum int32    `json:"memberNum" form:"memberNum"`
+	MemberNum int32    `json:"memberNum"`
 	MemberIds []string `json:"memberIds"`
 }
 
 type InviteGroupMembersReq struct {
 	Id           int64    `json:"id,optional"`
 	IdStr        string   `json:"idStr,optional"` // 群 ID, 如果同时填了 idStr, 则优先选择 idStr
-	NewMemberIds []string `json:"newMemberIds" form:"newMemberIds"`
+	NewMemberIds []string `json:"newMemberIds"`
 }
 
 type InviteGroupMembersResp struct {
-	Id        int64  `json:"id,optional" form:"id,optional" example:"123821199217135616"`
+	Id        int64  `json:"id,optional" example:"123821199217135616"`
 	IdStr     string `json:"idStr,optional"` // 群 ID, 如果同时填了 idStr, 则优先选择 idStr
-	MemberNum int32  `json:"memberNum" form:"memberNum" example:"5"`
+	MemberNum int32  `json:"memberNum" example:"5"`
 }
 
 type JoinGroupReq struct {
@@ -394,18 +394,18 @@ type GetHWCloudTokenResp struct {
 }
 
 type OssBase struct {
-	AppId   string `json:"appId" form:"appId"`
-	OssType string `json:"ossType,optional,options=huaweiyun|aliyun|minio" form:"ossType,optional,options=huaweiyun|aliyun|minio"` //云服务商（选填）: 自动选择默认服务商, 或者指定
+	AppId   string `json:"appId"`
+	OssType string `json:"ossType,optional,options=huaweiyun|aliyun|minio"` //云服务商（选填）: 自动选择默认服务商, 或者指定
 }
 
 type Part struct {
-	ETag       string `json:"ETag" form:"ETag"`                                             // 段数据的MD5值
-	PartNumber int32  `json:"partNumber,range=[1:10000]" form:"partNumber,range=[1:10000]"` //分段序号, 范围是1~10000
+	ETag       string `json:"ETag"`                       // 段数据的MD5值
+	PartNumber int32  `json:"partNumber,range=[1:10000]"` //分段序号, 范围是1~10000
 }
 
 type UploadReq struct {
 	OssBase
-	Key string `json:"key" form:"key"` // 文件名(包含路径)
+	Key string `json:"key"` // 文件名(包含路径)
 }
 
 type UploadResp struct {
@@ -415,7 +415,7 @@ type UploadResp struct {
 
 type InitMultiUploadReq struct {
 	OssBase
-	Key string `json:"key" form:"key"` // 文件名(包含路径)
+	Key string `json:"key"` // 文件名(包含路径)
 }
 
 type InitMultiUploadResp struct {
@@ -425,9 +425,9 @@ type InitMultiUploadResp struct {
 
 type UploadPartReq struct {
 	OssBase
-	Key        string `json:"key" form:"key"`                                               // 文件名(包含路径)
-	UploadId   string `json:"uploadId" form:"uploadId"`                                     // 分段上传任务全局唯一标识
-	PartNumber int32  `json:"partNumber,range=[1:10000]" form:"partNumber,range=[1:10000]"` // 分段序号, 范围是1~10000
+	Key        string `json:"key"`                        // 文件名(包含路径)
+	UploadId   string `json:"uploadId"`                   // 分段上传任务全局唯一标识
+	PartNumber int32  `json:"partNumber,range=[1:10000]"` // 分段序号, 范围是1~10000
 }
 
 type UploadPartResp struct {
@@ -438,8 +438,8 @@ type UploadPartResp struct {
 
 type CompleteMultiUploadReq struct {
 	OssBase
-	Key      string `json:"key" form:"key"`           // 文件名(包含路径)
-	UploadId string `json:"uploadId" form:"uploadId"` // 分段上传任务全局唯一标识
+	Key      string `json:"key"`      // 文件名(包含路径)
+	UploadId string `json:"uploadId"` // 分段上传任务全局唯一标识
 	Parts    []Part `json:"parts"`
 }
 
@@ -450,8 +450,8 @@ type CompleteMultiUploadResp struct {
 
 type AbortMultiUploadReq struct {
 	OssBase
-	Key      string `json:"key" form:"key"`           // 文件名(包含路径)
-	UploadId string `json:"uploadId" form:"uploadId"` // 分段上传任务全局唯一标识
+	Key      string `json:"key"`      // 文件名(包含路径)
+	UploadId string `json:"uploadId"` // 分段上传任务全局唯一标识
 }
 
 type AbortMultiUploadResp struct {

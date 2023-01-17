@@ -5,12 +5,11 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/txchat/dtalk/app/services/group/internal/model"
-
 	"github.com/txchat/dtalk/app/services/answer/answerclient"
 	"github.com/txchat/dtalk/app/services/generator/generatorclient"
 	"github.com/txchat/dtalk/app/services/group/internal/config"
 	"github.com/txchat/dtalk/app/services/group/internal/dao"
+	"github.com/txchat/dtalk/app/services/group/internal/model"
 	"github.com/txchat/dtalk/internal/group"
 	"github.com/txchat/dtalk/internal/notice"
 	txchatNoticeApi "github.com/txchat/dtalk/internal/notice/txchat"
@@ -18,9 +17,12 @@ import (
 	txchatSignalApi "github.com/txchat/dtalk/internal/signal/txchat"
 	xerror "github.com/txchat/dtalk/pkg/error"
 	"github.com/txchat/dtalk/pkg/mysql"
+	"github.com/txchat/dtalk/pkg/naming"
+	"github.com/txchat/dtalk/pkg/net/grpc"
 	"github.com/txchat/dtalk/pkg/util"
 	logic "github.com/txchat/im/api/logic/grpc"
 	"github.com/zeromicro/go-zero/zrpc"
+	"google.golang.org/grpc/resolver"
 )
 
 type ServiceContext struct {
@@ -49,7 +51,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor), zrpc.WithNonBlock())),
 		SignalHub:   txchatSignalApi.NewSignalHub(answerClient),
 		NoticeHub:   txchatNoticeApi.NewNoticeHub(answerClient),
-		logicClient: nil,
+		logicClient: newLogicClient(c),
 	}
 }
 
@@ -104,4 +106,18 @@ func (s *ServiceContext) UnRegisterGroupMembers(ctx context.Context, gid int64, 
 		return err
 	}
 	return nil
+}
+
+func newLogicClient(cfg config.Config) logic.LogicClient {
+	rb := naming.NewResolver(cfg.LogicRPCClient.RegAddrs, cfg.LogicRPCClient.Schema)
+	resolver.Register(rb)
+
+	addr := fmt.Sprintf("%s:///%s", cfg.LogicRPCClient.Schema, cfg.LogicRPCClient.SrvName) // "schema://[authority]/service"
+	fmt.Println("logic rpc client call addr:", addr)
+
+	conn, err := grpc.NewGRPCConn(addr, cfg.LogicRPCClient.Dial)
+	if err != nil {
+		panic(err)
+	}
+	return logic.NewLogicClient(conn)
 }

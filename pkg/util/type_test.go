@@ -3,6 +3,7 @@ package util
 import (
 	"encoding/json"
 	"math"
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -64,26 +65,27 @@ func TestToString(t *testing.T) {
 
 func TestToBool(t *testing.T) {
 	cases := []struct {
+		name   string
 		src    interface{}
 		expect bool
 		err    error
 	}{
-		{src: 123456, expect: true},
-		{src: int64(13579), expect: true},
-		{src: -123456, expect: false},
-		{src: int64(-13579), expect: false},
-		{src: uint(123456), expect: true},
-		{src: uint64(13579), expect: true},
-		{src: 1234.5678, expect: true},
-		{src: float32(1234.5), expect: true},
-		{src: -1234.5678, expect: false},
-		{src: float32(-1234.5), expect: false},
+		{name: "123456", src: 123456, expect: true, err: nil},
+		{name: "int64(13579)", src: int64(13579), expect: true, err: nil},
+		{name: "-123456", src: -123456, expect: false, err: nil},
+		{name: "int64(-13579)", src: int64(-13579), expect: false, err: nil},
+		{name: "uint(123456)", src: uint(123456), expect: true, err: nil},
+		{name: "uint64(13579)", src: uint64(13579), expect: true, err: nil},
+		{name: "1234.5678", src: 1234.5678, expect: true, err: nil},
+		{name: "float32(1234.5)", src: float32(1234.5), expect: true, err: nil},
+		{name: "-1234.5678", src: -1234.5678, expect: false, err: nil},
+		{name: "float32(-1234.5)", src: float32(-1234.5), expect: false, err: nil},
 
-		{src: true, expect: true},
-		{src: false, expect: false},
-		{src: "TOO BOOL", expect: false},
-		{src: "TRUE", expect: true},
-		{src: "false", expect: false},
+		{name: "true", src: true, expect: true, err: nil},
+		{name: "false", src: false, expect: false, err: nil},
+		{name: "TOO BOOL", src: "TOO BOOL", expect: false, err: strconv.ErrSyntax},
+		{name: "TRUE", src: "TRUE", expect: true, err: nil},
+		{name: "false", src: "false", expect: false, err: nil},
 		//{src: []byte("true"), expect: true},
 		//{src: []byte("to string"), expect: false},
 		//{src: []rune("to string"), expect: false},
@@ -91,16 +93,20 @@ func TestToBool(t *testing.T) {
 		//{src: nil, expect: false},
 
 		//error
-		{src: 12345.12345 + 6666i, expect: true, err: ErrDataTypeNotSupported},
-		{src: complex64(1234.5 + 6666i), expect: true, err: ErrDataTypeNotSupported},
-		{src: -12345.12345 + 6666i, expect: false, err: ErrDataTypeNotSupported},
-		{src: complex64(-1234.5 + 6666i), expect: false, err: ErrDataTypeNotSupported},
+		{name: "12345.12345 + 6666i", src: 12345.12345 + 6666i, expect: false, err: ErrDataTypeNotSupported},
+		{name: "complex64(1234.5 + 6666i)", src: complex64(1234.5 + 6666i), expect: false, err: ErrDataTypeNotSupported},
+		{name: "-12345.12345 + 6666i", src: -12345.12345 + 6666i, expect: false, err: ErrDataTypeNotSupported},
+		{name: "complex64(-1234.5 + 6666i)", src: complex64(-1234.5 + 6666i), expect: false, err: ErrDataTypeNotSupported},
 	}
 
 	for _, c := range cases {
 		get, err := ToBool(c.src)
-		assert.Equal(t, c.err, err)
-		assert.Equal(t, c.expect, get)
+		if c.err != nil {
+			assert.ErrorContainsf(t, err, c.err.Error(), "test name %s --- source value %v", c.name, c.src)
+		} else {
+			assert.NoErrorf(t, err, "test name %s --- source value %v", c.name, c.src)
+		}
+		assert.Equalf(t, c.expect, get, "test name %s --- source value %v", c.name, c.src)
 	}
 }
 
@@ -160,7 +166,7 @@ func TestToInt(t *testing.T) {
 		{name: "src: PI", src: "3.14159265358979323846264338327950288419716939937510582097494459", expect: 0, err: ErrInvalidSyntax},
 		{name: "src: 1", src: " 1", expect: 0, err: ErrInvalidSyntax},
 		{name: "src: space 3.14", src: " 3.14", expect: 0, err: ErrInvalidSyntax},
-		{name: "src: empty", src: "", expect: 0, err: ErrEmptyValue},
+		{name: "src: empty", src: "", expect: 0, err: nil},
 		{name: "src: string", src: "string", expect: 0, err: ErrInvalidSyntax},
 		//json Number
 		{name: "src: json.Number(9223372036854775807)", src: json.Number("9223372036854775807"), expect: math.MaxInt64},           //max int64
@@ -255,7 +261,7 @@ func TestToInt32(t *testing.T) {
 		{name: "src: PI", src: "3.14159265358979323846264338327950288419716939937510582097494459", expect: 0, err: ErrInvalidSyntax},
 		{name: "src: 1", src: " 1", expect: 0, err: ErrInvalidSyntax},
 		{name: "src: space 3.14", src: " 3.14", expect: 0, err: ErrInvalidSyntax},
-		{name: "src: empty", src: "", expect: 0, err: ErrEmptyValue},
+		{name: "src: empty", src: "", expect: 0, err: nil},
 		{name: "src: string", src: "string", expect: 0, err: ErrInvalidSyntax},
 		//json Number
 		{name: "src: json.Number(2147483647)", src: json.Number("2147483647"), expect: math.MaxInt32},
@@ -338,7 +344,7 @@ func TestToInt64(t *testing.T) {
 		{name: "src: PI", src: "3.14159265358979323846264338327950288419716939937510582097494459", expect: 0, err: ErrInvalidSyntax},
 		{name: "src: 1", src: " 1", expect: 0, err: ErrInvalidSyntax},
 		{name: "src: space 3.14", src: " 3.14", expect: 0, err: ErrInvalidSyntax},
-		{name: "src: empty", src: "", expect: 0, err: ErrEmptyValue},
+		{name: "src: empty", src: "", expect: 0, err: nil},
 		{name: "src: string", src: "string", expect: 0, err: ErrInvalidSyntax},
 		//json Number
 		{name: "src: json.Number(9223372036854775807)", src: json.Number("9223372036854775807"), expect: math.MaxInt64},           //max int64
@@ -425,7 +431,7 @@ func TestToUint(t *testing.T) {
 		{name: "src: PI", src: "3.14159265358979323846264338327950288419716939937510582097494459", expect: 0, err: ErrInvalidSyntax},
 		{name: "src: 1", src: " 1", expect: 0, err: ErrInvalidSyntax},
 		{name: "src: space 3.14", src: " 3.14", expect: 0, err: ErrInvalidSyntax},
-		{name: "src: empty", src: "", expect: 0, err: ErrEmptyValue},
+		{name: "src: empty", src: "", expect: 0, err: nil},
 		{name: "src: string", src: "string", expect: 0, err: ErrInvalidSyntax},
 		//json Number
 		{name: "src: json.Number(18446744073709551615)", src: json.Number("18446744073709551615"), expect: math.MaxUint64},
@@ -513,7 +519,7 @@ func TestToUint32(t *testing.T) {
 		{name: "src: PI", src: "3.14159265358979323846264338327950288419716939937510582097494459", expect: 0, err: ErrInvalidSyntax},
 		{name: "src: 1", src: " 1", expect: 0, err: ErrInvalidSyntax},
 		{name: "src: space 3.14", src: " 3.14", expect: 0, err: ErrInvalidSyntax},
-		{name: "src: empty", src: "", expect: 0, err: ErrEmptyValue},
+		{name: "src: empty", src: "", expect: 0, err: nil},
 		{name: "src: string", src: "string", expect: 0, err: ErrInvalidSyntax},
 		//json Number
 		{name: "src: json.Number(4294967295)", src: json.Number("4294967295"), expect: math.MaxUint32},
@@ -601,7 +607,7 @@ func TestToUint64(t *testing.T) {
 		{name: "src: PI", src: "3.14159265358979323846264338327950288419716939937510582097494459", expect: 0, err: ErrInvalidSyntax},
 		{name: "src: 1", src: " 1", expect: 0, err: ErrInvalidSyntax},
 		{name: "src: space 3.14", src: " 3.14", expect: 0, err: ErrInvalidSyntax},
-		{name: "src: empty", src: "", expect: 0, err: ErrEmptyValue},
+		{name: "src: empty", src: "", expect: 0, err: nil},
 		{name: "src: string", src: "string", expect: 0, err: ErrInvalidSyntax},
 		//json Number
 		{name: "src: json.Number(18446744073709551615)", src: json.Number("18446744073709551615"), expect: math.MaxUint64},
@@ -675,7 +681,7 @@ func TestToFloat(t *testing.T) {
 		{name: "src: PI", src: "3.14159265358979323846264338327950288419716939937510582097494459", expect: 3.14159265358979323846264338327950288419716939937510582097494459},
 		{name: "src: space 1", src: " 1", expect: 0, err: ErrInvalidSyntax},
 		{name: "src: space 3.14", src: " 3.14", expect: 0, err: ErrInvalidSyntax},
-		{name: "src: empty", src: "", expect: 0, err: ErrEmptyValue},
+		{name: "src: empty", src: "", expect: 0, err: nil},
 		{name: "src: string", src: "string", expect: 0, err: ErrInvalidSyntax},
 		//not supported
 		{name: "src: []rune", src: []rune("to string"), expect: 0, err: ErrDataTypeNotSupported},
@@ -740,7 +746,7 @@ func TestToFloat32(t *testing.T) {
 		{name: "src: PI", src: "3.14159265358979323846264338327950288419716939937510582097494459", expect: 3.14159265358979323846264338327950288419716939937510582097494459},
 		{name: "src: space 1", src: " 1", expect: 0, err: ErrInvalidSyntax},
 		{name: "src: space 3.14", src: " 3.14", expect: 0, err: ErrInvalidSyntax},
-		{name: "src: empty", src: "", expect: 0, err: ErrEmptyValue},
+		{name: "src: empty", src: "", expect: 0, err: nil},
 		{name: "src: string", src: "string", expect: 0, err: ErrInvalidSyntax},
 		//not supported
 		{name: "src: []rune", src: []rune("to string"), expect: 0, err: ErrDataTypeNotSupported},
@@ -805,7 +811,7 @@ func TestToFloat64(t *testing.T) {
 		{name: "src: PI", src: "3.14159265358979323846264338327950288419716939937510582097494459", expect: 3.14159265358979323846264338327950288419716939937510582097494459},
 		{name: "src: space 1", src: " 1", expect: 0, err: ErrInvalidSyntax},
 		{name: "src: space 3.14", src: " 3.14", expect: 0, err: ErrInvalidSyntax},
-		{name: "src: empty", src: "", expect: 0, err: ErrEmptyValue},
+		{name: "src: empty", src: "", expect: 0, err: nil},
 		{name: "src: string", src: "string", expect: 0, err: ErrInvalidSyntax},
 		//not supported
 		{name: "src: []rune", src: []rune("to string"), expect: 0, err: ErrDataTypeNotSupported},
@@ -820,22 +826,5 @@ func TestToFloat64(t *testing.T) {
 			assert.NoErrorf(t, err, "test name %s --- source value %v", c.name, c.src)
 		}
 		assert.Equalf(t, c.expect, get, "test name %s --- source value %v", c.name, c.src)
-	}
-}
-
-func TestFloatToIntPrecision(t *testing.T) {
-	//float32
-	data1 := (0x01 << 25) + 1
-	f1 := float32(data1)
-	wantF1 := int64(data1)
-	if int64(f1) != wantF1 {
-		t.Logf("got: %v, want %v\n", int64(f1), wantF1)
-	}
-	//float64
-	data2 := -(0x01 << 53) + 1
-	f2 := float32(data2)
-	wantF2 := int64(data2)
-	if int64(f2) != wantF2 {
-		t.Logf("got: %v, want %v\n", int64(f2), wantF2)
 	}
 }

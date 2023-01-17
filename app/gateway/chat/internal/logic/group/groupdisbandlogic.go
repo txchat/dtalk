@@ -48,6 +48,9 @@ func (l *GroupDisbandLogic) GroupDisband(req *types.GroupDisbandReq) (resp *type
 		Uid: uid,
 	})
 	if err != nil {
+		if err == xerror.ErrGroupMemberNotExist {
+			err = xerror.ErrPermissionDenied
+		}
 		return nil, err
 	}
 	operator := operatorResp.GetMember()

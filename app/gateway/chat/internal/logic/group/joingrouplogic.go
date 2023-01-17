@@ -55,10 +55,16 @@ func (l *JoinGroupLogic) JoinGroup(req *types.JoinGroupReq) (resp *types.JoinGro
 		Uid: req.InviterId,
 	})
 	if err != nil {
+		if err == xerror.ErrGroupMemberNotExist {
+			err = xerror.ErrPersonOutOfGroup
+		}
 		return nil, err
 	}
 
 	inviter := mInfo.GetMember()
+	if inviter.GetRole() == group.RoleType_Out {
+		return nil, xerror.ErrPersonOutOfGroup
+	}
 
 	switch gInfo.GetGroup().GetJoinType() {
 	case group.GroupJoinType_AnybodyCanJoinGroup:

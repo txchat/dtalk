@@ -23,6 +23,12 @@ AnswerRPC:
       - "${ETCD_HOST}:2379"
     Key: "answer.rpc"
     Timeout: 60000 # 60s
+LogicRPCClient:
+  RegAddrs: "${ETCD_HOST}:2379"
+  Schema: "im"
+  SrvName: "logic"
+  Dial: "1s"
+  Timeout: "1s"
 Group:
   MaxMembers: 2000
   MaxManagers: 10

@@ -40,18 +40,18 @@ type GetHWCloudTokenResp {
 }
 
 type OssBase {
-	AppId   string `json:"appId" form:"appId"`
-	OssType string `json:"ossType,optional,options=huaweiyun|aliyun|minio" form:"ossType,optional,options=huaweiyun|aliyun|minio"` //云服务商（选填）: 自动选择默认服务商, 或者指定
+	AppId   string `json:"appId"`
+	OssType string `json:"ossType,optional,options=huaweiyun|aliyun|minio"` //云服务商（选填）: 自动选择默认服务商, 或者指定
 }
 
 type Part {
-	ETag       string `json:"ETag" form:"ETag"`                                             // 段数据的MD5值
-	PartNumber int32  `json:"partNumber,range=[1:10000]" form:"partNumber,range=[1:10000]"` //分段序号, 范围是1~10000
+	ETag       string `json:"ETag"`                       // 段数据的MD5值
+	PartNumber int32  `json:"partNumber,range=[1:10000]"` //分段序号, 范围是1~10000
 }
 
 type UploadReq {
 	OssBase
-	Key string `json:"key" form:"key"` // 文件名(包含路径)
+	Key string `json:"key"` // 文件名(包含路径)
 }
 
 type UploadResp {
@@ -61,7 +61,7 @@ type UploadResp {
 
 type InitMultiUploadReq {
 	OssBase
-	Key string `json:"key" form:"key"` // 文件名(包含路径)
+	Key string `json:"key"` // 文件名(包含路径)
 }
 
 type InitMultiUploadResp {
@@ -72,9 +72,9 @@ type InitMultiUploadResp {
 type UploadPartReq {
 	OssBase
 
-	Key        string `json:"key" form:"key"`                                               // 文件名(包含路径)
-	UploadId   string `json:"uploadId" form:"uploadId"`                                     // 分段上传任务全局唯一标识
-	PartNumber int32  `json:"partNumber,range=[1:10000]" form:"partNumber,range=[1:10000]"` // 分段序号, 范围是1~10000
+	Key        string `json:"key"`                        // 文件名(包含路径)
+	UploadId   string `json:"uploadId"`                   // 分段上传任务全局唯一标识
+	PartNumber int32  `json:"partNumber,range=[1:10000]"` // 分段序号, 范围是1~10000
 }
 
 type UploadPartResp {
@@ -85,8 +85,8 @@ type UploadPartResp {
 
 type CompleteMultiUploadReq {
 	OssBase
-	Key      string `json:"key" form:"key"`           // 文件名(包含路径)
-	UploadId string `json:"uploadId" form:"uploadId"` // 分段上传任务全局唯一标识
+	Key      string `json:"key"`      // 文件名(包含路径)
+	UploadId string `json:"uploadId"` // 分段上传任务全局唯一标识
 	Parts    []Part `json:"parts"`
 }
 
@@ -97,8 +97,8 @@ type CompleteMultiUploadResp {
 
 type AbortMultiUploadReq {
 	OssBase
-	Key      string `json:"key" form:"key"`           // 文件名(包含路径)
-	UploadId string `json:"uploadId" form:"uploadId"` // 分段上传任务全局唯一标识
+	Key      string `json:"key"`      // 文件名(包含路径)
+	UploadId string `json:"uploadId"` // 分段上传任务全局唯一标识
 }
 
 type AbortMultiUploadResp {

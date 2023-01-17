@@ -55,6 +55,9 @@ func (l *InviteGroupMembersLogic) InviteGroupMembers(req *types.InviteGroupMembe
 		Uid: uid,
 	})
 	if err != nil {
+		if err == xerror.ErrGroupMemberNotExist {
+			err = xerror.ErrYouAreOutOfGroup
+		}
 		return nil, err
 	}
 

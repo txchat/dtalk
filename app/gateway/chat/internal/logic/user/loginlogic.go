@@ -63,6 +63,9 @@ func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginResp, err erro
 			})
 		}
 	}
+	resp = &types.LoginResp{
+		Address: uid,
+	}
 	return
 }
 

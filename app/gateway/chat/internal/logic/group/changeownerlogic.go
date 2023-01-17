@@ -55,6 +55,21 @@ func (l *ChangeOwnerLogic) ChangeOwner(req *types.ChangeOwnerReq) (resp *types.C
 		return nil, xerror.ErrPermissionDenied
 	}
 
+	targetResp, err := l.svcCtx.GroupRPC.MemberInfo(l.ctx, &groupclient.MemberInfoReq{
+		Gid: gid,
+		Uid: req.MemberId,
+	})
+	if err != nil {
+		if err == xerror.ErrGroupMemberNotExist {
+			err = xerror.ErrPersonOutOfGroup
+		}
+		return nil, err
+	}
+	target := targetResp.GetMember()
+	if target == nil || target.GetRole() == group.RoleType_Out {
+		return nil, xerror.ErrPersonOutOfGroup
+	}
+
 	_, err = l.svcCtx.GroupRPC.ChangeOwner(l.ctx, &groupclient.ChangeOwnerReq{
 		Gid:      gid,
 		Operator: uid,

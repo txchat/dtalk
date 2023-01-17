@@ -36,7 +36,7 @@ func Error(w http.ResponseWriter, r *http.Request, err error) {
 
 	httpx.WriteJson(w, http.StatusOK, &Response{
 		Result:  e.Code(),
-		Message: e.Error(),
+		Message: e.Msg(),
 		Data:    e.Data(),
 	})
 }
