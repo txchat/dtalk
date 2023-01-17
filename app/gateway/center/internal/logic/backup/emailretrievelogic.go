@@ -35,7 +35,7 @@ func (l *EmailRetrieveLogic) EmailRetrieve(req *types.EmailRetrieveReq) (resp *t
 	params := map[string]string{
 		notify.ParamEmail:    req.Email,
 		notify.ParamCode:     req.Code,
-		notify.ParamCodeType: l.svcCtx.Config.Email.CodeTypes[notify.Quick],
+		notify.ParamCodeType: l.svcCtx.Config.Email.CodeTypes[notify.Bind],
 	}
 	err = l.svcCtx.EmailValidate.ValidateCode(params)
 	if err != nil {

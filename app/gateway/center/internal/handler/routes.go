@@ -86,6 +86,16 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			[]rest.Route{
 				{
 					Method:  http.MethodPost,
+					Path:    "/backup/phone-send",
+					Handler: backup.SendPhoneCodeHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/backup/email-send",
+					Handler: backup.SendEmailCodeHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
 					Path:    "/backup/phone-binding",
 					Handler: backup.PhoneBindingHandler(serverCtx),
 				},

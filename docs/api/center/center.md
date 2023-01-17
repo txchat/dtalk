@@ -316,7 +316,67 @@ type EmailExportResp struct {
 }
 ```
 
-### 10. "手机号绑定账号"
+### 10. "发送手机验证码"
+
+1. route definition
+
+- Url: /backup/phone-send
+- Method: POST
+- Request: `SendPhoneCodeReq`
+- Response: `SendPhoneCodeResp`
+
+2. request definition
+
+
+
+```golang
+type SendPhoneCodeReq struct {
+	CodeType string `json:"codeType"`
+	Phone string `json:"phone"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type SendPhoneCodeResp struct {
+}
+```
+
+### 11. "发送邮箱验证码"
+
+1. route definition
+
+- Url: /backup/email-send
+- Method: POST
+- Request: `SendEmailCodeReq`
+- Response: `SendEmailCodeResp`
+
+2. request definition
+
+
+
+```golang
+type SendEmailCodeReq struct {
+	CodeType string `json:"codeType"`
+	Email string `json:"email"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type SendEmailCodeResp struct {
+}
+```
+
+### 12. "手机号绑定账号"
 
 1. route definition
 
@@ -349,7 +409,7 @@ type PhoneBindingResp struct {
 }
 ```
 
-### 11. "邮箱绑定账号"
+### 13. "邮箱绑定账号"
 
 1. route definition
 
@@ -381,7 +441,7 @@ type EmailBindingResp struct {
 }
 ```
 
-### 12. "手机号关联账号"
+### 14. "手机号关联账号"
 
 1. route definition
 
@@ -413,7 +473,7 @@ type PhoneRelateResp struct {
 }
 ```
 
-### 13. "地址找回备份"
+### 15. "地址找回备份"
 
 1. route definition
 
@@ -460,7 +520,7 @@ type AddressInfo struct {
 }
 ```
 
-### 14. "编辑助记词"
+### 16. "编辑助记词"
 
 1. route definition
 
@@ -489,7 +549,7 @@ type EditMnemonicResp struct {
 }
 ```
 
-### 15. "获取地址"
+### 17. "获取地址"
 
 1. route definition
 
@@ -519,7 +579,7 @@ type GetAddressResp struct {
 }
 ```
 
-### 16. "检查版本"
+### 18. "检查版本"
 
 1. route definition
 
@@ -580,7 +640,7 @@ type VersionInfo struct {
 }
 ```
 
-### 17. "创建新版本"
+### 19. "创建新版本"
 
 1. route definition
 
@@ -636,7 +696,7 @@ type VersionInfo struct {
 }
 ```
 
-### 18. "更新版本"
+### 20. "更新版本"
 
 1. route definition
 
@@ -691,7 +751,7 @@ type VersionInfo struct {
 }
 ```
 
-### 19. "更改版本状态"
+### 21. "更改版本状态"
 
 1. route definition
 
@@ -721,7 +781,7 @@ type ChangeVersionStateResp struct {
 }
 ```
 
-### 20. "版本列表"
+### 22. "版本列表"
 
 1. route definition
 

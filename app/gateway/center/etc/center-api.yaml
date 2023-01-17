@@ -36,7 +36,7 @@ SMS:
   Surl: ""
   AppKey: ""
   SecretKey: ""
-  Msg: ""
+  Msg: "FzmRandom5"
   Env: ""
   CodeTypes:
     quick: "quick"
@@ -46,7 +46,7 @@ Email:
   Surl: ""
   AppKey: ""
   SecretKey: ""
-  Msg: ""
+  Msg: "FzmRandom5"
   Env: ""
   CodeTypes:
     quick: "quick"

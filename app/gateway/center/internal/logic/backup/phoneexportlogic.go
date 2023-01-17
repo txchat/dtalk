@@ -36,13 +36,9 @@ func (l *PhoneExportLogic) PhoneExport(req *types.PhoneExportReq) (resp *types.P
 	}
 	err = l.svcCtx.SmsValidate.ValidateCode(params)
 	if err != nil {
-		err = xerror.ErrCodeError
+		err = xerror.ErrExportAddressPhoneInconsistent
 		return
 	}
 
-	var b bool
-	if !b {
-		err = xerror.ErrExportAddressEmailInconsistent
-	}
 	return
 }

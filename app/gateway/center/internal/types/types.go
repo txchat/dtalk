@@ -131,6 +131,22 @@ type EmailExportReq struct {
 type EmailExportResp struct {
 }
 
+type SendPhoneCodeReq struct {
+	CodeType string `json:"codeType"`
+	Phone    string `json:"phone"`
+}
+
+type SendPhoneCodeResp struct {
+}
+
+type SendEmailCodeReq struct {
+	CodeType string `json:"codeType"`
+	Email    string `json:"email"`
+}
+
+type SendEmailCodeResp struct {
+}
+
 type PhoneBindingReq struct {
 	Area     string `json:"area,optional"`
 	Phone    string `json:"phone"`

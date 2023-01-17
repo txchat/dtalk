@@ -82,6 +82,22 @@ type EmailExportReq {
 type EmailExportResp {
 }
 
+type SendPhoneCodeReq {
+	CodeType string `json:"codeType"`
+	Phone    string `json:"phone"`
+}
+
+type SendPhoneCodeResp {
+}
+
+type SendEmailCodeReq {
+	CodeType string `json:"codeType"`
+	Email    string `json:"email"`
+}
+
+type SendEmailCodeResp {
+}
+
 type PhoneBindingReq {
 	Area     string `json:"area,optional"`
 	Phone    string `json:"phone"`
@@ -162,6 +178,14 @@ service center-api {
 	middleware: AppAuthMiddleware
 )
 service center-api {
+	@doc "发送手机验证码"
+	@handler SendPhoneCode
+	post /backup/phone-send (SendPhoneCodeReq) returns (SendPhoneCodeResp)
+	
+	@doc "发送邮箱验证码"
+	@handler SendEmailCode
+	post /backup/email-send (SendEmailCodeReq) returns (SendEmailCodeResp)
+	
 	@doc "手机号绑定账号"
 	@handler PhoneBinding
 	post /backup/phone-binding (PhoneBindingReq) returns (PhoneBindingResp)

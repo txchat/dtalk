@@ -25,7 +25,7 @@ type GetModulesReq {
 }
 
 type GetModulesResp {
-    Modules []Module `json:"modules"`
+	Modules []Module `json:"modules"`
 }
 
 @server(

@@ -35,12 +35,8 @@ func (l *EmailExportLogic) EmailExport(req *types.EmailExportReq) (resp *types.E
 	}
 	err = l.svcCtx.EmailValidate.ValidateCode(params)
 	if err != nil {
-		err = xerror.ErrCodeError
-		return
-	}
-	var b bool
-	if !b {
 		err = xerror.ErrExportAddressEmailInconsistent
+		return
 	}
 	return
 }

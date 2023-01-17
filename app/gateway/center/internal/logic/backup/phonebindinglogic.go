@@ -42,7 +42,7 @@ func (l *PhoneBindingLogic) PhoneBinding(req *types.PhoneBindingReq) (resp *type
 	params := map[string]string{
 		notify.ParamMobile:   req.Phone,
 		notify.ParamCode:     req.Code,
-		notify.ParamCodeType: l.svcCtx.Config.SMS.CodeTypes[notify.Quick],
+		notify.ParamCodeType: l.svcCtx.Config.SMS.CodeTypes[notify.Bind],
 	}
 	err = l.svcCtx.SmsValidate.ValidateCode(params)
 	if err != nil {

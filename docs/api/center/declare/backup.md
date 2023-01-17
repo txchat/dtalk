@@ -221,7 +221,67 @@ type EmailExportResp struct {
 }
 ```
 
-### 7. "手机号绑定账号"
+### 7. "发送手机验证码"
+
+1. route definition
+
+- Url: /backup/phone-send
+- Method: POST
+- Request: `SendPhoneCodeReq`
+- Response: `SendPhoneCodeResp`
+
+2. request definition
+
+
+
+```golang
+type SendPhoneCodeReq struct {
+	CodeType string `json:"codeType"`
+	Phone string `json:"phone"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type SendPhoneCodeResp struct {
+}
+```
+
+### 8. "发送邮箱验证码"
+
+1. route definition
+
+- Url: /backup/email-send
+- Method: POST
+- Request: `SendEmailCodeReq`
+- Response: `SendEmailCodeResp`
+
+2. request definition
+
+
+
+```golang
+type SendEmailCodeReq struct {
+	CodeType string `json:"codeType"`
+	Email string `json:"email"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type SendEmailCodeResp struct {
+}
+```
+
+### 9. "手机号绑定账号"
 
 1. route definition
 
@@ -254,7 +314,7 @@ type PhoneBindingResp struct {
 }
 ```
 
-### 8. "邮箱绑定账号"
+### 10. "邮箱绑定账号"
 
 1. route definition
 
@@ -286,7 +346,7 @@ type EmailBindingResp struct {
 }
 ```
 
-### 9. "手机号关联账号"
+### 11. "手机号关联账号"
 
 1. route definition
 
@@ -318,7 +378,7 @@ type PhoneRelateResp struct {
 }
 ```
 
-### 10. "地址找回备份"
+### 12. "地址找回备份"
 
 1. route definition
 
@@ -365,7 +425,7 @@ type AddressInfo struct {
 }
 ```
 
-### 11. "编辑助记词"
+### 13. "编辑助记词"
 
 1. route definition
 
@@ -394,7 +454,7 @@ type EditMnemonicResp struct {
 }
 ```
 
-### 12. "获取地址"
+### 14. "获取地址"
 
 1. route definition
 
