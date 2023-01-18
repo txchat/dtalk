@@ -136,6 +136,9 @@ func (repo *GroupRepositoryMysql) InsertGroupInfo(tx *mysql.MysqlTx, g *model.Gr
 func (repo *GroupRepositoryMysql) InsertGroupMembers(tx *mysql.MysqlTx, members []*model.GroupMember, updateTime int64) (int64, int64, error) {
 	var params []interface{}
 	cases := ""
+	if len(members) < 1 {
+		return 0, 0, nil
+	}
 	for i, m := range members {
 		if i == 0 {
 			cases += "(?,?,?,?,?,?)"
@@ -263,6 +266,9 @@ func (repo *GroupRepositoryMysql) UpdateGroupMemberRole(tx *mysql.MysqlTx, membe
 func (repo *GroupRepositoryMysql) UpdateGroupMembersMuteTime(tx *mysql.MysqlTx, members []*model.GroupMember) (int64, int64, error) {
 	var params []interface{}
 	cases := ""
+	if len(members) < 1 {
+		return 0, 0, nil
+	}
 	for i, m := range members {
 		if i == 0 {
 			cases += "(?,?,?,?)"

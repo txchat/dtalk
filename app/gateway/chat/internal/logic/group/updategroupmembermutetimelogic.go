@@ -2,6 +2,7 @@ package group
 
 import (
 	"context"
+	"math"
 
 	"github.com/txchat/dtalk/app/gateway/chat/internal/model"
 	"github.com/txchat/dtalk/app/services/group/group"
@@ -44,10 +45,15 @@ func (l *UpdateGroupMemberMuteTimeLogic) UpdateGroupMemberMuteTime(req *types.Up
 		gid = req.Id
 	}
 	nowTs := util.TimeNowUnixMilli()
-	var deadline int64 = 0
+	var deadline int64
 
 	if req.MuteTime > 0 {
-		deadline = nowTs + req.MuteTime
+		if uint64(nowTs+req.MuteTime) > math.MaxInt64 || uint64(nowTs+req.MuteTime) < 0 {
+			//overflow
+			deadline = math.MaxInt64
+		} else {
+			deadline = nowTs + req.MuteTime
+		}
 	}
 
 	operatorResp, err := l.svcCtx.GroupRPC.MemberInfo(l.ctx, &groupclient.MemberInfoReq{
@@ -70,6 +76,9 @@ func (l *UpdateGroupMemberMuteTimeLogic) UpdateGroupMemberMuteTime(req *types.Up
 		Gid: gid,
 		Uid: req.MemberIds,
 	})
+	if err != nil {
+		return nil, err
+	}
 
 	members := make([]string, 0)
 	groupMemberReply := make([]*types.GroupMember, 0)
@@ -91,7 +100,7 @@ func (l *UpdateGroupMemberMuteTimeLogic) UpdateGroupMemberMuteTime(req *types.Up
 			Gid:      gid,
 			Operator: uid,
 			Mid:      members,
-			Deadline: nowTs + req.MuteTime,
+			Deadline: deadline,
 		})
 		if err != nil {
 			return nil, err
