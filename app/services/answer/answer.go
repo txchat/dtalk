@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"os"
@@ -9,8 +10,8 @@ import (
 	"github.com/txchat/dtalk/app/services/answer/internal/config"
 	"github.com/txchat/dtalk/app/services/answer/internal/server"
 	"github.com/txchat/dtalk/app/services/answer/internal/svc"
+	"github.com/txchat/dtalk/app/services/answer/rmq/mq"
 	xerror "github.com/txchat/dtalk/pkg/error"
-
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/core/service"
 	"github.com/zeromicro/go-zero/zrpc"
@@ -44,6 +45,10 @@ func main() {
 	var c config.Config
 	conf.MustLoad(*configFile, &c, conf.UseEnv())
 	ctx := svc.NewServiceContext(c)
+
+	mqSvc := mq.NewService(c, ctx)
+	mqSvc.Serve()
+	defer mqSvc.Shutdown(context.Background())
 
 	s := zrpc.MustNewServer(c.RpcServerConf, func(grpcServer *grpc.Server) {
 		answer.RegisterAnswerServer(grpcServer, server.NewAnswerServer(ctx))

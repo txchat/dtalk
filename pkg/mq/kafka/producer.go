@@ -17,6 +17,7 @@ type ProducerConfig struct {
 }
 
 type Producer struct {
+	brokers []string
 	conn sarama.SyncProducer
 }
 
@@ -48,7 +49,8 @@ func NewProducer(cfg ProducerConfig) *Producer {
 	}
 	log.Info("producer dial kafka server", "brokers", cfg.Brokers)
 	return &Producer{
-		conn: pub,
+		brokers: cfg.Brokers,
+		conn:    pub,
 	}
 }
 
@@ -56,7 +58,7 @@ func (p *Producer) Publish(topic, k string, v []byte) (int32, int64, error) {
 	if k == "" {
 		k = strconv.FormatInt(time.Now().UnixNano(), 10)
 	}
-	log.Debug("push params", "topic", topic)
+	log.Debug("push params", "topic", topic, "brokers", p.brokers)
 	m := &sarama.ProducerMessage{
 		Key:       sarama.StringEncoder(k),
 		Topic:     topic,

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"os"
@@ -9,8 +10,9 @@ import (
 	"github.com/txchat/dtalk/app/services/pusher/internal/server"
 	"github.com/txchat/dtalk/app/services/pusher/internal/svc"
 	"github.com/txchat/dtalk/app/services/pusher/pusher"
+	"github.com/txchat/dtalk/app/services/pusher/rmq/connmq"
+	"github.com/txchat/dtalk/app/services/pusher/rmq/rdmq"
 	xerror "github.com/txchat/dtalk/pkg/error"
-
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/core/service"
 	"github.com/zeromicro/go-zero/zrpc"
@@ -44,6 +46,14 @@ func main() {
 	var c config.Config
 	conf.MustLoad(*configFile, &c, conf.UseEnv())
 	ctx := svc.NewServiceContext(c)
+
+	connMQSvc := connmq.NewService(c, ctx)
+	connMQSvc.Serve()
+	defer connMQSvc.Shutdown(context.Background())
+
+	rdMQSvc := rdmq.NewService(c, ctx)
+	rdMQSvc.Serve()
+	defer rdMQSvc.Shutdown(context.Background())
 
 	s := zrpc.MustNewServer(c.RpcServerConf, func(grpcServer *grpc.Server) {
 		pusher.RegisterPusherServer(grpcServer, server.NewPusherServer(ctx))
