@@ -15,7 +15,7 @@ func GetTokenHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req types.GetTokenReq
 		if err := httpx.Parse(r, &req); err != nil {
-			xhttp.Error(w, r, xerror.ErrInvalidParams)
+			xhttp.Error(w, r, xerror.NewCustomError(xerror.ErrInvalidParams, err))
 			return
 		}
 

@@ -11,8 +11,8 @@ import (
 	"github.com/txchat/dtalk/internal/recordhelper"
 	"github.com/txchat/dtalk/proto/offline"
 	"github.com/txchat/dtalk/proto/record"
-	comet "github.com/txchat/im/api/comet/grpc"
-	logic "github.com/txchat/im/api/logic/grpc"
+	"github.com/txchat/im/api/comet"
+	"github.com/txchat/im/app/logic/logicclient"
 	"github.com/txchat/imparse/proto/auth"
 	"github.com/txchat/imparse/proto/common"
 	"github.com/zeromicro/go-zero/core/logx"
@@ -33,7 +33,7 @@ func NewPusherLogic(ctx context.Context, svcCtx *svc.ServiceContext) *PusherLogi
 }
 
 func (l *PusherLogic) UniCastDevices(m *record.PushMsg) error {
-	keysMsg := &logic.KeysMsg{
+	keysMsg := &logicclient.KeysMsg{
 		AppId:  m.GetAppId(),
 		ToKeys: []string{m.GetTarget()},
 		Msg:    m.GetMsg(),
@@ -71,7 +71,7 @@ func (l *PusherLogic) UniCastDevices(m *record.PushMsg) error {
 }
 
 func (l *PusherLogic) UniCast(m *record.PushMsg) error {
-	midsMsg := &logic.MidsMsg{
+	midsMsg := &logicclient.MidsMsg{
 		AppId: m.GetAppId(),
 		ToIds: []string{m.GetTarget()},
 		Msg:   m.GetMsg(),
@@ -132,7 +132,7 @@ func (l *PusherLogic) UniCast(m *record.PushMsg) error {
 }
 
 func (l *PusherLogic) GroupCast(m *record.PushMsg) error {
-	gMsg := &logic.GroupMsg{
+	gMsg := &logicclient.GroupMsg{
 		AppId: m.GetAppId(),
 		Group: m.GetTarget(),
 		Msg:   m.GetMsg(),

@@ -14,8 +14,9 @@ import (
 	"github.com/txchat/dtalk/app/services/pusher/internal/svc"
 	xkafka "github.com/txchat/dtalk/pkg/mq/kafka"
 	"github.com/txchat/dtalk/pkg/util"
-	comet "github.com/txchat/im/api/comet/grpc"
-	logic "github.com/txchat/im/api/logic/grpc"
+	"github.com/txchat/im/api/comet"
+	"github.com/txchat/im/api/protocol"
+	"github.com/txchat/im/app/logic/logicclient"
 	"github.com/txchat/imparse"
 	"github.com/txchat/imparse/chat"
 	"github.com/txchat/imparse/proto/auth"
@@ -56,7 +57,7 @@ func (s *Service) Shutdown(ctx context.Context) {
 }
 
 func (s *Service) handleFunc(key string, data []byte) error {
-	bizMsg := new(logic.BizMsg)
+	bizMsg := new(logicclient.BizMsg)
 	if err := proto.Unmarshal(data, bizMsg); err != nil {
 		s.Error("logic.BizMsg proto.Unmarshal error", "err", err)
 		return err
@@ -65,7 +66,7 @@ func (s *Service) handleFunc(key string, data []byte) error {
 		return model.ErrAppID
 	}
 	switch bizMsg.GetOp() {
-	case int32(comet.Op_Auth), int32(comet.Op_Disconnect), int32(comet.Op_ReceiveMsgReply), int32(comet.Op_SyncMsgReq):
+	case int32(protocol.Op_Auth), int32(protocol.Op_Disconnect), int32(protocol.Op_ReceiveMsgReply), int32(protocol.Op_SyncMsgReq):
 		if err := s.DealConn(context.TODO(), bizMsg); err != nil {
 			//TODO redo consume message
 			return err
@@ -76,9 +77,9 @@ func (s *Service) handleFunc(key string, data []byte) error {
 	return nil
 }
 
-func (s *Service) DealConn(ctx context.Context, m *logic.BizMsg) error {
+func (s *Service) DealConn(ctx context.Context, m *logicclient.BizMsg) error {
 	switch m.Op {
-	case int32(comet.Op_Auth):
+	case int32(protocol.Op_Auth):
 		s.Info("user login with key")
 		//将用户设备信息存入缓存
 		dev, err := parseDevice(m)
@@ -124,7 +125,7 @@ func (s *Service) DealConn(ctx context.Context, m *logic.BizMsg) error {
 		if err != nil {
 			s.Error("JoinGroups failed", "err", err)
 		}
-	case int32(comet.Op_Disconnect):
+	case int32(protocol.Op_Disconnect):
 		s.Info("user logout with key")
 		err := s.svcCtx.Repo.ClearConnSeq(m.Key)
 		if err != nil {
@@ -137,8 +138,8 @@ func (s *Service) DealConn(ctx context.Context, m *logic.BizMsg) error {
 		if err != nil {
 			s.Error("EnableDeviceInfo failed", "err", err)
 		}
-	case int32(comet.Op_ReceiveMsgReply):
-		var p comet.Proto
+	case int32(protocol.Op_ReceiveMsgReply):
+		var p protocol.Proto
 		err := proto.Unmarshal(m.Msg, &p)
 		if err != nil {
 			s.Error("unmarshal proto error", "err", err)
@@ -186,10 +187,10 @@ func (s *Service) DealConn(ctx context.Context, m *logic.BizMsg) error {
 			default:
 			}
 		}
-	case int32(comet.Op_SyncMsgReq):
+	case int32(protocol.Op_SyncMsgReq):
 		//TODO disabled
 		return nil
-		var p comet.Proto
+		var p protocol.Proto
 		var pro comet.SyncMsg
 		err := proto.Unmarshal(m.Msg, &p)
 		if err != nil {
@@ -200,7 +201,7 @@ func (s *Service) DealConn(ctx context.Context, m *logic.BizMsg) error {
 		if err != nil {
 			s.Error("Unmarshal failed",
 				"err", err,
-				"option", comet.Op_SyncMsgReq,
+				"option", protocol.Op_SyncMsgReq,
 			)
 			break
 		}
@@ -218,8 +219,8 @@ func (s *Service) DealConn(ctx context.Context, m *logic.BizMsg) error {
 	return nil
 }
 
-func parseDevice(m *logic.BizMsg) (*auth.Login, error) {
-	var p comet.Proto
+func parseDevice(m *logicclient.BizMsg) (*auth.Login, error) {
+	var p protocol.Proto
 	err := proto.Unmarshal(m.Msg, &p)
 	if err != nil {
 		return nil, err

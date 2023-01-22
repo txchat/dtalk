@@ -17,12 +17,9 @@ import (
 	txchatSignalApi "github.com/txchat/dtalk/internal/signal/txchat"
 	xerror "github.com/txchat/dtalk/pkg/error"
 	"github.com/txchat/dtalk/pkg/mysql"
-	"github.com/txchat/dtalk/pkg/naming"
-	"github.com/txchat/dtalk/pkg/net/grpc"
 	"github.com/txchat/dtalk/pkg/util"
-	logic "github.com/txchat/im/api/logic/grpc"
+	"github.com/txchat/im/app/logic/logicclient"
 	"github.com/zeromicro/go-zero/zrpc"
-	"google.golang.org/grpc/resolver"
 )
 
 type ServiceContext struct {
@@ -32,7 +29,7 @@ type ServiceContext struct {
 	IDGenRPC     generatorclient.Generator
 	SignalHub    signal.Signal
 	NoticeHub    notice.Notice
-	logicClient  logic.LogicClient
+	logicClient  logicclient.Logic
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -49,14 +46,15 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		GroupManager: group.NewGroupManager(),
 		IDGenRPC: generatorclient.NewGenerator(zrpc.MustNewClient(c.IDGenRPC,
 			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor), zrpc.WithNonBlock())),
-		SignalHub:   txchatSignalApi.NewSignalHub(answerClient),
-		NoticeHub:   txchatNoticeApi.NewNoticeHub(answerClient),
-		logicClient: newLogicClient(c),
+		SignalHub: txchatSignalApi.NewSignalHub(answerClient),
+		NoticeHub: txchatNoticeApi.NewNoticeHub(answerClient),
+		logicClient: logicclient.NewLogic(zrpc.MustNewClient(c.LogicRPC,
+			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor), zrpc.WithNonBlock())),
 	}
 }
 
 func (s *ServiceContext) RegisterGroupMembers(ctx context.Context, gid int64, members []string) error {
-	reply, err := s.logicClient.JoinGroupsByMids(ctx, &logic.GroupsMid{
+	reply, err := s.logicClient.JoinGroupsByMids(ctx, &logicclient.GroupsMid{
 		AppId: s.Config.AppID,
 		Gid:   []string{util.MustToString(gid)},
 		Mids:  members,
@@ -74,7 +72,7 @@ func (s *ServiceContext) RegisterGroupMembers(ctx context.Context, gid int64, me
 }
 
 func (s *ServiceContext) UnRegisterGroup(ctx context.Context, gid int64) error {
-	reply, err := s.logicClient.DelGroups(ctx, &logic.DelGroupsReq{
+	reply, err := s.logicClient.DelGroups(ctx, &logicclient.DelGroupsReq{
 		AppId: s.Config.AppID,
 		Gid:   []string{util.MustToString(gid)},
 	})
@@ -91,7 +89,7 @@ func (s *ServiceContext) UnRegisterGroup(ctx context.Context, gid int64) error {
 }
 
 func (s *ServiceContext) UnRegisterGroupMembers(ctx context.Context, gid int64, members []string) error {
-	reply, err := s.logicClient.LeaveGroupsByMids(ctx, &logic.GroupsMid{
+	reply, err := s.logicClient.LeaveGroupsByMids(ctx, &logicclient.GroupsMid{
 		AppId: s.Config.AppID,
 		Gid:   []string{util.MustToString(gid)},
 		Mids:  members,
@@ -106,18 +104,4 @@ func (s *ServiceContext) UnRegisterGroupMembers(ctx context.Context, gid int64, 
 		return err
 	}
 	return nil
-}
-
-func newLogicClient(cfg config.Config) logic.LogicClient {
-	rb := naming.NewResolver(cfg.LogicRPCClient.RegAddrs, cfg.LogicRPCClient.Schema)
-	resolver.Register(rb)
-
-	addr := fmt.Sprintf("%s:///%s", cfg.LogicRPCClient.Schema, cfg.LogicRPCClient.SrvName) // "schema://[authority]/service"
-	fmt.Println("logic rpc client call addr:", addr)
-
-	conn, err := grpc.NewGRPCConn(addr, cfg.LogicRPCClient.Dial)
-	if err != nil {
-		panic(err)
-	}
-	return logic.NewLogicClient(conn)
 }

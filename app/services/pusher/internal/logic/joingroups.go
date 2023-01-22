@@ -6,9 +6,8 @@ import (
 	"time"
 
 	"github.com/txchat/dtalk/app/services/group/groupclient"
-
 	"github.com/txchat/dtalk/app/services/pusher/internal/svc"
-	logic "github.com/txchat/im/api/logic/grpc"
+	"github.com/txchat/im/app/logic/logicclient"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -53,7 +52,7 @@ func (l *JoinGroupsLogic) JoinGroups(uid, key string) error {
 	for i, group := range groups {
 		gids[i] = strconv.FormatInt(group, 10)
 	}
-	_, err = l.svcCtx.LogicRPC.JoinGroupsByKeys(l.ctx, &logic.GroupsKey{
+	_, err = l.svcCtx.LogicRPC.JoinGroupsByKeys(l.ctx, &logicclient.GroupsKey{
 		AppId: l.svcCtx.Config.AppID,
 		Keys:  []string{key},
 		Gid:   gids,

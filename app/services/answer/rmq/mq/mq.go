@@ -4,14 +4,15 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/txchat/im/api/protocol"
+	"github.com/txchat/im/app/logic/logicclient"
+
 	"github.com/golang/protobuf/proto"
 	"github.com/txchat/dtalk/app/services/answer/internal/config"
 	innerLogic "github.com/txchat/dtalk/app/services/answer/internal/logic"
 	"github.com/txchat/dtalk/app/services/answer/internal/model"
 	"github.com/txchat/dtalk/app/services/answer/internal/svc"
 	xkafka "github.com/txchat/dtalk/pkg/mq/kafka"
-	comet "github.com/txchat/im/api/comet/grpc"
-	logic "github.com/txchat/im/api/logic/grpc"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -48,7 +49,7 @@ func (s *Service) Shutdown(ctx context.Context) {
 }
 
 func (s *Service) handleFunc(key string, data []byte) error {
-	bizMsg := new(logic.BizMsg)
+	bizMsg := new(logicclient.BizMsg)
 	if err := proto.Unmarshal(data, bizMsg); err != nil {
 		s.Error("logic.BizMsg proto.Unmarshal error", "err", err)
 		return err
@@ -57,7 +58,7 @@ func (s *Service) handleFunc(key string, data []byte) error {
 		return model.ErrAppID
 	}
 	switch bizMsg.GetOp() {
-	case int32(comet.Op_SendMsg):
+	case int32(protocol.Op_SendMsg):
 		if err := s.DealOpSendMsg(context.TODO(), bizMsg); err != nil {
 			//TODO redo consume message
 			return err
@@ -68,7 +69,7 @@ func (s *Service) handleFunc(key string, data []byte) error {
 	return nil
 }
 
-func (s *Service) DealOpSendMsg(ctx context.Context, m *logic.BizMsg) error {
+func (s *Service) DealOpSendMsg(ctx context.Context, m *logicclient.BizMsg) error {
 	s.Slow("start create frame")
 	l := innerLogic.NewInnerPushLogic(ctx, s.svcCtx)
 	_, _, err := l.PushToClient(s.svcCtx.AnswerInter4rmq, m.GetKey(), m.GetFromId(), m.GetMsg())

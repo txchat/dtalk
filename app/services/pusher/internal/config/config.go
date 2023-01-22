@@ -2,7 +2,6 @@ package config
 
 import (
 	xkafka "github.com/txchat/dtalk/pkg/mq/kafka"
-	xgrpc "github.com/txchat/dtalk/pkg/net/grpc"
 	xredis "github.com/txchat/dtalk/pkg/redis"
 	"github.com/zeromicro/go-zero/zrpc"
 )
@@ -14,6 +13,7 @@ type Config struct {
 	DeviceRPC zrpc.RpcClientConf
 	AnswerRPC zrpc.RpcClientConf
 	GroupRPC  zrpc.RpcClientConf
+	LogicRPC  zrpc.RpcClientConf
 
 	ProducerStorage           xkafka.ProducerConfig
 	OffPushEnabled            bool
@@ -22,6 +22,4 @@ type Config struct {
 	ConnDealBatchConsumerConf xkafka.BatchConsumerConf
 	PushDealConsumerConfig    xkafka.ConsumerConfig
 	PushDealBatchConsumerConf xkafka.BatchConsumerConf
-
-	LogicRPCClient xgrpc.RPCClient
 }

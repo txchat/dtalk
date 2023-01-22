@@ -28,6 +28,12 @@ AnswerRPC:
       - "${ETCD_HOST}:2379"
     Key: "answer.rpc"
     Timeout: 60000 # 60s
+LogicRPC:
+  Etcd:
+    Hosts:
+      - "${ETCD_HOST}:2379"
+    Key: "logic.rpc"
+    Timeout: 60000 # 60s
 GroupRPC:
   Etcd:
     Hosts:
@@ -59,10 +65,3 @@ PushDealBatchConsumerConf:
   CacheCapacity: 0
   Consumers: 0
   Processors: 0
-
-LogicRPCClient:
-  RegAddrs: "${ETCD_HOST}:2379"
-  Schema: "im"
-  SrvName: "logic"
-  Dial: "1s"
-  Timeout: "1s"

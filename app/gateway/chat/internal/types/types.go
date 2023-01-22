@@ -115,7 +115,7 @@ type PushResp struct {
 }
 
 type LoginReq struct {
-	ConnType int32 `json:"connType"`
+	ConnType int32 `json:"connType,optional"`
 }
 
 type LoginResp struct {

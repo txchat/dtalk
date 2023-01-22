@@ -12,15 +12,15 @@ import (
 
 type Storage struct {
 	AppID string
+	topic string
 	conn  *xkafka.Producer
 }
 
 func NewStoragePublish(appID string, cfg xkafka.ProducerConfig) *Storage {
-	appTopic := fmt.Sprintf("store-%s-topic", appID)
-	cfg.Topic = appTopic
 	conn := xkafka.NewProducer(cfg)
 	return &Storage{
 		AppID: appID,
+		topic: fmt.Sprintf("store-%s-topic", appID),
 		conn:  conn,
 	}
 }
@@ -37,7 +37,7 @@ func (p *Storage) BatchPush(ctx context.Context, key, fromId string) (err error)
 	if err != nil {
 		return
 	}
-	_, _, err = p.conn.Publish(fromId, b)
+	_, _, err = p.conn.Publish(p.topic, fromId, b)
 	return
 }
 
@@ -60,7 +60,7 @@ func (p *Storage) MarkRead(ctx context.Context, key, fromId string, tp imparse.F
 	if err != nil {
 		return
 	}
-	_, _, err = p.conn.Publish(fromId, b)
+	_, _, err = p.conn.Publish(p.topic, fromId, b)
 	return
 }
 
@@ -82,6 +82,6 @@ func (p *Storage) Sync(ctx context.Context, key, fromId string, mid int64) (err 
 	if err != nil {
 		return
 	}
-	_, _, err = p.conn.Publish(fromId, b)
+	_, _, err = p.conn.Publish(p.topic, fromId, b)
 	return
 }

@@ -4,12 +4,11 @@ import (
 	"context"
 	"strconv"
 
-	"github.com/txchat/dtalk/internal/recordutil"
-
 	"github.com/golang/protobuf/proto"
 	"github.com/txchat/dtalk/app/services/pusher/pusherclient"
+	"github.com/txchat/dtalk/internal/recordutil"
 	"github.com/txchat/dtalk/pkg/util"
-	comet "github.com/txchat/im/api/comet/grpc"
+	"github.com/txchat/im/api/protocol"
 	"github.com/txchat/imparse"
 	"github.com/txchat/imparse/chat"
 	"github.com/txchat/imparse/proto/common"
@@ -30,8 +29,8 @@ func (s *Service) pushClient(ctx context.Context, key, from, mid, target string,
 }
 
 func (s *Service) sendPrivateUnReadMsg(key, uid string) error {
-	var p comet.Proto
-	p.Op = int32(comet.Op_ReceiveMsg)
+	var p protocol.Proto
+	p.Op = int32(protocol.Op_ReceiveMsg)
 	p.Ver = 1
 	p.Seq = 0
 	bizP := &common.Proto{
@@ -72,8 +71,8 @@ func (s *Service) sendPrivateUnReadMsg(key, uid string) error {
 }
 
 func (s *Service) sendGroupUnReadMsg(key, uid string) error {
-	var p comet.Proto
-	p.Op = int32(comet.Op_ReceiveMsg)
+	var p protocol.Proto
+	p.Op = int32(protocol.Op_ReceiveMsg)
 	p.Ver = 1
 	p.Seq = 0
 	bizP := &common.Proto{
@@ -114,8 +113,8 @@ func (s *Service) sendGroupUnReadMsg(key, uid string) error {
 }
 
 func (s *Service) sendSignalUnReadMsg(key, uid string) error {
-	var p comet.Proto
-	p.Op = int32(comet.Op_ReceiveMsg)
+	var p protocol.Proto
+	p.Op = int32(protocol.Op_ReceiveMsg)
 	p.Ver = 1
 	p.Seq = 0
 	bizP := &common.Proto{

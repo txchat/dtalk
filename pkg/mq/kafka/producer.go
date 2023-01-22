@@ -12,14 +12,12 @@ import (
 type ProducerConfig struct {
 	Version string   `json:",optional"`
 	Brokers []string `json:",optional"`
-	Topic   string   `json:",optional"`
 
 	realVersion sarama.KafkaVersion `json:"-,optional"`
 }
 
 type Producer struct {
-	conn  sarama.SyncProducer
-	topic string
+	conn sarama.SyncProducer
 }
 
 func ensureProducerConfig(cfg *ProducerConfig) {
@@ -33,9 +31,6 @@ func ensureProducerConfig(cfg *ProducerConfig) {
 	if len(cfg.Brokers) == 0 {
 		panic(errors.New("brokers is empty"))
 	}
-	if cfg.Topic == "" {
-		panic(errors.New("topic is empty"))
-	}
 }
 
 func NewProducer(cfg ProducerConfig) *Producer {
@@ -47,25 +42,24 @@ func NewProducer(cfg ProducerConfig) *Producer {
 	kc.Producer.Retry.Max = 10                   //发送消息重试的次数
 	kc.Producer.Return.Successes = true
 
-	log.Debug("conn params", "topic", cfg.Topic, "brokers", cfg.Brokers)
 	pub, err := sarama.NewSyncProducer(cfg.Brokers, kc)
 	if err != nil {
 		panic(err)
 	}
+	log.Info("producer dial kafka server", "brokers", cfg.Brokers)
 	return &Producer{
-		conn:  pub,
-		topic: cfg.Topic,
+		conn: pub,
 	}
 }
 
-func (p *Producer) Publish(k string, v []byte) (int32, int64, error) {
+func (p *Producer) Publish(topic, k string, v []byte) (int32, int64, error) {
 	if k == "" {
 		k = strconv.FormatInt(time.Now().UnixNano(), 10)
 	}
-	log.Debug("push params", "topic", p.topic)
+	log.Debug("push params", "topic", topic)
 	m := &sarama.ProducerMessage{
 		Key:       sarama.StringEncoder(k),
-		Topic:     p.topic,
+		Topic:     topic,
 		Value:     sarama.ByteEncoder(v),
 		Timestamp: time.Now(),
 	}

@@ -40,9 +40,9 @@ GroupRPC:
       - "${ETCD_HOST}:2379"
     Key: "group.rpc"
     Timeout: 60000 # 60s
-LogicRPCClient:
-  RegAddrs: "${ETCD_HOST}:2379"
-  Schema: "im"
-  SrvName: "logic"
-  Dial: "1s"
-  Timeout: "1s"
+LogicRPC:
+  Etcd:
+    Hosts:
+      - "${ETCD_HOST}:2379"
+    Key: "logic.rpc"
+    Timeout: 60000 # 60s

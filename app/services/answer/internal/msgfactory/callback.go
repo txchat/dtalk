@@ -2,25 +2,26 @@ package msgfactory
 
 import (
 	"context"
-
-	xkafka "github.com/txchat/dtalk/pkg/mq/kafka"
+	"fmt"
 
 	"github.com/golang/protobuf/proto"
+	xkafka "github.com/txchat/dtalk/pkg/mq/kafka"
 	record "github.com/txchat/dtalk/proto/record"
-	logic "github.com/txchat/im/api/logic/grpc"
+	"github.com/txchat/im/app/logic/logicclient"
 	"github.com/txchat/imparse"
 )
 
 // WithCometLevelAckCallback send msg callback
 type WithCometLevelAckCallback struct {
-	appId       string
-	mqPub       *xkafka.Producer
-	logicClient logic.LogicClient
+	appId, topic string
+	mqPub        *xkafka.Producer
+	logicClient  logicclient.Logic
 }
 
-func NewWithCometLevelAckCallback(appId string, mqPub *xkafka.Producer, logicClient logic.LogicClient) *WithCometLevelAckCallback {
+func NewWithCometLevelAckCallback(appId string, mqPub *xkafka.Producer, logicClient logicclient.Logic) *WithCometLevelAckCallback {
 	return &WithCometLevelAckCallback{
 		appId:       appId,
+		topic:       fmt.Sprintf("received-%s-topic", appId),
 		mqPub:       mqPub,
 		logicClient: logicClient,
 	}
@@ -42,12 +43,12 @@ func (e *WithCometLevelAckCallback) Transport(ctx context.Context, mid int64, ke
 		return err
 	}
 
-	_, _, err = e.mqPub.Publish(from, b)
+	_, _, err = e.mqPub.Publish(e.topic, from, b)
 	return err
 }
 
 func (e *WithCometLevelAckCallback) RevAck(ctx context.Context, id int64, keys []string, data []byte) error {
-	keysMsg := &logic.KeysMsg{
+	keysMsg := &logicclient.KeysMsg{
 		AppId:  e.appId,
 		ToKeys: keys,
 		Msg:    data,
@@ -59,13 +60,14 @@ func (e *WithCometLevelAckCallback) RevAck(ctx context.Context, id int64, keys [
 
 // WithoutAckCallback inner send msg callback
 type WithoutAckCallback struct {
-	appId string
-	mqPub *xkafka.Producer
+	appId, topic string
+	mqPub        *xkafka.Producer
 }
 
 func NewWithoutAckCallback(appId string, mqPub *xkafka.Producer) *WithoutAckCallback {
 	return &WithoutAckCallback{
 		appId: appId,
+		topic: fmt.Sprintf("received-%s-topic", appId),
 		mqPub: mqPub,
 	}
 }
@@ -86,7 +88,7 @@ func (e *WithoutAckCallback) Transport(ctx context.Context, mid int64, key, from
 		return err
 	}
 
-	_, _, err = e.mqPub.Publish(from, b)
+	_, _, err = e.mqPub.Publish(e.topic, from, b)
 	return err
 }
 

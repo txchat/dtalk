@@ -12,9 +12,9 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/ethereum/go-ethereum v1.10.8
 	github.com/gammazero/workerpool v1.1.2
-	github.com/go-sql-driver/mysql v1.6.0
+	github.com/go-sql-driver/mysql v1.7.0
 	github.com/gogo/protobuf v1.3.2
-	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
+	github.com/golang/glog v1.0.0
 	github.com/golang/protobuf v1.5.2
 	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/google/uuid v1.3.0
@@ -27,16 +27,15 @@ require (
 	github.com/oofpgDLD/u-push v0.0.2
 	github.com/pkg/errors v0.9.1
 	github.com/rs/zerolog v1.21.0
-	github.com/stretchr/testify v1.8.0
-	github.com/swaggo/swag v1.7.9
+	github.com/stretchr/testify v1.8.1
 	github.com/tencentyun/tls-sig-api-v2-golang v1.2.0
 	github.com/txchat/im v0.0.1
 	github.com/txchat/imparse v0.0.1
-	github.com/zeromicro/go-zero v1.4.0
-	go.etcd.io/etcd/api/v3 v3.5.4
-	go.etcd.io/etcd/client/v3 v3.5.4
+	github.com/zeromicro/go-zero v1.4.3
+	go.etcd.io/etcd/api/v3 v3.5.5
+	go.etcd.io/etcd/client/v3 v3.5.5
 	golang.org/x/crypto v0.0.0-20220722155217-630584e8d5aa
-	google.golang.org/grpc v1.48.0
+	google.golang.org/grpc v1.50.1
 	google.golang.org/protobuf v1.28.1
 )
 

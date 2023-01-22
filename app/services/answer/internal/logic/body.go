@@ -2,7 +2,7 @@ package logic
 
 import (
 	"github.com/golang/protobuf/proto"
-	comet "github.com/txchat/im/api/comet/grpc"
+	"github.com/txchat/im/api/protocol"
 	"github.com/txchat/imparse/proto/common"
 	"github.com/txchat/imparse/proto/signal"
 )
@@ -30,9 +30,9 @@ var signalReliableMap = map[signal.SignalType]bool{
 }
 
 func noticeMsgData(channelType int32, from, target string, seq string, data []byte) ([]byte, error) {
-	var p comet.Proto
+	var p protocol.Proto
 	var err error
-	p.Op = int32(comet.Op_SendMsg)
+	p.Op = int32(protocol.Op_SendMsg)
 	p.Ver = 1
 	p.Seq = 0
 
@@ -63,9 +63,9 @@ func noticeMsgData(channelType int32, from, target string, seq string, data []by
 }
 
 func signalBody(target string, tp signal.SignalType, actionData []byte) ([]byte, error) {
-	var p comet.Proto
+	var p protocol.Proto
 	var err error
-	p.Op = int32(comet.Op_SendMsg)
+	p.Op = int32(protocol.Op_SendMsg)
 	p.Ver = 1
 	p.Seq = 0
 

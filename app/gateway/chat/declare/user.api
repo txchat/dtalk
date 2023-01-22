@@ -10,7 +10,7 @@ info(
 // goctl api format -dir .
 
 type LoginReq {
-	ConnType int32 `json:"connType"`
+	ConnType int32 `json:"connType,optional"`
 }
 
 type LoginResp {

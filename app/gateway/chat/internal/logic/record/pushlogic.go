@@ -5,12 +5,13 @@ import (
 	"io/ioutil"
 	"mime/multipart"
 
+	"github.com/txchat/im/api/protocol"
+
 	"github.com/txchat/dtalk/app/gateway/chat/internal/svc"
 	"github.com/txchat/dtalk/app/gateway/chat/internal/types"
 	"github.com/txchat/dtalk/app/services/answer/answerclient"
 	xerror "github.com/txchat/dtalk/pkg/error"
 	xhttp "github.com/txchat/dtalk/pkg/net/http"
-	comet "github.com/txchat/im/api/comet/grpc"
 	"github.com/zeromicro/go-zero/core/logx"
 	"google.golang.org/protobuf/proto"
 )
@@ -53,9 +54,9 @@ func (l *PushLogic) Push(req *types.PushReq, fh *multipart.FileHeader) (resp *ty
 		err = xerror.ErrExec
 		return
 	}
-	p := comet.Proto{
+	p := protocol.Proto{
 		Ver:  1,
-		Op:   int32(comet.Op_SendMsg),
+		Op:   int32(protocol.Op_SendMsg),
 		Seq:  0,
 		Ack:  0,
 		Body: body,
