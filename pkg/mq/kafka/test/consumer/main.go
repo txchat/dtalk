@@ -24,15 +24,15 @@ var (
 )
 
 func init() {
-	flag.IntVar(&Consumers, "cons", 1, "")
-	flag.IntVar(&Processors, "pros", 1, "")
+	flag.IntVar(&Consumers, "cons", 1, "装填到缓冲区的工作协程数量")
+	flag.IntVar(&Processors, "pros", 1, "从缓冲区取出的工作协程数量")
 	flag.IntVar(&connTimeout, "cto", 7000, "连接超时时间，单位ms")
-	flag.IntVar(&batchCacheCapacity, "bcc", 0, "缓冲区大小")
-	flag.IntVar(&consumerCacheCapacity, "ccc", 0, "缓冲区大小")
+	flag.IntVar(&batchCacheCapacity, "bcc", 0, "批量消费缓冲区大小")
+	flag.IntVar(&consumerCacheCapacity, "ccc", 0, "单个消费者缓冲区大小")
 	flag.StringVar(&topic, "topic", "test-mytest-topic", "")
 	flag.StringVar(&group, "group", "", "")
 	flag.StringVar(&broker, "broker", "127.0.0.1:9092", "")
-	flag.BoolVar(&graceful, "graceful", true, "")
+	flag.BoolVar(&graceful, "graceful", true, "优雅停止开关")
 }
 
 //

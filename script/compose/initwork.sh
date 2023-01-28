@@ -10,7 +10,7 @@ created_network=()
 
 serviceList=$1
 projectVersion=$2
-networks="txchat-componets txchat-service"
+networks="txchat-components txchat-service"
 
 # platform adaptation
 HOST_OS=$(uname -s | tr '[:upper:]' '[:lower:]')

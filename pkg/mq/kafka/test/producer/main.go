@@ -23,7 +23,7 @@ var (
 
 func init() {
 	flag.IntVar(&start, "start", 0, "")
-	flag.IntVar(&number, "number", 1, "")
+	flag.IntVar(&number, "number", 1, "并发生产数")
 	flag.StringVar(&topic, "topic", "test-mytest-topic", "")
 	flag.StringVar(&broker, "broker", "127.0.0.1:9092", "")
 }

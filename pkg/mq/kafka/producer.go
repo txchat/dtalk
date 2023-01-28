@@ -18,7 +18,7 @@ type ProducerConfig struct {
 
 type Producer struct {
 	brokers []string
-	conn sarama.SyncProducer
+	conn    sarama.SyncProducer
 }
 
 func ensureProducerConfig(cfg *ProducerConfig) {
