@@ -128,6 +128,7 @@ func (bc *BatchConsumer) consumeOne(key string, data []byte) error {
 
 func (bc *BatchConsumer) close() {
 	if atomic.CompareAndSwapInt32(&bc.isClosed, 0, 1) {
+		bc.consumer.Close()
 		close(bc.channel)
 	}
 }
@@ -138,14 +139,13 @@ func (bc *BatchConsumer) Start() {
 }
 
 func (bc *BatchConsumer) Stop() {
-	bc.consumer.Close()
 	bc.close()
 }
 
 func (bc *BatchConsumer) GracefulStop(ctx context.Context) {
 	down := make(chan struct{})
 	go func() {
-		bc.consumer.Close()
+		bc.close()
 		bc.consumerWorkers.StopWait()
 		close(down)
 	}()

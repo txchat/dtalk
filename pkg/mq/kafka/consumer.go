@@ -23,9 +23,10 @@ type ConsumerConfig struct {
 }
 
 type Consumer struct {
-	log log15.Logger
-	cfg ConsumerConfig
-	ctx context.Context
+	log    log15.Logger
+	cfg    ConsumerConfig
+	ctx    context.Context
+	cancel func()
 
 	client sarama.ConsumerGroup
 	queue  chan *sarama.ConsumerMessage
@@ -64,20 +65,22 @@ func NewConsumer(cfg ConsumerConfig, logger log15.Logger) *Consumer {
 		logger = log15.New()
 	}
 
-	consumer := &Consumer{
-		log:    logger,
-		cfg:    cfg,
-		ctx:    context.Background(),
-		client: nil,
-		queue:  make(chan *sarama.ConsumerMessage, cfg.CacheCapacity),
-		ready:  make(chan bool),
-	}
-
 	client, err := sarama.NewConsumerGroup(cfg.Brokers, cfg.Group, c)
 	if err != nil {
 		panic(err)
 	}
-	consumer.client = client
+
+	ctx, cancel := context.WithCancel(context.Background())
+	consumer := &Consumer{
+		log:      logger,
+		cfg:      cfg,
+		ctx:      ctx,
+		cancel:   cancel,
+		client:   client,
+		queue:    make(chan *sarama.ConsumerMessage, cfg.CacheCapacity),
+		ready:    make(chan bool),
+		isClosed: 0,
+	}
 
 	go func() {
 		for {
@@ -94,16 +97,15 @@ func NewConsumer(cfg ConsumerConfig, logger log15.Logger) *Consumer {
 				return
 			}
 			//consumer.log.Info("consumer rebalanced", "member id", session.MemberID(), "id", session.GenerationID())
-			consumer.ready = make(chan bool)
 		}
 	}()
 
-	ctx, cancel := context.WithTimeout(context.Background(), cfg.ConnectTimeout)
-	defer cancel()
+	timeoutCtx, done := context.WithTimeout(consumer.ctx, cfg.ConnectTimeout)
+	defer done()
 	//block create with timeout
 	select {
-	case <-ctx.Done():
-		panic(ctx.Err())
+	case <-timeoutCtx.Done():
+		panic(timeoutCtx.Err())
 	case <-consumer.ready:
 	}
 	return consumer
@@ -121,7 +123,9 @@ func (c *Consumer) FetchMessage(ctx context.Context) (message *sarama.ConsumerMe
 func (c *Consumer) Close() error {
 	var err error
 	if atomic.CompareAndSwapInt32(&c.isClosed, 0, 1) {
+		c.cancel()
 		err = c.client.Close()
+		close(c.queue)
 	}
 	return err
 }
@@ -135,7 +139,7 @@ func (c *Consumer) Setup(sarama.ConsumerGroupSession) error {
 // Cleanup is run at the end of a session, once all ConsumeClaim goroutines have exited
 // but before the offsets are committed for the very last time.
 func (c *Consumer) Cleanup(session sarama.ConsumerGroupSession) error {
-	close(c.queue)
+	c.ready = make(chan bool)
 	return nil
 }
 
