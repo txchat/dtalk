@@ -134,7 +134,7 @@ func (l *CreateGroupLogic) randomMarkId() (string, error) {
 	for i := 0; i < 10; i++ {
 		markId := xrand.NewNumber(8)
 		if _, err := l.svcCtx.Repo.GetGroupByMarkId(markId); err != nil {
-			if errors.Is(err, xerror.ErrNotFound) {
+			if errors.Is(err, xerror.ErrGroupNotExist) || errors.Is(err, xerror.ErrNotFound) {
 				return markId, nil
 			}
 			return "", err

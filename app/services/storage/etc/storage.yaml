@@ -22,7 +22,7 @@ MySQL:
   Port: 3306
   User: "root"
   Pwd: "${MYSQL_PASSWORD}"
-  DB: "dtalk"
+  DB: "dtalk_record"
 DeviceRPC:
   Etcd:
     Hosts:
