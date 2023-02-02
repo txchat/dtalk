@@ -93,7 +93,7 @@ func (bc *BatchConsumer) startProducers() {
 				// io.ErrClosedPipe means committing messages on the consumer,
 				// kafka will refire the messages on uncommitted messages, ignore
 				if err == io.EOF || err == io.ErrClosedPipe {
-					bc.log.Debug("fetchMessage io.EOF or io.ErrClosedPipe")
+					bc.log.Info("fetchMessage io.EOF or io.ErrClosedPipe")
 					return
 				}
 				if err != nil {
