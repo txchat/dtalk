@@ -45,7 +45,7 @@ StoreDealConsumerConfig:
   Version: ""
   Brokers: ["${KAFKA_HOST}:9092"]
   CacheCapacity: 0
-  ConnectTimeout: "7s"
+  ConnectTimeout: "30s"
 StoreDealBatchConsumerConf:
   CacheCapacity: 0
   Consumers: 0
@@ -54,7 +54,7 @@ SyncDealConsumerConfig:
   Version: ""
   Brokers: ["${KAFKA_HOST}:9092"]
   CacheCapacity: 0
-  ConnectTimeout: "7s"
+  ConnectTimeout: "30s"
 SyncDealBatchConsumerConf:
   CacheCapacity: 0
   Consumers: 0

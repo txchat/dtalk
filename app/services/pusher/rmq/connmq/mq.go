@@ -39,7 +39,7 @@ func NewService(cfg config.Config, svcCtx *svc.ServiceContext) *Service {
 	}
 	//topic config
 	cfg.ConnDealConsumerConfig.Topic = fmt.Sprintf("goim-%s-topic", cfg.AppID)
-	cfg.ConnDealConsumerConfig.Group = fmt.Sprintf("goim-%s-group", cfg.AppID)
+	cfg.ConnDealConsumerConfig.Group = fmt.Sprintf("goim-%s-pusher-group", cfg.AppID)
 	//new batch consumer
 	consumer := xkafka.NewConsumer(cfg.ConnDealConsumerConfig, nil)
 	logx.Info("dial kafka broker success")

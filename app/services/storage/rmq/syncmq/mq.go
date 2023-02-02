@@ -28,7 +28,7 @@ func NewService(cfg config.Config, svcCtx *svc.ServiceContext) *Service {
 	}
 	//topic config
 	cfg.SyncDealConsumerConfig.Topic = fmt.Sprintf("store-%s-topic", cfg.AppID)
-	cfg.SyncDealConsumerConfig.Group = fmt.Sprintf("store-%s-group", cfg.AppID)
+	cfg.SyncDealConsumerConfig.Group = fmt.Sprintf("store-%s-storage-group", cfg.AppID)
 	//new batch consumer
 	consumer := xkafka.NewConsumer(cfg.SyncDealConsumerConfig, nil)
 	logx.Info("dial kafka broker success")

@@ -30,7 +30,7 @@ func NewService(cfg config.Config, svcCtx *svc.ServiceContext) *Service {
 	}
 	//topic config
 	cfg.PushDealConsumerConfig.Topic = fmt.Sprintf("received-%s-topic", cfg.AppID)
-	cfg.PushDealConsumerConfig.Group = fmt.Sprintf("received-%s-group", cfg.AppID)
+	cfg.PushDealConsumerConfig.Group = fmt.Sprintf("received-%s-pusher-group", cfg.AppID)
 	//new batch consumer
 	consumer := xkafka.NewConsumer(cfg.PushDealConsumerConfig, nil)
 	logx.Info("dial kafka broker success")
