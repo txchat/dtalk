@@ -2,8 +2,8 @@ package msgfactory
 
 import (
 	"github.com/txchat/dtalk/app/services/answer/internal/model"
+	"github.com/txchat/dtalk/internal/bizproto"
 	"github.com/txchat/imparse"
-	"github.com/txchat/imparse/chat"
 	"github.com/txchat/imparse/proto/common"
 )
 
@@ -58,23 +58,23 @@ func NewChecker() *Checker {
 
 func (c *Checker) CheckFrame(frame imparse.Frame) error {
 	switch frame.Type() {
-	case chat.PrivateFrameType:
-		f := frame.(*chat.PrivateFrame)
+	case bizproto.PrivateFrameType:
+		f := frame.(*bizproto.PrivateFrame)
 		if !isChTypeOk(f.GetChannelType()) {
 			return model.ErrorChType
 		}
 		if !isMsgTypeOk(f.GetMsgType()) {
 			return model.ErrorMsgType
 		}
-	case chat.GroupFrameType:
-		f := frame.(*chat.GroupFrame)
+	case bizproto.GroupFrameType:
+		f := frame.(*bizproto.GroupFrame)
 		if !isChTypeOk(f.GetChannelType()) {
 			return model.ErrorChType
 		}
 		if !isMsgTypeOk(f.GetMsgType()) {
 			return model.ErrorMsgType
 		}
-	case chat.SignalFrameType:
+	case bizproto.SignalFrameType:
 		return model.ErrorEnvType
 	default:
 		return model.ErrorEnvType

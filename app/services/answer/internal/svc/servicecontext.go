@@ -9,10 +9,10 @@ import (
 	"github.com/txchat/dtalk/app/services/answer/internal/dao"
 	"github.com/txchat/dtalk/app/services/answer/internal/msgfactory"
 	"github.com/txchat/dtalk/app/services/generator/generatorclient"
+	"github.com/txchat/dtalk/internal/bizproto"
 	xerror "github.com/txchat/dtalk/pkg/error"
 	xkafka "github.com/txchat/dtalk/pkg/mq/kafka"
 	"github.com/txchat/imparse"
-	"github.com/txchat/imparse/chat"
 	"github.com/zeromicro/go-zero/zrpc"
 )
 
@@ -24,7 +24,7 @@ type ServiceContext struct {
 	AnswerInter4rmq imparse.Answer
 	AnswerInter4rpc imparse.Answer
 	//need not init
-	Parser chat.StandardParse
+	Parser bizproto.StandardParse
 
 	IDGenRPC generatorclient.Generator
 	LogicRPC logicclient.Logic

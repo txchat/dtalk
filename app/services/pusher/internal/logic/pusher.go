@@ -11,7 +11,7 @@ import (
 	"github.com/txchat/dtalk/internal/recordhelper"
 	"github.com/txchat/dtalk/proto/offline"
 	"github.com/txchat/dtalk/proto/record"
-	"github.com/txchat/im/api/comet"
+	"github.com/txchat/im/app/comet/cometclient"
 	"github.com/txchat/im/app/logic/logicclient"
 	"github.com/txchat/imparse/proto/auth"
 	"github.com/txchat/imparse/proto/common"
@@ -44,7 +44,7 @@ func (l *PusherLogic) UniCastDevices(m *record.PushMsg) error {
 		return err
 	}
 
-	index := comet.PushMsgReply{}
+	index := cometclient.PushMsgReply{}
 	err = proto.Unmarshal(reply.Msg, &index)
 	if err != nil {
 		return fmt.Errorf("unmarshal PushMsgReply failed: %v", err)
@@ -105,7 +105,7 @@ func (l *PusherLogic) UniCast(m *record.PushMsg) error {
 		return err
 	}
 
-	index := comet.PushMsgReply{}
+	index := cometclient.PushMsgReply{}
 	err = proto.Unmarshal(reply.Msg, &index)
 	if err != nil {
 		return fmt.Errorf("unmarshal PushMsgReply failed: %v", err)
@@ -149,7 +149,7 @@ func (l *PusherLogic) GroupCast(m *record.PushMsg) error {
 		return err
 	}
 
-	index := comet.PushMsgReply{}
+	index := cometclient.PushMsgReply{}
 	err = proto.Unmarshal(reply.Msg, &index)
 	if err != nil {
 		return fmt.Errorf("unmarshal PushMsgReply failed: %v", err)

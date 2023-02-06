@@ -12,13 +12,13 @@ import (
 	innerLogic "github.com/txchat/dtalk/app/services/pusher/internal/logic"
 	"github.com/txchat/dtalk/app/services/pusher/internal/model"
 	"github.com/txchat/dtalk/app/services/pusher/internal/svc"
+	"github.com/txchat/dtalk/internal/bizproto"
 	xkafka "github.com/txchat/dtalk/pkg/mq/kafka"
 	"github.com/txchat/dtalk/pkg/util"
-	"github.com/txchat/im/api/comet"
 	"github.com/txchat/im/api/protocol"
+	"github.com/txchat/im/app/comet/cometclient"
 	"github.com/txchat/im/app/logic/logicclient"
 	"github.com/txchat/imparse"
-	"github.com/txchat/imparse/chat"
 	"github.com/txchat/imparse/proto/auth"
 	"github.com/txchat/imparse/proto/signal"
 	"github.com/zeromicro/go-zero/core/logx"
@@ -175,7 +175,7 @@ func (s *Service) DealConn(ctx context.Context, m *logicclient.BizMsg) error {
 				)
 			}
 			switch item.Type {
-			case string(chat.PrivateFrameType):
+			case string(bizproto.PrivateFrameType):
 				err := s.svcCtx.SignalHub.MessageReceived(ctx, item)
 				if err != nil {
 					s.Error("UniCastSignalReceived failed",
@@ -191,7 +191,7 @@ func (s *Service) DealConn(ctx context.Context, m *logicclient.BizMsg) error {
 		//TODO disabled
 		return nil
 		var p protocol.Proto
-		var pro comet.SyncMsg
+		var pro cometclient.SyncMsg
 		err := proto.Unmarshal(m.Msg, &p)
 		if err != nil {
 			s.Error("unmarshal proto error", "err", err)
@@ -225,7 +225,7 @@ func parseDevice(m *logicclient.BizMsg) (*auth.Login, error) {
 	if err != nil {
 		return nil, err
 	}
-	var authMsg comet.AuthMsg
+	var authMsg cometclient.AuthMsg
 	err = proto.Unmarshal(p.Body, &authMsg)
 	if err != nil {
 		return nil, err

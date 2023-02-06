@@ -6,11 +6,11 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/txchat/dtalk/app/services/pusher/pusherclient"
+	"github.com/txchat/dtalk/internal/bizproto"
 	"github.com/txchat/dtalk/internal/recordutil"
 	"github.com/txchat/dtalk/pkg/util"
 	"github.com/txchat/im/api/protocol"
 	"github.com/txchat/imparse"
-	"github.com/txchat/imparse/chat"
 	"github.com/txchat/imparse/proto/common"
 	"github.com/txchat/imparse/proto/signal"
 )
@@ -61,7 +61,7 @@ func (s *Service) sendPrivateUnReadMsg(key, uid string) error {
 			continue
 		}
 		bytes, _ := proto.Marshal(&p)
-		err = s.pushClient(context.TODO(), key, m.SenderId, strconv.FormatInt(eveP.Mid, 10), key, imparse.UniCast, chat.PrivateFrameType, bytes)
+		err = s.pushClient(context.TODO(), key, m.SenderId, strconv.FormatInt(eveP.Mid, 10), key, imparse.UniCast, bizproto.PrivateFrameType, bytes)
 		if err != nil {
 			s.Error("sendPrivateUnReadMsg PushClient failed", "toUID", uid, "mid", eveP.Mid, "err", err)
 			return err
@@ -103,7 +103,7 @@ func (s *Service) sendGroupUnReadMsg(key, uid string) error {
 			continue
 		}
 		bytes, _ := proto.Marshal(&p)
-		err = s.pushClient(context.TODO(), key, m.SenderId, strconv.FormatInt(eveP.Mid, 10), key, imparse.GroupCast, chat.GroupFrameType, bytes)
+		err = s.pushClient(context.TODO(), key, m.SenderId, strconv.FormatInt(eveP.Mid, 10), key, imparse.GroupCast, bizproto.GroupFrameType, bytes)
 		if err != nil {
 			s.Error("sendGroupUnReadMsg PushClient failed", "toUID", uid, "mid", eveP.Mid, "err", err)
 			return err
@@ -137,7 +137,7 @@ func (s *Service) sendSignalUnReadMsg(key, uid string) error {
 			continue
 		}
 		bytes, _ := proto.Marshal(&p)
-		err = s.pushClient(context.TODO(), key, m.Uid, m.Id, key, imparse.UniCast, chat.SignalFrameType, bytes)
+		err = s.pushClient(context.TODO(), key, m.Uid, m.Id, key, imparse.UniCast, bizproto.SignalFrameType, bytes)
 		if err != nil {
 			s.Error("sendSignalUnReadMsg PushClient failed", "toUID", uid, "action", eveP.Type, "err", err)
 			return err
@@ -175,13 +175,13 @@ func (s *Service) CheckOnline(ctx context.Context, key string) (bool, error) {
 
 func (s *Service) MarkReceived(tp, uid string, mid int64) error {
 	switch tp {
-	case string(chat.PrivateFrameType):
+	case string(bizproto.PrivateFrameType):
 		_, _, err := s.svcCtx.Repo.MarkMsgReceived(uid, mid)
 		return err
-	case string(chat.GroupFrameType):
+	case string(bizproto.GroupFrameType):
 		_, _, err := s.svcCtx.Repo.MarkGroupMsgReceived(uid, mid)
 		return err
-	case string(chat.SignalFrameType):
+	case string(bizproto.SignalFrameType):
 		_, _, err := s.svcCtx.Repo.MarkSignalReceived(uid, mid)
 		return err
 	default:

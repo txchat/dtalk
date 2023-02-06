@@ -12,10 +12,10 @@ import (
 	"github.com/txchat/dtalk/app/services/storage/internal/config"
 	"github.com/txchat/dtalk/app/services/storage/internal/model"
 	"github.com/txchat/dtalk/app/services/storage/internal/svc"
+	"github.com/txchat/dtalk/internal/bizproto"
 	xkafka "github.com/txchat/dtalk/pkg/mq/kafka"
 	record "github.com/txchat/dtalk/proto/record"
 	"github.com/txchat/imparse"
-	"github.com/txchat/imparse/chat"
 	"github.com/txchat/imparse/proto/auth"
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -26,7 +26,7 @@ type Service struct {
 	svcCtx        *svc.ServiceContext
 	batchConsumer *xkafka.BatchConsumer
 	storageExec   imparse.Storage
-	parser        chat.StandardParse
+	parser        bizproto.StandardParse
 }
 
 func NewService(cfg config.Config, svcCtx *svc.ServiceContext) *Service {
@@ -72,7 +72,7 @@ func (s *Service) handleFunc(key string, data []byte) error {
 }
 
 func (s *Service) DealStore(ctx context.Context, m *record.PushMsg) error {
-	frame, err := s.parser.NewFrame(m.GetKey(), m.GetFromId(), bytes.NewReader(m.GetMsg()), chat.WithMid(m.GetMid()), chat.WithTarget(m.GetTarget()), chat.WithTransmissionMethod(imparse.Channel(m.GetType())))
+	frame, err := s.parser.NewFrame(m.GetKey(), m.GetFromId(), bytes.NewReader(m.GetMsg()), bizproto.WithMid(m.GetMid()), bizproto.WithTarget(m.GetTarget()), bizproto.WithTransmissionMethod(imparse.Channel(m.GetType())))
 	if err != nil {
 		s.Error("NewFrame error", "key", m.Key, "from", m.FromId, "err", err)
 		return err

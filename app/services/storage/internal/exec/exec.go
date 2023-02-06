@@ -11,9 +11,9 @@ import (
 	"github.com/txchat/dtalk/app/services/storage/internal/logic"
 	"github.com/txchat/dtalk/app/services/storage/internal/model"
 	"github.com/txchat/dtalk/app/services/storage/internal/svc"
+	"github.com/txchat/dtalk/internal/bizproto"
 	"github.com/txchat/dtalk/pkg/util"
 	"github.com/txchat/imparse"
-	"github.com/txchat/imparse/chat"
 	"github.com/txchat/imparse/proto/auth"
 )
 
@@ -29,22 +29,22 @@ func NewStorageExec(svcCtx *svc.ServiceContext) *StorageExec {
 
 func (e *StorageExec) SaveMsg(deviceType auth.Device, frame imparse.Frame) error {
 	switch frame.Type() {
-	case chat.PrivateFrameType:
-		pv := frame.(*chat.PrivateFrame)
+	case bizproto.PrivateFrameType:
+		pv := frame.(*bizproto.PrivateFrame)
 		if pv.GetTransmissionMethod() != imparse.UniCast {
 			return model.ErrFrameType
 		}
 		l := logic.NewStorePrivateMsgLogic(context.TODO(), e.svcCtx)
 		return l.StoreMsg(deviceType, pv.GetBase())
-	case chat.GroupFrameType:
-		pv := frame.(*chat.GroupFrame)
+	case bizproto.GroupFrameType:
+		pv := frame.(*bizproto.GroupFrame)
 		if pv.GetTransmissionMethod() != imparse.GroupCast {
 			return model.ErrFrameType
 		}
 		l := logic.NewStoreGroupMsgLogic(context.TODO(), e.svcCtx)
 		return l.StoreMsg(deviceType, pv.GetBase())
-	case chat.SignalFrameType:
-		pv := frame.(*chat.SignalFrame)
+	case bizproto.SignalFrameType:
+		pv := frame.(*bizproto.SignalFrame)
 		base := pv.GetBase()
 		if !base.GetReliable() {
 			return nil

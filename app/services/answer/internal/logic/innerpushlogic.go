@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"context"
 
+	"github.com/txchat/dtalk/internal/bizproto"
 	"github.com/txchat/imparse"
-	"github.com/txchat/imparse/chat"
 
 	"github.com/txchat/dtalk/app/services/answer/internal/svc"
 
@@ -28,7 +28,7 @@ func NewInnerPushLogic(ctx context.Context, svcCtx *svc.ServiceContext) *InnerPu
 
 func (l *InnerPushLogic) InnerPushToClient(exec imparse.Answer, key, from, target string, pushType imparse.Channel, body []byte) (int64, error) {
 	var mid int64
-	frame, err := l.svcCtx.Parser.NewFrame(key, from, bytes.NewReader(body), chat.WithTarget(target), chat.WithTransmissionMethod(pushType))
+	frame, err := l.svcCtx.Parser.NewFrame(key, from, bytes.NewReader(body), bizproto.WithTarget(target), bizproto.WithTransmissionMethod(pushType))
 	if err != nil {
 		return 0, err
 	}

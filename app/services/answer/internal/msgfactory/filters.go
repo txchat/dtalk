@@ -5,10 +5,10 @@ import (
 	"time"
 
 	"github.com/txchat/dtalk/app/services/group/groupclient"
+	"github.com/txchat/dtalk/internal/bizproto"
 	xerror "github.com/txchat/dtalk/pkg/error"
 	"github.com/txchat/dtalk/pkg/util"
 	"github.com/txchat/imparse"
-	"github.com/txchat/imparse/chat"
 	"github.com/txchat/imparse/proto/common"
 )
 
@@ -25,9 +25,9 @@ func NewFilters(groupRPCClient groupclient.Group) *Filters {
 func (fs *Filters) GetFilters() map[imparse.FrameType][]imparse.Filter {
 	//filters
 	return map[imparse.FrameType][]imparse.Filter{
-		chat.GroupFrameType: {
+		bizproto.GroupFrameType: {
 			func(ctx context.Context, frame imparse.Frame) error {
-				fm := frame.(*chat.GroupFrame)
+				fm := frame.(*bizproto.GroupFrame)
 				//判断群聊拦截
 				if fm.GetMsgType() != common.MsgType_Notice {
 					if ok, err := fs.checkInGroup(ctx, fm.GetFrom(), util.MustToInt64(fm.GetTarget())); !ok {
