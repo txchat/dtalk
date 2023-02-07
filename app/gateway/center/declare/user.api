@@ -1,0 +1,33 @@
+syntax = "v2"
+
+info(
+	title: "backend api declare"
+	desc: ""
+	author: "dld"
+	email: "oofpgdld@gmail.com"
+	version: "v1.0.0"
+)
+// goctl api format -dir .
+
+type LoginReq {
+	UserName string `json:"userName"`
+	Password string `json:"password"`
+}
+
+type LoginResp {
+	UserInfo UserInfo `json:"userInfo"`
+}
+
+type UserInfo {
+	UserName string `json:"userName"`
+	Token    string `json:"token"`
+}
+
+@server(
+	group: backend
+)
+service center-api {
+	@doc "后台用户登录"
+	@handler Login
+	post /backend/user/login (LoginReq) returns (LoginResp)
+}

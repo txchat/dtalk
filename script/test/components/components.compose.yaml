@@ -1,0 +1,210 @@
+version: "2.4"
+services:
+  redis:
+    image: redis:${REDIS_VERSION}
+    container_name: ${REDIS_CONTAINER_NAME}
+    restart: unless-stopped
+    networks:
+      - components
+    volumes:
+      - redis_data:/data
+      - redis_config:/usr/local/etc/redis
+      - redis_log:/logs
+    ports:
+      - ${REDIS_PUB_PORT}:6379
+    command: [ "redis-server"]
+  etcd:
+    image: quay.io/coreos/etcd:${ETCD_VERSION}
+    container_name: ${ETCD_CONTAINER_NAME}
+    restart: unless-stopped
+    networks:
+      - components
+    ports:
+      - ${ETCD_PUB_CLIENT_PORT}:2379
+      - ${ETCD_PUB_PEER_PORT}:2380
+    volumes:
+      - etcd_data:/etcd-data
+    command:
+      - /usr/local/bin/etcd
+      - --name=${ETCD_NAME}
+      - --data-dir=/etcd_data
+      - --listen-client-urls=http://0.0.0.0:2379
+      - --advertise-client-urls=http://${ETCD_CONTAINER_NAME}:${ETCD_PUB_CLIENT_PORT}
+      - --listen-peer-urls=http://0.0.0.0:2380
+      - --initial-advertise-peer-urls=http://${ETCD_CONTAINER_NAME}:${ETCD_PUB_PEER_PORT}
+      - --initial-cluster=${ETCD_NAME}=http://${ETCD_CONTAINER_NAME}:${ETCD_PUB_PEER_PORT}
+      - --initial-cluster-token=${ETCD_TOKEN}
+      - --initial-cluster-state=new
+      - --log-level=info
+      - --logger=zap
+      - --log-outputs=stderr
+  mysql:
+    image: custom-mysql:${MYSQL_VERSION}
+    build:
+      context: .
+      dockerfile: mysql.Dockerfile
+      args:
+        version: ${MYSQL_VERSION}
+    container_name: ${MYSQL_CONTAINER_NAME}
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - mysql_log:/logs
+      - mysql_init:/docker-entrypoint-initdb.d
+    environment:
+      TZ: Asia/Shanghai
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_ROOT_HOST: ${MYSQL_ROOT_HOST}
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 10s
+      retries: 10
+#  minio:
+#    image: minio/minio:${MINIO_VERSION}
+#    container_name: ${MINIO_CONTAINER_NAME}
+#    ports:
+#      - "9000:9000"
+#      - "9001:9001"
+#    volumes:
+#      - ${MINIO_DATA_VOLUME}:/data
+#    networks:
+#      - components
+#    command: server --console-address ":9001" /data
+#    environment:
+#      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+#      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+#    restart: always
+#    healthcheck:
+#      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
+#      interval: 30s
+#      timeout: 20s
+#      retries: 3
+#  nginx:
+#    image: custom-nginx:${NGINX_VERSION}
+#    build:
+#      context: .
+#      dockerfile: nginx.Dockerfile
+#      args:
+#        version: ${NGINX_VERSION}
+#    container_name: ${NGINX_CONTAINER_NAME}
+#    volumes:
+#      - ${NGINX_CONFIG_VOLUME}:/etc/nginx/conf.d:ro
+#      - ${NGINX_LOG_VOLUME}:/var/log/nginx/
+#    networks:
+#      - components
+#    ports:
+#      - "80"
+#      - "8888:8888"
+#      - "8889:8889"
+#    depends_on:
+#      - gateway
+#      - discovery
+#      - backup
+#      - oss
+#      - backend
+#      - call
+
+  zookeeper:
+    image: wurstmeister/zookeeper
+    container_name: ${ZOOKEEPER_CONTAINER_NAME}
+    restart: unless-stopped
+    volumes:
+      - zookeeper_data:/data
+    networks:
+      - components
+    ports:
+      - "2181:2181"
+  # kafka version: 1.1.0
+  # scala version: 2.12
+  kafka:
+    image: wurstmeister/kafka
+    container_name: ${KAFKA_CONTAINER_NAME}
+    restart: unless-stopped
+    ports:
+      - "9092:9092"
+      - "9094:9094"
+    # kafka connectivity: https://github.com/wurstmeister/kafka-docker/wiki/Connectivity#internal-versus-advertised
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: INSIDE://127.0.0.1:9092,OUTSIDE://127.0.0.1:9094
+      KAFKA_LISTENERS: INSIDE://:9092,OUTSIDE://:9094
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+      #      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      #      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://host.docker.internal:9092
+      #      KAFKA_ADVERTISED_HOST_NAME: localhost
+      KAFKA_ZOOKEEPER_CONNECT: "${ZOOKEEPER_CONTAINER_NAME}:2181"
+      KAFKA_BROKER_ID: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CREATE_TOPICS: "stream-in:1:1,stream-out:1:1"
+    volumes:
+      - kafka_data:/kafka
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - components
+    depends_on:
+      - zookeeper
+    healthcheck:
+      test: [ "CMD", "kafka-topics.sh", "--list", "--zookeeper", "txchat-zookeeper:2181" ]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+  kafka-manager:
+    container_name: ${KAFKA_MANAGER_CONTAINER_NAME}
+    image: sheepkiller/kafka-manager
+    environment:
+      ZK_HOSTS: ${ZOOKEEPER_CONTAINER_NAME}:2181
+    networks:
+      - components
+    ports:
+      - "9020:9000"
+    depends_on:
+      zookeeper:
+        condition: service_started
+#      kafka: # this feature is removed at compose version 3.x
+#        condition: service_healthy
+volumes:
+  redis_data:
+    name: ${REDIS_DATA_VOLUME}
+    external: false
+  redis_config:
+    name: ${REDIS_CONFIG_VOLUME}
+    external: false
+  redis_log:
+    name: ${REDIS_LOG_VOLUME}
+    external: false
+  etcd_data:
+    name: ${ETCD_DATA_VOLUME}
+    external: false
+  mysql_data:
+    name: ${MYSQL_DATA_VOLUME}
+    external: false
+  mysql_log:
+    name: ${MYSQL_LOG_VOLUME}
+    external: false
+  mysql_init:
+    name: ${MYSQL_INIT_VOLUME}
+    external: false
+  mysql_config:
+    name: ${MYSQL_CONFIG_VOLUME}
+    external: false
+  minio_data:
+    name: ${MINIO_DATA_VOLUME}
+    external: false
+  nginx_config:
+    name: ${NGINX_CONFIG_VOLUME}
+    external: false
+  nginx_log:
+    name: ${NGINX_LOG_VOLUME}
+    external: false
+  zookeeper_data:
+    name: ${ZOOKEEPER_DATA_VOLUME}
+    external: false
+  kafka_data:
+    name: ${KAFKA_DATA_VOLUME}
+    external: false
+networks:
+  components:
+    external: false

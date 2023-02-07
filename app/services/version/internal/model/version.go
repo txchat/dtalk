@@ -1,0 +1,66 @@
+package model
+
+import (
+	"encoding/json"
+
+	"github.com/txchat/dtalk/pkg/util"
+)
+
+type Description []string
+
+func (desc *Description) ToString() string {
+	b, err := json.Marshal(desc)
+	if err != nil {
+		return ""
+	}
+	return string(b)
+}
+
+func ConvertDescription(str string) (Description, error) {
+	var desc Description
+	err := json.Unmarshal([]byte(str), &desc)
+	if err != nil {
+		return nil, err
+	}
+	return desc, nil
+}
+
+type VersionForm struct {
+	Id          int64       `json:"id"`
+	Platform    string      `json:"platform"`
+	Status      int32       `json:"status"`
+	DeviceType  string      `json:"deviceType"`
+	VersionName string      `json:"versionName"`
+	VersionCode int64       `json:"versionCode"`
+	URL         string      `json:"url"`
+	Force       bool        `json:"force"`
+	Description Description `json:"description"`
+	OpeUser     string      `json:"opeUser"`
+	Md5         string      `json:"md5"`
+	Size        int64       `json:"size"`
+	UpdateTime  int64       `json:"updateTime"`
+	CreateTime  int64       `json:"createTime"`
+}
+
+func ConvertVersionForm(record map[string]string) (*VersionForm, error) {
+	description, err := ConvertDescription(record["description"])
+	if err != nil {
+		return nil, err
+	}
+	return &VersionForm{
+		Id:          util.MustToInt64(record["id"]),
+		Platform:    record["platform"],
+		Status:      util.MustToInt32(record["state"]),
+		DeviceType:  record["device_type"],
+		VersionName: record["version_name"],
+		VersionCode: util.MustToInt64(record["version_code"]),
+		URL:         record["download_url"],
+		Force:       util.MustToBool(record["force_update"]),
+		Description: description,
+		OpeUser:     record["ope_user"],
+		Md5:         record["md5"],
+		Size:        util.MustToInt64(record["size"]),
+		UpdateTime:  util.MustToInt64(record["update_time"]),
+		CreateTime:  util.MustToInt64(record["create_time"]),
+	}, nil
+}

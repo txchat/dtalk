@@ -1,0 +1,48 @@
+AppID: dtalk
+Name: answer.rpc
+ListenOn: 0.0.0.0:17001
+Etcd:
+  Hosts:
+  - ${ETCD_HOST}:2379
+  Key: answer.rpc
+RedisDB:
+  Network: "tcp"
+  Addr: "${REDIS_HOST}:6379"
+  Auth: ""
+  Active: 60000
+  Idle: 1024
+  DialTimeout: "200ms"
+  ReadTimeout: "500ms"
+  WriteTimeout: "500ms"
+  IdleTimeout: "120s"
+  Expire: "30m"
+Producer:
+  Version: ""
+  Brokers: ["${KAFKA_HOST}:9092"]
+ConsumerConfig:
+  Version: ""
+  Brokers: ["${KAFKA_HOST}:9092"]
+  CacheCapacity: 0
+  ConnectTimeout: "30s"
+BatchConsumerConf:
+  CacheCapacity: 0
+  Consumers: 0
+  Processors: 0
+IDGenRPC:
+  Etcd:
+    Hosts:
+      - "${ETCD_HOST}:2379"
+    Key: "generator.rpc"
+    Timeout: 60000 # 60s
+GroupRPC:
+  Etcd:
+    Hosts:
+      - "${ETCD_HOST}:2379"
+    Key: "group.rpc"
+    Timeout: 60000 # 60s
+LogicRPC:
+  Etcd:
+    Hosts:
+      - "${ETCD_HOST}:2379"
+    Key: "logic.rpc"
+    Timeout: 60000 # 60s

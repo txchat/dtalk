@@ -1,0 +1,27 @@
+Name: offline.rpc
+ListenOn: 0.0.0.0:8080
+AppID: "dtalk"
+Etcd:
+  Hosts:
+  - ${ETCD_HOST}:2379
+  Key: offline.rpc
+DealConsumerConfig:
+  Version: ""
+  Brokers: ["${KAFKA_HOST}:9092"]
+  CacheCapacity: 0
+  ConnectTimeout: "7s"
+DealBatchConsumerConf:
+  CacheCapacity: 0
+  Consumers: 0
+  Processors: 0
+Pushers: # 友盟离线推送物料
+  Android:
+    Env: "debug"
+    AppKey: ""
+    AppMasterSecret: ""
+    MiActivity: ""
+  iOS:
+    Env: "debug"
+    AppKey: ""
+    AppMasterSecret: ""
+    MiActivity: ""

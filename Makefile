@@ -5,7 +5,8 @@ projectVersion=$(shell git describe --abbrev=8 --tags)
 gitCommit=$(shell git rev-parse --short=8 HEAD)
 
 pkgCommitName=${projectVersion}_${gitCommit}
-servers=answer backend backup call device discovery gateway generator group offline-push oss pusher store
+servers=answer backup call device generator group offline oss pusher storage version
+gateways=center chat
 
 help: ## Display this help screen
 	@printf "Help doc:\nUsage: make [command]\n"
@@ -13,10 +14,10 @@ help: ## Display this help screen
 	@grep -h -E '^([a-zA-Z_-]|\%)+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 build: clean ## 编译本机系统和指令集的可执行文件
-	./script/builder/builder.sh ${TARGETDIR} "" "${servers}"
+	./script/builder/builder.sh ${TARGETDIR} "" "${servers}" "${gateways}"
 
 build_%: clean ## 编译目标机器的可执行文件（例如: make build_linux_amd64）
-	./script/builder/builder.sh ${TARGETDIR} $* "${servers}"
+	./script/builder/builder.sh ${TARGETDIR} $* "${servers}" "${gateways}"
 
 pkg: build ## 编译并打包本机系统和指令集的可执行文件
 	tar -zcvf ${TARGETDIR}_'host'_${pkgCommitName}.tar.gz ${TARGETDIR}/
@@ -28,6 +29,8 @@ images: build_linux_amd64 ## 打包docker镜像
 	cp script/docker/*Dockerfile ${TARGETDIR}
 	cd ${TARGETDIR} && for i in $(servers) ; do \
 		docker build --build-arg server_name=$$i . -f server.Dockerfile -t txchat-$$i:${projectVersion}; \
+	done && for i in $(gateways) ; do \
+		docker build --build-arg server_name=$$i . -f gateway.Dockerfile -t txchat-$$i:${projectVersion}; \
 	done
 
 init-compose: images ## 使用docker compose启动
@@ -36,7 +39,7 @@ init-compose: images ## 使用docker compose启动
 	cp -R script/nginx/. run_compose/
 	cd run_compose && \
 	./envfill.sh;\
-	./initwork.sh "${servers}" "${projectVersion}"
+	./initwork.sh "${servers} ${gateways}" "${projectVersion}"
 
 docker-compose-up: ## 使用docker compose启动
 	@if [ ! -d "run_compose/" ]; then \
@@ -52,15 +55,42 @@ docker-compose-%: ## 使用docker compose 命令(服务列表：make docker-comp
     cd run_compose && \
     docker compose -f components.compose.yaml -f service.compose.yaml $*
 
-.PHONY: doc
-doc:
-	./script/doc/doc.sh v1
+test-init:
+	cp -R script/test/components/. test_compose/
+	cp -R script/mysql/. test_compose/
+	cp -R script/nginx/. test_compose/
+
+test-up:
+	@if [ ! -d "test_compose/" ]; then \
+		exit -1;\
+	 fi; \
+	cd test_compose && \
+	docker compose -f components.compose.yaml up -d
+
+test-%:
+	@if [ ! -d "test_compose/" ]; then \
+       cp -R script/compose/. test_compose/; \
+     fi; \
+    cd test_compose && \
+    docker compose -f components.compose.yaml $*
 
 test:
 	$(GOENV) go test -v ./...
 
 clean:
 	rm -rf ${TARGETDIR}
+
+.PHONY: doc swagger
+doc:
+	# ./script/doc/doc.sh v1
+	goctl -v || GO111MODULE=on GOPROXY=https://goproxy.cn/,direct go install github.com/zeromicro/go-zero/tools/goctl@latest \
+&& goctl api doc --dir app/gateway/center --o docs/api/center && goctl api doc --dir app/gateway/chat --o docs/api/chat
+
+swagger:
+	goctl -v || GO111MODULE=on GOPROXY=https://goproxy.cn/,direct go install github.com/zeromicro/go-zero/tools/goctl@latest \
+&& goctl-swagger -v || GO111MODULE=on GOPROXY=https://goproxy.cn/,direct go install github.com/zeromicro/goctl-swagger@latest \
+&& goctl api plugin -plugin goctl-swagger="swagger -filename center.json" -api app/gateway/center/center.api -dir . \
+$$ goctl api plugin -plugin goctl-swagger="swagger -filename chat.json" -api app/gateway/chat/chat.api -dir .
 
 .PHONY: fmt_proto fmt_shell fmt_go
 

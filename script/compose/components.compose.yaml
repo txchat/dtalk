@@ -60,12 +60,8 @@ services:
       - "8888:8888"
       - "8889:8889"
     depends_on:
-      - gateway
-      - discovery
-      - backup
-      - oss
-      - backend
-      - call
+      - center
+      - chat
 
 volumes:
   txchat-mysql-data:

@@ -2,6 +2,7 @@ package error
 
 import (
 	"context"
+	"math"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -18,10 +19,27 @@ func WrapErr(err error) error {
 	case interface{ GRPCStatus() *status.Status }:
 		return e.GRPCStatus().Err()
 	case *Error:
-		return status.Error(codes.Code(-e.Code()), e.Error())
+		return status.Error(codes.Code(math.Abs(float64(e.Code()))), e.String())
 	default:
 		return status.Error(codes.Unknown, err.Error())
 	}
+}
+
+// UnwrapErr 返回gRPC状态码解包后的业务错误
+func UnwrapErr(err error) error {
+	if err == nil {
+		return nil
+	}
+
+	s, _ := status.FromError(err)
+	c, m := uint32(s.Code()), s.Message()
+	if c < grpcMaxCode {
+		return err
+	}
+	if e, ok := ConvertError(m); ok {
+		return e
+	}
+	return err
 }
 
 // ErrInterceptor 业务错误服务端一元拦截器
@@ -34,20 +52,4 @@ func ErrInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServer
 func ErrClientInterceptor(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 	err := invoker(ctx, method, req, reply, cc, opts...)
 	return UnwrapErr(err)
-}
-
-// UnwrapErr 返回gRPC状态码解包后的业务错误
-func UnwrapErr(err error) error {
-	if err == nil {
-		return nil
-	}
-
-	s, _ := status.FromError(err)
-	c := int(s.Code())
-
-	if _, ok := errorMsg[-c]; ok {
-		return NewError(-c)
-	}
-
-	return err
 }

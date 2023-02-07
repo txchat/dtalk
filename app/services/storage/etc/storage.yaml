@@ -1,0 +1,61 @@
+Name: storage.rpc
+ListenOn: 0.0.0.0:8080
+AppID: "dtalk"
+SyncCache: false
+Etcd:
+  Hosts:
+  - ${ETCD_HOST}:2379
+  Key: storage.rpc
+RedisDB:
+  Network: "tcp"
+  Addr: "${REDIS_HOST}:6379"
+  Auth: ""
+  Active: 60000
+  Idle: 1024
+  DialTimeout: "200ms"
+  ReadTimeout: "500ms"
+  WriteTimeout: "500ms"
+  IdleTimeout: "120s"
+  Expire: "30m"
+MySQL:
+  Host: "${MYSQL_HOST}"
+  Port: 3306
+  User: "root"
+  Pwd: "${MYSQL_PASSWORD}"
+  DB: "dtalk_record"
+DeviceRPC:
+  Etcd:
+    Hosts:
+      - "${ETCD_HOST}:2379"
+    Key: "device.rpc"
+    Timeout: 60000 # 60s
+PusherRPC:
+  Etcd:
+    Hosts:
+      - "${ETCD_HOST}:2379"
+    Key: "pusher.rpc"
+    Timeout: 60000 # 60s
+GroupRPC:
+  Etcd:
+    Hosts:
+      - "${ETCD_HOST}:2379"
+    Key: "group.rpc"
+    Timeout: 60000 # 60s
+StoreDealConsumerConfig:
+  Version: ""
+  Brokers: ["${KAFKA_HOST}:9092"]
+  CacheCapacity: 0
+  ConnectTimeout: "30s"
+StoreDealBatchConsumerConf:
+  CacheCapacity: 0
+  Consumers: 0
+  Processors: 0
+SyncDealConsumerConfig:
+  Version: ""
+  Brokers: ["${KAFKA_HOST}:9092"]
+  CacheCapacity: 0
+  ConnectTimeout: "30s"
+SyncDealBatchConsumerConf:
+  CacheCapacity: 0
+  Consumers: 0
+  Processors: 0

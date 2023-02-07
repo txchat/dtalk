@@ -1,0 +1,15 @@
+import(
+	"declare/call.api"
+	"declare/record.api"
+	"declare/user.api"
+	"declare/group.api"
+	"declare/oss.api"
+)
+
+info(
+	title: ""
+	desc: ""
+	author: ""
+	email: ""
+	version: ""
+)

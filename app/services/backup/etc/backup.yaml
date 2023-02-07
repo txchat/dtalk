@@ -1,0 +1,12 @@
+Name: backup.rpc
+ListenOn: 0.0.0.0:17002
+Etcd:
+  Hosts:
+  - ${ETCD_HOST}:2379
+  Key: backup.rpc
+MySQL:
+  Host: "${MYSQL_HOST}"
+  Port: 3306
+  User: "root"
+  Pwd: "${MYSQL_PASSWORD}"
+  DB: "dtalk"

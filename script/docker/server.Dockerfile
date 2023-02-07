@@ -17,4 +17,4 @@ COPY ${server_name} .
 COPY ${server_name}.* /etc/txchat-${server_name}/config/
 ## we can then kick off our newly compiled
 ## binary exectuable!!
-CMD ["sh", "-c", "./${SERVERNAME} -conf /etc/txchat-${SERVERNAME}/config/${SERVERNAME}.toml"]
+CMD ["sh", "-c", "./${SERVERNAME} -f /etc/txchat-${SERVERNAME}/config/${SERVERNAME}.yaml"]

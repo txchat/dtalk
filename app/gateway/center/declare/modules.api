@@ -1,0 +1,38 @@
+syntax = "v2"
+
+info(
+	title: "modules api declare"
+	desc: ""
+	author: "dld"
+	email: "oofpgdld@gmail.com"
+	version: "v1.0.0"
+)
+// goctl api format -dir .
+
+type Module {
+	Name      string   `json:"name,options=wallet|oa|redpacket|live|shop"`
+	IsEnabled bool     `json:"isEnabled"`
+	EndPoints []string `json:"endPoints"`
+}
+
+type GetModuleResp {
+	Name      string   `json:"name,options=wallet|oa|redpacket|live|shop"`
+	IsEnabled bool     `json:"isEnabled"`
+	EndPoints []string `json:"endPoints"`
+}
+
+type GetModulesReq {
+}
+
+type GetModulesResp {
+	Modules []Module `json:"modules"`
+}
+
+@server(
+	middleware: AppParseHeaderMiddleware
+)
+service center-api {
+	@doc "获取启用模块"
+	@handler GetModules
+	post /app/modules/all (GetModulesReq) returns (GetModulesResp)
+}

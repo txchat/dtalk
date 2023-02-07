@@ -1,0 +1,21 @@
+import(
+	"declare/discovery.api"
+	"declare/modules.api"
+	"declare/user.api"
+	"declare/backup.api"
+	"declare/version.api"
+)
+
+info(
+	title: ""
+	desc: ""
+	author: ""
+	email: ""
+	version: ""
+)
+
+type HTTPBase {
+	Result  int         `json:"result"`
+	Message string      `json:"message"`
+	Data    interface{} `json:"data"`
+}
