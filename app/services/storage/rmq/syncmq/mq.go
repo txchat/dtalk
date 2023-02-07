@@ -8,8 +8,8 @@ import (
 	"github.com/txchat/dtalk/app/services/storage/internal/config"
 	"github.com/txchat/dtalk/app/services/storage/internal/model"
 	"github.com/txchat/dtalk/app/services/storage/internal/svc"
-	xkafka "github.com/txchat/dtalk/pkg/mq/kafka"
 	record "github.com/txchat/dtalk/proto/record"
+	xkafka "github.com/txchat/pkg/mq/kafka"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 

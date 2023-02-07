@@ -13,10 +13,10 @@ import (
 	"github.com/txchat/dtalk/app/services/storage/internal/model"
 	"github.com/txchat/dtalk/app/services/storage/internal/svc"
 	"github.com/txchat/dtalk/internal/bizproto"
-	xkafka "github.com/txchat/dtalk/pkg/mq/kafka"
 	record "github.com/txchat/dtalk/proto/record"
 	"github.com/txchat/imparse"
 	"github.com/txchat/imparse/proto/auth"
+	xkafka "github.com/txchat/pkg/mq/kafka"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 

@@ -13,7 +13,6 @@ import (
 	"github.com/txchat/dtalk/app/services/pusher/internal/model"
 	"github.com/txchat/dtalk/app/services/pusher/internal/svc"
 	"github.com/txchat/dtalk/internal/bizproto"
-	xkafka "github.com/txchat/dtalk/pkg/mq/kafka"
 	"github.com/txchat/dtalk/pkg/util"
 	"github.com/txchat/im/api/protocol"
 	"github.com/txchat/im/app/comet/cometclient"
@@ -21,6 +20,7 @@ import (
 	"github.com/txchat/imparse"
 	"github.com/txchat/imparse/proto/auth"
 	"github.com/txchat/imparse/proto/signal"
+	xkafka "github.com/txchat/pkg/mq/kafka"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 

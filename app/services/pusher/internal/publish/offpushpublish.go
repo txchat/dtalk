@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	xkafka "github.com/txchat/dtalk/pkg/mq/kafka"
+	xkafka "github.com/txchat/pkg/mq/kafka"
 )
 
 type OffPush struct {

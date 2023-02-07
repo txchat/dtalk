@@ -4,10 +4,9 @@ import (
 	"net/http"
 
 	"github.com/txchat/dtalk/app/gateway/center/internal/middleware/authmock"
-
-	"github.com/txchat/dtalk/pkg/auth"
 	xerror "github.com/txchat/dtalk/pkg/error"
 	xhttp "github.com/txchat/dtalk/pkg/net/http"
+	"github.com/txchat/pkg/auth"
 )
 
 type AppAuthMiddleware struct {
@@ -35,11 +34,11 @@ func (m *AppAuthMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
 				return
 			}
 		}
-		server := auth.NewDefaultApiAuthenticator()
+		server := auth.NewDefaultAPIAuthenticator()
 		uid, err := server.Auth(custom.Signature)
 		if err != nil {
 			switch err {
-			case auth.ERR_SIGNATUREEXPIRED:
+			case auth.ErrSignatureExpired:
 				err = xerror.ErrSignatureExpired
 			default:
 				err = xerror.ErrSignatureInvalid

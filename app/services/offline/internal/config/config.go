@@ -1,7 +1,7 @@
 package config
 
 import (
-	xkafka "github.com/txchat/dtalk/pkg/mq/kafka"
+	xkafka "github.com/txchat/pkg/mq/kafka"
 	"github.com/zeromicro/go-zero/zrpc"
 )
 

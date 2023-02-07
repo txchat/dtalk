@@ -9,12 +9,12 @@ import (
 	"github.com/txchat/dtalk/app/services/offline/internal/config"
 	"github.com/txchat/dtalk/app/services/offline/internal/model"
 	"github.com/txchat/dtalk/app/services/offline/internal/svc"
-	xkafka "github.com/txchat/dtalk/pkg/mq/kafka"
 	pusher "github.com/txchat/dtalk/pkg/third-part-push"
 	"github.com/txchat/dtalk/pkg/third-part-push/android"
 	"github.com/txchat/dtalk/pkg/third-part-push/ios"
 	"github.com/txchat/dtalk/proto/offline"
 	"github.com/txchat/imparse/proto/auth"
+	xkafka "github.com/txchat/pkg/mq/kafka"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 

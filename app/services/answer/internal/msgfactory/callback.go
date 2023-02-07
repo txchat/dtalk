@@ -5,10 +5,10 @@ import (
 	"fmt"
 
 	"github.com/golang/protobuf/proto"
-	xkafka "github.com/txchat/dtalk/pkg/mq/kafka"
 	record "github.com/txchat/dtalk/proto/record"
 	"github.com/txchat/im/app/logic/logicclient"
 	"github.com/txchat/imparse"
+	xkafka "github.com/txchat/pkg/mq/kafka"
 )
 
 // WithCometLevelAckCallback send msg callback

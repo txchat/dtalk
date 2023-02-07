@@ -9,9 +9,9 @@ import (
 	innerLogic "github.com/txchat/dtalk/app/services/pusher/internal/logic"
 	"github.com/txchat/dtalk/app/services/pusher/internal/model"
 	"github.com/txchat/dtalk/app/services/pusher/internal/svc"
-	xkafka "github.com/txchat/dtalk/pkg/mq/kafka"
 	record "github.com/txchat/dtalk/proto/record"
 	"github.com/txchat/imparse"
+	xkafka "github.com/txchat/pkg/mq/kafka"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 

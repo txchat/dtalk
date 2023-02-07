@@ -12,7 +12,7 @@ import (
 	innerLogic "github.com/txchat/dtalk/app/services/answer/internal/logic"
 	"github.com/txchat/dtalk/app/services/answer/internal/model"
 	"github.com/txchat/dtalk/app/services/answer/internal/svc"
-	xkafka "github.com/txchat/dtalk/pkg/mq/kafka"
+	xkafka "github.com/txchat/pkg/mq/kafka"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
