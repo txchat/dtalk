@@ -14,21 +14,21 @@ import (
 	"time"
 
 	"github.com/inconshreveable/log15"
-	http_tools "github.com/txchat/dtalk/pkg/net/http"
+	httptools "github.com/txchat/dtalk/pkg/net/http"
 	"github.com/txchat/dtalk/pkg/notify"
-	. "github.com/txchat/dtalk/pkg/notify/sms/model"
+	"github.com/txchat/dtalk/pkg/notify/sms/model"
 )
 
 type SMS struct {
 	appKey     string
 	secretKey  string
-	serviceUrl string
+	serviceURL string
 	msg        string
 }
 
 func NewSMS(url, appKey, secretKey, msg string) *SMS {
 	return &SMS{
-		serviceUrl: url,
+		serviceURL: url,
 		appKey:     appKey,
 		secretKey:  secretKey,
 		msg:        msg,
@@ -51,10 +51,10 @@ func (s *SMS) Send(param map[string]string) (interface{}, error) {
 
 	timestamp := strconv.FormatInt(time.Now().Unix(), 10)
 	reqMethod := "POST"
-	reqUrl := s.serviceUrl + "/send/sms2"
-	strParams := MapToSortUrlEncode(values)
+	reqURL := s.serviceURL + "/send/sms2"
+	strParams := MapToSortURLEncode(values)
 
-	sign := sginature(s.appKey, values, s.secretKey, timestamp)
+	sign := signature(s.appKey, values, s.secretKey, timestamp)
 
 	headerMap := map[string]string{
 		"Content-Type":     "application/x-www-form-urlencoded",
@@ -63,7 +63,7 @@ func (s *SMS) Send(param map[string]string) (interface{}, error) {
 		"FZM-Ca-Signature": sign,
 	}
 
-	req, err := http.NewRequest(reqMethod, reqUrl, strings.NewReader(strParams))
+	req, err := http.NewRequest(reqMethod, reqURL, strings.NewReader(strParams))
 	if err != nil {
 		return nil, err
 	}
@@ -73,7 +73,7 @@ func (s *SMS) Send(param map[string]string) (interface{}, error) {
 	}
 
 	c := http.Client{
-		Timeout: HttpReqTimeout,
+		Timeout: model.HttpReqTimeout,
 	}
 
 	resp, err := c.Do(req)
@@ -105,24 +105,24 @@ func (s *SMS) Send(param map[string]string) (interface{}, error) {
 		return nil, fmt.Errorf("invaild tresult")
 	}
 
-	sCode, err := http_tools.ParseInterface(result["code"], "string")
+	sCode, err := httptools.ParseInterface(result["code"], "string")
 	if nil != err {
 		return nil, err
 	}
 
-	sError, err := http_tools.ParseInterface(result["error"], "string")
+	sError, err := httptools.ParseInterface(result["error"], "string")
 	if nil != err {
 		return nil, err
 	}
 
-	sMessage, err := http_tools.ParseInterface(result["message"], "string")
+	sMessage, err := httptools.ParseInterface(result["message"], "string")
 	if nil != err {
 		return nil, err
 	}
 
 	if "200" != sCode.(string) || "succ" != sError.(string) || "succ" != sMessage.(string) {
 		//return fmt.Errorf("code : " + sCode.(string) + ", error : " + sError.(string) + ", message : " + sMessage.(string))
-		return nil, &Error{Code: sCode.(string), Err: sError.(string), Message: sMessage.(string)}
+		return nil, &model.Error{Code: sCode.(string), Err: sError.(string), Message: sMessage.(string)}
 	}
 
 	data, ok := result["data"]
@@ -139,7 +139,7 @@ func (s *SMS) Send(param map[string]string) (interface{}, error) {
 	if rltData, ok = info["data"].(map[string]interface{}); ok {
 	}
 
-	return &SendResult{
+	return &model.SendResult{
 		IsShow:     isShow,
 		IsValidate: isValidate,
 		Data:       rltData,
@@ -161,10 +161,10 @@ func (s *SMS) ValidateCode(param map[string]string) error {
 
 	timestamp := strconv.FormatInt(time.Now().Unix(), 10)
 	reqMethod := "POST"
-	reqUrl := s.serviceUrl + "/validate/code"
-	strParams := MapToSortUrlEncode(values)
+	reqURL := s.serviceURL + "/validate/code"
+	strParams := MapToSortURLEncode(values)
 
-	sign := sginature(s.appKey, values, s.secretKey, timestamp)
+	sign := signature(s.appKey, values, s.secretKey, timestamp)
 
 	headerMap := map[string]string{
 		"Content-Type":     "application/x-www-form-urlencoded",
@@ -173,7 +173,7 @@ func (s *SMS) ValidateCode(param map[string]string) error {
 		"FZM-Ca-Signature": sign,
 	}
 
-	req, err := http.NewRequest(reqMethod, reqUrl, strings.NewReader(strParams))
+	req, err := http.NewRequest(reqMethod, reqURL, strings.NewReader(strParams))
 	if err != nil {
 		return err
 	}
@@ -183,7 +183,7 @@ func (s *SMS) ValidateCode(param map[string]string) error {
 	}
 
 	c := http.Client{
-		Timeout: HttpReqTimeout,
+		Timeout: model.HttpReqTimeout,
 	}
 
 	resp, err := c.Do(req)
@@ -215,31 +215,31 @@ func (s *SMS) ValidateCode(param map[string]string) error {
 		return fmt.Errorf("invaild tresult")
 	}
 
-	sCode, err := http_tools.ParseInterface(result["code"], "string")
+	sCode, err := httptools.ParseInterface(result["code"], "string")
 	if nil != err {
 		return err
 	}
 
-	sError, err := http_tools.ParseInterface(result["error"], "string")
+	sError, err := httptools.ParseInterface(result["error"], "string")
 	if nil != err {
 		return err
 	}
 
-	sMessage, err := http_tools.ParseInterface(result["message"], "string")
+	sMessage, err := httptools.ParseInterface(result["message"], "string")
 	if nil != err {
 		return err
 	}
 
 	if "200" != sCode.(string) || "succ" != sError.(string) || "succ" != sMessage.(string) {
 		//return fmt.Errorf("code : " + sCode.(string) + ", error : " + sError.(string) + ", message : " + sMessage.(string))
-		return &Error{Code: sCode.(string), Err: sError.(string), Message: sMessage.(string)}
+		return &model.Error{Code: sCode.(string), Err: sError.(string), Message: sMessage.(string)}
 	}
 
 	return nil
 }
 
-func sginature(appKey string, req map[string]string, secretKey string, time string) string {
-	signParams := MapToSortUrlEncode(req)
+func signature(appKey string, req map[string]string, secretKey string, time string) string {
+	signParams := MapToSortURLEncode(req)
 	signParams = appKey + signParams + secretKey + time
 	h := md5.New()
 	h.Write([]byte(signParams))
@@ -249,10 +249,10 @@ func sginature(appKey string, req map[string]string, secretKey string, time stri
 	return sign
 }
 
-func MapToSortUrlEncode(paramsMap map[string]string) string {
+func MapToSortURLEncode(paramsMap map[string]string) string {
 	v := url.Values{}
 
-	mapKeys := []string{}
+	var mapKeys []string
 	for k := range paramsMap {
 		mapKeys = append(mapKeys, k)
 	}

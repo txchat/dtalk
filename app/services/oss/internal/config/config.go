@@ -24,5 +24,5 @@ type Oss struct {
 	Bucket          string
 	// EndPoint 资源终端
 	EndPoint  string
-	PublicUrl string
+	PublicURL string
 }

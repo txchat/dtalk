@@ -63,7 +63,7 @@ func (l *InviteGroupMembersLogic) InviteGroupMembers(req *types.InviteGroupMembe
 
 	inviter := mInfo.GetMember()
 
-	var memberNum int32 = 0
+	var memberNum int32
 	var inviteResp *groupclient.InviteMembersResp
 
 	switch gInfo.GetGroup().GetJoinType() {

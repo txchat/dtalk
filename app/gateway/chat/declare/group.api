@@ -115,29 +115,29 @@ type GetGroupPubInfoResp {
 	GroupInfo
 }
 
-type GroupDisbandReq {
+type DisbandGroupReq {
 	Id    int64  `json:"id,optional"`
 	IdStr string `json:"idStr,optional"` // 群 ID, 如果同时填了 idStr, 则优先选择 idStr
 }
 
-type GroupDisbandResp {
+type DisbandGroupResp {
 }
 
-type GroupExitReq {
+type MemberExitGroupReq {
 	Id    int64  `json:"id,optional"`
 	IdStr string `json:"idStr,optional"` // 群 ID, 如果同时填了 idStr, 则优先选择 idStr
 }
 
-type GroupExitResp {
+type MemberExitGroupResp {
 }
 
-type GroupRemoveReq {
+type MemberRemoveGroupReq {
 	Id        int64    `json:"id,optional"`
 	IdStr     string   `json:"idStr,optional"` // 群 ID, 如果同时填了 idStr, 则优先选择 idStr
 	MemberIds []string `json:"memberIds"`
 }
 
-type GroupRemoveResp {
+type MemberRemoveGroupResp {
 	MemberNum int32    `json:"memberNum"`
 	MemberIds []string `json:"memberIds"`
 }
@@ -287,16 +287,16 @@ service chat-api {
 	post /group/app/group-pub-info (GetGroupPubInfoReq) returns (GetGroupPubInfoResp)
 	
 	@doc "解散群"
-	@handler GroupDisband
-	post /group/app/group-disband (GroupDisbandReq) returns (GroupDisbandResp)
+	@handler DisbandGroup
+	post /group/app/group-disband (DisbandGroupReq) returns (DisbandGroupResp)
 	
 	@doc "退出群"
-	@handler GroupExit
-	post /group/app/group-exit (GroupExitReq) returns (GroupExitResp)
+	@handler MemberExitGroup
+	post /group/app/group-exit (MemberExitGroupReq) returns (MemberExitGroupResp)
 	
 	@doc "将成员移除群"
-	@handler GroupRemove
-	post /group/app/group-remove (GroupRemoveReq) returns (GroupRemoveResp)
+	@handler MemberRemoveGroup
+	post /group/app/group-remove (MemberRemoveGroupReq) returns (MemberRemoveGroupResp)
 	
 	@doc "邀请新成员"
 	@handler InviteGroupMembers

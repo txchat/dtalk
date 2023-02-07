@@ -9,13 +9,13 @@ import (
 	"github.com/txchat/dtalk/pkg/notify"
 )
 
-type DebugValidate struct {
+type Validate struct {
 	mockCode string
 	real     notify.Validate
 }
 
-func NewDebugValidate(code string, v notify.Validate) *DebugValidate {
-	return &DebugValidate{
+func NewDebugValidate(code string, v notify.Validate) *Validate {
+	return &Validate{
 		mockCode: code,
 		real:     v,
 	}
@@ -38,14 +38,14 @@ func GetMockCode(mode string) string {
 	return strings.Repeat("1", num)
 }
 
-func (v *DebugValidate) Send(params map[string]string) (interface{}, error) {
+func (v *Validate) Send(params map[string]string) (interface{}, error) {
 	if v.real == nil {
 		return nil, errors.New("未注册验证器")
 	}
 	return v.real.Send(params)
 }
 
-func (v *DebugValidate) ValidateCode(param map[string]string) error {
+func (v *Validate) ValidateCode(param map[string]string) error {
 	code := param[notify.ParamCode]
 	if v.mockCode == code {
 		return nil

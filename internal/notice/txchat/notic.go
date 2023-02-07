@@ -201,7 +201,7 @@ func (hub *NoticeHub) UpdateGroupName(ctx context.Context, gid int64, operator, 
 
 func (hub *NoticeHub) UpdateGroupMemberRole(ctx context.Context, gid int64, operator, uid string, role group.RoleType) error {
 	switch role {
-	case group.Owner:
+	case group.RoleOwner:
 	default:
 		return nil
 	}

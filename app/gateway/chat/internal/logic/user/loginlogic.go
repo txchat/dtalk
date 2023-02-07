@@ -52,12 +52,12 @@ func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginResp, err erro
 					Datetime   uint64 `json:"datetime"`
 					Device     int32  `json:"device"`
 					DeviceName string `json:"deviceName"`
-					Uuid       string `json:"uuid"`
+					UUID       string `json:"uuid"`
 				}{
 					Datetime:   dev.GetAddTime(),
 					Device:     dev.GetDeviceType(),
 					DeviceName: dev.GetDeviceName(),
-					Uuid:       dev.GetDeviceUUid(),
+					UUID:       dev.GetDeviceUUid(),
 				},
 				Service: "",
 			})

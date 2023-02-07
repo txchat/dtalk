@@ -39,7 +39,7 @@ func engineInit(svcCtx *ServiceContext) {
 			DurationSeconds: o.DurationSeconds,
 			Bucket:          o.Bucket,
 			EndPoint:        o.EndPoint,
-			PublicUrl:       o.PublicUrl,
+			PublicUrl:       o.PublicURL,
 		}
 
 		var invoker oss.Oss

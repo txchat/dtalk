@@ -137,9 +137,9 @@ func (g *Group) Invite(id, nickname string) error {
 		return ErrGroupMaxMembersLimit
 	}
 
-	role := Normal
+	role := RoleNormal
 	if id == g.owner {
-		role = Owner
+		role = RoleOwner
 	}
 	g.members = append(g.members, &Member{
 		id:       id,
@@ -164,8 +164,8 @@ func (g *Group) ChangeOwner(operator, newOwner *Member, mmg *GMManager) error {
 		return err
 	}
 
-	operator.SetRole(Normal)
-	newOwner.SetRole(Owner)
+	operator.SetRole(RoleNormal)
+	newOwner.SetRole(RoleOwner)
 
 	g.owner = newOwner.Id()
 	return nil

@@ -5,14 +5,14 @@ import (
 	"github.com/txchat/dtalk/pkg/util"
 )
 
-type GroupManager struct {
+type Manager struct {
 }
 
-func NewGroupManager() *GroupManager {
-	return &GroupManager{}
+func NewGroupManager() *Manager {
+	return &Manager{}
 }
 
-func (mg *GroupManager) CreateNewGroup(gType TypeOfGroup, groupId int64, name, markId, ownerId string, maxMembers int) *Group {
+func (mg *Manager) CreateNewGroup(gType TypeOfGroup, groupId int64, name, markId, ownerId string, maxMembers int) *Group {
 	joinPermission := AnybodyCanJoinGroup
 	switch gType {
 	case NormalGroup:

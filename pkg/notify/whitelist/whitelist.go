@@ -6,32 +6,32 @@ import (
 	"github.com/txchat/dtalk/pkg/notify"
 )
 
-type WhitelistValidate struct {
+type Validate struct {
 	whitelist map[string]string
 	real      notify.Validate
 }
 
-func NewWhitelistValidate(list []notify.Whitelist, v notify.Validate) *WhitelistValidate {
+func NewWhitelistValidate(list []notify.Whitelist, v notify.Validate) *Validate {
 	whitelist := make(map[string]string)
 	for _, item := range list {
 		if item.Enable {
 			whitelist[item.Account] = item.Code
 		}
 	}
-	return &WhitelistValidate{
+	return &Validate{
 		whitelist: whitelist,
 		real:      v,
 	}
 }
 
-func (v *WhitelistValidate) Send(params map[string]string) (interface{}, error) {
+func (v *Validate) Send(params map[string]string) (interface{}, error) {
 	if v.real == nil {
 		return nil, errors.New("未注册验证器")
 	}
 	return v.real.Send(params)
 }
 
-func (v *WhitelistValidate) ValidateCode(param map[string]string) error {
+func (v *Validate) ValidateCode(param map[string]string) error {
 	code := param[notify.ParamCode]
 	phone := param[notify.ParamMobile]
 	email := param[notify.ParamEmail]

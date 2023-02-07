@@ -6,7 +6,7 @@ type LoginNotAllowedErr struct {
 		Datetime   uint64 `json:"datetime"`
 		Device     int32  `json:"device"`
 		DeviceName string `json:"deviceName"`
-		Uuid       string `json:"uuid"`
+		UUID       string `json:"uuid"`
 	} `json:"message"`
 	Service string `json:"service"`
 }

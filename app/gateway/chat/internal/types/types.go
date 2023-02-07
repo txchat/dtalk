@@ -229,29 +229,29 @@ type GetGroupPubInfoResp struct {
 	GroupInfo
 }
 
-type GroupDisbandReq struct {
+type DisbandGroupReq struct {
 	Id    int64  `json:"id,optional"`
 	IdStr string `json:"idStr,optional"` // 群 ID, 如果同时填了 idStr, 则优先选择 idStr
 }
 
-type GroupDisbandResp struct {
+type DisbandGroupResp struct {
 }
 
-type GroupExitReq struct {
+type MemberExitGroupReq struct {
 	Id    int64  `json:"id,optional"`
 	IdStr string `json:"idStr,optional"` // 群 ID, 如果同时填了 idStr, 则优先选择 idStr
 }
 
-type GroupExitResp struct {
+type MemberExitGroupResp struct {
 }
 
-type GroupRemoveReq struct {
+type MemberRemoveGroupReq struct {
 	Id        int64    `json:"id,optional"`
 	IdStr     string   `json:"idStr,optional"` // 群 ID, 如果同时填了 idStr, 则优先选择 idStr
 	MemberIds []string `json:"memberIds"`
 }
 
-type GroupRemoveResp struct {
+type MemberRemoveGroupResp struct {
 	MemberNum int32    `json:"memberNum"`
 	MemberIds []string `json:"memberIds"`
 }

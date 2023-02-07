@@ -16,7 +16,7 @@ import (
 	"github.com/inconshreveable/log15"
 	http_tools "github.com/txchat/dtalk/pkg/net/http"
 	"github.com/txchat/dtalk/pkg/notify"
-	. "github.com/txchat/dtalk/pkg/notify/email/model"
+	"github.com/txchat/dtalk/pkg/notify/email/model"
 )
 
 type Email struct {
@@ -73,7 +73,7 @@ func (e *Email) Send(param map[string]string) (interface{}, error) {
 	}
 
 	c := http.Client{
-		Timeout: HttpReqTimeout,
+		Timeout: model.HttpReqTimeout,
 	}
 
 	resp, err := c.Do(req)
@@ -122,7 +122,7 @@ func (e *Email) Send(param map[string]string) (interface{}, error) {
 
 	if "200" != sCode.(string) || "succ" != sError.(string) || "succ" != sMessage.(string) {
 		//return fmt.Errorf("code : " + sCode.(string) + ", error : " + sError.(string) + ", message : " + sMessage.(string))
-		return nil, &Error{Code: sCode.(string), Err: sError.(string), Message: sMessage.(string)}
+		return nil, &model.Error{Code: sCode.(string), Err: sError.(string), Message: sMessage.(string)}
 	}
 
 	data, ok := result["data"]
@@ -139,7 +139,7 @@ func (e *Email) Send(param map[string]string) (interface{}, error) {
 	if rltData, ok = info["data"].(map[string]interface{}); ok {
 	}
 
-	return &SendResult{
+	return &model.SendResult{
 		IsShow:     isShow,
 		IsValidate: isValidate,
 		Data:       rltData,
@@ -183,7 +183,7 @@ func (e *Email) ValidateCode(param map[string]string) error {
 	}
 
 	c := http.Client{
-		Timeout: HttpReqTimeout,
+		Timeout: model.HttpReqTimeout,
 	}
 
 	resp, err := c.Do(req)
@@ -232,7 +232,7 @@ func (e *Email) ValidateCode(param map[string]string) error {
 
 	if "200" != sCode.(string) || "succ" != sError.(string) || "succ" != sMessage.(string) {
 		//return fmt.Errorf("code : " + sCode.(string) + ", error : " + sError.(string) + ", message : " + sMessage.(string))
-		return &Error{Code: sCode.(string), Err: sError.(string), Message: sMessage.(string)}
+		return &model.Error{Code: sCode.(string), Err: sError.(string), Message: sMessage.(string)}
 	}
 
 	return nil

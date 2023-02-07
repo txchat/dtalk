@@ -7,6 +7,7 @@ import (
 	"github.com/txchat/dtalk/pkg/util"
 )
 
+//nolint:deadcode,varcheck
 const (
 	// dtalk_group_info
 	_InsertGroupInfo = `INSERT INTO dtalk_group_info ( group_id, group_mark_id, group_name, group_avatar, group_member_num, group_maximum,

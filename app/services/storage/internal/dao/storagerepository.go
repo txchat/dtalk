@@ -15,7 +15,7 @@ type StorageRepository interface {
 	UnReceiveMsg(uid string) ([]*model.MsgContent, error)
 	UserLastMsg(uid string, num int64) ([]*model.MsgContent, error)
 	UserMsgAfter(uid string, startMid, count int64) ([]*model.MsgContent, error)
-	GetMsgBySeq(senderUid, seq string) (*model.MsgContent, error)
+	GetMsgBySeq(senderUID, seq string) (*model.MsgContent, error)
 	IncMsgVersion(uid string) (uint64, error)
 	//group about
 	AppendGroupMsgContent(tx *xmysql.MysqlTx, m *model.MsgContent) (int64, int64, error)

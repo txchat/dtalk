@@ -3,11 +3,9 @@ package logic
 import (
 	"context"
 
-	"github.com/txchat/imparse"
-	"github.com/txchat/imparse/proto/signal"
-
 	"github.com/txchat/dtalk/app/services/answer/answer"
 	"github.com/txchat/dtalk/app/services/answer/internal/svc"
+	"github.com/txchat/imparse"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -27,7 +25,7 @@ func NewGroupCastSignalLogic(ctx context.Context, svcCtx *svc.ServiceContext) *G
 }
 
 func (l *GroupCastSignalLogic) GroupCastSignal(in *answer.GroupCastSignalReq) (*answer.GroupCastSignalReply, error) {
-	data, err := signalBody(in.GetTarget(), signal.SignalType(in.GetType()), in.GetBody())
+	data, err := signalBody(in.GetTarget(), in.GetType(), in.GetBody())
 	if err != nil {
 		return &answer.GroupCastSignalReply{}, err
 	}

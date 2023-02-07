@@ -11,16 +11,16 @@ import (
 	"github.com/zeromicro/go-zero/rest/httpx"
 )
 
-func GroupDisbandHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
+func MemberExitGroupHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req types.GroupDisbandReq
+		var req types.MemberExitGroupReq
 		if err := httpx.Parse(r, &req); err != nil {
 			xhttp.Error(w, r, xerror.NewCustomError(xerror.ErrInvalidParams, err))
 			return
 		}
 
-		l := group.NewGroupDisbandLogic(r.Context(), svcCtx)
-		resp, err := l.GroupDisband(&req)
+		l := group.NewMemberExitGroupLogic(r.Context(), svcCtx)
+		resp, err := l.MemberExitGroup(&req)
 		if err != nil {
 			xhttp.Error(w, r, err)
 		} else {

@@ -2,7 +2,6 @@ package svc
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	"github.com/txchat/dtalk/app/services/answer/answerclient"
@@ -25,7 +24,7 @@ import (
 type ServiceContext struct {
 	Config       config.Config
 	Repo         dao.GroupRepository
-	GroupManager *group.GroupManager
+	GroupManager *group.Manager
 	IDGenRPC     generatorclient.Generator
 	SignalHub    signal.Signal
 	NoticeHub    notice.Notice
@@ -59,12 +58,12 @@ func (s *ServiceContext) RegisterGroupMembers(ctx context.Context, gid int64, me
 		Gid:   []string{util.MustToString(gid)},
 		Mids:  members,
 	})
-	if err != nil || reply.IsOk == false {
+	if err != nil || !reply.IsOk {
 		if err.Error() == model.ErrPushMsgArg.Error() {
 			return nil
 		}
 		if err == nil {
-			err = errors.New(fmt.Sprintf("reply=%+v", reply))
+			err = fmt.Errorf("reply=%+v", reply)
 		}
 		return err
 	}
@@ -76,12 +75,12 @@ func (s *ServiceContext) UnRegisterGroup(ctx context.Context, gid int64) error {
 		AppId: s.Config.AppID,
 		Gid:   []string{util.MustToString(gid)},
 	})
-	if err != nil || reply.IsOk == false {
+	if err != nil || !reply.IsOk {
 		if err.Error() == model.ErrPushMsgArg.Error() {
 			return nil
 		}
 		if err == nil {
-			err = errors.New(fmt.Sprintf("reply=%+v", reply))
+			err = fmt.Errorf("reply=%+v", reply)
 		}
 		return err
 	}
@@ -94,12 +93,12 @@ func (s *ServiceContext) UnRegisterGroupMembers(ctx context.Context, gid int64, 
 		Gid:   []string{util.MustToString(gid)},
 		Mids:  members,
 	})
-	if err != nil || reply.IsOk == false {
+	if err != nil || !reply.IsOk {
 		if err.Error() == model.ErrPushMsgArg.Error() {
 			return nil
 		}
 		if err == nil {
-			err = errors.New(fmt.Sprintf("reply=%+v", reply))
+			err = fmt.Errorf("reply=%+v", reply)
 		}
 		return err
 	}

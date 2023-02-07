@@ -73,8 +73,8 @@ func (l *ChangeOwnerLogic) ChangeOwner(in *group.ChangeOwnerReq) (*group.ChangeO
 		return nil, err
 	}
 
-	err = l.svcCtx.SignalHub.UpdateGroupMemberRole(l.ctx, gid, in.GetNew(), xgroup.Owner)
-	err = l.svcCtx.SignalHub.UpdateGroupMemberRole(l.ctx, gid, in.GetOperator(), xgroup.Normal)
-	err = l.svcCtx.NoticeHub.UpdateGroupMemberRole(l.ctx, gid, in.GetOperator(), in.GetNew(), xgroup.Owner)
+	err = l.svcCtx.SignalHub.UpdateGroupMemberRole(l.ctx, gid, in.GetNew(), xgroup.RoleOwner)
+	err = l.svcCtx.SignalHub.UpdateGroupMemberRole(l.ctx, gid, in.GetOperator(), xgroup.RoleNormal)
+	err = l.svcCtx.NoticeHub.UpdateGroupMemberRole(l.ctx, gid, in.GetOperator(), in.GetNew(), xgroup.RoleOwner)
 	return &group.ChangeOwnerResp{}, nil
 }

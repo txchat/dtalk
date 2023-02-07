@@ -3,10 +3,10 @@ package group
 type RoleType int
 
 const (
-	Normal  RoleType = 0
-	Manager RoleType = 1
-	Owner   RoleType = 2
-	Out     RoleType = 10
+	RoleNormal  RoleType = 0
+	RoleManager RoleType = 1
+	RoleOwner   RoleType = 2
+	RoleOut     RoleType = 10
 )
 
 const (
@@ -58,5 +58,5 @@ func (m *Member) MuteTime() int64 {
 }
 
 func (m *Member) AdminOrOwner() bool {
-	return m.role == Manager || m.role == Owner
+	return m.role == RoleManager || m.role == RoleOwner
 }

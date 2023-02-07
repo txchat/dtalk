@@ -27,5 +27,5 @@ Oss:
       DurationSeconds : 3600,
       Bucket : "dtalk-test",
       EndPoint : "txchat-minio:9000",
-      PublicUrl : "http://host_ipaddress:9000"
+      PublicURL : "http://host_ipaddress:9000"
   }

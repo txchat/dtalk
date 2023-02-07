@@ -16,19 +16,19 @@ import (
 	//xhttp "github.com/txchat/dtalk/pkg/net/http"
 )
 
-type GroupDisbandLogic struct {
+type DisbandGroupLogic struct {
 	logx.Logger
 	ctx    context.Context
 	svcCtx *svc.ServiceContext
 	custom *xhttp.Custom
 }
 
-func NewGroupDisbandLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GroupDisbandLogic {
+func NewDisbandGroupLogic(ctx context.Context, svcCtx *svc.ServiceContext) *DisbandGroupLogic {
 	c, ok := xhttp.FromContext(ctx)
 	if !ok {
 		c = &xhttp.Custom{}
 	}
-	return &GroupDisbandLogic{
+	return &DisbandGroupLogic{
 		Logger: logx.WithContext(ctx),
 		ctx:    ctx,
 		svcCtx: svcCtx,
@@ -36,7 +36,7 @@ func NewGroupDisbandLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Grou
 	}
 }
 
-func (l *GroupDisbandLogic) GroupDisband(req *types.GroupDisbandReq) (resp *types.GroupDisbandResp, err error) {
+func (l *DisbandGroupLogic) DisbandGroup(req *types.DisbandGroupReq) (resp *types.DisbandGroupResp, err error) {
 	uid := l.custom.UID
 	gid, err := util.ToInt64(req.IdStr)
 	if err != nil {
@@ -66,6 +66,6 @@ func (l *GroupDisbandLogic) GroupDisband(req *types.GroupDisbandReq) (resp *type
 		return nil, err
 	}
 
-	resp = &types.GroupDisbandResp{}
+	resp = &types.DisbandGroupResp{}
 	return
 }

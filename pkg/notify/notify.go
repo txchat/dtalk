@@ -12,7 +12,7 @@ const (
 )
 
 const (
-	ParamSvcUrl   = "serviceUrl"
+	ParamSvcURL   = "serviceUrl"
 	ParamCodeType = "codetype"
 	ParamMobile   = "mobile"
 	ParamEmail    = "email"

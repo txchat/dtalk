@@ -113,8 +113,8 @@ func (repo *UniRepository) UserMsgAfter(uid string, startMid, count int64) ([]*m
 	return ret, err
 }
 
-func (repo *UniRepository) GetMsgBySeq(senderUid, seq string) (*model.MsgContent, error) {
-	maps, err := repo.mysql.Query(_GetMsgBySeq, senderUid, seq)
+func (repo *UniRepository) GetMsgBySeq(senderUID, seq string) (*model.MsgContent, error) {
+	maps, err := repo.mysql.Query(_GetMsgBySeq, senderUID, seq)
 	if err != nil {
 		return nil, err
 	}

@@ -63,7 +63,7 @@ func (l *RevokeLogic) revokePersonal(operator string, mid int64) error {
 		return err
 	}
 	target := record.ReceiverId
-	if record.SenderId != operator || time.Since(util.UnixToTime(int64(record.CreateTime))) > time.Duration(l.svcCtx.Config.Revoke.Expire) {
+	if record.SenderId != operator || time.Since(util.UnixToTime(int64(record.CreateTime))) > l.svcCtx.Config.Revoke.Expire {
 		return model.ErrPermission
 	}
 
@@ -93,7 +93,7 @@ func (l *RevokeLogic) revokeGroup(operator string, mid int64) error {
 		return err
 	}
 	target := record.ReceiverId
-	if record.SenderId == operator && time.Since(util.UnixToTime(int64(record.CreateTime))) > time.Duration(l.svcCtx.Config.Revoke.Expire) {
+	if record.SenderId == operator && time.Since(util.UnixToTime(int64(record.CreateTime))) > l.svcCtx.Config.Revoke.Expire {
 		return model.ErrPermission
 	}
 	gid := util.MustToInt64(target)

@@ -11,16 +11,16 @@ import (
 	"github.com/zeromicro/go-zero/rest/httpx"
 )
 
-func GroupRemoveHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
+func MemberRemoveGroupHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req types.GroupRemoveReq
+		var req types.MemberRemoveGroupReq
 		if err := httpx.Parse(r, &req); err != nil {
 			xhttp.Error(w, r, xerror.NewCustomError(xerror.ErrInvalidParams, err))
 			return
 		}
 
-		l := group.NewGroupRemoveLogic(r.Context(), svcCtx)
-		resp, err := l.GroupRemove(&req)
+		l := group.NewMemberRemoveGroupLogic(r.Context(), svcCtx)
+		resp, err := l.MemberRemoveGroup(&req)
 		if err != nil {
 			xhttp.Error(w, r, err)
 		} else {

@@ -141,17 +141,17 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				{
 					Method:  http.MethodPost,
 					Path:    "/group/app/group-disband",
-					Handler: group.GroupDisbandHandler(serverCtx),
+					Handler: group.DisbandGroupHandler(serverCtx),
 				},
 				{
 					Method:  http.MethodPost,
 					Path:    "/group/app/group-exit",
-					Handler: group.GroupExitHandler(serverCtx),
+					Handler: group.MemberExitGroupHandler(serverCtx),
 				},
 				{
 					Method:  http.MethodPost,
 					Path:    "/group/app/group-remove",
-					Handler: group.GroupRemoveHandler(serverCtx),
+					Handler: group.MemberRemoveGroupHandler(serverCtx),
 				},
 				{
 					Method:  http.MethodPost,

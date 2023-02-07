@@ -35,7 +35,7 @@ func (l *CheckMemberInGroupLogic) CheckMemberInGroup(in *group.CheckMemberInGrou
 		return nil, err
 	}
 
-	if xgroup.RoleType(member.GroupMemberType) == xgroup.Out {
+	if xgroup.RoleType(member.GroupMemberType) == xgroup.RoleOut {
 		return &group.CheckMemberInGroupResp{Ok: false}, nil
 	}
 	return &group.CheckMemberInGroupResp{

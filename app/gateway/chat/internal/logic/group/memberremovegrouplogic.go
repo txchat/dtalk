@@ -16,19 +16,19 @@ import (
 	//xhttp "github.com/txchat/dtalk/pkg/net/http"
 )
 
-type GroupExitLogic struct {
+type MemberRemoveGroupLogic struct {
 	logx.Logger
 	ctx    context.Context
 	svcCtx *svc.ServiceContext
 	custom *xhttp.Custom
 }
 
-func NewGroupExitLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GroupExitLogic {
+func NewMemberRemoveGroupLogic(ctx context.Context, svcCtx *svc.ServiceContext) *MemberRemoveGroupLogic {
 	c, ok := xhttp.FromContext(ctx)
 	if !ok {
 		c = &xhttp.Custom{}
 	}
-	return &GroupExitLogic{
+	return &MemberRemoveGroupLogic{
 		Logger: logx.WithContext(ctx),
 		ctx:    ctx,
 		svcCtx: svcCtx,
@@ -36,7 +36,7 @@ func NewGroupExitLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GroupEx
 	}
 }
 
-func (l *GroupExitLogic) GroupExit(req *types.GroupExitReq) (resp *types.GroupExitResp, err error) {
+func (l *MemberRemoveGroupLogic) MemberRemoveGroup(req *types.MemberRemoveGroupReq) (resp *types.MemberRemoveGroupResp, err error) {
 	uid := l.custom.UID
 	gid, err := util.ToInt64(req.IdStr)
 	if err != nil {
@@ -51,18 +51,35 @@ func (l *GroupExitLogic) GroupExit(req *types.GroupExitReq) (resp *types.GroupEx
 		return nil, err
 	}
 	operator := operatorResp.GetMember()
-	if operator.GetRole() == group.RoleType_Owner || operator.GetRole() == group.RoleType_Out {
+	if operator.GetRole() < group.RoleType_Manager {
 		return nil, xerror.ErrPermissionDenied
 	}
 
-	_, err = l.svcCtx.GroupRPC.MemberExit(l.ctx, &groupclient.MemberExitReq{
-		Gid:      gid,
-		Operator: uid,
+	membersResp, err := l.svcCtx.GroupRPC.MembersInfo(l.ctx, &groupclient.MembersInfoReq{
+		Gid: gid,
+		Uid: req.MemberIds,
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	resp = &types.GroupExitResp{}
+	members := make([]string, 0)
+	for _, member := range membersResp.GetMembers() {
+		if member.GetRole() == group.RoleType_Owner || member.GetRole() == group.RoleType_Out {
+			continue
+		}
+		members = append(members, member.GetUid())
+	}
+
+	kickOutResp, err := l.svcCtx.GroupRPC.KickOutMembers(l.ctx, &groupclient.KickOutMembersReq{
+		Gid:      gid,
+		Operator: uid,
+		Mid:      members,
+	})
+
+	resp = &types.MemberRemoveGroupResp{
+		MemberNum: kickOutResp.GetNumber(),
+		MemberIds: members,
+	}
 	return
 }
