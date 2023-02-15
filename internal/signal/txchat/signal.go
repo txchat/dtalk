@@ -5,19 +5,48 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/pkg/errors"
-	"github.com/txchat/dtalk/app/services/answer/answerclient"
+	"github.com/txchat/dtalk/app/services/pusher/pusherclient"
+	"github.com/txchat/dtalk/app/services/transfer/transfer"
+	"github.com/txchat/dtalk/app/services/transfer/transferclient"
 	"github.com/txchat/dtalk/internal/group"
 	"github.com/txchat/dtalk/internal/recordhelper"
 	"github.com/txchat/dtalk/pkg/util"
+	"github.com/txchat/im/api/protocol"
+	"github.com/txchat/imparse/proto/common"
 	"github.com/txchat/imparse/proto/signal"
 )
 
 type SignalHub struct {
-	answerClient answerclient.Answer
+	transferClient transferclient.Transfer
+	pusherClient   pusherclient.Pusher
 }
 
-func NewSignalHub(conn answerclient.Answer) *SignalHub {
-	return &SignalHub{answerClient: conn}
+func NewSignalHub(transferClient transferclient.Transfer, pusherClient pusherclient.Pusher) *SignalHub {
+	return &SignalHub{
+		transferClient: transferClient,
+		pusherClient:   pusherClient,
+	}
+}
+
+func (hub *SignalHub) convertSignalProtoData(signalType signal.SignalType, actionBody []byte) ([]byte, error) {
+	sig := &signal.Signal{
+		Type: signalType,
+		Body: actionBody,
+	}
+	sigData, err := proto.Marshal(sig)
+	if err != nil {
+		return nil, err
+	}
+
+	signalEvent := &common.Proto{
+		EventType: common.Proto_signal,
+		Body:      sigData,
+	}
+	signalEventData, err := proto.Marshal(signalEvent)
+	if err != nil {
+		return nil, err
+	}
+	return signalEventData, nil
 }
 
 func (hub *SignalHub) GroupAddNewMembers(ctx context.Context, gid int64, members []string) error {
@@ -31,10 +60,17 @@ func (hub *SignalHub) GroupAddNewMembers(ctx context.Context, gid int64, members
 		return err
 	}
 
-	_, err = hub.answerClient.GroupCastSignal(ctx, &answerclient.GroupCastSignalReq{
-		Type:   signal.SignalType_SignInGroup,
-		Target: util.MustToString(gid),
-		Body:   body,
+	var data []byte
+	data, err = hub.convertSignalProtoData(signal.SignalType_SignInGroup, body)
+	if err != nil {
+		return err
+	}
+
+	_, err = hub.transferClient.TransferMessage(ctx, &transferclient.TransferMessageReq{
+		From:        "",
+		Target:      util.MustToString(gid),
+		ChannelType: transfer.Channel_Group,
+		Body:        data,
 	})
 	return err
 }
@@ -50,10 +86,17 @@ func (hub *SignalHub) GroupRemoveMembers(ctx context.Context, gid int64, members
 		return err
 	}
 
-	_, err = hub.answerClient.GroupCastSignal(ctx, &answerclient.GroupCastSignalReq{
-		Type:   signal.SignalType_SignOutGroup,
-		Target: util.MustToString(gid),
-		Body:   body,
+	var data []byte
+	data, err = hub.convertSignalProtoData(signal.SignalType_SignOutGroup, body)
+	if err != nil {
+		return err
+	}
+
+	_, err = hub.transferClient.TransferMessage(ctx, &transferclient.TransferMessageReq{
+		From:        "",
+		Target:      util.MustToString(gid),
+		ChannelType: transfer.Channel_Group,
+		Body:        data,
 	})
 	return err
 }
@@ -68,10 +111,17 @@ func (hub *SignalHub) GroupDeleted(ctx context.Context, gid int64) error {
 		return err
 	}
 
-	_, err = hub.answerClient.GroupCastSignal(ctx, &answerclient.GroupCastSignalReq{
-		Type:   signal.SignalType_DeleteGroup,
-		Target: util.MustToString(gid),
-		Body:   body,
+	var data []byte
+	data, err = hub.convertSignalProtoData(signal.SignalType_DeleteGroup, body)
+	if err != nil {
+		return err
+	}
+
+	_, err = hub.transferClient.TransferMessage(ctx, &transferclient.TransferMessageReq{
+		From:        "",
+		Target:      util.MustToString(gid),
+		ChannelType: transfer.Channel_Group,
+		Body:        data,
 	})
 	return err
 }
@@ -87,10 +137,17 @@ func (hub *SignalHub) UpdateGroupJoinType(ctx context.Context, gid int64, tp int
 		return err
 	}
 
-	_, err = hub.answerClient.GroupCastSignal(ctx, &answerclient.GroupCastSignalReq{
-		Type:   signal.SignalType_UpdateGroupJoinType,
-		Target: util.MustToString(gid),
-		Body:   body,
+	var data []byte
+	data, err = hub.convertSignalProtoData(signal.SignalType_UpdateGroupJoinType, body)
+	if err != nil {
+		return err
+	}
+
+	_, err = hub.transferClient.TransferMessage(ctx, &transferclient.TransferMessageReq{
+		From:        "",
+		Target:      util.MustToString(gid),
+		ChannelType: transfer.Channel_Group,
+		Body:        data,
 	})
 	return err
 }
@@ -106,10 +163,17 @@ func (hub *SignalHub) UpdateGroupFriendlyType(ctx context.Context, gid int64, tp
 		return err
 	}
 
-	_, err = hub.answerClient.GroupCastSignal(ctx, &answerclient.GroupCastSignalReq{
-		Type:   signal.SignalType_UpdateGroupFriendType,
-		Target: util.MustToString(gid),
-		Body:   body,
+	var data []byte
+	data, err = hub.convertSignalProtoData(signal.SignalType_UpdateGroupFriendType, body)
+	if err != nil {
+		return err
+	}
+
+	_, err = hub.transferClient.TransferMessage(ctx, &transferclient.TransferMessageReq{
+		From:        "",
+		Target:      util.MustToString(gid),
+		ChannelType: transfer.Channel_Group,
+		Body:        data,
 	})
 	return err
 }
@@ -125,10 +189,17 @@ func (hub *SignalHub) UpdateGroupMuteType(ctx context.Context, gid int64, tp int
 		return err
 	}
 
-	_, err = hub.answerClient.GroupCastSignal(ctx, &answerclient.GroupCastSignalReq{
-		Type:   signal.SignalType_UpdateGroupMuteType,
-		Target: util.MustToString(gid),
-		Body:   body,
+	var data []byte
+	data, err = hub.convertSignalProtoData(signal.SignalType_UpdateGroupMuteType, body)
+	if err != nil {
+		return err
+	}
+
+	_, err = hub.transferClient.TransferMessage(ctx, &transferclient.TransferMessageReq{
+		From:        "",
+		Target:      util.MustToString(gid),
+		ChannelType: transfer.Channel_Group,
+		Body:        data,
 	})
 	return err
 }
@@ -144,10 +215,17 @@ func (hub *SignalHub) UpdateGroupName(ctx context.Context, gid int64, name strin
 		return err
 	}
 
-	_, err = hub.answerClient.GroupCastSignal(ctx, &answerclient.GroupCastSignalReq{
-		Type:   signal.SignalType_UpdateGroupName,
-		Target: util.MustToString(gid),
-		Body:   body,
+	var data []byte
+	data, err = hub.convertSignalProtoData(signal.SignalType_UpdateGroupName, body)
+	if err != nil {
+		return err
+	}
+
+	_, err = hub.transferClient.TransferMessage(ctx, &transferclient.TransferMessageReq{
+		From:        "",
+		Target:      util.MustToString(gid),
+		ChannelType: transfer.Channel_Group,
+		Body:        data,
 	})
 	return err
 }
@@ -163,10 +241,17 @@ func (hub *SignalHub) UpdateGroupAvatar(ctx context.Context, gid int64, avatar s
 		return err
 	}
 
-	_, err = hub.answerClient.GroupCastSignal(ctx, &answerclient.GroupCastSignalReq{
-		Type:   signal.SignalType_UpdateGroupAvatar,
-		Target: util.MustToString(gid),
-		Body:   body,
+	var data []byte
+	data, err = hub.convertSignalProtoData(signal.SignalType_UpdateGroupAvatar, body)
+	if err != nil {
+		return err
+	}
+
+	_, err = hub.transferClient.TransferMessage(ctx, &transferclient.TransferMessageReq{
+		From:        "",
+		Target:      util.MustToString(gid),
+		ChannelType: transfer.Channel_Group,
+		Body:        data,
 	})
 	return err
 }
@@ -183,10 +268,17 @@ func (hub *SignalHub) UpdateGroupMemberRole(ctx context.Context, gid int64, uid 
 		return err
 	}
 
-	_, err = hub.answerClient.GroupCastSignal(ctx, &answerclient.GroupCastSignalReq{
-		Type:   signal.SignalType_UpdateGroupMemberType,
-		Target: util.MustToString(gid),
-		Body:   body,
+	var data []byte
+	data, err = hub.convertSignalProtoData(signal.SignalType_UpdateGroupMemberType, body)
+	if err != nil {
+		return err
+	}
+
+	_, err = hub.transferClient.TransferMessage(ctx, &transferclient.TransferMessageReq{
+		From:        "",
+		Target:      util.MustToString(gid),
+		ChannelType: transfer.Channel_Group,
+		Body:        data,
 	})
 	return err
 }
@@ -203,10 +295,17 @@ func (hub *SignalHub) UpdateMembersMuteTime(ctx context.Context, gid, muteTime i
 		return err
 	}
 
-	_, err = hub.answerClient.GroupCastSignal(ctx, &answerclient.GroupCastSignalReq{
-		Type:   signal.SignalType_UpdateGroupMemberMuteTime,
-		Target: util.MustToString(gid),
-		Body:   body,
+	var data []byte
+	data, err = hub.convertSignalProtoData(signal.SignalType_UpdateGroupMemberMuteTime, body)
+	if err != nil {
+		return err
+	}
+
+	_, err = hub.transferClient.TransferMessage(ctx, &transferclient.TransferMessageReq{
+		From:        "",
+		Target:      util.MustToString(gid),
+		ChannelType: transfer.Channel_Group,
+		Body:        data,
 	})
 	return err
 }
@@ -219,11 +318,17 @@ func (hub *SignalHub) StartCall(ctx context.Context, target string, traceId int6
 	if err != nil {
 		return errors.WithMessagef(err, "proto.Marshal, action=%+v", action)
 	}
+	var data []byte
+	data, err = hub.convertSignalProtoData(signal.SignalType_StartCall, body)
+	if err != nil {
+		return err
+	}
 
-	_, err = hub.answerClient.UniCastSignal(ctx, &answerclient.UniCastSignalReq{
-		Type:   signal.SignalType_StartCall,
-		Target: target,
-		Body:   body,
+	_, err = hub.transferClient.TransferMessage(ctx, &transferclient.TransferMessageReq{
+		From:        "",
+		Target:      target,
+		ChannelType: transfer.Channel_Private,
+		Body:        data,
 	})
 	return err
 }
@@ -234,10 +339,17 @@ func (hub *SignalHub) AcceptCall(ctx context.Context, target string, action *sig
 		return errors.WithMessagef(err, "proto.Marshal, action=%+v", action)
 	}
 
-	_, err = hub.answerClient.UniCastSignal(ctx, &answerclient.UniCastSignalReq{
-		Type:   signal.SignalType_AcceptCall,
-		Target: target,
-		Body:   body,
+	var data []byte
+	data, err = hub.convertSignalProtoData(signal.SignalType_AcceptCall, body)
+	if err != nil {
+		return err
+	}
+
+	_, err = hub.transferClient.TransferMessage(ctx, &transferclient.TransferMessageReq{
+		From:        "",
+		Target:      target,
+		ChannelType: transfer.Channel_Private,
+		Body:        data,
 	})
 	return err
 }
@@ -248,47 +360,80 @@ func (hub *SignalHub) StopCall(ctx context.Context, target string, action *signa
 		return errors.WithMessagef(err, "proto.Marshal, action=%+v", action)
 	}
 
-	_, err = hub.answerClient.UniCastSignal(ctx, &answerclient.UniCastSignalReq{
-		Type:   signal.SignalType_StopCall,
-		Target: target,
-		Body:   body,
+	var data []byte
+	data, err = hub.convertSignalProtoData(signal.SignalType_StopCall, body)
+	if err != nil {
+		return err
+	}
+
+	_, err = hub.transferClient.TransferMessage(ctx, &transferclient.TransferMessageReq{
+		From:        "",
+		Target:      target,
+		ChannelType: transfer.Channel_Private,
+		Body:        data,
 	})
 	return err
 }
 
 func (hub *SignalHub) MessageReceived(ctx context.Context, item *recordhelper.ConnSeqItem) error {
-	actionProto := &signal.SignalReceived{
+	action := &signal.SignalReceived{
 		Logs: item.Logs,
 	}
-	actionData, err := proto.Marshal(actionProto)
+	body, err := proto.Marshal(action)
 	if err != nil {
 		return err
 	}
-	_, err = hub.answerClient.UniCastSignal(ctx, &answerclient.UniCastSignalReq{
-		Type:   signal.SignalType_Received,
-		Target: item.Sender,
-		Body:   actionData,
+
+	var data []byte
+	data, err = hub.convertSignalProtoData(signal.SignalType_Received, body)
+	if err != nil {
+		return err
+	}
+
+	_, err = hub.transferClient.TransferMessage(ctx, &transferclient.TransferMessageReq{
+		From:        "",
+		Target:      item.Sender,
+		ChannelType: transfer.Channel_Private,
+		Body:        data,
 	})
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 func (hub *SignalHub) EndpointLogin(ctx context.Context, uid string, action *signal.SignalEndpointLogin) error {
-	actionData, err := proto.Marshal(action)
+	body, err := proto.Marshal(action)
 	if err != nil {
 		return err
 	}
-	_, err = hub.answerClient.UniCastSignal(ctx, &answerclient.UniCastSignalReq{
-		Type:   signal.SignalType_EndpointLogin,
-		Target: uid,
-		Body:   actionData,
+
+	var data []byte
+	data, err = hub.convertSignalProtoData(signal.SignalType_EndpointLogin, body)
+	if err != nil {
+		return err
+	}
+
+	p := &protocol.Proto{
+		Ver:     1,
+		Op:      int32(protocol.Op_ReceiveMsg),
+		Seq:     0,
+		Ack:     0,
+		Mid:     0,
+		Channel: 0,
+		Target:  "",
+		Time:    0,
+		Body:    data,
+	}
+	data, err = proto.Marshal(p)
+	if err != nil {
+		return err
+	}
+
+	_, err = hub.pusherClient.PushList(ctx, &pusherclient.PushListReq{
+		App:  "",
+		From: "",
+		Uid:  []string{uid},
+		Body: data,
 	})
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 func (hub *SignalHub) FocusPrivateMessage(ctx context.Context, users []string, action *signal.SignalFocusMessage) error {
@@ -298,12 +443,18 @@ func (hub *SignalHub) FocusPrivateMessage(ctx context.Context, users []string, a
 	}
 
 	for _, user := range users {
-		_, err = hub.answerClient.UniCastSignal(ctx, &answerclient.UniCastSignalReq{
-			Type:   signal.SignalType_FocusMessage,
-			Target: user,
-			Body:   body,
-		})
+		var data []byte
+		data, err = hub.convertSignalProtoData(signal.SignalType_FocusMessage, body)
 		if err != nil {
+			return err
+		}
+
+		if _, err = hub.transferClient.TransferMessage(ctx, &transferclient.TransferMessageReq{
+			From:        "",
+			Target:      user,
+			ChannelType: transfer.Channel_Private,
+			Body:        data,
+		}); err != nil {
 			return err
 		}
 	}
@@ -315,10 +466,18 @@ func (hub *SignalHub) FocusGroupMessage(ctx context.Context, gid int64, action *
 	if err != nil {
 		return err
 	}
-	_, err = hub.answerClient.GroupCastSignal(ctx, &answerclient.GroupCastSignalReq{
-		Type:   signal.SignalType_FocusMessage,
-		Target: util.MustToString(gid),
-		Body:   body,
+
+	var data []byte
+	data, err = hub.convertSignalProtoData(signal.SignalType_FocusMessage, body)
+	if err != nil {
+		return err
+	}
+
+	_, err = hub.transferClient.TransferMessage(ctx, &transferclient.TransferMessageReq{
+		From:        "",
+		Target:      util.MustToString(gid),
+		ChannelType: transfer.Channel_Group,
+		Body:        data,
 	})
 	return err
 }
@@ -330,12 +489,18 @@ func (hub *SignalHub) RevokePrivateMessage(ctx context.Context, users []string, 
 	}
 
 	for _, user := range users {
-		_, err = hub.answerClient.UniCastSignal(ctx, &answerclient.UniCastSignalReq{
-			Type:   signal.SignalType_Revoke,
-			Target: user,
-			Body:   body,
-		})
+		var data []byte
+		data, err = hub.convertSignalProtoData(signal.SignalType_Revoke, body)
 		if err != nil {
+			return err
+		}
+
+		if _, err = hub.transferClient.TransferMessage(ctx, &transferclient.TransferMessageReq{
+			From:        "",
+			Target:      user,
+			ChannelType: transfer.Channel_Private,
+			Body:        data,
+		}); err != nil {
 			return err
 		}
 	}
@@ -347,10 +512,18 @@ func (hub *SignalHub) RevokeGroupMessage(ctx context.Context, gid int64, action 
 	if err != nil {
 		return errors.WithMessagef(err, "proto.Marshal, action=%+v", action)
 	}
-	_, err = hub.answerClient.GroupCastSignal(ctx, &answerclient.GroupCastSignalReq{
-		Type:   signal.SignalType_Revoke,
-		Target: util.MustToString(gid),
-		Body:   body,
+
+	var data []byte
+	data, err = hub.convertSignalProtoData(signal.SignalType_Revoke, body)
+	if err != nil {
+		return err
+	}
+
+	_, err = hub.transferClient.TransferMessage(ctx, &transferclient.TransferMessageReq{
+		From:        "",
+		Target:      util.MustToString(gid),
+		ChannelType: transfer.Channel_Group,
+		Body:        data,
 	})
 	return err
 }

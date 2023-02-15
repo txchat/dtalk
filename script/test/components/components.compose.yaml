@@ -165,6 +165,33 @@ services:
         condition: service_started
 #      kafka: # this feature is removed at compose version 3.x
 #        condition: service_healthy
+  mongo:
+    image: mongo
+    container_name: ${MONGO_CONTAINER_NAME}
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - mongo_data:/data/
+      - mongo_conf:/etc/mongo
+    networks:
+      - components
+  mongo-express:
+    image: mongo-express
+    container_name: ${MONGO_EXPRESS_CONTAINER_NAME}
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
+    networks:
+      - components
+
 volumes:
   redis_data:
     name: ${REDIS_DATA_VOLUME}
@@ -204,6 +231,12 @@ volumes:
     external: false
   kafka_data:
     name: ${KAFKA_DATA_VOLUME}
+    external: false
+  mongo_data:
+    name: ${MONGO_DATA_VOLUME}
+    external: false
+  mongo_conf:
+    name: ${MONGO_CONFIG_VOLUME}
     external: false
 networks:
   components:

@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package transfer;
+option go_package = "./transfer";
+
+enum Channel {
+  Private = 0;
+  Group = 1;
+}
+
+message TransferMessageReq {
+  string from = 1;
+  string target = 2;
+  Channel channelType = 3;
+  bytes body = 4;
+}
+
+message TransferMessageResp {}
+
+message CheckMessageResendReq {
+  string from = 1;
+  string uuid = 2;
+  int64 seq = 3;
+}
+
+message CheckMessageResendResp { int64 mid = 1; }
+
+service Transfer {
+  rpc TransferMessage(TransferMessageReq) returns (TransferMessageResp);
+  rpc CheckMessageResend(CheckMessageResendReq)
+      returns (CheckMessageResendResp);
+}

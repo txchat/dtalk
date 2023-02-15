@@ -1,0 +1,19 @@
+AppID: dtalk
+Name: transfer.rpc
+ListenOn: 0.0.0.0:8080
+Etcd:
+  Hosts:
+  - 127.0.0.1:2379
+  Key: transfer.rpc
+Producer:
+  Version: ""
+  Brokers: ["${KAFKA_HOST}:9092"]
+ConsumerConfig:
+  Version: ""
+  Brokers: ["${KAFKA_HOST}:9092"]
+  CacheCapacity: 0
+  ConnectTimeout: "30s"
+BatchConsumerConf:
+  CacheCapacity: 0
+  Consumers: 0
+  Processors: 0

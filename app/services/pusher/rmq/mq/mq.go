@@ -1,4 +1,4 @@
-package rdmq
+package mq
 
 import (
 	"context"
@@ -9,8 +9,9 @@ import (
 	innerLogic "github.com/txchat/dtalk/app/services/pusher/internal/logic"
 	"github.com/txchat/dtalk/app/services/pusher/internal/model"
 	"github.com/txchat/dtalk/app/services/pusher/internal/svc"
-	record "github.com/txchat/dtalk/proto/record"
-	"github.com/txchat/imparse"
+	"github.com/txchat/dtalk/app/services/pusher/pusher"
+	"github.com/txchat/dtalk/proto/record"
+	"github.com/txchat/im/api/protocol"
 	xkafka "github.com/txchat/pkg/mq/kafka"
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -29,8 +30,8 @@ func NewService(cfg config.Config, svcCtx *svc.ServiceContext) *Service {
 		svcCtx: svcCtx,
 	}
 	//topic config
-	cfg.PushDealConsumerConfig.Topic = fmt.Sprintf("received-%s-topic", cfg.AppID)
-	cfg.PushDealConsumerConfig.Group = fmt.Sprintf("received-%s-pusher-group", cfg.AppID)
+	cfg.PushDealConsumerConfig.Topic = fmt.Sprintf("biz-%s-push", cfg.AppID)
+	cfg.PushDealConsumerConfig.Group = fmt.Sprintf("biz-%s-push-pusher", cfg.AppID)
 	//new batch consumer
 	consumer := xkafka.NewConsumer(cfg.PushDealConsumerConfig, nil)
 	logx.Info("dial kafka broker success")
@@ -48,36 +49,42 @@ func (s *Service) Shutdown(ctx context.Context) {
 }
 
 func (s *Service) handleFunc(key string, data []byte) error {
-	bizMsg := new(record.PushMsg)
-	if err := proto.Unmarshal(data, bizMsg); err != nil {
+	ctx := context.Background()
+	msg := new(record.PushMsgMQ)
+	if err := proto.Unmarshal(data, msg); err != nil {
 		s.Error("logic.BizMsg proto.Unmarshal error", "err", err)
 		return err
 	}
-	if bizMsg.AppId != s.Config.AppID {
+	if msg.AppId != s.Config.AppID {
 		return model.ErrAppID
 	}
-	if err := s.DealPush(context.TODO(), bizMsg); err != nil {
+	if err := s.consumerOnePush(ctx, msg); err != nil {
 		//TODO redo consume message
 		return err
 	}
 	return nil
 }
 
-func (s *Service) DealPush(ctx context.Context, m *record.PushMsg) error {
-	//sendB
-	var err error
-	switch m.GetType() {
-	case int32(imparse.UniCast):
-		l := innerLogic.NewPusherLogic(ctx, s.svcCtx)
-		err = l.UniCast(m)
-	case int32(imparse.GroupCast):
-		l := innerLogic.NewPusherLogic(ctx, s.svcCtx)
-		err = l.GroupCast(m)
+func (s *Service) consumerOnePush(ctx context.Context, m *record.PushMsgMQ) error {
+	switch m.GetChannel() {
+	case protocol.Channel_Private:
+		l := innerLogic.NewPushListLogic(ctx, s.svcCtx)
+		_, err := l.PushList(&pusher.PushListReq{
+			App:  m.GetAppId(),
+			From: m.GetFrom(),
+			Uid:  []string{m.GetTarget()},
+			Body: m.GetMsg(),
+		})
+		return err
+	case protocol.Channel_Group:
+		l := innerLogic.NewPushGroupLogic(ctx, s.svcCtx)
+		_, err := l.PushGroup(&pusher.PushGroupReq{
+			App:  m.GetAppId(),
+			Gid:  m.GetTarget(),
+			Body: m.GetMsg(),
+		})
+		return err
 	default:
-		err = fmt.Errorf("push type %v undefined", m.GetType())
+		return fmt.Errorf("push type %v undefined", m.GetChannel())
 	}
-	if err != nil {
-		s.Error("DealPush error", "err", err)
-	}
-	return nil
 }

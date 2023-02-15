@@ -5,23 +5,19 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"os/signal"
+	"syscall"
 
-	"github.com/txchat/dtalk/app/services/pusher/internal/config"
-	"github.com/txchat/dtalk/app/services/pusher/internal/server"
-	"github.com/txchat/dtalk/app/services/pusher/internal/svc"
-	"github.com/txchat/dtalk/app/services/pusher/pusher"
-	"github.com/txchat/dtalk/app/services/pusher/rmq/mq"
-	xerror "github.com/txchat/dtalk/pkg/error"
+	"github.com/txchat/dtalk/app/services/device/internal/config"
+	"github.com/txchat/dtalk/app/services/device/internal/svc"
+	"github.com/txchat/dtalk/app/services/device/rmq/mq"
 	"github.com/zeromicro/go-zero/core/conf"
-	"github.com/zeromicro/go-zero/core/service"
-	"github.com/zeromicro/go-zero/zrpc"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
+	"github.com/zeromicro/go-zero/core/logx"
 )
 
 var (
 	// projectName 项目名称
-	projectName = "pusher"
+	projectName = "pusher-rmq"
 	// projectVersion 项目版本
 	projectVersion = "0.0.1"
 	// goVersion go版本
@@ -35,7 +31,7 @@ var (
 	// isShowVersion 是否显示项目版本信息
 	isShowVersion = flag.Bool("v", false, "show project version")
 	// configFile 配置文件路径
-	configFile = flag.String("f", "etc/pusher.yaml", "the config file")
+	configFile = flag.String("f", "etc/pusher-rmq.yaml", "the config file")
 )
 
 func main() {
@@ -48,20 +44,25 @@ func main() {
 
 	mqSvc := mq.NewService(c, ctx)
 	mqSvc.Serve()
-	defer mqSvc.Shutdown(context.Background())
 
-	s := zrpc.MustNewServer(c.RpcServerConf, func(grpcServer *grpc.Server) {
-		pusher.RegisterPusherServer(grpcServer, server.NewPusherServer(ctx))
-
-		if c.Mode == service.DevMode || c.Mode == service.TestMode {
-			reflection.Register(grpcServer)
+	// init signal
+	sc := make(chan os.Signal, 1)
+	signal.Notify(sc, syscall.SIGHUP, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT)
+	for {
+		s := <-sc
+		logx.Info("service get a signal", "signal", s.String())
+		switch s {
+		case syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT:
+			mqSvc.Shutdown(context.Background())
+			logx.Info("server exit")
+			return
+		case syscall.SIGHUP:
+			conf.MustLoad(*configFile, &c, conf.UseEnv())
+			logx.Info("server hangup")
+		default:
+			return
 		}
-	})
-	defer s.Stop()
-	s.AddUnaryInterceptors(xerror.ErrInterceptor)
-
-	fmt.Printf("Starting rpc server at %s...\n", c.ListenOn)
-	s.Start()
+	}
 }
 
 // showVersion 显示项目版本信息

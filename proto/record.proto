@@ -4,16 +4,15 @@ syntax = "proto3";
 package dtalk.record;
 option go_package = "github.com/txchat/dtalk/proto/record";
 
+import "github.com/txchat/im/api/protocol/protocol.proto";
+
 // record --> mq
-message PushMsg {
+message PushMsgMQ {
   string appId = 1;
-  string fromId = 2;
-  int64 mid = 3;
-  string key = 4;
-  string target = 5; //推送目标 用户id 或者 群id
-  bytes msg = 6;
-  int32 type = 7;
-  string frameType = 8;
+  string from = 2;
+  string target = 3;
+  im.protocol.Channel channel = 4;
+  bytes msg = 5;
 }
 
 enum Operation {

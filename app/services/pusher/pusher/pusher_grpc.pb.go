@@ -20,6 +20,8 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PusherClient interface {
 	PushClient(ctx context.Context, in *PushReq, opts ...grpc.CallOption) (*PushReply, error)
+	PushGroup(ctx context.Context, in *PushGroupReq, opts ...grpc.CallOption) (*PushGroupResp, error)
+	PushList(ctx context.Context, in *PushListReq, opts ...grpc.CallOption) (*PushListResp, error)
 }
 
 type pusherClient struct {
@@ -39,11 +41,31 @@ func (c *pusherClient) PushClient(ctx context.Context, in *PushReq, opts ...grpc
 	return out, nil
 }
 
+func (c *pusherClient) PushGroup(ctx context.Context, in *PushGroupReq, opts ...grpc.CallOption) (*PushGroupResp, error) {
+	out := new(PushGroupResp)
+	err := c.cc.Invoke(ctx, "/pusher.Pusher/PushGroup", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *pusherClient) PushList(ctx context.Context, in *PushListReq, opts ...grpc.CallOption) (*PushListResp, error) {
+	out := new(PushListResp)
+	err := c.cc.Invoke(ctx, "/pusher.Pusher/PushList", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PusherServer is the server API for Pusher service.
 // All implementations must embed UnimplementedPusherServer
 // for forward compatibility
 type PusherServer interface {
 	PushClient(context.Context, *PushReq) (*PushReply, error)
+	PushGroup(context.Context, *PushGroupReq) (*PushGroupResp, error)
+	PushList(context.Context, *PushListReq) (*PushListResp, error)
 	mustEmbedUnimplementedPusherServer()
 }
 
@@ -53,6 +75,12 @@ type UnimplementedPusherServer struct {
 
 func (UnimplementedPusherServer) PushClient(context.Context, *PushReq) (*PushReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PushClient not implemented")
+}
+func (UnimplementedPusherServer) PushGroup(context.Context, *PushGroupReq) (*PushGroupResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PushGroup not implemented")
+}
+func (UnimplementedPusherServer) PushList(context.Context, *PushListReq) (*PushListResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PushList not implemented")
 }
 func (UnimplementedPusherServer) mustEmbedUnimplementedPusherServer() {}
 
@@ -85,6 +113,42 @@ func _Pusher_PushClient_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Pusher_PushGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PushGroupReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PusherServer).PushGroup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pusher.Pusher/PushGroup",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PusherServer).PushGroup(ctx, req.(*PushGroupReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Pusher_PushList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PushListReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PusherServer).PushList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pusher.Pusher/PushList",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PusherServer).PushList(ctx, req.(*PushListReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Pusher_ServiceDesc is the grpc.ServiceDesc for Pusher service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -95,6 +159,14 @@ var Pusher_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "PushClient",
 			Handler:    _Pusher_PushClient_Handler,
+		},
+		{
+			MethodName: "PushGroup",
+			Handler:    _Pusher_PushGroup_Handler,
+		},
+		{
+			MethodName: "PushList",
+			Handler:    _Pusher_PushList_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -15,4 +15,25 @@ message PushReq {
 
 message PushReply {}
 
-service Pusher { rpc PushClient(PushReq) returns (PushReply); }
+message PushGroupReq {
+  string app = 1;
+  string gid = 2;
+  bytes body = 5;
+}
+
+message PushGroupResp {}
+
+message PushListReq {
+  string app = 1;
+  string from = 2;
+  repeated string uid = 3;
+  bytes body = 4;
+}
+
+message PushListResp {}
+
+service Pusher {
+  rpc PushClient(PushReq) returns (PushReply);
+  rpc PushGroup(PushGroupReq) returns (PushGroupResp);
+  rpc PushList(PushListReq) returns (PushListResp);
+}

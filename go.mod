@@ -35,3 +35,8 @@ require (
 	google.golang.org/grpc v1.50.1
 	google.golang.org/protobuf v1.28.1
 )
+
+replace (
+	github.com/txchat/im => ../im
+	github.com/txchat/imparse => ../imparse
+)
