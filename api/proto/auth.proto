@@ -1,0 +1,27 @@
+// protoc -I=. -I=$GOPATH/src --go_out=plugins=grpc:. *.proto
+syntax = "proto3";
+
+package dtalk.api.proto;
+option go_package = "github.com/txchat/dtalk/api/proto/auth;auth";
+
+enum Device {
+  Android = 0;
+  IOS = 1;
+  Windows = 2;
+  Linux = 3;
+  MacOS = 4;
+  Web = 5;
+}
+
+message Login {
+  enum ConnType {
+    Connect = 0;
+    Reconnect = 1;
+  }
+  Device device = 1;
+  string username = 2;
+  string deviceToken = 3;
+  ConnType connType = 4;
+  string uuid = 5;
+  string deviceName = 6;
+}

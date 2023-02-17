@@ -27,7 +27,6 @@ require (
 	github.com/stretchr/testify v1.8.1
 	github.com/tencentyun/tls-sig-api-v2-golang v1.2.0
 	github.com/txchat/im v0.1.0
-	github.com/txchat/imparse v0.1.0
 	github.com/txchat/pkg v0.0.1
 	github.com/zeromicro/go-zero v1.4.3
 	go.etcd.io/etcd/api/v3 v3.5.5
@@ -38,5 +37,4 @@ require (
 
 replace (
 	github.com/txchat/im => ../im
-	github.com/txchat/imparse => ../imparse
 )

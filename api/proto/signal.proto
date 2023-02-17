@@ -1,0 +1,165 @@
+// protoc -I=. -I=$GOPATH/src --go_out=plugins=grpc:. *.proto
+syntax = "proto3";
+
+package dtalk.api.proto;
+
+import "github.com/txchat/dtalk/api/proto/auth.proto"; //我自己定义，在同一个package下
+
+option go_package = "github.com/txchat/dtalk/api/proto/signal;signal";
+
+// alert msg define
+message Signal {
+  SignalType type = 1;
+  bytes body = 2;
+}
+
+enum SignalType {
+  Received = 0;
+  Revoke = 1;
+  SignInGroup = 10;
+  SignOutGroup = 11;
+  DeleteGroup = 12;
+  FocusMessage = 13;
+  EndpointLogin = 14;
+  //
+  UpdateGroupJoinType = 20;
+  UpdateGroupFriendType = 21;
+  UpdateGroupMuteType = 22;
+  UpdateGroupMemberType = 23;
+  UpdateGroupMemberMuteTime = 24;
+  UpdateGroupName = 25;
+  UpdateGroupAvatar = 26;
+  //
+  StartCall = 31;
+  AcceptCall = 32;
+  StopCall = 33;
+}
+
+message SignalReceived { repeated int64 logs = 1; }
+
+message SignalSignInGroup {
+  repeated string uid = 1;
+  int64 group = 2;
+  uint64 time = 3;
+}
+
+message SignalSignOutGroup {
+  repeated string uid = 1;
+  int64 group = 2;
+  uint64 time = 3;
+}
+
+message SignalDeleteGroup {
+  int64 group = 1;
+  uint64 time = 2;
+}
+
+message SignalFocusMessage {
+  int64 mid = 1;
+  string uid = 2;
+  int32 currentNum = 3;
+  uint64 time = 4;
+}
+
+message SignalEndpointLogin {
+  string uuid = 1;
+  Device device = 2;
+  string deviceName = 3;
+  uint64 datetime = 4;
+}
+
+enum JoinType {
+  JoinAllow = 0;
+  JoinDeny = 1;
+  JoinApply = 2;
+}
+
+message SignalUpdateGroupJoinType {
+  int64 group = 1;
+  JoinType type = 2;
+  uint64 time = 3;
+}
+
+enum FriendType {
+  FriendAllow = 0;
+  FriendDeny = 1;
+}
+
+message SignalUpdateGroupFriendType {
+  int64 group = 1;
+  FriendType type = 2;
+  uint64 time = 3;
+}
+
+enum MuteType {
+  MuteAllow = 0;
+  MuteDeny = 1;
+}
+
+message SignalUpdateGroupMuteType {
+  int64 group = 1;
+  MuteType type = 2;
+  uint64 time = 3;
+}
+
+enum MemberType {
+  Normal = 0;
+  Admin = 1;
+  Owner = 2;
+}
+
+message SignalUpdateGroupMemberType {
+  int64 group = 1;
+  string uid = 2;
+  MemberType type = 3;
+  uint64 time = 4;
+}
+
+message SignalUpdateGroupMemberMuteTime {
+  int64 group = 1;
+  repeated string uid = 2;
+  int64 muteTime = 3;
+  uint64 time = 4;
+}
+
+message SignalUpdateGroupName {
+  int64 group = 1;
+  string name = 2;
+  uint64 time = 3;
+}
+
+message SignalUpdateGroupAvatar {
+  int64 group = 1;
+  string avatar = 2;
+  uint64 time = 3;
+}
+
+message SignalStartCall { int64 trace_id = 1; }
+
+message SignalAcceptCall {
+  int64 trace_id = 1;
+  int32 room_id = 2;
+  string uid = 3;
+  string user_sig = 4;
+  string private_map_key = 5;
+  int32 skd_app_id = 6;
+}
+
+enum StopCallType {
+  Busy = 0;
+  Timeout = 1;
+  Reject = 2;
+  Hangup = 3;
+  Cancel = 4;
+}
+
+message SignalStopCall {
+  int64 trace_id = 1;
+  StopCallType reason = 2;
+}
+
+message SignalRevoke {
+  int64 mid = 1;
+  string operator = 2;
+  bool self = 3;
+}

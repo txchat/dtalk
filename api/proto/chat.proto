@@ -1,0 +1,16 @@
+// protoc -I=. -I=$GOPATH/src --go_out=plugins=grpc:. *.proto
+syntax = "proto3";
+
+package dtalk.api.proto;
+option go_package = "github.com/txchat/dtalk/api/proto/chat;chat";
+
+message Chat {
+  // event define
+  enum Type {
+    message = 0;
+    signal = 1;
+  }
+  Type type = 1;
+  int64 seq = 2;
+  bytes body = 3;
+}

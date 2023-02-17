@@ -37,8 +37,8 @@ func NewService(cfg config.Config, svcCtx *svc.ServiceContext) *Service {
 		storageExec: imparse.NewStandardStorage(exec.NewStorageExec(svcCtx)),
 	}
 	//topic config
-	cfg.StoreDealConsumerConfig.Topic = fmt.Sprintf("received-%s-topic", cfg.AppID)
-	cfg.StoreDealConsumerConfig.Group = fmt.Sprintf("received-%s-storage-group", cfg.AppID)
+	cfg.StoreDealConsumerConfig.Topic = fmt.Sprintf("biz-%s-store", cfg.AppID)
+	cfg.StoreDealConsumerConfig.Group = fmt.Sprintf("biz-%s-store-storage", cfg.AppID)
 	//new batch consumer
 	consumer := xkafka.NewConsumer(cfg.StoreDealConsumerConfig, nil)
 	logx.Info("dial kafka broker success")
@@ -56,22 +56,25 @@ func (s *Service) Shutdown(ctx context.Context) {
 }
 
 func (s *Service) handleFunc(key string, data []byte) error {
-	bizMsg := new(record.PushMsg)
-	if err := proto.Unmarshal(data, bizMsg); err != nil {
+	msg := new(record.StoreMsgMQ)
+	if err := proto.Unmarshal(data, msg); err != nil {
 		s.Error("logic.BizMsg proto.Unmarshal error", "err", err)
 		return err
 	}
-	if bizMsg.AppId != s.Config.AppID {
+	if msg.AppId != s.Config.AppID {
 		return model.ErrAppID
 	}
-	if err := s.DealStore(context.TODO(), bizMsg); err != nil {
+	if err := s.DealStore(context.TODO(), msg); err != nil {
 		//TODO redo consume message
 		return err
 	}
 	return nil
 }
 
-func (s *Service) DealStore(ctx context.Context, m *record.PushMsg) error {
+func (s *Service) DealStore(ctx context.Context, m *record.StoreMsgMQ) error {
+
+	
+
 	frame, err := s.parser.NewFrame(m.GetKey(), m.GetFromId(), bytes.NewReader(m.GetMsg()), bizproto.WithMid(m.GetMid()), bizproto.WithTarget(m.GetTarget()), bizproto.WithTransmissionMethod(imparse.Channel(m.GetType())))
 	if err != nil {
 		s.Error("NewFrame error", "key", m.Key, "from", m.FromId, "err", err)
