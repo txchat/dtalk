@@ -5,43 +5,43 @@ import (
 	"encoding/json"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/txchat/imparse/proto/common"
-	"github.com/txchat/imparse/proto/msg"
-	"github.com/txchat/imparse/proto/signal"
+	"github.com/txchat/dtalk/api/proto/message"
+	"github.com/txchat/dtalk/api/proto/msg"
+	"github.com/txchat/dtalk/api/proto/signal"
 )
 
-var msgFactory = map[common.MsgType]func() proto.Message{
-	common.MsgType_Text: func() proto.Message {
+var msgFactory = map[message.MsgType]func() proto.Message{
+	message.MsgType_Text: func() proto.Message {
 		return &msg.TextMsg{}
 	},
-	common.MsgType_Audio: func() proto.Message {
+	message.MsgType_Audio: func() proto.Message {
 		return &msg.AudioMsg{}
 	},
-	common.MsgType_Image: func() proto.Message {
+	message.MsgType_Image: func() proto.Message {
 		return &msg.ImageMsg{}
 	},
-	common.MsgType_Video: func() proto.Message {
+	message.MsgType_Video: func() proto.Message {
 		return &msg.VideoMsg{}
 	},
-	common.MsgType_File: func() proto.Message {
+	message.MsgType_File: func() proto.Message {
 		return &msg.FileMsg{}
 	},
-	common.MsgType_Card: func() proto.Message {
+	message.MsgType_Card: func() proto.Message {
 		return &msg.CardMsg{}
 	},
-	common.MsgType_Notice: func() proto.Message {
+	message.MsgType_Notice: func() proto.Message {
 		return &msg.NoticeMsg{}
 	},
-	common.MsgType_Forward: func() proto.Message {
+	message.MsgType_Forward: func() proto.Message {
 		return &msg.ForwardMsg{}
 	},
-	common.MsgType_Transfer: func() proto.Message {
+	message.MsgType_Transfer: func() proto.Message {
 		return &msg.TransferMsg{}
 	},
-	common.MsgType_RedPacket: func() proto.Message {
+	message.MsgType_RedPacket: func() proto.Message {
 		return &msg.RedPacketMsg{}
 	},
-	common.MsgType_ContactCard: func() proto.Message {
+	message.MsgType_ContactCard: func() proto.Message {
 		return &msg.ContactCardMsg{}
 	},
 }
@@ -135,7 +135,7 @@ func jsonDataToProtobufMessage(m proto.Message, data []byte) {
 	}
 }
 
-func CommonMsgProtobufDataToJSONData(m *common.Common) []byte {
+func CommonMsgProtobufDataToJSONData(m *message.Message) []byte {
 	creator, ok := msgFactory[m.MsgType]
 	if !ok || creator == nil {
 		return m.Msg
@@ -144,7 +144,7 @@ func CommonMsgProtobufDataToJSONData(m *common.Common) []byte {
 	return protobufDataToJSONData(protoMsg, m.Msg)
 }
 
-func SourceJSONMarshal(m *common.Common) []byte {
+func SourceJSONMarshal(m *message.Message) []byte {
 	if m.Source == nil {
 		return nil
 	}
@@ -155,7 +155,7 @@ func SourceJSONMarshal(m *common.Common) []byte {
 	return b
 }
 
-func ReferenceJSONMarshal(m *common.Common) []byte {
+func ReferenceJSONMarshal(m *message.Message) []byte {
 	if m.Reference == nil {
 		return nil
 	}
@@ -176,7 +176,7 @@ func SignalContentToJSONData(m *signal.Signal) []byte {
 }
 
 func CommonMsgJSONDataToProtobuf(msgType uint32, data []byte) proto.Message {
-	creator, ok := msgFactory[common.MsgType(msgType)]
+	creator, ok := msgFactory[message.MsgType(msgType)]
 	if !ok || creator == nil {
 		return nil
 	}
@@ -186,7 +186,7 @@ func CommonMsgJSONDataToProtobuf(msgType uint32, data []byte) proto.Message {
 }
 
 func CommonMsgJSONDataToProtobufData(msgType uint32, data []byte) []byte {
-	creator, ok := msgFactory[common.MsgType(msgType)]
+	creator, ok := msgFactory[message.MsgType(msgType)]
 	if !ok || creator == nil {
 		return data
 	}
@@ -194,11 +194,11 @@ func CommonMsgJSONDataToProtobufData(msgType uint32, data []byte) []byte {
 	return jsonDataToProtobufData(protoMsg, data)
 }
 
-func SourceJSONUnmarshal(data []byte) *common.Source {
+func SourceJSONUnmarshal(data []byte) *message.Source {
 	if len(data) == 0 {
 		return nil
 	}
-	var src common.Source
+	var src message.Source
 	err := json.Unmarshal(data, &src)
 	if err != nil {
 		return &src
@@ -206,11 +206,11 @@ func SourceJSONUnmarshal(data []byte) *common.Source {
 	return &src
 }
 
-func ReferenceJSONUnmarshal(data []byte) *common.Reference {
+func ReferenceJSONUnmarshal(data []byte) *message.Reference {
 	if len(data) == 0 {
 		return nil
 	}
-	var src common.Reference
+	var src message.Reference
 	err := json.Unmarshal(data, &src)
 	if err != nil {
 		return &src

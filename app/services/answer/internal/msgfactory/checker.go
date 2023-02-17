@@ -1,10 +1,10 @@
 package msgfactory
 
 import (
+	"github.com/txchat/dtalk/api/proto/common"
 	"github.com/txchat/dtalk/app/services/answer/internal/model"
 	"github.com/txchat/dtalk/internal/bizproto"
 	"github.com/txchat/imparse"
-	"github.com/txchat/imparse/proto/common"
 )
 
 func isChTypeOk(t common.Channel) bool {

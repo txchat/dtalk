@@ -10,7 +10,7 @@ import (
 	xerror "github.com/txchat/dtalk/pkg/error"
 	xhttp "github.com/txchat/dtalk/pkg/net/http"
 
-	"github.com/txchat/imparse/proto/auth"
+	"github.com/txchat/dtalk/api/proto/auth"
 	"github.com/zeromicro/go-zero/core/logx"
 	//xhttp "github.com/txchat/dtalk/pkg/net/http"
 )

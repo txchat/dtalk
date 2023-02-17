@@ -3,7 +3,7 @@ syntax = "proto3";
 package answer;
 option go_package = "./answer";
 
-import "github.com/txchat/imparse/proto/signal.proto";
+import "github.com/txchat/dtalk/api/proto/signal.proto";
 
 message PushCommonMsgReq {
   string key = 1;

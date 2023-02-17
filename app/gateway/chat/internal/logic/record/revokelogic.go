@@ -4,18 +4,17 @@ import (
 	"context"
 	"time"
 
-	"github.com/txchat/dtalk/app/services/group/group"
-	"github.com/txchat/dtalk/app/services/group/groupclient"
-
+	"github.com/txchat/dtalk/api/proto/message"
+	"github.com/txchat/dtalk/api/proto/signal"
 	"github.com/txchat/dtalk/app/gateway/chat/internal/model"
 	"github.com/txchat/dtalk/app/gateway/chat/internal/svc"
 	"github.com/txchat/dtalk/app/gateway/chat/internal/types"
+	"github.com/txchat/dtalk/app/services/group/group"
+	"github.com/txchat/dtalk/app/services/group/groupclient"
 	"github.com/txchat/dtalk/app/services/storage/storageclient"
 	xerror "github.com/txchat/dtalk/pkg/error"
 	xhttp "github.com/txchat/dtalk/pkg/net/http"
 	"github.com/txchat/dtalk/pkg/util"
-	"github.com/txchat/imparse/proto/common"
-	"github.com/txchat/imparse/proto/signal"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -56,7 +55,7 @@ func (l *RevokeLogic) Revoke(req *types.RevokeReq) (resp *types.RevokeResp, err 
 func (l *RevokeLogic) revokePersonal(operator string, mid int64) error {
 	//查找消息
 	record, err := l.svcCtx.StorageRPC.GetRecord(l.ctx, &storageclient.GetRecordReq{
-		Tp:  common.Channel_ToUser,
+		Tp:  message.Channel_Private,
 		Mid: mid,
 	})
 	if err != nil {
@@ -68,7 +67,7 @@ func (l *RevokeLogic) revokePersonal(operator string, mid int64) error {
 	}
 
 	if _, err := l.svcCtx.StorageRPC.DelRecord(l.ctx, &storageclient.DelRecordReq{
-		Tp:  common.Channel_ToUser,
+		Tp:  message.Channel_Private,
 		Mid: mid,
 	}); err != nil {
 		return err
@@ -86,7 +85,7 @@ func (l *RevokeLogic) revokePersonal(operator string, mid int64) error {
 func (l *RevokeLogic) revokeGroup(operator string, mid int64) error {
 	//查找消息
 	record, err := l.svcCtx.StorageRPC.GetRecord(l.ctx, &storageclient.GetRecordReq{
-		Tp:  common.Channel_ToGroup,
+		Tp:  message.Channel_Group,
 		Mid: mid,
 	})
 	if err != nil {
@@ -125,7 +124,7 @@ func (l *RevokeLogic) revokeGroup(operator string, mid int64) error {
 		}
 	}
 	if _, err := l.svcCtx.StorageRPC.DelRecord(l.ctx, &storageclient.DelRecordReq{
-		Tp:  common.Channel_ToGroup,
+		Tp:  message.Channel_Group,
 		Mid: mid,
 	}); err != nil {
 		return err

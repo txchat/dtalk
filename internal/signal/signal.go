@@ -3,9 +3,9 @@ package signal
 import (
 	"context"
 
+	"github.com/txchat/dtalk/api/proto/signal"
 	"github.com/txchat/dtalk/internal/group"
 	"github.com/txchat/dtalk/internal/recordhelper"
-	"github.com/txchat/imparse/proto/signal"
 )
 
 type Signal interface {

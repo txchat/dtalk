@@ -2,9 +2,9 @@ package logic
 
 import (
 	"github.com/golang/protobuf/proto"
+	"github.com/txchat/dtalk/api/proto/common"
+	"github.com/txchat/dtalk/api/proto/signal"
 	"github.com/txchat/im/api/protocol"
-	"github.com/txchat/imparse/proto/common"
-	"github.com/txchat/imparse/proto/signal"
 )
 
 var signalReliableMap = map[signal.SignalType]bool{

@@ -3,10 +3,9 @@ package logic
 import (
 	"context"
 
-	"github.com/txchat/imparse"
-
 	"github.com/txchat/dtalk/app/services/answer/answer"
 	"github.com/txchat/dtalk/app/services/answer/internal/svc"
+	"github.com/txchat/imparse"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )

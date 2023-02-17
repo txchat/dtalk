@@ -5,9 +5,9 @@ import (
 	"fmt"
 
 	"github.com/gomodule/redigo/redis"
+	"github.com/txchat/dtalk/api/proto/auth"
 	"github.com/txchat/dtalk/app/services/device/internal/model"
 	xredis "github.com/txchat/dtalk/pkg/redis"
-	"github.com/txchat/imparse/proto/auth"
 )
 
 const (

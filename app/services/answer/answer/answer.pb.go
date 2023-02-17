@@ -10,7 +10,7 @@ import (
 	reflect "reflect"
 	sync "sync"
 
-	signal "github.com/txchat/imparse/proto/signal"
+	signal "github.com/txchat/dtalk/api/proto/signal"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 )

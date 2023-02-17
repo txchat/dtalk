@@ -3,22 +3,27 @@ package txchat
 import (
 	"context"
 
+	"github.com/txchat/dtalk/api/proto/message"
+	"github.com/txchat/dtalk/app/services/transfer/transferclient"
+
 	"github.com/golang/protobuf/proto"
 	"github.com/google/uuid"
+	"github.com/txchat/dtalk/api/proto/common"
+	"github.com/txchat/dtalk/api/proto/msg"
+	"github.com/txchat/dtalk/api/proto/signal"
 	"github.com/txchat/dtalk/app/services/answer/answerclient"
 	"github.com/txchat/dtalk/internal/group"
 	"github.com/txchat/dtalk/pkg/util"
-	"github.com/txchat/imparse/proto/common"
-	"github.com/txchat/imparse/proto/msg"
-	"github.com/txchat/imparse/proto/signal"
 )
 
 type NoticeHub struct {
-	answerClient answerclient.Answer
+	transferClient transferclient.Transfer
 }
 
-func NewNoticeHub(conn answerclient.Answer) *NoticeHub {
-	return &NoticeHub{answerClient: conn}
+func NewNoticeHub(transferClient transferclient.Transfer) *NoticeHub {
+	return &NoticeHub{
+		transferClient: transferClient,
+	}
 }
 
 func (hub *NoticeHub) GroupAddNewMembers(ctx context.Context, gid int64, operator string, members []string) error {
@@ -39,6 +44,19 @@ func (hub *NoticeHub) GroupAddNewMembers(ctx context.Context, gid int64, operato
 	data, err := proto.Marshal(noticeMsg)
 	if err != nil {
 		return err
+	}
+
+	msg := &message.Message{
+		ChannelType: 0,
+		Mid:         "",
+		Cid:         "",
+		From:        "",
+		Target:      "",
+		MsgType:     0,
+		Msg:         nil,
+		Datetime:    0,
+		Source:      nil,
+		Reference:   nil,
 	}
 
 	_, err = hub.answerClient.PushNoticeMsg(ctx, &answerclient.PushNoticeMsgReq{

@@ -2,6 +2,7 @@ package svc
 
 import (
 	"github.com/txchat/im/app/logic/logicclient"
+	"github.com/txchat/imparse"
 
 	"github.com/txchat/dtalk/app/services/group/groupclient"
 
@@ -11,7 +12,6 @@ import (
 	"github.com/txchat/dtalk/app/services/generator/generatorclient"
 	"github.com/txchat/dtalk/internal/bizproto"
 	xerror "github.com/txchat/dtalk/pkg/error"
-	"github.com/txchat/imparse"
 	xkafka "github.com/txchat/pkg/mq/kafka"
 	"github.com/zeromicro/go-zero/zrpc"
 )

@@ -8,6 +8,9 @@ import (
 	"github.com/txchat/dtalk/app/services/device/internal/config"
 	"github.com/txchat/dtalk/app/services/device/internal/dao"
 	"github.com/txchat/dtalk/app/services/group/groupclient"
+	"github.com/txchat/dtalk/app/services/transfer/transferclient"
+	"github.com/txchat/dtalk/internal/signal"
+	txchatSignalApi "github.com/txchat/dtalk/internal/signal/txchat"
 	xerror "github.com/txchat/dtalk/pkg/error"
 	"github.com/txchat/im/app/logic/logicclient"
 	"github.com/zeromicro/go-zero/zrpc"
@@ -17,8 +20,10 @@ type ServiceContext struct {
 	Config config.Config
 	Repo   dao.DeviceRepository
 
-	LogicRPC logicclient.Logic
-	GroupRPC groupclient.Group
+	LogicRPC       logicclient.Logic
+	GroupRPC       groupclient.Group
+	TransferClient transferclient.Transfer
+	SignalHub      signal.Signal
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -29,6 +34,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor), zrpc.WithNonBlock())),
 		LogicRPC: logicclient.NewLogic(zrpc.MustNewClient(c.LogicRPC,
 			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor), zrpc.WithNonBlock())),
+		SignalHub: txchatSignalApi.NewSignalHub(answerClient),
 	}
 }
 

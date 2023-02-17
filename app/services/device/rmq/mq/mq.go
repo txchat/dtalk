@@ -7,14 +7,14 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/proto"
+	"github.com/txchat/dtalk/api/proto/auth"
+	"github.com/txchat/dtalk/api/proto/signal"
 	"github.com/txchat/dtalk/app/services/device/internal/config"
 	"github.com/txchat/dtalk/app/services/device/internal/model"
 	"github.com/txchat/dtalk/app/services/device/internal/svc"
 	"github.com/txchat/dtalk/pkg/util"
 	"github.com/txchat/im/api/protocol"
 	"github.com/txchat/im/app/logic/logicclient"
-	"github.com/txchat/imparse/proto/auth"
-	"github.com/txchat/imparse/proto/signal"
 	xkafka "github.com/txchat/pkg/mq/kafka"
 	"github.com/zeromicro/go-zero/core/logx"
 )

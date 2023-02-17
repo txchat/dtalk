@@ -4,16 +4,17 @@ import (
 	"context"
 	"time"
 
+	"github.com/txchat/dtalk/internal/proto/offline"
+
 	"github.com/golang/protobuf/proto"
+	"github.com/txchat/dtalk/api/proto/auth"
+	"github.com/txchat/dtalk/api/proto/message"
 	"github.com/txchat/dtalk/app/services/device/deviceclient"
 	"github.com/txchat/dtalk/app/services/pusher/internal/config"
 	"github.com/txchat/dtalk/app/services/pusher/internal/dao"
 	"github.com/txchat/dtalk/app/services/pusher/internal/publish"
 	xerror "github.com/txchat/dtalk/pkg/error"
-	"github.com/txchat/dtalk/proto/offline"
 	"github.com/txchat/im/app/logic/logicclient"
-	"github.com/txchat/imparse/proto/auth"
-	"github.com/txchat/imparse/proto/message"
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/zrpc"
 )

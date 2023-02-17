@@ -25,6 +25,32 @@ type FocusReq {
 type FocusResp {
 }
 
+type GetSeqRangeReq {
+}
+
+type GetSeqRangeResp {
+   	MaxSeq int64 `json:"maxSeq"`
+   	MinSeq int64 `json:"minSeq"`
+}
+
+type PullReq {
+	SeqList []int64 `json:"seqList"`
+}
+
+type PullResp {
+    Records [][]byte `json:"records"`
+}
+
+type PullPrivateRoamingReq {
+	Session string `json:"session"`
+	Size int32 `json:"size"`
+}
+
+type PullPrivateRoamingResp {
+    Records [][]byte `json:"records"`
+}
+
+
 type SyncReq {
 	MaxCount int64 `json:"count,range=[1:1000]"` // 消息数量
 	StartMid int64 `json:"start,optional"`       // 消息 ID
@@ -78,11 +104,23 @@ service chat-api {
 	@doc "关注消息"
 	@handler Focus
 	post /app/record/focus (FocusReq) returns (FocusResp)
-	
-	@doc "同步聊天记录"
-	@handler Sync
-	post /app/record/sync-record (SyncReq) returns (SyncResp)
-	
+
+    @doc "获取消息序列范围"
+	@handler GetSeqRange
+	post /app/record/seq-range (GetSeqRangeReq) returns (GetSeqRangeResp)
+
+    @doc "拉取同步消息"
+	@handler Pull
+	post /app/record/pull (PullReq) returns (PullResp)
+
+	@doc "拉取私聊漫游消息"
+	@handler PullPrivateRoaming
+	post /app/record/private-roaming (PullPrivateRoamingReq) returns (PullPrivateRoamingResp)
+
+	@doc "拉取群聊漫游消息"
+	@handler PullGroupRoaming
+	post /app/record/group-roaming (PullGroupRoamingReq) returns (PullGroupRoamingResp)
+
 	@doc "获取私聊消息"
 	@handler PrivateRecord
 	post /app/record/pri-chat-record (PrivateRecordReq) returns (PrivateRecordResp)

@@ -4,12 +4,12 @@ import (
 	"context"
 	"time"
 
+	"github.com/txchat/dtalk/api/proto/common"
 	"github.com/txchat/dtalk/app/services/group/groupclient"
 	"github.com/txchat/dtalk/internal/bizproto"
 	xerror "github.com/txchat/dtalk/pkg/error"
 	"github.com/txchat/dtalk/pkg/util"
 	"github.com/txchat/imparse"
-	"github.com/txchat/imparse/proto/common"
 )
 
 type Filters struct {

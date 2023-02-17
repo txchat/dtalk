@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/golang/protobuf/proto"
-	record "github.com/txchat/dtalk/proto/record"
+	"github.com/txchat/dtalk/internal/proto/record"
 	"github.com/txchat/im/app/logic/logicclient"
 	"github.com/txchat/imparse"
 	xkafka "github.com/txchat/pkg/mq/kafka"

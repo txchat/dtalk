@@ -4,15 +4,14 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/txchat/imparse/proto/message"
-
 	"github.com/golang/protobuf/proto"
+	"github.com/txchat/dtalk/api/proto/message"
 	"github.com/txchat/dtalk/app/services/pusher/internal/config"
 	innerLogic "github.com/txchat/dtalk/app/services/pusher/internal/logic"
 	"github.com/txchat/dtalk/app/services/pusher/internal/model"
 	"github.com/txchat/dtalk/app/services/pusher/internal/svc"
 	"github.com/txchat/dtalk/app/services/pusher/pusher"
-	"github.com/txchat/dtalk/proto/record"
+	"github.com/txchat/dtalk/internal/proto/record"
 	xkafka "github.com/txchat/pkg/mq/kafka"
 	"github.com/zeromicro/go-zero/core/logx"
 )
