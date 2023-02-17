@@ -4,15 +4,19 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/txchat/dtalk/internal/proto/record"
+
 	"github.com/golang/protobuf/proto"
+	"github.com/txchat/dtalk/api/proto/chat"
+	"github.com/txchat/dtalk/api/proto/message"
 	"github.com/txchat/dtalk/app/services/device/deviceclient"
 	"github.com/txchat/dtalk/app/services/generator/generatorclient"
 	"github.com/txchat/dtalk/app/services/group/groupclient"
 	"github.com/txchat/dtalk/app/services/pusher/pusherclient"
 	"github.com/txchat/dtalk/app/services/transfer/internal/config"
 	"github.com/txchat/dtalk/app/services/transfer/internal/dao"
+	"github.com/txchat/dtalk/app/services/transfer/internal/model"
 	"github.com/txchat/dtalk/pkg/util"
-	"github.com/txchat/dtalk/proto/record"
 	"github.com/txchat/im/api/protocol"
 	xkafka "github.com/txchat/pkg/mq/kafka"
 )
@@ -38,23 +42,27 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	}
 }
 
-func (s *ServiceContext) saveMessageToStorage(ctx context.Context, p *protocol.Proto) error {
-	//TODO publish store
-	return nil
-}
-
-func (s *ServiceContext) asyncPushMessage(ctx context.Context, from string, p *protocol.Proto) error {
-	msg, err := proto.Marshal(p)
+func (s *ServiceContext) saveMessageToStorage(ctx context.Context, from, target string, chatProto *chat.Chat) error {
+	v, err := proto.Marshal(&record.StoreMsgMQ{
+		AppId:  s.Config.AppID,
+		From:   from,
+		Target: target,
+		Chat:   chatProto,
+	})
 	if err != nil {
 		return err
 	}
+	_, _, err = s.Producer.Publish(fmt.Sprintf("biz-%s-store", s.Config.AppID), from, v)
+	return err
+}
 
+func (s *ServiceContext) asyncPushMessage(ctx context.Context, channel message.Channel, from, target string, body []byte) error {
 	v, err := proto.Marshal(&record.PushMsgMQ{
 		AppId:   s.Config.AppID,
 		From:    from,
-		Target:  p.GetTarget(),
-		Channel: p.GetChannel(),
-		Msg:     msg,
+		Target:  target,
+		Channel: channel,
+		Msg:     body,
 	})
 	if err != nil {
 		return err
@@ -63,79 +71,83 @@ func (s *ServiceContext) asyncPushMessage(ctx context.Context, from string, p *p
 	return err
 }
 
-func (s *ServiceContext) TransferMessage(ctx context.Context, from string, p *protocol.Proto) error {
-	p.Op = int32(protocol.Op_ReceiveMsg)
-	switch p.GetChannel() {
-	case protocol.Channel_Group:
+func (s *ServiceContext) TransferMessage(ctx context.Context, channel message.Channel, from, target string, chatProto *chat.Chat) error {
+	switch channel {
+	case message.Channel_Group:
 		members, err := s.GroupClient.MembersInfo(ctx, &groupclient.MembersInfoReq{
-			Gid: util.MustToInt64(p.GetTarget()),
+			Gid: util.MustToInt64(target),
 			Uid: nil,
 		})
 		if err != nil {
 			return err
 		}
 		for _, member := range members.GetMembers() {
-			p = deepCopy(p)
+			chatProto = deepCopy(chatProto)
 			// 1, seq增加
 			var seq int64
 			seq, err = s.Repo.IncrUserSeq(ctx, member.GetUid())
 			if err != nil {
 				continue
 			}
+			chatProto.Seq = seq
 			// 2. 持久化
-			p.Seq = seq
 			// 写同步库
-			err = s.Repo.SaveUserChatRecord(ctx, p)
+			err = s.Repo.SaveUserChatRecord(ctx, chatProto)
 			if err != nil {
 				continue
 			}
 			// 异步写存储库
-			err = s.saveMessageToStorage(ctx, p)
+			err = s.saveMessageToStorage(ctx, from, member.GetUid(), chatProto)
 			if err != nil {
 				continue
 			}
-		}
-		// 推送
-		_, err = s.PusherClient.PushGroup(ctx, &pusherclient.PushGroupReq{
-			App:  s.Config.AppID,
-			Gid:  p.GetTarget(),
-			Body: nil,
-		})
-		if err != nil {
-			//异步处理推送
-			err = s.asyncPushMessage(ctx, from, p)
+			// 推送
+			_, err = s.PusherClient.PushList(ctx, &pusherclient.PushListReq{
+				App:  s.Config.AppID,
+				From: from,
+				Uid:  []string{member.GetUid()},
+				Body: nil,
+			})
 			if err != nil {
-				//TODO log
+				//异步处理推送
+				err = s.asyncPushMessage(ctx, message.Channel_Private, from, target, nil)
+				if err != nil {
+					//TODO log
+				}
 			}
 		}
-	case protocol.Channel_Private:
+	case message.Channel_Private:
 		// 1, seq增加
-		seq, err := s.Repo.IncrUserSeq(ctx, p.GetTarget())
+		seq, err := s.Repo.IncrUserSeq(ctx, target)
 		if err != nil {
 			return err
 		}
+		chatProto.Seq = seq
 		// 2. 持久化
-		p.Seq = seq
 		// 写同步库
-		err = s.Repo.SaveUserChatRecord(ctx, p)
+		err = s.Repo.SaveUserChatRecord(ctx, chatProto)
 		if err != nil {
 			return err
 		}
 		// 异步写存储库
-		err = s.saveMessageToStorage(ctx, p)
+		err = s.saveMessageToStorage(ctx, from, target, chatProto)
 		if err != nil {
 			return err
 		}
 		// 3. 推送
+		body, err := warpAndMarshal(chatProto)
+		if err != nil {
+			return err
+		}
 		_, err = s.PusherClient.PushList(ctx, &pusherclient.PushListReq{
 			App:  s.Config.AppID,
 			From: from,
-			Uid:  []string{p.GetTarget()},
-			Body: nil,
+			Uid:  []string{target},
+			Body: body,
 		})
 		if err != nil {
 			//异步处理推送
-			err = s.asyncPushMessage(ctx, from, p)
+			err = s.asyncPushMessage(ctx, channel, from, target, body)
 			if err != nil {
 				//TODO log
 			}
@@ -146,17 +158,27 @@ func (s *ServiceContext) TransferMessage(ctx context.Context, from string, p *pr
 	return nil
 }
 
-func deepCopy(p *protocol.Proto) *protocol.Proto {
-	newP := new(protocol.Proto)
-	newP.Ver = p.Ver
-	newP.Op = p.Op
+func deepCopy(p *chat.Chat) *chat.Chat {
+	newP := new(chat.Chat)
+	newP.Type = p.Type
 	newP.Seq = p.Seq
-	newP.Ack = p.Ack
-	newP.Mid = p.Mid
-	newP.Channel = p.Channel
-	newP.Target = p.Target
-	newP.Time = p.Time
 	newP.Body = make([]byte, len(p.Body))
 	copy(newP.Body, p.Body)
 	return newP
+}
+
+func warpAndMarshal(chatProto *chat.Chat) ([]byte, error) {
+	body, err := proto.Marshal(chatProto)
+	if err != nil {
+		return nil, err
+	}
+	// 组装消息协议
+	p := &protocol.Proto{
+		Ver:  model.NowProtoVersion,
+		Op:   int32(protocol.Op_ReceiveMsg),
+		Seq:  0,
+		Ack:  0,
+		Body: body,
+	}
+	return proto.Marshal(p)
 }

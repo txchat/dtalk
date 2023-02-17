@@ -4,11 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/txchat/dtalk/app/services/device/deviceclient"
-	"github.com/txchat/dtalk/app/services/transfer/internal/logic"
-	"github.com/txchat/dtalk/app/services/transfer/transfer"
-
 	"github.com/golang/protobuf/proto"
+	"github.com/txchat/dtalk/api/proto/chat"
+	"github.com/txchat/dtalk/api/proto/message"
 	"github.com/txchat/dtalk/app/services/transfer/internal/config"
 	"github.com/txchat/dtalk/app/services/transfer/internal/model"
 	"github.com/txchat/dtalk/app/services/transfer/internal/svc"
@@ -72,47 +70,34 @@ func (s *Service) handleFunc(key string, data []byte) error {
 
 	switch receivedMsg.GetOp() {
 	case protocol.Op_SendMsg:
-		dev, err := s.svcCtx.DeviceClient.GetDeviceByConnId(ctx, &deviceclient.GetDeviceByConnIdRequest{
-			Uid:    receivedMsg.GetFrom(),
-			ConnID: key,
-		})
+		//dev, err := s.svcCtx.DeviceClient.GetDeviceByConnId(ctx, &deviceclient.GetDeviceByConnIdRequest{
+		//	Uid:    receivedMsg.GetFrom(),
+		//	ConnID: key,
+		//})
+		//if err != nil {
+		//	return err
+		//}
+
+		var chatProto *chat.Chat
+		err = proto.Unmarshal(receivedMsg.GetBody(), chatProto)
 		if err != nil {
 			return err
 		}
-		uuid := dev.GetDeviceUUid()
-		l := logic.NewCheckMessageResendLogic(ctx, s.svcCtx)
-		resp, err := l.CheckMessageResend(&transfer.CheckMessageResendReq{
-			From: receivedMsg.GetFrom(),
-			Uuid: uuid,
-			Seq:  p.GetSeq(),
-		})
+
+		var msg *message.Message
+		err = proto.Unmarshal(chatProto.GetBody(), msg)
 		if err != nil {
 			return err
 		}
-		if resp.GetMid() != 0 {
-			break
-		}
-		err = s.svcCtx.TransferMessage(ctx, receivedMsg.GetFrom(), &p)
+
+		err = s.svcCtx.TransferMessage(ctx, msg.GetChannelType(), msg.GetTarget(), receivedMsg.GetFrom(), chatProto)
 		if err != nil {
 			//TODO log
+			return err
 		}
 	case protocol.Op_ReceiveMsgReply:
-		msgIndex, err := s.svcCtx.Repo.GetUserClientSeqByMid(ctx, p.GetMid())
+		err = s.svcCtx.Repo.UpdateLastReceiveMid(ctx, receivedMsg.GetFrom(), "")
 		if err != nil {
-			return err
-		}
-
-		lastSeq, err := s.svcCtx.Repo.UpdateUserLatestRev(ctx, msgIndex.UUID, msgIndex.UID, receivedMsg.GetFrom(), msgIndex.Seq)
-		if err != nil {
-			return err
-		}
-
-		err := s.svcCtx.SignalHub.MessageReceived(ctx, item)
-		if err != nil {
-			s.Error("UniCastSignalReceived failed",
-				"err", err,
-				"ack", p.GetAck(),
-			)
 			return err
 		}
 	default:
