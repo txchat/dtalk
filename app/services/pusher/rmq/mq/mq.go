@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/txchat/imparse/proto/message"
+
 	"github.com/golang/protobuf/proto"
 	"github.com/txchat/dtalk/app/services/pusher/internal/config"
 	innerLogic "github.com/txchat/dtalk/app/services/pusher/internal/logic"
@@ -11,7 +13,6 @@ import (
 	"github.com/txchat/dtalk/app/services/pusher/internal/svc"
 	"github.com/txchat/dtalk/app/services/pusher/pusher"
 	"github.com/txchat/dtalk/proto/record"
-	"github.com/txchat/im/api/protocol"
 	xkafka "github.com/txchat/pkg/mq/kafka"
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -67,7 +68,7 @@ func (s *Service) handleFunc(key string, data []byte) error {
 
 func (s *Service) consumerOnePush(ctx context.Context, m *record.PushMsgMQ) error {
 	switch m.GetChannel() {
-	case protocol.Channel_Private:
+	case message.Channel_Private:
 		l := innerLogic.NewPushListLogic(ctx, s.svcCtx)
 		_, err := l.PushList(&pusher.PushListReq{
 			App:  m.GetAppId(),
@@ -76,7 +77,7 @@ func (s *Service) consumerOnePush(ctx context.Context, m *record.PushMsgMQ) erro
 			Body: m.GetMsg(),
 		})
 		return err
-	case protocol.Channel_Group:
+	case message.Channel_Group:
 		l := innerLogic.NewPushGroupLogic(ctx, s.svcCtx)
 		_, err := l.PushGroup(&pusher.PushGroupReq{
 			App:  m.GetAppId(),

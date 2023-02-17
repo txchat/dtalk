@@ -22,11 +22,6 @@ func NewPusherServer(svcCtx *svc.ServiceContext) *PusherServer {
 	}
 }
 
-func (s *PusherServer) PushClient(ctx context.Context, in *pusher.PushReq) (*pusher.PushReply, error) {
-	l := logic.NewPushClientLogic(ctx, s.svcCtx)
-	return l.PushClient(in)
-}
-
 func (s *PusherServer) PushGroup(ctx context.Context, in *pusher.PushGroupReq) (*pusher.PushGroupResp, error) {
 	l := logic.NewPushGroupLogic(ctx, s.svcCtx)
 	return l.PushGroup(in)

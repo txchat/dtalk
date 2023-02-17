@@ -17,11 +17,8 @@ type (
 	PushGroupResp = pusher.PushGroupResp
 	PushListReq   = pusher.PushListReq
 	PushListResp  = pusher.PushListResp
-	PushReply     = pusher.PushReply
-	PushReq       = pusher.PushReq
 
 	Pusher interface {
-		PushClient(ctx context.Context, in *PushReq, opts ...grpc.CallOption) (*PushReply, error)
 		PushGroup(ctx context.Context, in *PushGroupReq, opts ...grpc.CallOption) (*PushGroupResp, error)
 		PushList(ctx context.Context, in *PushListReq, opts ...grpc.CallOption) (*PushListResp, error)
 	}
@@ -35,11 +32,6 @@ func NewPusher(cli zrpc.Client) Pusher {
 	return &defaultPusher{
 		cli: cli,
 	}
-}
-
-func (m *defaultPusher) PushClient(ctx context.Context, in *PushReq, opts ...grpc.CallOption) (*PushReply, error) {
-	client := pusher.NewPusherClient(m.cli.Conn())
-	return client.PushClient(ctx, in, opts...)
 }
 
 func (m *defaultPusher) PushGroup(ctx context.Context, in *PushGroupReq, opts ...grpc.CallOption) (*PushGroupResp, error) {
