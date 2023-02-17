@@ -3,17 +3,17 @@ syntax = "proto3";
 package storage;
 option go_package = "./storage";
 
-import "github.com/txchat/imparse/proto/common.proto";
+import "github.com/txchat/dtalk/api/proto/message.proto";
 
 message DelRecordReq {
-  imparse.proto.Channel tp = 1;
+  dtalk.api.proto.Channel tp = 1;
   int64 mid = 2;
 }
 
 message DelRecordReply {}
 
 message GetRecordReq {
-  imparse.proto.Channel tp = 1;
+  dtalk.api.proto.Channel tp = 1;
   int64 mid = 2;
 }
 
@@ -29,7 +29,7 @@ message GetRecordReply {
 }
 
 message GetRecordsAfterMidReq {
-  imparse.proto.Channel tp = 1;
+  dtalk.api.proto.Channel tp = 1;
   int64 mid = 2;
   string from = 3;
   string target = 4;

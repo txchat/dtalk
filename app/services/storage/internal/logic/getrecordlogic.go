@@ -3,10 +3,10 @@ package logic
 import (
 	"context"
 
+	"github.com/txchat/dtalk/api/proto/message"
 	"github.com/txchat/dtalk/app/services/storage/internal/model"
 	"github.com/txchat/dtalk/app/services/storage/internal/svc"
 	"github.com/txchat/dtalk/app/services/storage/storage"
-	"github.com/txchat/imparse/proto/common"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -25,13 +25,13 @@ func NewGetRecordLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetReco
 }
 
 func (l *GetRecordLogic) GetRecord(in *storage.GetRecordReq) (*storage.GetRecordReply, error) {
-	var item *model.MsgContent
+	var item *model.PrivateMsgContent
 	var err error
 	switch in.GetTp() {
-	case common.Channel_ToUser:
-		item, err = l.svcCtx.Repo.GetSpecifyRecord(in.GetMid())
-	case common.Channel_ToGroup:
-		item, err = l.svcCtx.Repo.GetSpecifyGroupRecord(in.GetMid())
+	case message.Channel_Private:
+		item, err = l.svcCtx.Repo.GetPrivateRecordByMid(in.GetMid())
+	case message.Channel_Group:
+		item, err = l.svcCtx.Repo.GetGroupRecordByMid(in.GetMid())
 	default:
 		err = model.ErrRecordNotFind
 	}
@@ -40,7 +40,7 @@ func (l *GetRecordLogic) GetRecord(in *storage.GetRecordReq) (*storage.GetRecord
 	}
 	return &storage.GetRecordReply{
 		Mid:        item.Mid,
-		Seq:        item.Seq,
+		Seq:        item.Cid,
 		SenderId:   item.SenderId,
 		ReceiverId: item.ReceiverId,
 		MsgType:    item.MsgType,

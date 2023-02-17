@@ -1,8 +1,8 @@
 package model
 
-type MsgContent struct {
+type PrivateMsgContent struct {
 	Mid        string
-	Seq        string
+	Cid        string
 	SenderId   string
 	ReceiverId string
 	MsgType    uint32
@@ -12,34 +12,31 @@ type MsgContent struct {
 	Reference  string
 }
 
-type MsgRelation struct {
+type PrivateMsgRelation struct {
 	Mid        string
 	OwnerUid   string
 	OtherUid   string
 	Type       uint8
-	State      uint8
 	CreateTime uint64
 }
 
-type MsgCache struct {
+type GroupMsgContent struct {
 	Mid        string
-	Seq        string
+	Cid        string
 	SenderId   string
 	ReceiverId string
+	GroupId    string
 	MsgType    uint32
 	Content    string
 	CreateTime uint64
 	Source     string
 	Reference  string
-	Prev       uint64
-	Version    uint64
 }
 
 type SignalContent struct {
-	Id         string
 	Uid        string
+	Seq        int64
 	Type       uint8
-	State      uint8
 	Content    string
 	CreateTime uint64
 	UpdateTime uint64

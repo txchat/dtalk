@@ -10,7 +10,7 @@ import (
 
 	"github.com/txchat/dtalk/app/services/storage/internal/config"
 	"github.com/txchat/dtalk/app/services/storage/internal/svc"
-	"github.com/txchat/dtalk/app/services/storage/rmq/rdmq"
+	"github.com/txchat/dtalk/app/services/storage/rmq/mq"
 	"github.com/txchat/dtalk/app/services/storage/rmq/syncmq"
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/core/logx"
@@ -46,7 +46,7 @@ func main() {
 	syncMQSvc := syncmq.NewService(c, ctx)
 	syncMQSvc.Serve()
 
-	rdMQSvc := rdmq.NewService(c, ctx)
+	rdMQSvc := mq.NewService(c, ctx)
 	rdMQSvc.Serve()
 
 	// init signal

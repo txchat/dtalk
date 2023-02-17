@@ -1,21 +1,18 @@
-package rdmq
+package mq
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 
-	"github.com/txchat/dtalk/app/services/storage/internal/exec"
+	"github.com/txchat/dtalk/internal/proto/record"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/txchat/dtalk/app/services/device/deviceclient"
+	"github.com/txchat/dtalk/api/proto/chat"
+	"github.com/txchat/dtalk/api/proto/message"
+	"github.com/txchat/dtalk/api/proto/signal"
 	"github.com/txchat/dtalk/app/services/storage/internal/config"
 	"github.com/txchat/dtalk/app/services/storage/internal/model"
 	"github.com/txchat/dtalk/app/services/storage/internal/svc"
-	"github.com/txchat/dtalk/internal/bizproto"
-	record "github.com/txchat/dtalk/proto/record"
-	"github.com/txchat/imparse"
-	"github.com/txchat/imparse/proto/auth"
 	xkafka "github.com/txchat/pkg/mq/kafka"
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -25,16 +22,13 @@ type Service struct {
 	Config        config.Config
 	svcCtx        *svc.ServiceContext
 	batchConsumer *xkafka.BatchConsumer
-	storageExec   imparse.Storage
-	parser        bizproto.StandardParse
 }
 
 func NewService(cfg config.Config, svcCtx *svc.ServiceContext) *Service {
 	s := &Service{
-		Logger:      logx.WithContext(context.TODO()),
-		Config:      cfg,
-		svcCtx:      svcCtx,
-		storageExec: imparse.NewStandardStorage(exec.NewStorageExec(svcCtx)),
+		Logger: logx.WithContext(context.TODO()),
+		Config: cfg,
+		svcCtx: svcCtx,
 	}
 	//topic config
 	cfg.StoreDealConsumerConfig.Topic = fmt.Sprintf("biz-%s-store", cfg.AppID)
@@ -56,6 +50,7 @@ func (s *Service) Shutdown(ctx context.Context) {
 }
 
 func (s *Service) handleFunc(key string, data []byte) error {
+	ctx := context.Background()
 	msg := new(record.StoreMsgMQ)
 	if err := proto.Unmarshal(data, msg); err != nil {
 		s.Error("logic.BizMsg proto.Unmarshal error", "err", err)
@@ -64,7 +59,7 @@ func (s *Service) handleFunc(key string, data []byte) error {
 	if msg.AppId != s.Config.AppID {
 		return model.ErrAppID
 	}
-	if err := s.DealStore(context.TODO(), msg); err != nil {
+	if err := s.DealStore(ctx, msg); err != nil {
 		//TODO redo consume message
 		return err
 	}
@@ -72,27 +67,36 @@ func (s *Service) handleFunc(key string, data []byte) error {
 }
 
 func (s *Service) DealStore(ctx context.Context, m *record.StoreMsgMQ) error {
-
-	
-
-	frame, err := s.parser.NewFrame(m.GetKey(), m.GetFromId(), bytes.NewReader(m.GetMsg()), bizproto.WithMid(m.GetMid()), bizproto.WithTarget(m.GetTarget()), bizproto.WithTransmissionMethod(imparse.Channel(m.GetType())))
-	if err != nil {
-		s.Error("NewFrame error", "key", m.Key, "from", m.FromId, "err", err)
-		return err
+	chatProto := m.GetChat()
+	switch chatProto.GetType() {
+	case chat.Chat_message:
+		var msg *message.Message
+		err := proto.Unmarshal(chatProto.GetBody(), msg)
+		if err != nil {
+			return err
+		}
+		switch msg.GetChannelType() {
+		case message.Channel_Private:
+			err = s.svcCtx.StorePrivateMessage(msg)
+			if err != nil {
+				return err
+			}
+		case message.Channel_Group:
+			err = s.svcCtx.StoreGroupMessage(m.GetTarget(), msg)
+			if err != nil {
+				return err
+			}
+		}
+	case chat.Chat_signal:
+		var sig *signal.Signal
+		err := proto.Unmarshal(chatProto.GetBody(), sig)
+		if err != nil {
+			return err
+		}
+		err = s.svcCtx.StoreSignal(m.GetTarget(), chatProto.GetSeq(), sig)
+		if err != nil {
+			return err
+		}
 	}
-	//TODO 暂时处理，之后device信息统一通过answer服务传递
-	devType := auth.Device_Android
-	dev, err := s.svcCtx.DeviceRPC.GetDeviceByConnId(ctx, &deviceclient.GetDeviceByConnIdRequest{
-		Uid:    m.GetFromId(),
-		ConnID: m.GetKey(),
-	})
-	if dev != nil {
-		devType = auth.Device(dev.GetDeviceType())
-	}
-	if err := s.storageExec.SaveMsg(ctx, devType, frame); err != nil {
-		s.Error("Store error", "key", m.Key, "from", m.FromId, "err", err)
-		return err
-	}
-	s.Slow("pass Store", "appId", m.AppId, "key", m.Key, "from", m.FromId)
 	return nil
 }

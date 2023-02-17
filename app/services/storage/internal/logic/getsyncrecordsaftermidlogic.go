@@ -6,10 +6,10 @@ import (
 	"github.com/txchat/dtalk/internal/recordutil"
 
 	"github.com/golang/protobuf/proto"
+	"github.com/txchat/dtalk/api/proto/common"
 	"github.com/txchat/dtalk/app/services/storage/internal/svc"
 	"github.com/txchat/dtalk/app/services/storage/storage"
 	"github.com/txchat/dtalk/pkg/util"
-	"github.com/txchat/imparse/proto/common"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -69,7 +69,7 @@ func (l *GetSyncRecordsAfterMidLogic) getSyncMsgJustBizLevel(key, uid string, st
 		eveP := &common.Common{
 			ChannelType: common.Channel_ToUser,
 			Mid:         util.MustToInt64(m.Mid),
-			Seq:         m.Seq,
+			Seq:         m.Cid,
 			From:        m.SenderId,
 			Target:      m.ReceiverId,
 			MsgType:     common.MsgType(m.MsgType),
@@ -92,7 +92,7 @@ func (l *GetSyncRecordsAfterMidLogic) getSyncMsgJustBizLevel(key, uid string, st
 		eveP := &common.Common{
 			ChannelType: common.Channel_ToGroup,
 			Mid:         util.MustToInt64(m.Mid),
-			Seq:         m.Seq,
+			Seq:         m.Cid,
 			From:        m.SenderId,
 			Target:      m.ReceiverId,
 			MsgType:     common.MsgType(m.MsgType),

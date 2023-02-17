@@ -9,8 +9,7 @@ import (
 	"github.com/txchat/dtalk/app/services/storage/internal/config"
 	"github.com/txchat/dtalk/app/services/storage/internal/server"
 	"github.com/txchat/dtalk/app/services/storage/internal/svc"
-	"github.com/txchat/dtalk/app/services/storage/rmq/rdmq"
-	"github.com/txchat/dtalk/app/services/storage/rmq/syncmq"
+	"github.com/txchat/dtalk/app/services/storage/rmq/mq"
 	"github.com/txchat/dtalk/app/services/storage/storage"
 	xerror "github.com/txchat/dtalk/pkg/error"
 	"github.com/zeromicro/go-zero/core/conf"
@@ -47,13 +46,9 @@ func main() {
 	conf.MustLoad(*configFile, &c, conf.UseEnv())
 	ctx := svc.NewServiceContext(c)
 
-	syncMQSvc := syncmq.NewService(c, ctx)
-	syncMQSvc.Serve()
-	defer syncMQSvc.Shutdown(context.Background())
-
-	rdMQSvc := rdmq.NewService(c, ctx)
-	rdMQSvc.Serve()
-	defer rdMQSvc.Shutdown(context.Background())
+	mqSvc := mq.NewService(c, ctx)
+	mqSvc.Serve()
+	defer mqSvc.Shutdown(context.Background())
 
 	s := zrpc.MustNewServer(c.RpcServerConf, func(grpcServer *grpc.Server) {
 		storage.RegisterStorageServer(grpcServer, server.NewStorageServer(ctx))
