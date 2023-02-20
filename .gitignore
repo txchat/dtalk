@@ -6,5 +6,6 @@ target_*
 *.tar.gz
 run_compose
 test_compose
+test_uni
 swagger/docs
 api-v1.md
