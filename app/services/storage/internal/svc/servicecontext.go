@@ -17,7 +17,7 @@ import (
 
 type ServiceContext struct {
 	Config config.Config
-	Repo   dao.StorageRepository
+	Repo   dao.Repository
 	//need not init
 	DeviceRPC deviceclient.Device
 	PusherRPC pusherclient.Pusher
@@ -27,7 +27,7 @@ type ServiceContext struct {
 func NewServiceContext(c config.Config) *ServiceContext {
 	s := &ServiceContext{
 		Config: c,
-		Repo:   dao.NewUniRepository(c.RedisDB, c.MySQL),
+		Repo:   dao.NewStorageRepository(c.RedisDB, c.MySQL),
 		DeviceRPC: deviceclient.NewDevice(zrpc.MustNewClient(c.DeviceRPC,
 			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor), zrpc.WithNonBlock())),
 		PusherRPC: pusherclient.NewPusher(zrpc.MustNewClient(c.PusherRPC,
@@ -43,12 +43,12 @@ func (s *ServiceContext) StorePrivateMessage(msg *message.Message) error {
 	if err != nil {
 		return err
 	}
-	_, _, err = s.Repo.AppendPrivateMsgContent(tx, &model.PrivateMsgContent{
+	_, _, err = s.Repo.AppendPrivateMsgContent(tx, &model.MsgContent{
 		Mid:        msg.GetMid(),
 		Cid:        msg.GetCid(),
 		SenderId:   msg.GetFrom(),
 		ReceiverId: msg.GetTarget(),
-		MsgType:    uint32(msg.GetMsgType()),
+		MsgType:    int32(msg.GetMsgType()),
 		Content:    string(recordutil.CommonMsgProtobufDataToJSONData(msg)),
 		CreateTime: msg.GetDatetime(),
 		Source:     string(recordutil.SourceJSONMarshal(msg)),
@@ -58,7 +58,7 @@ func (s *ServiceContext) StorePrivateMessage(msg *message.Message) error {
 		tx.RollBack()
 		return err
 	}
-	_, _, err = s.Repo.AppendPrivateMsgRelation(tx, &model.PrivateMsgRelation{
+	_, _, err = s.Repo.AppendPrivateMsgRelation(tx, &model.MsgRelation{
 		Mid:        msg.GetMid(),
 		OwnerUid:   msg.GetFrom(),
 		OtherUid:   msg.GetTarget(),
@@ -69,7 +69,7 @@ func (s *ServiceContext) StorePrivateMessage(msg *message.Message) error {
 		tx.RollBack()
 		return err
 	}
-	_, _, err = s.Repo.AppendPrivateMsgRelation(tx, &model.PrivateMsgRelation{
+	_, _, err = s.Repo.AppendPrivateMsgRelation(tx, &model.MsgRelation{
 		Mid:        msg.GetMid(),
 		OwnerUid:   msg.GetTarget(),
 		OtherUid:   msg.GetFrom(),
@@ -88,20 +88,52 @@ func (s *ServiceContext) StorePrivateMessage(msg *message.Message) error {
 	return nil
 }
 
-func (s *ServiceContext) StoreGroupMessage(member string, msg *message.Message) error {
-	_, _, err := s.Repo.AppendGroupMsgContent(&model.GroupMsgContent{
+func (s *ServiceContext) StoreGroupMessage(members []string, msg *message.Message) error {
+	var msgRelate = make([]*model.MsgRelation, len(members))
+	for i, member := range members {
+		sendOrRev := model.Rev
+		if member == msg.GetFrom() {
+			sendOrRev = model.Send
+		}
+		//发送者
+		msgRelate[i] = &model.MsgRelation{
+			Mid:        msg.GetMid(),
+			OwnerUid:   member,
+			OtherUid:   msg.GetTarget(),
+			Type:       int8(sendOrRev),
+			CreateTime: msg.GetDatetime(),
+		}
+	}
+	tx, err := s.Repo.NewTx()
+	if err != nil {
+		return err
+	}
+	_, _, err = s.Repo.AppendGroupMsgContent(tx, &model.MsgContent{
 		Mid:        msg.GetMid(),
 		Cid:        msg.GetCid(),
 		SenderId:   msg.GetFrom(),
-		ReceiverId: member,
-		GroupId:    msg.GetTarget(),
-		MsgType:    uint32(msg.GetMsgType()),
+		ReceiverId: msg.GetTarget(),
+		MsgType:    int32(msg.GetMsgType()),
 		Content:    string(recordutil.CommonMsgProtobufDataToJSONData(msg)),
 		CreateTime: msg.GetDatetime(),
 		Source:     string(recordutil.SourceJSONMarshal(msg)),
 		Reference:  string(recordutil.ReferenceJSONMarshal(msg)),
 	})
-	return err
+	if err != nil {
+		tx.RollBack()
+		return err
+	}
+	_, _, err = s.Repo.AppendGroupMsgRelation(tx, msgRelate)
+	if err != nil {
+		tx.RollBack()
+		return err
+	}
+	err = tx.Commit()
+	if err != nil {
+		tx.RollBack()
+		return err
+	}
+	return nil
 }
 
 func (s *ServiceContext) StoreSignal(target string, seq int64, sig *signal.Signal) error {
@@ -109,10 +141,10 @@ func (s *ServiceContext) StoreSignal(target string, seq int64, sig *signal.Signa
 	m := &model.SignalContent{
 		Uid:        target,
 		Seq:        seq,
-		Type:       uint8(sig.GetType()),
+		Type:       int8(sig.GetType()),
 		Content:    string(recordutil.SignalContentToJSONData(sig)),
-		CreateTime: uint64(now),
-		UpdateTime: uint64(now),
+		CreateTime: now,
+		UpdateTime: now,
 	}
 	_, _, err := s.Repo.AppendSignalContent(m)
 	return err

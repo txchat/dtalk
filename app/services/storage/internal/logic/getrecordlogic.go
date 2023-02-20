@@ -25,13 +25,13 @@ func NewGetRecordLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetReco
 }
 
 func (l *GetRecordLogic) GetRecord(in *storage.GetRecordReq) (*storage.GetRecordReply, error) {
-	var item *model.PrivateMsgContent
+	var record *model.MsgContent
 	var err error
 	switch in.GetTp() {
 	case message.Channel_Private:
-		item, err = l.svcCtx.Repo.GetPrivateRecordByMid(in.GetMid())
+		record, err = l.svcCtx.Repo.GetPrivateRecordByMid(in.GetMid())
 	case message.Channel_Group:
-		item, err = l.svcCtx.Repo.GetGroupRecordByMid(in.GetMid())
+		record, err = l.svcCtx.Repo.GetGroupRecordByMid(in.GetMid())
 	default:
 		err = model.ErrRecordNotFind
 	}
@@ -39,13 +39,6 @@ func (l *GetRecordLogic) GetRecord(in *storage.GetRecordReq) (*storage.GetRecord
 		return nil, err
 	}
 	return &storage.GetRecordReply{
-		Mid:        item.Mid,
-		Seq:        item.Cid,
-		SenderId:   item.SenderId,
-		ReceiverId: item.ReceiverId,
-		MsgType:    item.MsgType,
-		Content:    item.Content,
-		CreateTime: item.CreateTime,
-		Source:     item.Source,
+		Record: model.ChatMsgRepoToRPC(record),
 	}, nil
 }

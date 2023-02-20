@@ -10,12 +10,12 @@ const (
 	_prefixRecordFocus = "record-focus:%v"
 )
 
-func keyRecordFocus(mid int64) string {
+func keyRecordFocus(mid string) string {
 	return fmt.Sprintf(_prefixRecordFocus, mid)
 }
 
 //key:version; val:json
-func (repo *UniRepository) AddRecordFocus(uid string, mid int64, time uint64) error {
+func (repo *StorageRepository) AddRecordFocus(uid string, mid string, time int64) error {
 	key := keyRecordFocus(mid)
 	conn := repo.redis.Get()
 	defer conn.Close()
@@ -31,7 +31,7 @@ func (repo *UniRepository) AddRecordFocus(uid string, mid int64, time uint64) er
 	return nil
 }
 
-func (repo *UniRepository) GetRecordFocusNumber(mid int64) (int32, error) {
+func (repo *StorageRepository) GetRecordFocusNumber(mid string) (int32, error) {
 	key := keyRecordFocus(mid)
 	conn := repo.redis.Get()
 	defer conn.Close()

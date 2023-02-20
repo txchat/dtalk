@@ -5,61 +5,53 @@ option go_package = "./storage";
 
 import "github.com/txchat/dtalk/api/proto/message.proto";
 
+message Record {
+  string mid = 1;
+  string cid = 2;
+  string senderId = 3;
+  string receiverId = 4;
+  int32 msgType = 5;
+  string content = 6;
+  int64 createTime = 7;
+  string source = 8;
+  string reference = 9;
+}
+
 message DelRecordReq {
   dtalk.api.proto.Channel tp = 1;
-  int64 mid = 2;
+  string mid = 2;
 }
 
 message DelRecordReply {}
 
 message GetRecordReq {
   dtalk.api.proto.Channel tp = 1;
-  int64 mid = 2;
+  string mid = 2;
 }
 
-message GetRecordReply {
-  string mid = 1;
-  string seq = 2;
-  string senderId = 3;
-  string receiverId = 4;
-  uint32 msgType = 5;
-  string content = 6;
-  uint64 createTime = 7;
-  string source = 8;
-}
-
-message GetRecordsAfterMidReq {
-  dtalk.api.proto.Channel tp = 1;
-  int64 mid = 2;
-  string from = 3;
-  string target = 4;
-  int64 count = 5;
-}
-
-message GetRecordsAfterMidReply { repeated GetRecordReply records = 1; }
-
-message GetSyncRecordsAfterMidReq {
-  int64 mid = 1;
-  string uid = 2;
-  int64 count = 3;
-}
-
-message GetSyncRecordsAfterMidReply { repeated bytes records = 1; }
+message GetRecordReply { Record record = 1; }
 
 message AddRecordFocusReq {
   string uid = 1;
-  int64 mid = 2;
-  uint64 time = 3;
+  string mid = 2;
+  int64 time = 3;
 }
 
 message AddRecordFocusReply { int32 currentNum = 1; }
+
+message GetChatSessionMsgReq {
+  dtalk.api.proto.Channel tp = 1;
+  string mid = 2;
+  string from = 3;
+  string target = 4;
+  int32 size = 5;
+}
+
+message GetChatSessionMsgReply { repeated Record records = 1; }
 
 service Storage {
   rpc DelRecord(DelRecordReq) returns (DelRecordReply);
   rpc GetRecord(GetRecordReq) returns (GetRecordReply);
   rpc AddRecordFocus(AddRecordFocusReq) returns (AddRecordFocusReply);
-  rpc GetRecordsAfterMid(GetRecordsAfterMidReq)
-      returns (GetRecordsAfterMidReply);
-  rpc GetSyncRecordsAfterMid(GetSyncRecordsAfterMidReq)
-      returns (GetSyncRecordsAfterMidReply);
+  rpc GetChatSessionMsg(GetChatSessionMsgReq) returns (GetChatSessionMsgReply);
 }

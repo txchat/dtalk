@@ -3,10 +3,11 @@ package model
 import "errors"
 
 var (
+	ErrAppID         = errors.New("app_id not compared")
 	ErrRecordNotFind = errors.New("record not find")
-	ErrConsumeRedo   = errors.New("process msg failed")
-	ErrFrameType     = errors.New("error frame type")
+	ErrChannelType   = errors.New("channel type not supported")
+	ErrTargetIsEmpty = errors.New("message target is empty")
 
-	ErrAppID            = errors.New("app_id not compared")
-	ErrCustomNotSupport = errors.New("biz not support")
+	ErrConsumeRedo = errors.New("process msg failed")
+	ErrFrameType   = errors.New("error frame type")
 )

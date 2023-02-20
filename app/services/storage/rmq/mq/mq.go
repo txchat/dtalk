@@ -93,7 +93,11 @@ func (s *Service) DealStore(ctx context.Context, m *record.StoreMsgMQ) error {
 		if err != nil {
 			return err
 		}
-		err = s.svcCtx.StoreSignal(m.GetTarget(), chatProto.GetSeq(), sig)
+		if len(m.GetTarget()) < 1 {
+			return model.ErrTargetIsEmpty
+		}
+		target := m.GetTarget()[0]
+		err = s.svcCtx.StoreSignal(target, chatProto.GetSeq(), sig)
 		if err != nil {
 			return err
 		}

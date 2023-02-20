@@ -13,23 +13,21 @@ import (
 )
 
 type (
-	AddRecordFocusReply         = storage.AddRecordFocusReply
-	AddRecordFocusReq           = storage.AddRecordFocusReq
-	DelRecordReply              = storage.DelRecordReply
-	DelRecordReq                = storage.DelRecordReq
-	GetRecordReply              = storage.GetRecordReply
-	GetRecordReq                = storage.GetRecordReq
-	GetRecordsAfterMidReply     = storage.GetRecordsAfterMidReply
-	GetRecordsAfterMidReq       = storage.GetRecordsAfterMidReq
-	GetSyncRecordsAfterMidReply = storage.GetSyncRecordsAfterMidReply
-	GetSyncRecordsAfterMidReq   = storage.GetSyncRecordsAfterMidReq
+	AddRecordFocusReply    = storage.AddRecordFocusReply
+	AddRecordFocusReq      = storage.AddRecordFocusReq
+	DelRecordReply         = storage.DelRecordReply
+	DelRecordReq           = storage.DelRecordReq
+	GetChatSessionMsgReply = storage.GetChatSessionMsgReply
+	GetChatSessionMsgReq   = storage.GetChatSessionMsgReq
+	GetRecordReply         = storage.GetRecordReply
+	GetRecordReq           = storage.GetRecordReq
+	Record                 = storage.Record
 
 	Storage interface {
 		DelRecord(ctx context.Context, in *DelRecordReq, opts ...grpc.CallOption) (*DelRecordReply, error)
 		GetRecord(ctx context.Context, in *GetRecordReq, opts ...grpc.CallOption) (*GetRecordReply, error)
 		AddRecordFocus(ctx context.Context, in *AddRecordFocusReq, opts ...grpc.CallOption) (*AddRecordFocusReply, error)
-		GetRecordsAfterMid(ctx context.Context, in *GetRecordsAfterMidReq, opts ...grpc.CallOption) (*GetRecordsAfterMidReply, error)
-		GetSyncRecordsAfterMid(ctx context.Context, in *GetSyncRecordsAfterMidReq, opts ...grpc.CallOption) (*GetSyncRecordsAfterMidReply, error)
+		GetChatSessionMsg(ctx context.Context, in *GetChatSessionMsgReq, opts ...grpc.CallOption) (*GetChatSessionMsgReply, error)
 	}
 
 	defaultStorage struct {
@@ -58,12 +56,7 @@ func (m *defaultStorage) AddRecordFocus(ctx context.Context, in *AddRecordFocusR
 	return client.AddRecordFocus(ctx, in, opts...)
 }
 
-func (m *defaultStorage) GetRecordsAfterMid(ctx context.Context, in *GetRecordsAfterMidReq, opts ...grpc.CallOption) (*GetRecordsAfterMidReply, error) {
+func (m *defaultStorage) GetChatSessionMsg(ctx context.Context, in *GetChatSessionMsgReq, opts ...grpc.CallOption) (*GetChatSessionMsgReply, error) {
 	client := storage.NewStorageClient(m.cli.Conn())
-	return client.GetRecordsAfterMid(ctx, in, opts...)
-}
-
-func (m *defaultStorage) GetSyncRecordsAfterMid(ctx context.Context, in *GetSyncRecordsAfterMidReq, opts ...grpc.CallOption) (*GetSyncRecordsAfterMidReply, error) {
-	client := storage.NewStorageClient(m.cli.Conn())
-	return client.GetSyncRecordsAfterMid(ctx, in, opts...)
+	return client.GetChatSessionMsg(ctx, in, opts...)
 }
