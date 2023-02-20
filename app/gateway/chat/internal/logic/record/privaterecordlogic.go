@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/txchat/dtalk/internal/recordutil"
+	"github.com/txchat/imparse/proto/common"
 
-	"github.com/txchat/dtalk/api/proto/common"
 	"github.com/txchat/dtalk/app/services/storage/storageclient"
 	xhttp "github.com/txchat/dtalk/pkg/net/http"
 	"github.com/txchat/dtalk/pkg/util"

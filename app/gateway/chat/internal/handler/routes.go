@@ -59,8 +59,28 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				},
 				{
 					Method:  http.MethodPost,
-					Path:    "/app/record/sync-record",
-					Handler: record.SyncHandler(serverCtx),
+					Path:    "/app/record/seq-range",
+					Handler: record.GetSeqRangeHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/app/record/pull",
+					Handler: record.PullHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/app/record/private-roaming",
+					Handler: record.PullPrivateRoamingHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/app/record/group-roaming",
+					Handler: record.PullGroupRoamingHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/app/record/last-private-arrival",
+					Handler: record.LastPrivateArrivalHandler(serverCtx),
 				},
 				{
 					Method:  http.MethodPost,

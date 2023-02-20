@@ -73,6 +73,50 @@ type FocusReq struct {
 type FocusResp struct {
 }
 
+type GetSeqRangeReq struct {
+}
+
+type GetSeqRangeResp struct {
+	MaxSeq int64 `json:"maxSeq"`
+	MinSeq int64 `json:"minSeq"`
+}
+
+type PullReq struct {
+	SeqList []int64 `json:"seqList"`
+}
+
+type PullResp struct {
+	Records [][]byte `json:"records"`
+}
+
+type PullPrivateRoamingReq struct {
+	Session string `json:"session"`
+	Size    int32  `json:"size"`
+	Cursor  int64  `json:"cursor"`
+}
+
+type PullPrivateRoamingResp struct {
+	Records []*Record `json:"records"`
+}
+
+type PullGroupRoamingReq struct {
+	Session string `json:"session"`
+	Size    int32  `json:"size"`
+	Cursor  int64  `json:"cursor"`
+}
+
+type PullGroupRoamingResp struct {
+	Records []*Record `json:"records"`
+}
+
+type LastPrivateArrivalReq struct {
+	Session string `json:"session"`
+}
+
+type LastPrivateArrivalResp struct {
+	Mid string `json:"mid"`
+}
+
 type SyncReq struct {
 	MaxCount int64 `json:"count,range=[1:1000]"` // 消息数量
 	StartMid int64 `json:"start,optional"`       // 消息 ID

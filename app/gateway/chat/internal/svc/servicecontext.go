@@ -4,12 +4,14 @@ import (
 	"github.com/txchat/dtalk/app/gateway/chat/internal/config"
 	"github.com/txchat/dtalk/app/gateway/chat/internal/middleware"
 	"github.com/txchat/dtalk/app/gateway/chat/internal/middleware/authmock"
+	"github.com/txchat/dtalk/app/gateway/chat/internal/types"
 	"github.com/txchat/dtalk/app/services/answer/answerclient"
 	"github.com/txchat/dtalk/app/services/call/callclient"
 	"github.com/txchat/dtalk/app/services/device/deviceclient"
 	"github.com/txchat/dtalk/app/services/group/groupclient"
 	"github.com/txchat/dtalk/app/services/oss/ossclient"
 	"github.com/txchat/dtalk/app/services/storage/storageclient"
+	"github.com/txchat/dtalk/internal/recordutil"
 	"github.com/txchat/dtalk/internal/signal"
 	txchatSignalApi "github.com/txchat/dtalk/internal/signal/txchat"
 	xerror "github.com/txchat/dtalk/pkg/error"
@@ -50,4 +52,20 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		AppAuthMiddleware:        middleware.NewAppAuthMiddleware(authmock.NewKVMock()).Handle,
 		SignalHub:                txchatSignalApi.NewSignalHub(answerRPC),
 	}
+}
+
+func (s *ServiceContext) ToChatRecord(records []*storageclient.Record) []*types.Record {
+	rlt := make([]*types.Record, len(records))
+	for i, msg := range records {
+		rlt[i] = &types.Record{
+			Mid:        msg.Mid,
+			Seq:        msg.Cid,
+			FromId:     msg.SenderId,
+			TargetId:   msg.ReceiverId,
+			MsgType:    int32(msg.MsgType),
+			Content:    recordutil.CommonMsgJSONDataToProtobuf(msg.MsgType, []byte(msg.Content)),
+			CreateTime: msg.CreateTime,
+		}
+	}
+	return rlt
 }

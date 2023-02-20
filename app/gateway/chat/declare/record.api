@@ -29,8 +29,8 @@ type GetSeqRangeReq {
 }
 
 type GetSeqRangeResp {
-   	MaxSeq int64 `json:"maxSeq"`
-   	MinSeq int64 `json:"minSeq"`
+	MaxSeq int64 `json:"maxSeq"`
+	MinSeq int64 `json:"minSeq"`
 }
 
 type PullReq {
@@ -38,18 +38,36 @@ type PullReq {
 }
 
 type PullResp {
-    Records [][]byte `json:"records"`
+	Records [][]byte `json:"records"`
 }
 
 type PullPrivateRoamingReq {
 	Session string `json:"session"`
-	Size int32 `json:"size"`
+	Size    int32  `json:"size"`
+	Cursor  int64  `json:"cursor"`
 }
 
 type PullPrivateRoamingResp {
-    Records [][]byte `json:"records"`
+	Records []*Record `json:"records"`
 }
 
+type PullGroupRoamingReq {
+	Session string `json:"session"`
+	Size    int32  `json:"size"`
+	Cursor  int64  `json:"cursor"`
+}
+
+type PullGroupRoamingResp {
+	Records []*Record `json:"records"`
+}
+
+type LastPrivateArrivalReq {
+	Session string `json:"session"`
+}
+
+type LastPrivateArrivalResp {
+	Mid string `json:"mid"`
+}
 
 type SyncReq {
 	MaxCount int64 `json:"count,range=[1:1000]"` // 消息数量
@@ -104,23 +122,27 @@ service chat-api {
 	@doc "关注消息"
 	@handler Focus
 	post /app/record/focus (FocusReq) returns (FocusResp)
-
-    @doc "获取消息序列范围"
+	
+	@doc "获取消息序列范围"
 	@handler GetSeqRange
 	post /app/record/seq-range (GetSeqRangeReq) returns (GetSeqRangeResp)
-
-    @doc "拉取同步消息"
+	
+	@doc "拉取同步消息"
 	@handler Pull
 	post /app/record/pull (PullReq) returns (PullResp)
-
+	
 	@doc "拉取私聊漫游消息"
 	@handler PullPrivateRoaming
 	post /app/record/private-roaming (PullPrivateRoamingReq) returns (PullPrivateRoamingResp)
-
+	
 	@doc "拉取群聊漫游消息"
 	@handler PullGroupRoaming
 	post /app/record/group-roaming (PullGroupRoamingReq) returns (PullGroupRoamingResp)
-
+	
+	@doc "最后抵达对方的消息"
+	@handler LastPrivateArrival
+	post /app/record/last-private-arrival (LastPrivateArrivalReq) returns (LastPrivateArrivalResp)
+	
 	@doc "获取私聊消息"
 	@handler PrivateRecord
 	post /app/record/pri-chat-record (PrivateRecordReq) returns (PrivateRecordResp)
