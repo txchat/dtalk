@@ -75,7 +75,7 @@ test-%:
     docker compose -f components.compose.yaml $*
 
 test:
-	$(GOENV) go test -v ./...
+	./script/test/unitestenv/run.sh
 
 clean:
 	rm -rf ${TARGETDIR}

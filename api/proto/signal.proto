@@ -40,32 +40,32 @@ message SignalReceived { repeated int64 logs = 1; }
 message SignalSignInGroup {
   repeated string uid = 1;
   int64 group = 2;
-  uint64 time = 3;
+  int64 time = 3;
 }
 
 message SignalSignOutGroup {
   repeated string uid = 1;
   int64 group = 2;
-  uint64 time = 3;
+  int64 time = 3;
 }
 
 message SignalDeleteGroup {
   int64 group = 1;
-  uint64 time = 2;
+  int64 time = 2;
 }
 
 message SignalFocusMessage {
   int64 mid = 1;
   string uid = 2;
   int32 currentNum = 3;
-  uint64 time = 4;
+  int64 time = 4;
 }
 
 message SignalEndpointLogin {
   string uuid = 1;
   Device device = 2;
   string deviceName = 3;
-  uint64 datetime = 4;
+  int64 datetime = 4;
 }
 
 enum JoinType {
@@ -77,7 +77,7 @@ enum JoinType {
 message SignalUpdateGroupJoinType {
   int64 group = 1;
   JoinType type = 2;
-  uint64 time = 3;
+  int64 time = 3;
 }
 
 enum FriendType {
@@ -88,7 +88,7 @@ enum FriendType {
 message SignalUpdateGroupFriendType {
   int64 group = 1;
   FriendType type = 2;
-  uint64 time = 3;
+  int64 time = 3;
 }
 
 enum MuteType {
@@ -99,7 +99,7 @@ enum MuteType {
 message SignalUpdateGroupMuteType {
   int64 group = 1;
   MuteType type = 2;
-  uint64 time = 3;
+  int64 time = 3;
 }
 
 enum MemberType {
@@ -112,26 +112,26 @@ message SignalUpdateGroupMemberType {
   int64 group = 1;
   string uid = 2;
   MemberType type = 3;
-  uint64 time = 4;
+  int64 time = 4;
 }
 
 message SignalUpdateGroupMemberMuteTime {
   int64 group = 1;
   repeated string uid = 2;
   int64 muteTime = 3;
-  uint64 time = 4;
+  int64 time = 4;
 }
 
 message SignalUpdateGroupName {
   int64 group = 1;
   string name = 2;
-  uint64 time = 3;
+  int64 time = 3;
 }
 
 message SignalUpdateGroupAvatar {
   int64 group = 1;
   string avatar = 2;
-  uint64 time = 3;
+  int64 time = 3;
 }
 
 message SignalStartCall { int64 trace_id = 1; }

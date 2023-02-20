@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 
-	"github.com/txchat/dtalk/internal/bizproto"
 	"github.com/txchat/imparse"
 
 	"github.com/txchat/dtalk/app/services/answer/internal/svc"

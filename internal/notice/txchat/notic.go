@@ -5,10 +5,11 @@ import (
 
 	"github.com/txchat/dtalk/api/proto/message"
 	"github.com/txchat/dtalk/app/services/transfer/transferclient"
+	"github.com/txchat/imparse/proto/common"
 
 	"github.com/golang/protobuf/proto"
 	"github.com/google/uuid"
-	"github.com/txchat/dtalk/api/proto/common"
+
 	"github.com/txchat/dtalk/api/proto/msg"
 	"github.com/txchat/dtalk/api/proto/signal"
 	"github.com/txchat/dtalk/app/services/answer/answerclient"

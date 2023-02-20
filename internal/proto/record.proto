@@ -20,6 +20,6 @@ message PushMsgMQ {
 message StoreMsgMQ {
   string appId = 1;
   string from = 2;
-  string target = 3;
+  repeated string target = 3;
   dtalk.api.proto.Chat chat = 4;
 }

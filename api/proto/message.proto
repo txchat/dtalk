@@ -35,7 +35,7 @@ message Message {
   string target = 5;
   MsgType msgType = 6;
   bytes msg = 7;
-  uint64 datetime = 8;
+  int64 datetime = 8;
   Source source = 9;
   Reference reference = 10;
 }

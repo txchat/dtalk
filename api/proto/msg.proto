@@ -55,7 +55,7 @@ message ForwardItem {
   string name = 2;
   int32 msgType = 3;
   bytes msg = 4;
-  uint64 datetime = 5;
+  int64 datetime = 5;
 }
 
 message ForwardMsg { repeated ForwardItem items = 1; }

@@ -42,7 +42,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	}
 }
 
-func (s *ServiceContext) saveMessageToStorage(ctx context.Context, from, target string, chatProto *chat.Chat) error {
+func (s *ServiceContext) saveMessageToStorage(ctx context.Context, from string, target []string, chatProto *chat.Chat) error {
 	v, err := proto.Marshal(&record.StoreMsgMQ{
 		AppId:  s.Config.AppID,
 		From:   from,
@@ -81,7 +81,9 @@ func (s *ServiceContext) TransferMessage(ctx context.Context, channel message.Ch
 		if err != nil {
 			return err
 		}
+		var memId = make([]string, 0, len(members.GetMembers()))
 		for _, member := range members.GetMembers() {
+			memId = append(memId, member.GetUid())
 			chatProto = deepCopy(chatProto)
 			// 1, seq增加
 			var seq int64
@@ -93,11 +95,6 @@ func (s *ServiceContext) TransferMessage(ctx context.Context, channel message.Ch
 			// 2. 持久化
 			// 写同步库
 			err = s.Repo.SaveUserChatRecord(ctx, chatProto)
-			if err != nil {
-				continue
-			}
-			// 异步写存储库
-			err = s.saveMessageToStorage(ctx, from, member.GetUid(), chatProto)
 			if err != nil {
 				continue
 			}
@@ -116,6 +113,11 @@ func (s *ServiceContext) TransferMessage(ctx context.Context, channel message.Ch
 				}
 			}
 		}
+		// 异步写存储库
+		err = s.saveMessageToStorage(ctx, from, memId, chatProto)
+		if err != nil {
+			return err
+		}
 	case message.Channel_Private:
 		// 1, seq增加
 		seq, err := s.Repo.IncrUserSeq(ctx, target)
@@ -130,7 +132,7 @@ func (s *ServiceContext) TransferMessage(ctx context.Context, channel message.Ch
 			return err
 		}
 		// 异步写存储库
-		err = s.saveMessageToStorage(ctx, from, target, chatProto)
+		err = s.saveMessageToStorage(ctx, from, []string{target}, chatProto)
 		if err != nil {
 			return err
 		}

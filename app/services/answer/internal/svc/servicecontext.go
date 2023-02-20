@@ -10,7 +10,7 @@ import (
 	"github.com/txchat/dtalk/app/services/answer/internal/dao"
 	"github.com/txchat/dtalk/app/services/answer/internal/msgfactory"
 	"github.com/txchat/dtalk/app/services/generator/generatorclient"
-	"github.com/txchat/dtalk/internal/bizproto"
+
 	xerror "github.com/txchat/dtalk/pkg/error"
 	xkafka "github.com/txchat/pkg/mq/kafka"
 	"github.com/zeromicro/go-zero/zrpc"

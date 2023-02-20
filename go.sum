@@ -2063,6 +2063,8 @@ github.com/tklauser/numcpus v0.4.0/go.mod h1:1+UI3pD8NW14VMwdgJNJ1ESk2UnwhAnz5hM
 github.com/tmc/grpc-websocket-proxy v0.0.0-20170815181823-89b8d40f7ca8/go.mod h1:ncp9v5uamzpCO7NfCPTXjqaC+bZgJeR0sMTm6dMHP7U=
 github.com/tv42/httpunix v0.0.0-20150427012821-b75d8614f926/go.mod h1:9ESjWnEqriFuLhtthL60Sar/7RFoluCcXsuvEwTV5KM=
 github.com/txchat/im-pkg v0.0.1/go.mod h1:MPRQGxQU0M1GTucTMoHkR++gHXeBnISlzto9meK9VL0=
+github.com/txchat/imparse v0.1.0 h1:e0mlt6LolCqP9vNEvy2M+YqrcpdR53+TW+nNOdaXp4U=
+github.com/txchat/imparse v0.1.0/go.mod h1:cG9vNSz/pSoS91A248EN2XW+viHb+zVKMo9f+POmxI8=
 github.com/txchat/pkg v0.0.1 h1:sPB+C7NJk1oGRCknpDcQt/CABoS98V/Rb+hjTe8mo9o=
 github.com/txchat/pkg v0.0.1/go.mod h1:7Zs1V+/tp+VZfKw1JhNWgofKnPrPVqKepbmHBZEumiU=
 github.com/txchat/task v0.0.1/go.mod h1:cm8o9EDxCiGSF11wtnI4Lp2WAsA0QreiqWzddDQ/UUw=
