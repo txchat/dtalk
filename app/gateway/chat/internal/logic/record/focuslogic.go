@@ -52,21 +52,22 @@ func (l *FocusLogic) Focus(req *types.FocusReq) (resp *types.FocusResp, err erro
 	return
 }
 
-func (l *FocusLogic) focusPersonal(operator string, mid int64) error {
+func (l *FocusLogic) focusPersonal(operator, mid string) error {
 	//查找消息
-	rd, err := l.svcCtx.StorageRPC.GetRecord(l.ctx, &storageclient.GetRecordReq{
+	rpcGetRecordResp, err := l.svcCtx.StorageRPC.GetRecord(l.ctx, &storageclient.GetRecordReq{
 		Tp:  message.Channel_Private,
 		Mid: mid,
 	})
 	if err != nil {
 		return err
 	}
-	target := rd.ReceiverId
-	sender := rd.SenderId
+	record := rpcGetRecordResp.GetRecord()
+	target := record.GetReceiverId()
+	sender := record.GetSenderId()
 	if operator == sender || operator != target {
 		return model.ErrPermission
 	}
-	now := uint64(util.TimeNowUnixNano() / int64(time.Millisecond))
+	now := util.TimeNowUnixNano() / int64(time.Millisecond)
 	addFocusResp, err := l.svcCtx.StorageRPC.AddRecordFocus(l.ctx, &storageclient.AddRecordFocusReq{
 		Uid:  operator,
 		Mid:  mid,
@@ -85,17 +86,19 @@ func (l *FocusLogic) focusPersonal(operator string, mid int64) error {
 	return err
 }
 
-func (l *FocusLogic) focusGroup(operator string, mid int64) error {
+func (l *FocusLogic) focusGroup(operator, mid string) error {
 	//查找消息
-	rd, err := l.svcCtx.StorageRPC.GetRecord(l.ctx, &storageclient.GetRecordReq{
+	rpcGetRecordResp, err := l.svcCtx.StorageRPC.GetRecord(l.ctx, &storageclient.GetRecordReq{
 		Tp:  message.Channel_Group,
 		Mid: mid,
 	})
 	if err != nil {
 		return err
 	}
-	target := rd.ReceiverId
-	sender := rd.SenderId
+
+	record := rpcGetRecordResp.GetRecord()
+	target := record.GetReceiverId()
+	sender := record.GetSenderId()
 	if operator == sender {
 		return model.ErrPermission
 	}
@@ -115,7 +118,7 @@ func (l *FocusLogic) focusGroup(operator string, mid int64) error {
 		return model.ErrPermission
 	}
 
-	now := uint64(util.TimeNowUnixNano() / int64(time.Millisecond))
+	now := util.TimeNowUnixNano() / int64(time.Millisecond)
 	addFocusResp, err := l.svcCtx.StorageRPC.AddRecordFocus(l.ctx, &storageclient.AddRecordFocusReq{
 		Uid:  operator,
 		Mid:  mid,

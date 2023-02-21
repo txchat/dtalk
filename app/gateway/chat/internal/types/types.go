@@ -57,17 +57,27 @@ type HandleCallResp struct {
 	SDKAppId      int32  `json:"sdkAppId"`
 }
 
+type Record struct {
+	Mid        string      `json:"mid"`        // 服务端消息序列号
+	Cid        string      `json:"cid"`        // 客户端消息序列号
+	FromId     string      `json:"fromId"`     // 发送者 id
+	TargetId   string      `json:"targetId"`   // 接收者 id
+	MsgType    int32       `json:"msgType"`    // 消息类型
+	Content    interface{} `json:"content"`    // 消息内容
+	CreateTime int64       `json:"createTime"` // 消息发送时间
+}
+
 type RevokeReq struct {
-	Type int   `json:"type,optional,options=0|1"` //撤回类型: 0->私聊, 1->群聊
-	Mid  int64 `json:"logId"`
+	Type int    `json:"type,optional,options=0|1"` //撤回类型: 0->私聊, 1->群聊
+	Mid  string `json:"mid"`
 }
 
 type RevokeResp struct {
 }
 
 type FocusReq struct {
-	Type int   `json:"type,optional,options=0|1"` //关注类型: 0->私聊, 1->群聊
-	Mid  int64 `json:"logId"`
+	Type int    `json:"type,optional,options=0|1"` //关注类型: 0->私聊, 1->群聊
+	Mid  string `json:"mid"`
 }
 
 type FocusResp struct {
@@ -91,8 +101,8 @@ type PullResp struct {
 
 type PullPrivateRoamingReq struct {
 	Session string `json:"session"`
-	Size    int32  `json:"size"`
-	Cursor  int64  `json:"cursor"`
+	Size    int32  `json:"size,range=[1:1000]"`
+	Cursor  string `json:"cursor"`
 }
 
 type PullPrivateRoamingResp struct {
@@ -101,8 +111,8 @@ type PullPrivateRoamingResp struct {
 
 type PullGroupRoamingReq struct {
 	Session string `json:"session"`
-	Size    int32  `json:"size"`
-	Cursor  int64  `json:"cursor"`
+	Size    int32  `json:"size,range=[1:1000]"`
+	Cursor  string `json:"cursor"`
 }
 
 type PullGroupRoamingResp struct {
@@ -117,45 +127,13 @@ type LastPrivateArrivalResp struct {
 	Mid string `json:"mid"`
 }
 
-type SyncReq struct {
-	MaxCount int64 `json:"count,range=[1:1000]"` // 消息数量
-	StartMid int64 `json:"start,optional"`       // 消息 ID
-}
-
-type SyncResp struct {
-	RecordCount int      `json:"record_count"` // 聊天记录数量
-	Records     []string `json:"records"`      // 聊天记录 base64 encoding
-}
-
-type PrivateRecordReq struct {
-	FromId      string `json:"-"`
-	TargetId    string `json:"targetId"`
-	RecordCount int64  `json:"count,range=[1:100]"`
-	Mid         string `json:"logId"`
-}
-
-type PrivateRecordResp struct {
-	RecordCount int       `json:"record_count"` // 聊天记录数量
-	Records     []*Record `json:"records"`      // 聊天记录
-}
-
-type Record struct {
-	Mid        string      `json:"logId"`      // log id
-	Seq        string      `json:"msgId"`      // msg id (uuid)
-	FromId     string      `json:"fromId"`     // 发送者 id
-	TargetId   string      `json:"targetId"`   // 接收者 id
-	MsgType    int32       `json:"msgType"`    // 消息类型
-	Content    interface{} `json:"content"`    // 消息内容
-	CreateTime uint64      `json:"createTime"` // 消息发送时间
-}
-
 type PushReq struct {
 	File string `form:"file"`
 }
 
 type PushResp struct {
-	Mid      int64  `json:"logId"`
-	Datetime uint64 `json:"datetime"`
+	Mid      int64 `json:"logId"`
+	Datetime int64 `json:"datetime"`
 }
 
 type LoginReq struct {

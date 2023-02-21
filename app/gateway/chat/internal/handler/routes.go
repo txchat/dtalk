@@ -84,11 +84,6 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				},
 				{
 					Method:  http.MethodPost,
-					Path:    "/app/record/pri-chat-record",
-					Handler: record.PrivateRecordHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
 					Path:    "/record/push",
 					Handler: record.PushHandler(serverCtx),
 				},

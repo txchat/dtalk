@@ -8,17 +8,17 @@ import (
 )
 
 const (
-	_InsertSignalContent       = `INSERT INTO dtalk_signal_content(seq,uid,type,content,create_time,update_time) VALUES(?,?,?,?,?,?) ON DUPLICATE KEY UPDATE update_time=?`
-	_InsertSignalContentPrefix = `INSERT INTO dtalk_signal_content(seq,uid,type,content,create_time,update_time) VALUES%s ON DUPLICATE KEY UPDATE update_time=VALUES(update_time)`
+	_InsertSignalContent       = `INSERT INTO dtalk_signal_content(uid,seq,type,content,create_time,update_time) VALUES(?,?,?,?,?,?) ON DUPLICATE KEY UPDATE update_time=?`
+	_InsertSignalContentPrefix = `INSERT INTO dtalk_signal_content(uid,seq,type,content,create_time,update_time) VALUES%s ON DUPLICATE KEY UPDATE update_time=VALUES(update_time)`
 )
 
-func (repo *StorageRepository) AppendSignalContent(m *model.SignalContent) (int64, int64, error) {
+func (repo *StorageRepository) AppendSignal(m *model.SignalContent) (int64, int64, error) {
 	num, lastId, err := repo.mysql.Exec(_InsertSignalContent,
-		m.Seq, m.Uid, m.Type, m.Content, m.CreateTime, m.UpdateTime, m.UpdateTime)
+		m.Uid, m.Seq, m.Type, m.Content, m.CreateTime, m.UpdateTime, m.UpdateTime)
 	return num, lastId, err
 }
 
-func (repo *StorageRepository) BatchAppendSignalContent(m []*model.SignalContent) (int64, int64, error) {
+func (repo *StorageRepository) BatchAppendSignal(m []*model.SignalContent) (int64, int64, error) {
 	//element should not empty
 	if len(m) == 0 {
 		return 0, 0, nil
@@ -27,7 +27,7 @@ func (repo *StorageRepository) BatchAppendSignalContent(m []*model.SignalContent
 	condition := ""
 	for _, row := range m {
 		condition += "(?,?,?,?,?,?),"
-		values = append(values, row.Seq, row.Uid, row.Type, row.Content, row.CreateTime, row.UpdateTime)
+		values = append(values, row.Uid, row.Seq, row.Type, row.Content, row.CreateTime, row.UpdateTime)
 	}
 	//trim the last ,
 	condition = strings.TrimSuffix(condition, ",")

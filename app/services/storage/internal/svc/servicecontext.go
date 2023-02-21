@@ -146,6 +146,6 @@ func (s *ServiceContext) StoreSignal(target string, seq int64, sig *signal.Signa
 		CreateTime: now,
 		UpdateTime: now,
 	}
-	_, _, err := s.Repo.AppendSignalContent(m)
+	_, _, err := s.Repo.AppendSignal(m)
 	return err
 }

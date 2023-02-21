@@ -28,14 +28,23 @@ exportGOEnv() {
     export GOSUMDB='sum.golang.google.cn'
 }
 
+source .env
+
+exportComponentEnv() {
+    export MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+}
+
 exportGOEnv
+exportComponentEnv
 
 #docker compose -f components.compose.yaml up && $(GOENV) go test -v "${work_dir}"/...
 #docker compose -f components.compose.yaml down
 
-cd "${work_dir}/test_uni/" && docker compose -f components.compose.yaml up -d && ./wait-for-it.sh
+if cd "${work_dir}/test_uni/" && docker compose -f components.compose.yaml up -d && ./wait-for-it.sh; then
+    go test -v "${work_dir}"/app/services/storage/internal/dao/...
+fi
 
 #go test -v "${work_dir}"/...
 
 # shutdown
-docker compose -f components.compose.yaml down
+#docker compose -f components.compose.yaml down

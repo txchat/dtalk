@@ -55,7 +55,7 @@ message SignalDeleteGroup {
 }
 
 message SignalFocusMessage {
-  int64 mid = 1;
+  string mid = 1;
   string uid = 2;
   int32 currentNum = 3;
   int64 time = 4;
@@ -159,7 +159,7 @@ message SignalStopCall {
 }
 
 message SignalRevoke {
-  int64 mid = 1;
+  string mid = 1;
   string operator = 2;
   bool self = 3;
 }

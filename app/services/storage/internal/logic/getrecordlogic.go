@@ -29,9 +29,9 @@ func (l *GetRecordLogic) GetRecord(in *storage.GetRecordReq) (*storage.GetRecord
 	var err error
 	switch in.GetTp() {
 	case message.Channel_Private:
-		record, err = l.svcCtx.Repo.GetPrivateRecordByMid(in.GetMid())
+		record, err = l.svcCtx.Repo.GetPrivateMsgByMid(in.GetMid())
 	case message.Channel_Group:
-		record, err = l.svcCtx.Repo.GetGroupRecordByMid(in.GetMid())
+		record, err = l.svcCtx.Repo.GetGroupMsgByMid(in.GetMid())
 	default:
 		err = model.ErrRecordNotFind
 	}

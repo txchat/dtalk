@@ -59,10 +59,10 @@ func (s *ServiceContext) ToChatRecord(records []*storageclient.Record) []*types.
 	for i, msg := range records {
 		rlt[i] = &types.Record{
 			Mid:        msg.Mid,
-			Seq:        msg.Cid,
+			Cid:        msg.Cid,
 			FromId:     msg.SenderId,
 			TargetId:   msg.ReceiverId,
-			MsgType:    int32(msg.MsgType),
+			MsgType:    msg.MsgType,
 			Content:    recordutil.CommonMsgJSONDataToProtobuf(msg.MsgType, []byte(msg.Content)),
 			CreateTime: msg.CreateTime,
 		}

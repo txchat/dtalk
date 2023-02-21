@@ -28,9 +28,9 @@ func (l *DelRecordLogic) DelRecord(in *storage.DelRecordReq) (*storage.DelRecord
 	var err error
 	switch in.GetTp() {
 	case message.Channel_Private:
-		_, _, err = l.svcCtx.Repo.DelPrivateMsgContent(in.GetMid())
+		_, _, err = l.svcCtx.Repo.DelPrivateMsg(in.GetMid())
 	case message.Channel_Group:
-		_, _, err = l.svcCtx.Repo.DelGroupMsgContent(in.GetMid())
+		_, _, err = l.svcCtx.Repo.DelGroupMsg(in.GetMid())
 	default:
 		err = model.ErrRecordNotFind
 	}

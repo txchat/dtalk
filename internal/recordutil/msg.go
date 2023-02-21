@@ -175,7 +175,7 @@ func SignalContentToJSONData(m *signal.Signal) []byte {
 	return protobufDataToJSONData(protoMsg, m.Body)
 }
 
-func CommonMsgJSONDataToProtobuf(msgType uint32, data []byte) proto.Message {
+func CommonMsgJSONDataToProtobuf(msgType int32, data []byte) proto.Message {
 	creator, ok := msgFactory[message.MsgType(msgType)]
 	if !ok || creator == nil {
 		return nil
@@ -185,7 +185,7 @@ func CommonMsgJSONDataToProtobuf(msgType uint32, data []byte) proto.Message {
 	return protoMsg
 }
 
-func CommonMsgJSONDataToProtobufData(msgType uint32, data []byte) []byte {
+func CommonMsgJSONDataToProtobufData(msgType int32, data []byte) []byte {
 	creator, ok := msgFactory[message.MsgType(msgType)]
 	if !ok || creator == nil {
 		return data
@@ -218,7 +218,7 @@ func ReferenceJSONUnmarshal(data []byte) *message.Reference {
 	return &src
 }
 
-func SignalContentJSONDataToProtobufData(actionType uint32, data []byte) []byte {
+func SignalContentJSONDataToProtobufData(actionType int32, data []byte) []byte {
 	creator, ok := signalFactory[signal.SignalType(actionType)]
 	if !ok || creator == nil {
 		return data
