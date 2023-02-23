@@ -3,6 +3,8 @@ package logic
 import (
 	"context"
 
+	"github.com/txchat/im/api/protocol"
+
 	"github.com/txchat/dtalk/app/services/pusher/internal/svc"
 	"github.com/txchat/dtalk/app/services/pusher/pusher"
 	"github.com/txchat/im/app/logic/logicclient"
@@ -27,7 +29,8 @@ func (l *PushListLogic) PushList(in *pusher.PushListReq) (*pusher.PushListResp, 
 	msg := &logicclient.PushByUIDReq{
 		AppId: in.GetApp(),
 		ToId:  append(in.GetUid(), in.GetFrom()),
-		Msg:   in.GetBody(),
+		Op:    protocol.Op_Message,
+		Body:  in.GetBody(),
 	}
 
 	if l.svcCtx.Config.OffPushEnabled {
@@ -36,7 +39,7 @@ func (l *PushListLogic) PushList(in *pusher.PushListReq) (*pusher.PushListResp, 
 
 	_, err := l.svcCtx.LogicRPC.PushByUID(l.ctx, msg)
 	if err != nil {
-		l.Error("PushByUID Failed", "err", err, "appId", msg.GetAppId(), "toId", msg.GetToId(), "len of msg", len(msg.GetMsg()))
+		l.Error("PushByUID Failed", "err", err, "appId", msg.GetAppId(), "toId", msg.GetToId(), "len of msg", len(msg.GetBody()))
 		return nil, err
 	}
 	return &pusher.PushListResp{}, nil

@@ -97,6 +97,11 @@ var signalFactory = map[signal.SignalType]func() proto.Message{
 	},
 }
 
+func IsMsgSupport(msgType message.MsgType) bool {
+	creator, ok := msgFactory[msgType]
+	return ok && creator != nil
+}
+
 func protobufDataToJSONData(m proto.Message, data []byte) []byte {
 	err := proto.Unmarshal(data, m)
 	if err != nil {

@@ -20,7 +20,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TransferClient interface {
 	TransferMessage(ctx context.Context, in *TransferMessageReq, opts ...grpc.CallOption) (*TransferMessageResp, error)
-	CheckMessageResend(ctx context.Context, in *CheckMessageResendReq, opts ...grpc.CallOption) (*CheckMessageResendResp, error)
+	PreSendMessageCheck(ctx context.Context, in *PreSendMessageCheckReq, opts ...grpc.CallOption) (*PreSendMessageCheckResp, error)
 }
 
 type transferClient struct {
@@ -40,9 +40,9 @@ func (c *transferClient) TransferMessage(ctx context.Context, in *TransferMessag
 	return out, nil
 }
 
-func (c *transferClient) CheckMessageResend(ctx context.Context, in *CheckMessageResendReq, opts ...grpc.CallOption) (*CheckMessageResendResp, error) {
-	out := new(CheckMessageResendResp)
-	err := c.cc.Invoke(ctx, "/transfer.Transfer/CheckMessageResend", in, out, opts...)
+func (c *transferClient) PreSendMessageCheck(ctx context.Context, in *PreSendMessageCheckReq, opts ...grpc.CallOption) (*PreSendMessageCheckResp, error) {
+	out := new(PreSendMessageCheckResp)
+	err := c.cc.Invoke(ctx, "/transfer.Transfer/PreSendMessageCheck", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +54,7 @@ func (c *transferClient) CheckMessageResend(ctx context.Context, in *CheckMessag
 // for forward compatibility
 type TransferServer interface {
 	TransferMessage(context.Context, *TransferMessageReq) (*TransferMessageResp, error)
-	CheckMessageResend(context.Context, *CheckMessageResendReq) (*CheckMessageResendResp, error)
+	PreSendMessageCheck(context.Context, *PreSendMessageCheckReq) (*PreSendMessageCheckResp, error)
 	mustEmbedUnimplementedTransferServer()
 }
 
@@ -65,8 +65,8 @@ type UnimplementedTransferServer struct {
 func (UnimplementedTransferServer) TransferMessage(context.Context, *TransferMessageReq) (*TransferMessageResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TransferMessage not implemented")
 }
-func (UnimplementedTransferServer) CheckMessageResend(context.Context, *CheckMessageResendReq) (*CheckMessageResendResp, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CheckMessageResend not implemented")
+func (UnimplementedTransferServer) PreSendMessageCheck(context.Context, *PreSendMessageCheckReq) (*PreSendMessageCheckResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PreSendMessageCheck not implemented")
 }
 func (UnimplementedTransferServer) mustEmbedUnimplementedTransferServer() {}
 
@@ -99,20 +99,20 @@ func _Transfer_TransferMessage_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Transfer_CheckMessageResend_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CheckMessageResendReq)
+func _Transfer_PreSendMessageCheck_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PreSendMessageCheckReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(TransferServer).CheckMessageResend(ctx, in)
+		return srv.(TransferServer).PreSendMessageCheck(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/transfer.Transfer/CheckMessageResend",
+		FullMethod: "/transfer.Transfer/PreSendMessageCheck",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TransferServer).CheckMessageResend(ctx, req.(*CheckMessageResendReq))
+		return srv.(TransferServer).PreSendMessageCheck(ctx, req.(*PreSendMessageCheckReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -129,8 +129,8 @@ var Transfer_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Transfer_TransferMessage_Handler,
 		},
 		{
-			MethodName: "CheckMessageResend",
-			Handler:    _Transfer_CheckMessageResend_Handler,
+			MethodName: "PreSendMessageCheck",
+			Handler:    _Transfer_PreSendMessageCheck_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

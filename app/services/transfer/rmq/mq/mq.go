@@ -60,26 +60,10 @@ func (s *Service) handleFunc(key string, data []byte) error {
 		return model.ErrAppID
 	}
 
-	//TODO protocol gateway check
-	var p protocol.Proto
-	body := receivedMsg.GetBody()
-	err := proto.Unmarshal(body, &p)
-	if err != nil {
-		return err
-	}
-
 	switch receivedMsg.GetOp() {
-	case protocol.Op_SendMsg:
-		//dev, err := s.svcCtx.DeviceClient.GetDeviceByConnId(ctx, &deviceclient.GetDeviceByConnIdRequest{
-		//	Uid:    receivedMsg.GetFrom(),
-		//	ConnID: key,
-		//})
-		//if err != nil {
-		//	return err
-		//}
-
+	case protocol.Op_Message:
 		var chatProto *chat.Chat
-		err = proto.Unmarshal(receivedMsg.GetBody(), chatProto)
+		err := proto.Unmarshal(receivedMsg.GetBody(), chatProto)
 		if err != nil {
 			return err
 		}
@@ -89,15 +73,10 @@ func (s *Service) handleFunc(key string, data []byte) error {
 		if err != nil {
 			return err
 		}
-
+		msg.From = receivedMsg.GetFrom()
 		err = s.svcCtx.TransferMessage(ctx, msg.GetChannelType(), msg.GetTarget(), receivedMsg.GetFrom(), chatProto)
 		if err != nil {
 			//TODO log
-			return err
-		}
-	case protocol.Op_ReceiveMsgReply:
-		err = s.svcCtx.Repo.UpdateLastReceiveMid(ctx, receivedMsg.GetFrom(), "")
-		if err != nil {
 			return err
 		}
 	default:

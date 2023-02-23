@@ -41,9 +41,11 @@ func (repo *TransferRepository) IncrUserSeq(ctx context.Context, uid string) (in
 }
 
 func (repo *TransferRepository) SaveUserChatRecord(ctx context.Context, p *protocol.Proto) error {
-
+	//TODO
+	return nil
 }
 
 func (repo *TransferRepository) MarkUserChatRecordReceived(ctx context.Context, uid string, seq int64) error {
-
+	//TODO
+	return nil
 }

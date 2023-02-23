@@ -27,7 +27,7 @@ func (s *TransferServer) TransferMessage(ctx context.Context, in *transfer.Trans
 	return l.TransferMessage(in)
 }
 
-func (s *TransferServer) CheckMessageResend(ctx context.Context, in *transfer.CheckMessageResendReq) (*transfer.CheckMessageResendResp, error) {
-	l := logic.NewCheckMessageResendLogic(ctx, s.svcCtx)
-	return l.CheckMessageResend(in)
+func (s *TransferServer) PreSendMessageCheck(ctx context.Context, in *transfer.PreSendMessageCheckReq) (*transfer.PreSendMessageCheckResp, error) {
+	l := logic.NewPreSendMessageCheckLogic(ctx, s.svcCtx)
+	return l.PreSendMessageCheck(in)
 }

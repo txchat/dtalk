@@ -14,3 +14,18 @@ message Chat {
   int64 seq = 2;
   bytes body = 3;
 }
+
+message SendMessageReply {
+  enum FailedType {
+    IsOK = 0;
+    InnerError = 1;
+    UnSupportedMessageType = 2;
+    InsufficientPermission = 3;
+    IllegalFormat = 4;
+    OutdatedFormat = 5;
+  }
+  FailedType code = 1;
+  string mid = 2;
+  int64 datetime = 3;
+  bool repeat = 4;
+}

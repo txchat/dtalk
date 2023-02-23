@@ -13,14 +13,14 @@ import (
 )
 
 type (
-	CheckMessageResendReq  = transfer.CheckMessageResendReq
-	CheckMessageResendResp = transfer.CheckMessageResendResp
-	TransferMessageReq     = transfer.TransferMessageReq
-	TransferMessageResp    = transfer.TransferMessageResp
+	PreSendMessageCheckReq  = transfer.PreSendMessageCheckReq
+	PreSendMessageCheckResp = transfer.PreSendMessageCheckResp
+	TransferMessageReq      = transfer.TransferMessageReq
+	TransferMessageResp     = transfer.TransferMessageResp
 
 	Transfer interface {
 		TransferMessage(ctx context.Context, in *TransferMessageReq, opts ...grpc.CallOption) (*TransferMessageResp, error)
-		CheckMessageResend(ctx context.Context, in *CheckMessageResendReq, opts ...grpc.CallOption) (*CheckMessageResendResp, error)
+		PreSendMessageCheck(ctx context.Context, in *PreSendMessageCheckReq, opts ...grpc.CallOption) (*PreSendMessageCheckResp, error)
 	}
 
 	defaultTransfer struct {
@@ -39,7 +39,7 @@ func (m *defaultTransfer) TransferMessage(ctx context.Context, in *TransferMessa
 	return client.TransferMessage(ctx, in, opts...)
 }
 
-func (m *defaultTransfer) CheckMessageResend(ctx context.Context, in *CheckMessageResendReq, opts ...grpc.CallOption) (*CheckMessageResendResp, error) {
+func (m *defaultTransfer) PreSendMessageCheck(ctx context.Context, in *PreSendMessageCheckReq, opts ...grpc.CallOption) (*PreSendMessageCheckResp, error) {
 	client := transfer.NewTransferClient(m.cli.Conn())
-	return client.CheckMessageResend(ctx, in, opts...)
+	return client.PreSendMessageCheck(ctx, in, opts...)
 }

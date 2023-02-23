@@ -84,13 +84,8 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				},
 				{
 					Method:  http.MethodPost,
-					Path:    "/record/push",
-					Handler: record.PushHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/record/push2",
-					Handler: record.Push2Handler(serverCtx),
+					Path:    "/app/record/send",
+					Handler: record.SendHandler(serverCtx),
 				},
 			}...,
 		),

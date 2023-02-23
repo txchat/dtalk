@@ -3,11 +3,17 @@ Host: 0.0.0.0
 Port: 8888
 Revoke:
   Expire: "86400h" #ten years
-AnswerRPC:
+LogicRPC:
   Etcd:
     Hosts:
       - "${ETCD_HOST}:2379"
-    Key: "answer.rpc"
+    Key: "logic.rpc"
+    Timeout: 60000 # 60s
+TransferRPC:
+  Etcd:
+    Hosts:
+      - "${ETCD_HOST}:2379"
+    Key: "transfer.rpc"
     Timeout: 60000 # 60s
 CallRPC:
   Etcd:

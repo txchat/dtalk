@@ -54,7 +54,7 @@ func (l *Push2Logic) Push2(req *types.PushReq, fh *multipart.FileHeader) (resp *
 		err = xerror.ErrExec
 		return
 	}
-	pushResp, err := l.svcCtx.AnswerRPC.PushCommonMsg(l.ctx, &answerclient.PushCommonMsgReq{
+	pushResp, err := l.svcCtx.LogicRPC.PushCommonMsg(l.ctx, &answerclient.PushCommonMsgReq{
 		Key:  "",
 		From: uid,
 		Body: body,

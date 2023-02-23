@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	checker "github.com/txchat/dtalk/internal/recordutil/dtalk"
+
 	"github.com/txchat/dtalk/internal/proto/record"
 
 	"github.com/golang/protobuf/proto"
@@ -15,9 +17,7 @@ import (
 	"github.com/txchat/dtalk/app/services/pusher/pusherclient"
 	"github.com/txchat/dtalk/app/services/transfer/internal/config"
 	"github.com/txchat/dtalk/app/services/transfer/internal/dao"
-	"github.com/txchat/dtalk/app/services/transfer/internal/model"
 	"github.com/txchat/dtalk/pkg/util"
-	"github.com/txchat/im/api/protocol"
 	xkafka "github.com/txchat/pkg/mq/kafka"
 )
 
@@ -30,15 +30,19 @@ type ServiceContext struct {
 	GroupClient  groupclient.Group
 	IDGenClient  generatorclient.Generator
 	Producer     *xkafka.Producer
+	Filters      map[message.Channel]checker.Filter
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
 	return &ServiceContext{
 		Config:       c,
 		Repo:         nil,
+		DeviceClient: nil,
 		PusherClient: nil,
 		GroupClient:  nil,
+		IDGenClient:  nil,
 		Producer:     xkafka.NewProducer(c.Producer),
+		Filters:      nil,
 	}
 }
 
@@ -137,7 +141,7 @@ func (s *ServiceContext) TransferMessage(ctx context.Context, channel message.Ch
 			return err
 		}
 		// 3. 推送
-		body, err := warpAndMarshal(chatProto)
+		body, err := proto.Marshal(chatProto)
 		if err != nil {
 			return err
 		}
@@ -167,20 +171,4 @@ func deepCopy(p *chat.Chat) *chat.Chat {
 	newP.Body = make([]byte, len(p.Body))
 	copy(newP.Body, p.Body)
 	return newP
-}
-
-func warpAndMarshal(chatProto *chat.Chat) ([]byte, error) {
-	body, err := proto.Marshal(chatProto)
-	if err != nil {
-		return nil, err
-	}
-	// 组装消息协议
-	p := &protocol.Proto{
-		Ver:  model.NowProtoVersion,
-		Op:   int32(protocol.Op_ReceiveMsg),
-		Seq:  0,
-		Ack:  0,
-		Body: body,
-	}
-	return proto.Marshal(p)
 }

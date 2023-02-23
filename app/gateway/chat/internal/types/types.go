@@ -127,13 +127,13 @@ type LastPrivateArrivalResp struct {
 	Mid string `json:"mid"`
 }
 
-type PushReq struct {
+type SendReq struct {
 	File string `form:"file"`
 }
 
-type PushResp struct {
-	Mid      int64 `json:"logId"`
-	Datetime int64 `json:"datetime"`
+type SendResp struct {
+	Mid      string `json:"mid"`
+	Datetime int64  `json:"datetime"`
 }
 
 type LoginReq struct {

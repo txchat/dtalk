@@ -3,6 +3,8 @@ package record
 import (
 	"context"
 
+	"github.com/txchat/dtalk/app/gateway/chat/internal/model"
+
 	"github.com/txchat/dtalk/api/proto/message"
 	"github.com/txchat/dtalk/app/services/storage/storageclient"
 	xhttp "github.com/txchat/dtalk/pkg/net/http"
@@ -46,6 +48,6 @@ func (l *PullGroupRoamingLogic) PullGroupRoaming(req *types.PullGroupRoamingReq)
 	if err != nil {
 		return
 	}
-	resp = &types.PullGroupRoamingResp{Records: l.svcCtx.ToChatRecord(rpcResp.GetRecords())}
+	resp = &types.PullGroupRoamingResp{Records: model.ToChatRecord(rpcResp.GetRecords())}
 	return
 }

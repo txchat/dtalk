@@ -15,17 +15,12 @@ message TransferMessageReq {
 
 message TransferMessageResp {}
 
-message CheckMessageResendReq {
-  string from = 1;
-  string uuid = 2;
-  int64 seq = 3;
-  int64 mid = 4;
-}
+message PreSendMessageCheckReq { dtalk.api.proto.Chat msg = 1; }
 
-message CheckMessageResendResp { int64 mid = 1; }
+message PreSendMessageCheckResp { dtalk.api.proto.SendMessageReply result = 1; }
 
 service Transfer {
   rpc TransferMessage(TransferMessageReq) returns (TransferMessageResp);
-  rpc CheckMessageResend(CheckMessageResendReq)
-      returns (CheckMessageResendResp);
+  rpc PreSendMessageCheck(PreSendMessageCheckReq)
+      returns (PreSendMessageCheckResp);
 }

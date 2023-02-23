@@ -54,7 +54,7 @@ type PullResp {
 type PullPrivateRoamingReq {
 	Session string `json:"session"`
 	Size    int32  `json:"size,range=[1:1000]"`
-	Cursor  string  `json:"cursor"`
+	Cursor  string `json:"cursor"`
 }
 
 type PullPrivateRoamingResp {
@@ -64,7 +64,7 @@ type PullPrivateRoamingResp {
 type PullGroupRoamingReq {
 	Session string `json:"session"`
 	Size    int32  `json:"size,range=[1:1000]"`
-	Cursor  string  `json:"cursor"`
+	Cursor  string `json:"cursor"`
 }
 
 type PullGroupRoamingResp {
@@ -79,14 +79,12 @@ type LastPrivateArrivalResp {
 	Mid string `json:"mid"`
 }
 
-
-type PushReq {
+type SendReq {
 	File string `form:"file"`
 }
 
-type PushResp {
-	Mid      int64  `json:"logId"`
-	Datetime int64 `json:"datetime"`
+type SendResp {
+	Result   []byte  `json:"result"`
 }
 
 @server(
@@ -123,10 +121,6 @@ service chat-api {
 	post /app/record/last-private-arrival (LastPrivateArrivalReq) returns (LastPrivateArrivalResp)
 
 	@doc "发送消息"
-	@handler Push
-	post /record/push (PushReq) returns (PushResp)
-	
-	@doc "发送消息"
-	@handler Push2
-	post /record/push2 (PushReq) returns (PushResp)
+	@handler Send
+	post /app/record/send (SendReq) returns (SendResp)
 }

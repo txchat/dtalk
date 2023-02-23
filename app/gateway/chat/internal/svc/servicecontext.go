@@ -4,17 +4,16 @@ import (
 	"github.com/txchat/dtalk/app/gateway/chat/internal/config"
 	"github.com/txchat/dtalk/app/gateway/chat/internal/middleware"
 	"github.com/txchat/dtalk/app/gateway/chat/internal/middleware/authmock"
-	"github.com/txchat/dtalk/app/gateway/chat/internal/types"
-	"github.com/txchat/dtalk/app/services/answer/answerclient"
 	"github.com/txchat/dtalk/app/services/call/callclient"
 	"github.com/txchat/dtalk/app/services/device/deviceclient"
 	"github.com/txchat/dtalk/app/services/group/groupclient"
 	"github.com/txchat/dtalk/app/services/oss/ossclient"
 	"github.com/txchat/dtalk/app/services/storage/storageclient"
-	"github.com/txchat/dtalk/internal/recordutil"
+	"github.com/txchat/dtalk/app/services/transfer/transferclient"
 	"github.com/txchat/dtalk/internal/signal"
 	txchatSignalApi "github.com/txchat/dtalk/internal/signal/txchat"
 	xerror "github.com/txchat/dtalk/pkg/error"
+	"github.com/txchat/im/app/logic/logicclient"
 	"github.com/zeromicro/go-zero/rest"
 	"github.com/zeromicro/go-zero/zrpc"
 )
@@ -22,7 +21,8 @@ import (
 type ServiceContext struct {
 	Config                   config.Config
 	CallRPC                  callclient.Call
-	AnswerRPC                answerclient.Answer
+	LogicRPC                 logicclient.Logic
+	TransferRPC              transferclient.Transfer
 	StorageRPC               storageclient.Storage
 	GroupRPC                 groupclient.Group
 	OssRPC                   ossclient.Oss
@@ -33,13 +33,14 @@ type ServiceContext struct {
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
-	answerRPC := answerclient.NewAnswer(zrpc.MustNewClient(c.AnswerRPC,
+	transferRPC := transferclient.NewTransfer(zrpc.MustNewClient(c.TransferRPC,
 		zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor), zrpc.WithNonBlock()))
 	return &ServiceContext{
 		Config: c,
 		CallRPC: callclient.NewCall(zrpc.MustNewClient(c.CallRPC,
 			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor), zrpc.WithNonBlock())),
-		AnswerRPC: answerRPC,
+		LogicRPC: logicclient.NewLogic(zrpc.MustNewClient(c.LogicRPC,
+			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor), zrpc.WithNonBlock())),
 		StorageRPC: storageclient.NewStorage(zrpc.MustNewClient(c.StorageRPC,
 			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor), zrpc.WithNonBlock())),
 		GroupRPC: groupclient.NewGroup(zrpc.MustNewClient(c.GroupRPC,
@@ -50,22 +51,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor), zrpc.WithNonBlock())),
 		AppParseHeaderMiddleware: middleware.NewAppParseHeaderMiddleware().Handle,
 		AppAuthMiddleware:        middleware.NewAppAuthMiddleware(authmock.NewKVMock()).Handle,
-		SignalHub:                txchatSignalApi.NewSignalHub(answerRPC),
+		TransferRPC:              transferRPC,
+		SignalHub:                txchatSignalApi.NewSignalHub(transferRPC),
 	}
-}
-
-func (s *ServiceContext) ToChatRecord(records []*storageclient.Record) []*types.Record {
-	rlt := make([]*types.Record, len(records))
-	for i, msg := range records {
-		rlt[i] = &types.Record{
-			Mid:        msg.Mid,
-			Cid:        msg.Cid,
-			FromId:     msg.SenderId,
-			TargetId:   msg.ReceiverId,
-			MsgType:    msg.MsgType,
-			Content:    recordutil.CommonMsgJSONDataToProtobuf(msg.MsgType, []byte(msg.Content)),
-			CreateTime: msg.CreateTime,
-		}
-	}
-	return rlt
 }

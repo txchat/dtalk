@@ -3,6 +3,8 @@ package logic
 import (
 	"context"
 
+	"github.com/txchat/im/api/protocol"
+
 	"github.com/txchat/im/app/logic/logicclient"
 
 	"github.com/txchat/dtalk/app/services/pusher/internal/svc"
@@ -29,12 +31,13 @@ func (l *PushGroupLogic) PushGroup(in *pusher.PushGroupReq) (*pusher.PushGroupRe
 	msg := &logicclient.PushGroupReq{
 		AppId: in.GetApp(),
 		Group: in.GetGid(),
-		Msg:   in.GetBody(),
+		Op:    protocol.Op_Message,
+		Body:  in.GetBody(),
 	}
 
 	_, err := l.svcCtx.LogicRPC.PushGroup(l.ctx, msg)
 	if err != nil {
-		l.Error("GroupCast PushGroup Failed", "err", err, "appId", msg.GetAppId(), "to group", msg.GetGroup(), "len of msg", len(msg.GetMsg()))
+		l.Error("GroupCast PushGroup Failed", "err", err, "appId", msg.GetAppId(), "to group", msg.GetGroup(), "len of msg", len(msg.GetBody()))
 		return nil, err
 	}
 	return &pusher.PushGroupResp{}, nil
