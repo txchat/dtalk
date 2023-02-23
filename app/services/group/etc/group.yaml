@@ -17,11 +17,11 @@ IDGenRPC:
       - "${ETCD_HOST}:2379"
     Key: "generator.rpc"
     Timeout: 60000 # 60s
-AnswerRPC:
+TransferRPC:
   Etcd:
     Hosts:
       - "${ETCD_HOST}:2379"
-    Key: "answer.rpc"
+    Key: "transfer.rpc"
     Timeout: 60000 # 60s
 LogicRPC:
   Etcd:

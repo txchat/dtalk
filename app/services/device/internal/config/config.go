@@ -12,6 +12,7 @@ type Config struct {
 	AppID                     string
 	GroupRPC                  zrpc.RpcClientConf
 	LogicRPC                  zrpc.RpcClientConf
+	PusherRPC                 zrpc.RpcClientConf
 	ConnDealConsumerConfig    xkafka.ConsumerConfig
 	ConnDealBatchConsumerConf xkafka.BatchConsumerConf
 }

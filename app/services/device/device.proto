@@ -14,7 +14,7 @@ message DeviceInfo {
   string username = 6;
   string deviceToken = 7;
   bool isEnabled = 8;
-  uint64 addTime = 9;
+  int64 addTime = 9;
   string DTUid = 10;
 }
 

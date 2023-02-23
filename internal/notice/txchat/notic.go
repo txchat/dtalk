@@ -3,16 +3,15 @@ package txchat
 import (
 	"context"
 
-	"github.com/txchat/dtalk/api/proto/message"
-	"github.com/txchat/dtalk/app/services/transfer/transferclient"
-	"github.com/txchat/imparse/proto/common"
+	"github.com/txchat/dtalk/api/proto/chat"
 
 	"github.com/golang/protobuf/proto"
 	"github.com/google/uuid"
+	"github.com/txchat/dtalk/api/proto/message"
+	"github.com/txchat/dtalk/app/services/transfer/transferclient"
 
 	"github.com/txchat/dtalk/api/proto/msg"
 	"github.com/txchat/dtalk/api/proto/signal"
-	"github.com/txchat/dtalk/app/services/answer/answerclient"
 	"github.com/txchat/dtalk/internal/group"
 	"github.com/txchat/dtalk/pkg/util"
 )
@@ -27,45 +26,52 @@ func NewNoticeHub(transferClient transferclient.Transfer) *NoticeHub {
 	}
 }
 
+func (hub *NoticeHub) convertNoticeProtoData(channelType message.Channel, from, target string, noticeType msg.NoticeMsgType, noticeMetadata proto.Message) (*chat.Chat, error) {
+	noticeData, err := proto.Marshal(noticeMetadata)
+	if err != nil {
+		return nil, err
+	}
+	msgData, err := proto.Marshal(&msg.NoticeMsg{
+		Type: noticeType,
+		Body: noticeData,
+	})
+	if err != nil {
+		return nil, err
+	}
+	body, err := proto.Marshal(&message.Message{
+		ChannelType: channelType,
+		Cid:         uuid.New().String(),
+		From:        from,
+		Target:      target,
+		MsgType:     message.MsgType_Notice,
+		Msg:         msgData,
+	})
+	if err != nil {
+		return nil, err
+	}
+	chatProto := &chat.Chat{
+		Type: chat.Chat_message,
+		Seq:  0,
+		Body: body,
+	}
+	return chatProto, nil
+}
+
 func (hub *NoticeHub) GroupAddNewMembers(ctx context.Context, gid int64, operator string, members []string) error {
 	noticeMetadata := &msg.NoticeMsgSignInGroup{
 		Group:   gid,
 		Inviter: operator,
 		Members: members,
 	}
-	body, err := proto.Marshal(noticeMetadata)
+	chatProto, err := hub.convertNoticeProtoData(message.Channel_Group, operator, util.MustToString(gid), msg.NoticeMsgType_SignInGroupNoticeMsg, noticeMetadata)
 	if err != nil {
 		return err
 	}
-
-	noticeMsg := &msg.NoticeMsg{
-		Type: msg.NoticeMsgType_SignInGroupNoticeMsg,
-		Body: body,
-	}
-	data, err := proto.Marshal(noticeMsg)
-	if err != nil {
-		return err
-	}
-
-	msg := &message.Message{
-		ChannelType: 0,
-		Mid:         "",
-		Cid:         "",
-		From:        "",
-		Target:      "",
-		MsgType:     0,
-		Msg:         nil,
-		Datetime:    0,
-		Source:      nil,
-		Reference:   nil,
-	}
-
-	_, err = hub.answerClient.PushNoticeMsg(ctx, &answerclient.PushNoticeMsgReq{
-		Seq:         uuid.New().String(),
-		ChannelType: int32(common.Channel_ToGroup),
+	_, err = hub.transferClient.TransferMessage(ctx, &transferclient.TransferMessageReq{
 		From:        operator,
 		Target:      util.MustToString(gid),
-		Data:        data,
+		ChannelType: message.Channel_Group,
+		Body:        chatProto,
 	})
 	return err
 }
@@ -75,26 +81,15 @@ func (hub *NoticeHub) GroupSignOut(ctx context.Context, gid int64, target string
 		Group:    gid,
 		Operator: target,
 	}
-	body, err := proto.Marshal(noticeMetadata)
+	chatProto, err := hub.convertNoticeProtoData(message.Channel_Group, target, util.MustToString(gid), msg.NoticeMsgType_SignOutGroupNoticeMsg, noticeMetadata)
 	if err != nil {
 		return err
 	}
-
-	noticeMsg := &msg.NoticeMsg{
-		Type: msg.NoticeMsgType_SignOutGroupNoticeMsg,
-		Body: body,
-	}
-	data, err := proto.Marshal(noticeMsg)
-	if err != nil {
-		return err
-	}
-
-	_, err = hub.answerClient.PushNoticeMsg(ctx, &answerclient.PushNoticeMsgReq{
-		Seq:         uuid.New().String(),
-		ChannelType: int32(common.Channel_ToGroup),
+	_, err = hub.transferClient.TransferMessage(ctx, &transferclient.TransferMessageReq{
 		From:        target,
 		Target:      util.MustToString(gid),
-		Data:        data,
+		ChannelType: message.Channel_Group,
+		Body:        chatProto,
 	})
 	return err
 }
@@ -105,26 +100,15 @@ func (hub *NoticeHub) GroupKickOutMembers(ctx context.Context, gid int64, operat
 		Operator: operator,
 		Members:  members,
 	}
-	body, err := proto.Marshal(noticeMetadata)
+	chatProto, err := hub.convertNoticeProtoData(message.Channel_Group, operator, util.MustToString(gid), msg.NoticeMsgType_KickOutGroupNoticeMsg, noticeMetadata)
 	if err != nil {
 		return err
 	}
-
-	noticeMsg := &msg.NoticeMsg{
-		Type: msg.NoticeMsgType_KickOutGroupNoticeMsg,
-		Body: body,
-	}
-	data, err := proto.Marshal(noticeMsg)
-	if err != nil {
-		return err
-	}
-
-	_, err = hub.answerClient.PushNoticeMsg(ctx, &answerclient.PushNoticeMsgReq{
-		Seq:         uuid.New().String(),
-		ChannelType: int32(common.Channel_ToGroup),
+	_, err = hub.transferClient.TransferMessage(ctx, &transferclient.TransferMessageReq{
 		From:        operator,
 		Target:      util.MustToString(gid),
-		Data:        data,
+		ChannelType: message.Channel_Group,
+		Body:        chatProto,
 	})
 	return err
 }
@@ -134,26 +118,15 @@ func (hub *NoticeHub) GroupDeleted(ctx context.Context, gid int64, operator stri
 		Group:    gid,
 		Operator: operator,
 	}
-	body, err := proto.Marshal(noticeMetadata)
+	chatProto, err := hub.convertNoticeProtoData(message.Channel_Group, operator, util.MustToString(gid), msg.NoticeMsgType_DeleteGroupNoticeMsg, noticeMetadata)
 	if err != nil {
 		return err
 	}
-
-	noticeMsg := &msg.NoticeMsg{
-		Type: msg.NoticeMsgType_DeleteGroupNoticeMsg,
-		Body: body,
-	}
-	data, err := proto.Marshal(noticeMsg)
-	if err != nil {
-		return err
-	}
-
-	_, err = hub.answerClient.PushNoticeMsg(ctx, &answerclient.PushNoticeMsgReq{
-		Seq:         uuid.New().String(),
-		ChannelType: int32(common.Channel_ToGroup),
+	_, err = hub.transferClient.TransferMessage(ctx, &transferclient.TransferMessageReq{
 		From:        operator,
 		Target:      util.MustToString(gid),
-		Data:        data,
+		ChannelType: message.Channel_Group,
+		Body:        chatProto,
 	})
 	return err
 }
@@ -164,26 +137,15 @@ func (hub *NoticeHub) UpdateGroupMuteType(ctx context.Context, gid int64, operat
 		Operator: operator,
 		Type:     signal.MuteType(tp),
 	}
-	body, err := proto.Marshal(noticeMetadata)
+	chatProto, err := hub.convertNoticeProtoData(message.Channel_Group, operator, util.MustToString(gid), msg.NoticeMsgType_UpdateGroupMutedNoticeMsg, noticeMetadata)
 	if err != nil {
 		return err
 	}
-
-	noticeMsg := &msg.NoticeMsg{
-		Type: msg.NoticeMsgType_UpdateGroupMutedNoticeMsg,
-		Body: body,
-	}
-	data, err := proto.Marshal(noticeMsg)
-	if err != nil {
-		return err
-	}
-
-	_, err = hub.answerClient.PushNoticeMsg(ctx, &answerclient.PushNoticeMsgReq{
-		Seq:         uuid.New().String(),
-		ChannelType: int32(common.Channel_ToGroup),
+	_, err = hub.transferClient.TransferMessage(ctx, &transferclient.TransferMessageReq{
 		From:        operator,
 		Target:      util.MustToString(gid),
-		Data:        data,
+		ChannelType: message.Channel_Group,
+		Body:        chatProto,
 	})
 	return err
 }
@@ -194,26 +156,15 @@ func (hub *NoticeHub) UpdateGroupName(ctx context.Context, gid int64, operator, 
 		Operator: operator,
 		Name:     name,
 	}
-	body, err := proto.Marshal(noticeMetadata)
+	chatProto, err := hub.convertNoticeProtoData(message.Channel_Group, operator, util.MustToString(gid), msg.NoticeMsgType_UpdateGroupNameNoticeMsg, noticeMetadata)
 	if err != nil {
 		return err
 	}
-
-	noticeMsg := &msg.NoticeMsg{
-		Type: msg.NoticeMsgType_UpdateGroupNameNoticeMsg,
-		Body: body,
-	}
-	data, err := proto.Marshal(noticeMsg)
-	if err != nil {
-		return err
-	}
-
-	_, err = hub.answerClient.PushNoticeMsg(ctx, &answerclient.PushNoticeMsgReq{
-		Seq:         uuid.New().String(),
-		ChannelType: int32(common.Channel_ToGroup),
+	_, err = hub.transferClient.TransferMessage(ctx, &transferclient.TransferMessageReq{
 		From:        operator,
 		Target:      util.MustToString(gid),
-		Data:        data,
+		ChannelType: message.Channel_Group,
+		Body:        chatProto,
 	})
 	return err
 }
@@ -228,26 +179,15 @@ func (hub *NoticeHub) UpdateGroupMemberRole(ctx context.Context, gid int64, oper
 		Group:    gid,
 		NewOwner: uid,
 	}
-	body, err := proto.Marshal(noticeMetadata)
+	chatProto, err := hub.convertNoticeProtoData(message.Channel_Group, operator, util.MustToString(gid), msg.NoticeMsgType_UpdateGroupOwnerNoticeMsg, noticeMetadata)
 	if err != nil {
 		return err
 	}
-
-	noticeMsg := &msg.NoticeMsg{
-		Type: msg.NoticeMsgType_UpdateGroupOwnerNoticeMsg,
-		Body: body,
-	}
-	data, err := proto.Marshal(noticeMsg)
-	if err != nil {
-		return err
-	}
-
-	_, err = hub.answerClient.PushNoticeMsg(ctx, &answerclient.PushNoticeMsgReq{
-		Seq:         uuid.New().String(),
-		ChannelType: int32(common.Channel_ToGroup),
+	_, err = hub.transferClient.TransferMessage(ctx, &transferclient.TransferMessageReq{
 		From:        operator,
 		Target:      util.MustToString(gid),
-		Data:        data,
+		ChannelType: message.Channel_Group,
+		Body:        chatProto,
 	})
 	return err
 }
@@ -258,26 +198,15 @@ func (hub *NoticeHub) UpdateMembersMuteTime(ctx context.Context, operator string
 		Operator: operator,
 		Members:  members,
 	}
-	body, err := proto.Marshal(noticeMetadata)
+	chatProto, err := hub.convertNoticeProtoData(message.Channel_Group, operator, util.MustToString(gid), msg.NoticeMsgType_UpdateGroupMemberMutedNoticeMsg, noticeMetadata)
 	if err != nil {
 		return err
 	}
-
-	noticeMsg := &msg.NoticeMsg{
-		Type: msg.NoticeMsgType_UpdateGroupMemberMutedNoticeMsg,
-		Body: body,
-	}
-	data, err := proto.Marshal(noticeMsg)
-	if err != nil {
-		return err
-	}
-
-	_, err = hub.answerClient.PushNoticeMsg(ctx, &answerclient.PushNoticeMsgReq{
-		Seq:         uuid.New().String(),
-		ChannelType: int32(common.Channel_ToGroup),
+	_, err = hub.transferClient.TransferMessage(ctx, &transferclient.TransferMessageReq{
 		From:        operator,
 		Target:      util.MustToString(gid),
-		Data:        data,
+		ChannelType: message.Channel_Group,
+		Body:        chatProto,
 	})
 	return err
 }

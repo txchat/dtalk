@@ -74,7 +74,7 @@ func (s *Service) consumerOneConnect(ctx context.Context, m *logicclient.Receive
 			s.Error("parseDevice failed", "err", err)
 		}
 		if dev != nil {
-			now := uint64(util.TimeNowUnixNano() / int64(time.Millisecond))
+			now := util.TimeNowUnixNano() / int64(time.Millisecond)
 			err = s.svcCtx.Repo.AddDeviceInfo(&model.Device{
 				Uid:         m.GetFrom(),
 				ConnectId:   m.GetKey(),
@@ -90,7 +90,7 @@ func (s *Service) consumerOneConnect(ctx context.Context, m *logicclient.Receive
 				s.Error("AddDeviceInfo failed", "err", err)
 			}
 			//发送登录通知
-			err = s.svcCtx.SignalHub.EndpointLogin(ctx, m.GetFrom(), &signal.SignalEndpointLogin{
+			err = s.svcCtx.EndpointLogin(ctx, m.GetFrom(), &signal.SignalEndpointLogin{
 				Uuid:       dev.GetUuid(),
 				Device:     dev.Device,
 				DeviceName: dev.GetDeviceName(),

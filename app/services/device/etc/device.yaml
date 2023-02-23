@@ -16,6 +16,12 @@ RedisDB:
   WriteTimeout: "500ms"
   IdleTimeout: "120s"
   Expire: "30m"
+PusherRPC:
+  Etcd:
+    Hosts:
+      - "${ETCD_HOST}:2379"
+    Key: "pusher.rpc"
+    Timeout: 60000 # 60s
 LogicRPC:
   Etcd:
     Hosts:

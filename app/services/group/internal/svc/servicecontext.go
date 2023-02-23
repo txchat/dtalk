@@ -4,7 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/txchat/dtalk/app/services/answer/answerclient"
+	"github.com/txchat/dtalk/app/services/transfer/transferclient"
+
 	"github.com/txchat/dtalk/app/services/generator/generatorclient"
 	"github.com/txchat/dtalk/app/services/group/internal/config"
 	"github.com/txchat/dtalk/app/services/group/internal/dao"
@@ -37,7 +38,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	if err != nil {
 		panic(err)
 	}
-	answerClient := answerclient.NewAnswer(zrpc.MustNewClient(c.AnswerRPC,
+	transferClient := transferclient.NewTransfer(zrpc.MustNewClient(c.TransferRPC,
 		zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor), zrpc.WithNonBlock()))
 	return &ServiceContext{
 		Config:       c,
@@ -45,18 +46,18 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		GroupManager: group.NewGroupManager(),
 		IDGenRPC: generatorclient.NewGenerator(zrpc.MustNewClient(c.IDGenRPC,
 			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor), zrpc.WithNonBlock())),
-		SignalHub: txchatSignalApi.NewSignalHub(answerClient),
-		NoticeHub: txchatNoticeApi.NewNoticeHub(answerClient),
+		SignalHub: txchatSignalApi.NewSignalHub(transferClient),
+		NoticeHub: txchatNoticeApi.NewNoticeHub(transferClient),
 		logicClient: logicclient.NewLogic(zrpc.MustNewClient(c.LogicRPC,
 			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor), zrpc.WithNonBlock())),
 	}
 }
 
 func (s *ServiceContext) RegisterGroupMembers(ctx context.Context, gid int64, members []string) error {
-	reply, err := s.logicClient.JoinGroupsByMids(ctx, &logicclient.GroupsMid{
+	reply, err := s.logicClient.JoinGroupByUID(ctx, &logicclient.JoinGroupByUIDReq{
 		AppId: s.Config.AppID,
 		Gid:   []string{util.MustToString(gid)},
-		Mids:  members,
+		Uid:   members,
 	})
 	if err != nil || !reply.IsOk {
 		if err.Error() == model.ErrPushMsgArg.Error() {
@@ -71,7 +72,7 @@ func (s *ServiceContext) RegisterGroupMembers(ctx context.Context, gid int64, me
 }
 
 func (s *ServiceContext) UnRegisterGroup(ctx context.Context, gid int64) error {
-	reply, err := s.logicClient.DelGroups(ctx, &logicclient.DelGroupsReq{
+	reply, err := s.logicClient.DelGroup(ctx, &logicclient.DelGroupReq{
 		AppId: s.Config.AppID,
 		Gid:   []string{util.MustToString(gid)},
 	})
@@ -88,10 +89,10 @@ func (s *ServiceContext) UnRegisterGroup(ctx context.Context, gid int64) error {
 }
 
 func (s *ServiceContext) UnRegisterGroupMembers(ctx context.Context, gid int64, members []string) error {
-	reply, err := s.logicClient.LeaveGroupsByMids(ctx, &logicclient.GroupsMid{
+	reply, err := s.logicClient.LeaveGroupByUID(ctx, &logicclient.LeaveGroupByUIDReq{
 		AppId: s.Config.AppID,
 		Gid:   []string{util.MustToString(gid)},
-		Mids:  members,
+		Uid:   members,
 	})
 	if err != nil || !reply.IsOk {
 		if err.Error() == model.ErrPushMsgArg.Error() {

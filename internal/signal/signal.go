@@ -25,7 +25,6 @@ type Signal interface {
 	StopCall(ctx context.Context, target string, action *signal.SignalStopCall) error
 
 	MessageReceived(ctx context.Context, item *recordhelper.ConnSeqItem) error
-	EndpointLogin(ctx context.Context, uid string, actionProto *signal.SignalEndpointLogin) error
 
 	FocusPrivateMessage(ctx context.Context, users []string, action *signal.SignalFocusMessage) error
 	FocusGroupMessage(ctx context.Context, gid int64, action *signal.SignalFocusMessage) error

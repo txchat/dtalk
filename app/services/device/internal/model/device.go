@@ -9,6 +9,6 @@ type Device struct {
 	Username    string `json:"username"`
 	DeviceToken string `json:"deviceToken"`
 	IsEnabled   bool   `json:"isEnabled"`
-	AddTime     uint64 `json:"addTime"`
+	AddTime     int64  `json:"addTime"`
 	DTUid       string `json:"-"`
 }

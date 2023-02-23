@@ -8,23 +8,19 @@ import (
 	"github.com/txchat/dtalk/api/proto/chat"
 	"github.com/txchat/dtalk/api/proto/message"
 	"github.com/txchat/dtalk/api/proto/signal"
-	"github.com/txchat/dtalk/app/services/pusher/pusherclient"
 	"github.com/txchat/dtalk/app/services/transfer/transferclient"
 	"github.com/txchat/dtalk/internal/group"
 	"github.com/txchat/dtalk/internal/recordhelper"
 	"github.com/txchat/dtalk/pkg/util"
-	"github.com/txchat/im/api/protocol"
 )
 
 type SignalHub struct {
 	transferClient transferclient.Transfer
-	pusherClient   pusherclient.Pusher
 }
 
-func NewSignalHub(transferClient transferclient.Transfer, pusherClient pusherclient.Pusher) *SignalHub {
+func NewSignalHub(transferClient transferclient.Transfer) *SignalHub {
 	return &SignalHub{
 		transferClient: transferClient,
-		pusherClient:   pusherClient,
 	}
 }
 
@@ -50,7 +46,7 @@ func (hub *SignalHub) GroupAddNewMembers(ctx context.Context, gid int64, members
 	action := &signal.SignalSignInGroup{
 		Uid:   members,
 		Group: gid,
-		Time:  util.MustToUint64(util.TimeNowUnixMilli()),
+		Time:  util.TimeNowUnixMilli(),
 	}
 	body, err := proto.Marshal(action)
 	if err != nil {
@@ -74,7 +70,7 @@ func (hub *SignalHub) GroupRemoveMembers(ctx context.Context, gid int64, members
 	action := &signal.SignalSignOutGroup{
 		Uid:   members,
 		Group: gid,
-		Time:  util.MustToUint64(util.TimeNowUnixMilli()),
+		Time:  util.TimeNowUnixMilli(),
 	}
 	body, err := proto.Marshal(action)
 	if err != nil {
@@ -98,7 +94,7 @@ func (hub *SignalHub) GroupRemoveMembers(ctx context.Context, gid int64, members
 func (hub *SignalHub) GroupDeleted(ctx context.Context, gid int64) error {
 	action := &signal.SignalDeleteGroup{
 		Group: gid,
-		Time:  util.MustToUint64(util.TimeNowUnixMilli()),
+		Time:  util.TimeNowUnixMilli(),
 	}
 	body, err := proto.Marshal(action)
 	if err != nil {
@@ -123,7 +119,7 @@ func (hub *SignalHub) UpdateGroupJoinType(ctx context.Context, gid int64, tp int
 	action := &signal.SignalUpdateGroupJoinType{
 		Group: gid,
 		Type:  signal.JoinType(tp),
-		Time:  util.MustToUint64(util.TimeNowUnixMilli()),
+		Time:  util.TimeNowUnixMilli(),
 	}
 	body, err := proto.Marshal(action)
 	if err != nil {
@@ -148,7 +144,7 @@ func (hub *SignalHub) UpdateGroupFriendlyType(ctx context.Context, gid int64, tp
 	action := &signal.SignalUpdateGroupFriendType{
 		Group: gid,
 		Type:  signal.FriendType(tp),
-		Time:  util.MustToUint64(util.TimeNowUnixMilli()),
+		Time:  util.TimeNowUnixMilli(),
 	}
 	body, err := proto.Marshal(action)
 	if err != nil {
@@ -173,7 +169,7 @@ func (hub *SignalHub) UpdateGroupMuteType(ctx context.Context, gid int64, tp int
 	action := &signal.SignalUpdateGroupMuteType{
 		Group: gid,
 		Type:  signal.MuteType(tp),
-		Time:  util.MustToUint64(util.TimeNowUnixMilli()),
+		Time:  util.TimeNowUnixMilli(),
 	}
 	body, err := proto.Marshal(action)
 	if err != nil {
@@ -198,7 +194,7 @@ func (hub *SignalHub) UpdateGroupName(ctx context.Context, gid int64, name strin
 	action := &signal.SignalUpdateGroupName{
 		Group: gid,
 		Name:  name,
-		Time:  util.MustToUint64(util.TimeNowUnixMilli()),
+		Time:  util.TimeNowUnixMilli(),
 	}
 	body, err := proto.Marshal(action)
 	if err != nil {
@@ -223,7 +219,7 @@ func (hub *SignalHub) UpdateGroupAvatar(ctx context.Context, gid int64, avatar s
 	action := &signal.SignalUpdateGroupAvatar{
 		Group:  gid,
 		Avatar: avatar,
-		Time:   util.MustToUint64(util.TimeNowUnixMilli()),
+		Time:   util.TimeNowUnixMilli(),
 	}
 	body, err := proto.Marshal(action)
 	if err != nil {
@@ -249,7 +245,7 @@ func (hub *SignalHub) UpdateGroupMemberRole(ctx context.Context, gid int64, uid 
 		Group: gid,
 		Uid:   uid,
 		Type:  signal.MemberType(role),
-		Time:  util.MustToUint64(util.TimeNowUnixMilli()),
+		Time:  util.TimeNowUnixMilli(),
 	}
 	body, err := proto.Marshal(action)
 	if err != nil {
@@ -275,7 +271,7 @@ func (hub *SignalHub) UpdateMembersMuteTime(ctx context.Context, gid, muteTime i
 		Group:    gid,
 		Uid:      members,
 		MuteTime: muteTime,
-		Time:     util.MustToUint64(util.TimeNowUnixMilli()),
+		Time:     util.TimeNowUnixMilli(),
 	}
 	body, err := proto.Marshal(action)
 	if err != nil {
@@ -378,42 +374,6 @@ func (hub *SignalHub) MessageReceived(ctx context.Context, item *recordhelper.Co
 		Target:      item.Sender,
 		ChannelType: message.Channel_Private,
 		Body:        chatProto,
-	})
-	return err
-}
-
-func (hub *SignalHub) EndpointLogin(ctx context.Context, uid string, action *signal.SignalEndpointLogin) error {
-	body, err := proto.Marshal(action)
-	if err != nil {
-		return err
-	}
-
-	chatProto, err := hub.convertSignalProtoData(signal.SignalType_EndpointLogin, body)
-	if err != nil {
-		return err
-	}
-
-	data, err := proto.Marshal(chatProto)
-	if err != nil {
-		return err
-	}
-	p := &protocol.Proto{
-		Ver:  1,
-		Op:   int32(protocol.Op_ReceiveMsg),
-		Seq:  0,
-		Ack:  0,
-		Body: data,
-	}
-	data, err = proto.Marshal(p)
-	if err != nil {
-		return err
-	}
-
-	_, err = hub.pusherClient.PushList(ctx, &pusherclient.PushListReq{
-		App:  "",
-		From: "",
-		Uid:  []string{uid},
-		Body: data,
 	})
 	return err
 }
