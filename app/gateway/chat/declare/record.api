@@ -16,11 +16,11 @@ type Record {
 	TargetId   string      `json:"targetId"`   // 接收者 id
 	MsgType    int32       `json:"msgType"`    // 消息类型
 	Content    interface{} `json:"content"`    // 消息内容
-	CreateTime int64      `json:"createTime"` // 消息发送时间
+	CreateTime int64       `json:"createTime"` // 消息发送时间
 }
 
 type RevokeReq {
-	Type int   `json:"type,optional,options=0|1"` //撤回类型: 0->私聊, 1->群聊
+	Type int    `json:"type,optional,options=0|1"` //撤回类型: 0->私聊, 1->群聊
 	Mid  string `json:"mid"`
 }
 
@@ -28,7 +28,7 @@ type RevokeResp {
 }
 
 type FocusReq {
-	Type int   `json:"type,optional,options=0|1"` //关注类型: 0->私聊, 1->群聊
+	Type int    `json:"type,optional,options=0|1"` //关注类型: 0->私聊, 1->群聊
 	Mid  string `json:"mid"`
 }
 
@@ -84,7 +84,10 @@ type SendReq {
 }
 
 type SendResp {
-	Result   []byte  `json:"result"`
+	Code     int32  `json:"code"`
+	Mid      string `json:"mid"`
+	Datetime int64  `json:"datetime"`
+	Repeat   bool   `json:"repeat"`
 }
 
 @server(
@@ -119,7 +122,7 @@ service chat-api {
 	@doc "最后抵达对方的消息"
 	@handler LastPrivateArrival
 	post /app/record/last-private-arrival (LastPrivateArrivalReq) returns (LastPrivateArrivalResp)
-
+	
 	@doc "发送消息"
 	@handler Send
 	post /app/record/send (SendReq) returns (SendResp)

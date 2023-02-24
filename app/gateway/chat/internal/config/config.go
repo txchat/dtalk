@@ -8,6 +8,7 @@ import (
 )
 
 type Config struct {
+	AppID string
 	rest.RestConf
 	Revoke      Revoke
 	CallRPC     zrpc.RpcClientConf

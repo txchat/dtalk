@@ -132,8 +132,10 @@ type SendReq struct {
 }
 
 type SendResp struct {
+	Code     int32  `json:"code"`
 	Mid      string `json:"mid"`
 	Datetime int64  `json:"datetime"`
+	Repeat   bool   `json:"repeat"`
 }
 
 type LoginReq struct {

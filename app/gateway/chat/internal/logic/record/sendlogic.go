@@ -5,6 +5,9 @@ import (
 	"io/ioutil"
 	"mime/multipart"
 
+	"github.com/golang/protobuf/proto"
+	"github.com/txchat/dtalk/api/proto/message"
+
 	"github.com/txchat/dtalk/app/services/transfer/transferclient"
 
 	"github.com/txchat/dtalk/api/proto/chat"
@@ -60,32 +63,53 @@ func (l *SendLogic) Send(req *types.SendReq, fh *multipart.FileHeader) (resp *ty
 		return
 	}
 
-	chatProto := chat.Chat{
-		Type: chat.Chat_message,
-		Seq:  0,
-		Body: body,
-	}
-	presendResp, err := l.svcCtx.TransferRPC.PreSendMessageCheck(l.ctx, &transferclient.PreSendMessageCheckReq{
-		Msg: &chatProto,
+	preSendResp, err := l.svcCtx.TransferRPC.PreSendMessageCheck(l.ctx, &transferclient.PreSendMessageCheckReq{
+		Msg: &chat.Chat{
+			Type: chat.Chat_message,
+			Seq:  0,
+			Body: body,
+		},
 	})
 	if err != nil {
 		return
 	}
 
-	switch x := presendResp.GetResult().GetResult().(type) {
-	case *chat.SendMessageReply_Failed_:
+	result := preSendResp.GetResult()
+	resp = &types.SendResp{
+		Code:     int32(result.GetCode()),
+		Mid:      result.GetMid(),
+		Datetime: result.GetDatetime(),
+		Repeat:   result.GetRepeat(),
+	}
+	if result.GetCode() != chat.SendMessageReply_IsOK || result.GetRepeat() {
 		return
-	case *chat.SendMessageReply_Success_:
-		if x.Success.GetRepeat() {
-			return
-		}
 	}
 
-	l.svcCtx.LogicRPC.SendByUID(l.ctx, &logicclient.SendByUIDReq{
-		AppId: "",
+	var msg *message.Message
+	err = proto.Unmarshal(body, msg)
+	if err != nil {
+		return
+	}
+	msg.From = uid
+	msg.Mid = result.GetMid()
+	msg.Datetime = result.GetDatetime()
+	msgData, err := proto.Marshal(msg)
+	if err != nil {
+		return
+	}
+	chatData, err := proto.Marshal(&chat.Chat{
+		Type: chat.Chat_message,
+		Seq:  0,
+		Body: msgData,
+	})
+	if err != nil {
+		return
+	}
+	_, err = l.svcCtx.LogicRPC.SendByUID(l.ctx, &logicclient.SendByUIDReq{
+		AppId: l.svcCtx.Config.AppID,
 		Uid:   uid,
 		Op:    protocol.Op_Message,
-		Body:  chatProto,
+		Body:  chatData,
 	})
 	return
 }
