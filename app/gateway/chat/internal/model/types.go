@@ -1,6 +1,7 @@
 package model
 
 import (
+	"github.com/txchat/dtalk/api/proto/message"
 	"github.com/txchat/dtalk/app/gateway/chat/internal/types"
 	"github.com/txchat/dtalk/app/services/storage/storageclient"
 	"github.com/txchat/dtalk/internal/recordutil"
@@ -15,7 +16,7 @@ func ToChatRecord(records []*storageclient.Record) []*types.Record {
 			FromId:     msg.SenderId,
 			TargetId:   msg.ReceiverId,
 			MsgType:    msg.MsgType,
-			Content:    recordutil.CommonMsgJSONDataToProtobuf(msg.MsgType, []byte(msg.Content)),
+			Content:    recordutil.MessageContentJSONDataToProtobuf(message.MsgType(msg.MsgType), []byte(msg.Content)),
 			CreateTime: msg.CreateTime,
 		}
 	}

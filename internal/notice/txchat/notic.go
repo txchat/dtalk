@@ -3,15 +3,13 @@ package txchat
 import (
 	"context"
 
-	"github.com/txchat/dtalk/api/proto/chat"
-
 	"github.com/golang/protobuf/proto"
 	"github.com/google/uuid"
+	"github.com/txchat/dtalk/api/proto/chat"
+	"github.com/txchat/dtalk/api/proto/content"
 	"github.com/txchat/dtalk/api/proto/message"
-	"github.com/txchat/dtalk/app/services/transfer/transferclient"
-
-	"github.com/txchat/dtalk/api/proto/msg"
 	"github.com/txchat/dtalk/api/proto/signal"
+	"github.com/txchat/dtalk/app/services/transfer/transferclient"
 	"github.com/txchat/dtalk/internal/group"
 	"github.com/txchat/dtalk/pkg/util"
 )
@@ -26,12 +24,12 @@ func NewNoticeHub(transferClient transferclient.Transfer) *NoticeHub {
 	}
 }
 
-func (hub *NoticeHub) convertNoticeProtoData(channelType message.Channel, from, target string, noticeType msg.NoticeMsgType, noticeMetadata proto.Message) (*chat.Chat, error) {
+func (hub *NoticeHub) convertNoticeProtoData(channelType message.Channel, from, target string, noticeType content.NoticeMsgType, noticeMetadata proto.Message) (*chat.Chat, error) {
 	noticeData, err := proto.Marshal(noticeMetadata)
 	if err != nil {
 		return nil, err
 	}
-	msgData, err := proto.Marshal(&msg.NoticeMsg{
+	msgData, err := proto.Marshal(&content.NoticeMsg{
 		Type: noticeType,
 		Body: noticeData,
 	})
@@ -44,7 +42,7 @@ func (hub *NoticeHub) convertNoticeProtoData(channelType message.Channel, from, 
 		From:        from,
 		Target:      target,
 		MsgType:     message.MsgType_Notice,
-		Msg:         msgData,
+		Content:     msgData,
 	})
 	if err != nil {
 		return nil, err
@@ -58,12 +56,12 @@ func (hub *NoticeHub) convertNoticeProtoData(channelType message.Channel, from, 
 }
 
 func (hub *NoticeHub) GroupAddNewMembers(ctx context.Context, gid int64, operator string, members []string) error {
-	noticeMetadata := &msg.NoticeMsgSignInGroup{
+	noticeMetadata := &content.NoticeMsgSignInGroup{
 		Group:   gid,
 		Inviter: operator,
 		Members: members,
 	}
-	chatProto, err := hub.convertNoticeProtoData(message.Channel_Group, operator, util.MustToString(gid), msg.NoticeMsgType_SignInGroupNoticeMsg, noticeMetadata)
+	chatProto, err := hub.convertNoticeProtoData(message.Channel_Group, operator, util.MustToString(gid), content.NoticeMsgType_SignInGroupNoticeMsg, noticeMetadata)
 	if err != nil {
 		return err
 	}
@@ -77,11 +75,11 @@ func (hub *NoticeHub) GroupAddNewMembers(ctx context.Context, gid int64, operato
 }
 
 func (hub *NoticeHub) GroupSignOut(ctx context.Context, gid int64, target string) error {
-	noticeMetadata := &msg.NoticeMsgSignOutGroup{
+	noticeMetadata := &content.NoticeMsgSignOutGroup{
 		Group:    gid,
 		Operator: target,
 	}
-	chatProto, err := hub.convertNoticeProtoData(message.Channel_Group, target, util.MustToString(gid), msg.NoticeMsgType_SignOutGroupNoticeMsg, noticeMetadata)
+	chatProto, err := hub.convertNoticeProtoData(message.Channel_Group, target, util.MustToString(gid), content.NoticeMsgType_SignOutGroupNoticeMsg, noticeMetadata)
 	if err != nil {
 		return err
 	}
@@ -95,12 +93,12 @@ func (hub *NoticeHub) GroupSignOut(ctx context.Context, gid int64, target string
 }
 
 func (hub *NoticeHub) GroupKickOutMembers(ctx context.Context, gid int64, operator string, members []string) error {
-	noticeMetadata := &msg.NoticeMsgKickOutGroup{
+	noticeMetadata := &content.NoticeMsgKickOutGroup{
 		Group:    gid,
 		Operator: operator,
 		Members:  members,
 	}
-	chatProto, err := hub.convertNoticeProtoData(message.Channel_Group, operator, util.MustToString(gid), msg.NoticeMsgType_KickOutGroupNoticeMsg, noticeMetadata)
+	chatProto, err := hub.convertNoticeProtoData(message.Channel_Group, operator, util.MustToString(gid), content.NoticeMsgType_KickOutGroupNoticeMsg, noticeMetadata)
 	if err != nil {
 		return err
 	}
@@ -114,11 +112,11 @@ func (hub *NoticeHub) GroupKickOutMembers(ctx context.Context, gid int64, operat
 }
 
 func (hub *NoticeHub) GroupDeleted(ctx context.Context, gid int64, operator string) error {
-	noticeMetadata := &msg.NoticeMsgDeleteGroup{
+	noticeMetadata := &content.NoticeMsgDeleteGroup{
 		Group:    gid,
 		Operator: operator,
 	}
-	chatProto, err := hub.convertNoticeProtoData(message.Channel_Group, operator, util.MustToString(gid), msg.NoticeMsgType_DeleteGroupNoticeMsg, noticeMetadata)
+	chatProto, err := hub.convertNoticeProtoData(message.Channel_Group, operator, util.MustToString(gid), content.NoticeMsgType_DeleteGroupNoticeMsg, noticeMetadata)
 	if err != nil {
 		return err
 	}
@@ -132,12 +130,12 @@ func (hub *NoticeHub) GroupDeleted(ctx context.Context, gid int64, operator stri
 }
 
 func (hub *NoticeHub) UpdateGroupMuteType(ctx context.Context, gid int64, operator string, tp int32) error {
-	noticeMetadata := &msg.NoticeMsgUpdateGroupMuted{
+	noticeMetadata := &content.NoticeMsgUpdateGroupMuted{
 		Group:    gid,
 		Operator: operator,
 		Type:     signal.MuteType(tp),
 	}
-	chatProto, err := hub.convertNoticeProtoData(message.Channel_Group, operator, util.MustToString(gid), msg.NoticeMsgType_UpdateGroupMutedNoticeMsg, noticeMetadata)
+	chatProto, err := hub.convertNoticeProtoData(message.Channel_Group, operator, util.MustToString(gid), content.NoticeMsgType_UpdateGroupMutedNoticeMsg, noticeMetadata)
 	if err != nil {
 		return err
 	}
@@ -151,12 +149,12 @@ func (hub *NoticeHub) UpdateGroupMuteType(ctx context.Context, gid int64, operat
 }
 
 func (hub *NoticeHub) UpdateGroupName(ctx context.Context, gid int64, operator, name string) error {
-	noticeMetadata := &msg.NoticeMsgUpdateGroupName{
+	noticeMetadata := &content.NoticeMsgUpdateGroupName{
 		Group:    gid,
 		Operator: operator,
 		Name:     name,
 	}
-	chatProto, err := hub.convertNoticeProtoData(message.Channel_Group, operator, util.MustToString(gid), msg.NoticeMsgType_UpdateGroupNameNoticeMsg, noticeMetadata)
+	chatProto, err := hub.convertNoticeProtoData(message.Channel_Group, operator, util.MustToString(gid), content.NoticeMsgType_UpdateGroupNameNoticeMsg, noticeMetadata)
 	if err != nil {
 		return err
 	}
@@ -175,11 +173,11 @@ func (hub *NoticeHub) UpdateGroupMemberRole(ctx context.Context, gid int64, oper
 	default:
 		return nil
 	}
-	noticeMetadata := &msg.NoticeMsgUpdateGroupOwner{
+	noticeMetadata := &content.NoticeMsgUpdateGroupOwner{
 		Group:    gid,
 		NewOwner: uid,
 	}
-	chatProto, err := hub.convertNoticeProtoData(message.Channel_Group, operator, util.MustToString(gid), msg.NoticeMsgType_UpdateGroupOwnerNoticeMsg, noticeMetadata)
+	chatProto, err := hub.convertNoticeProtoData(message.Channel_Group, operator, util.MustToString(gid), content.NoticeMsgType_UpdateGroupOwnerNoticeMsg, noticeMetadata)
 	if err != nil {
 		return err
 	}
@@ -193,12 +191,12 @@ func (hub *NoticeHub) UpdateGroupMemberRole(ctx context.Context, gid int64, oper
 }
 
 func (hub *NoticeHub) UpdateMembersMuteTime(ctx context.Context, operator string, gid, muteTime int64, members []string) error {
-	noticeMetadata := &msg.NoticeMsgUpdateGroupMemberMutedTime{
+	noticeMetadata := &content.NoticeMsgUpdateGroupMemberMutedTime{
 		Group:    gid,
 		Operator: operator,
 		Members:  members,
 	}
-	chatProto, err := hub.convertNoticeProtoData(message.Channel_Group, operator, util.MustToString(gid), msg.NoticeMsgType_UpdateGroupMemberMutedNoticeMsg, noticeMetadata)
+	chatProto, err := hub.convertNoticeProtoData(message.Channel_Group, operator, util.MustToString(gid), content.NoticeMsgType_UpdateGroupMemberMutedNoticeMsg, noticeMetadata)
 	if err != nil {
 		return err
 	}

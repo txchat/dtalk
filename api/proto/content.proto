@@ -4,14 +4,19 @@ syntax = "proto3";
 package dtalk.api.proto;
 
 import "github.com/txchat/dtalk/api/proto/signal.proto";
+import "github.com/txchat/dtalk/api/proto/message.proto";
 
-option go_package = "github.com/txchat/dtalk/api/proto/msg;msg";
+option go_package = "github.com/txchat/dtalk/api/proto/content;content";
 
-message EncryptMsg { string content = 1; }
+message EncryptMsg {
+  MsgType type = 1;
+  string crypto = 2;
+  bytes data = 3;
+}
 
 message TextMsg {
   string content = 1;
-  repeated string mention = 2;
+  repeated string ait = 2;
 }
 
 message AudioMsg {
