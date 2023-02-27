@@ -18,14 +18,15 @@ type androidPusher struct {
 	environment     string
 }
 
-func (t *androidPusher) SinglePush(deviceToken, title, text string, extra *pusher.Extra) error {
+func (t *androidPusher) SinglePush(deviceToken string, notification pusher.Notification, extra *pusher.Extra) error {
 	var client push.PushClient
 	unicast := android_push.NewAndroidUnicast(t.AppKey, t.AppMasterSecret)
 
 	//fmt.Println(t.AppKey, t.AppMasterSecret, t.DeviceToken, title, text)
 	unicast.SetDeviceToken(deviceToken)
-	unicast.SetTitle(title)
-	unicast.SetText(text)
+	unicast.SetTitle(notification.Title)
+	unicast.SetTicker(notification.Subtitle)
+	unicast.SetText(notification.Body)
 	unicast.GoCustomAfterOpen("")
 	unicast.SetDisplayType(push.NOTIFICATION)
 	unicast.SetMipush(true, t.MiActivity)
@@ -41,19 +42,20 @@ func (t *androidPusher) SinglePush(deviceToken, title, text string, extra *pushe
 		return errors.New("unknown environment")
 	}
 	// Set customized fields
-	unicast.SetExtraField("address", extra.Address)
+	unicast.SetExtraField("sessionKey", extra.SessionKey)
 	unicast.SetExtraField("channelType", strconv.FormatInt(int64(extra.ChannelType), 10))
 	return client.Send(unicast)
 }
 
-func (t *androidPusher) SingleCustomPush(address, title, text string, extra *pusher.Extra) error {
+func (t *androidPusher) SingleCustomPush(address string, notification pusher.Notification, extra *pusher.Extra) error {
 	var client push.PushClient
 	unicast := android_push.NewAndroidCustomizedcast(t.AppKey, t.AppMasterSecret)
 
 	//fmt.Println(t.AppKey, t.AppMasterSecret, t.DeviceToken, title, text)
 	unicast.SetAlias(address, "ADDRESS")
-	unicast.SetTitle(title)
-	unicast.SetText(text)
+	unicast.SetTitle(notification.Title)
+	unicast.SetTicker(notification.Subtitle)
+	unicast.SetText(notification.Body)
 	unicast.GoCustomAfterOpen("")
 	unicast.SetDisplayType(push.NOTIFICATION)
 	unicast.SetMipush(true, t.MiActivity)
@@ -69,7 +71,7 @@ func (t *androidPusher) SingleCustomPush(address, title, text string, extra *pus
 		return errors.New("unknown environment")
 	}
 	// Set customized fields
-	unicast.SetExtraField("address", extra.Address)
+	unicast.SetExtraField("sessionKey", extra.SessionKey)
 	unicast.SetExtraField("channelType", strconv.FormatInt(int64(extra.ChannelType), 10))
 	return client.Send(unicast)
 }

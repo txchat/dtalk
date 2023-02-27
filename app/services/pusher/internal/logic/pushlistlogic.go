@@ -28,18 +28,19 @@ func NewPushListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *PushList
 func (l *PushListLogic) PushList(in *pusher.PushListReq) (*pusher.PushListResp, error) {
 	msg := &logicclient.PushByUIDReq{
 		AppId: in.GetApp(),
-		ToId:  append(in.GetUid(), in.GetFrom()),
+		ToId:  in.GetUid(),
 		Op:    protocol.Op_Message,
 		Body:  in.GetBody(),
 	}
 
-	if l.svcCtx.Config.OffPushEnabled {
-		l.svcCtx.PushOffline(l.ctx, in.GetApp(), in.GetFrom(), in.GetUid())
-	}
-
 	_, err := l.svcCtx.LogicRPC.PushByUID(l.ctx, msg)
 	if err != nil {
-		l.Error("PushByUID Failed", "err", err, "appId", msg.GetAppId(), "toId", msg.GetToId(), "len of msg", len(msg.GetBody()))
+		if l.svcCtx.Config.OffPushEnabled {
+			err = l.svcCtx.PublishThirdPartyPushMQ(l.ctx, in.GetFrom(), in.GetUid(), in.GetBody())
+			if err != nil {
+				l.Error(err)
+			}
+		}
 		return nil, err
 	}
 	return &pusher.PushListResp{}, nil

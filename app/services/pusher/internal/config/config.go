@@ -8,13 +8,12 @@ import (
 
 type Config struct {
 	zrpc.RpcServerConf
-	AppID     string
-	RedisDB   xredis.Config
-	DeviceRPC zrpc.RpcClientConf
-	LogicRPC  zrpc.RpcClientConf
-
+	AppID                     string
+	RedisDB                   xredis.Config
+	DeviceRPC                 zrpc.RpcClientConf
+	LogicRPC                  zrpc.RpcClientConf
 	OffPushEnabled            bool
-	ProducerOffPush           xkafka.ProducerConfig
+	Producer                  xkafka.ProducerConfig
 	PushDealConsumerConfig    xkafka.ConsumerConfig
 	PushDealBatchConsumerConf xkafka.BatchConsumerConf
 }

@@ -1,27 +1,10 @@
 package checker
 
 import (
-	"github.com/golang/protobuf/proto"
 	"github.com/txchat/dtalk/api/proto/chat"
 	"github.com/txchat/dtalk/api/proto/message"
 	"github.com/txchat/dtalk/internal/recordutil"
 )
-
-func Check(chatProto *chat.Chat) chat.SendMessageReply_FailedType {
-	switch chatProto.GetType() {
-	case chat.Chat_message:
-		var msg *message.Message
-		err := proto.Unmarshal(chatProto.GetBody(), msg)
-		if err != nil {
-			return chat.SendMessageReply_IllegalFormat
-		}
-		return CheckMessage(msg)
-	case chat.Chat_signal:
-		return chat.SendMessageReply_UnSupportedMessageType
-	default:
-		return chat.SendMessageReply_UnSupportedMessageType
-	}
-}
 
 func checkChannelType(channel message.Channel) bool {
 	switch channel {

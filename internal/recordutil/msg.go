@@ -109,13 +109,14 @@ func protobufDataToJSONData(m proto.Message, data []byte) ([]byte, error) {
 	return json.Marshal(m)
 }
 
-func jsonDataToProtobufData(m proto.Message, data []byte) ([]byte, error) {
-	err := json.Unmarshal(data, m)
-	if err != nil {
-		return nil, err
-	}
-	return proto.Marshal(m)
-}
+//
+//func jsonDataToProtobufData(m proto.Message, data []byte) ([]byte, error) {
+//	err := json.Unmarshal(data, m)
+//	if err != nil {
+//		return nil, err
+//	}
+//	return proto.Marshal(m)
+//}
 
 func MessageContentProtobufDataToJSONData(m *message.Message) []byte {
 	creator, ok := msgFactory[m.MsgType]

@@ -49,7 +49,7 @@ func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginResp, err erro
 			return nil, xerror.NewCustomError(xerror.ErrReconnectRejected, model.LoginNotAllowedErr{
 				Code: xerror.ErrReconnectRejected.Code(),
 				Message: struct {
-					Datetime   uint64 `json:"datetime"`
+					Datetime   int64  `json:"datetime"`
 					Device     int32  `json:"device"`
 					DeviceName string `json:"deviceName"`
 					UUID       string `json:"uuid"`

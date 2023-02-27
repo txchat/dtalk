@@ -28,6 +28,7 @@ exportGOEnv() {
     export GOSUMDB='sum.golang.google.cn'
 }
 
+# shellcheck disable=SC1091
 source .env
 
 exportComponentEnv() {

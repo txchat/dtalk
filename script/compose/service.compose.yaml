@@ -119,9 +119,9 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
-  answer:
-    image: txchat-answer:${ANSWER_IMAGE}
-    container_name: ${ANSWER_CONTAINER_NAME}
+  transfer:
+    image: txchat-transfer:${TRANSFER_IMAGE}
+    container_name: ${TRANSFER_CONTAINER_NAME}
     environment:
       ETCD_HOST: txchat-etcd
       KAFKA_HOST: txchat-kafka
@@ -130,7 +130,7 @@ services:
       - txchat-components
       - txchat-service
     volumes:
-      - ${ANSWER_CONFIG_VOLUME}:/etc/txchat-answer/config
+      - ${TRANSFER_CONFIG_VOLUME}:/etc/txchat-transfer/config
   pusher:
     image: txchat-pusher:${PUSHER_IMAGE}
     container_name: ${PUSHER_CONTAINER_NAME}
@@ -144,7 +144,7 @@ services:
     volumes:
       - ${PUSHER_CONFIG_VOLUME}:/etc/txchat-pusher/config
     depends_on:
-      answer:
+      transfer:
         condition: service_started
   storage:
     image: txchat-storage:${STORAGE_IMAGE}
@@ -195,7 +195,7 @@ volumes:
     external: true
   txchat-version-config:
     external: true
-  txchat-answer-config:
+  txchat-transfer-config:
     external: true
   txchat-pusher-config:
     external: true

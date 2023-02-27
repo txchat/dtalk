@@ -5,7 +5,7 @@ projectVersion=$(shell git describe --abbrev=8 --tags)
 gitCommit=$(shell git rev-parse --short=8 HEAD)
 
 pkgCommitName=${projectVersion}_${gitCommit}
-servers=answer backup call device generator group offline oss pusher storage version
+servers=backup call device generator group offline oss pusher storage transfer version
 gateways=center chat
 
 help: ## Display this help screen

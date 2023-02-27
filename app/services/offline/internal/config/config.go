@@ -1,6 +1,8 @@
 package config
 
 import (
+	"time"
+
 	xkafka "github.com/txchat/pkg/mq/kafka"
 	"github.com/zeromicro/go-zero/zrpc"
 )
@@ -8,6 +10,7 @@ import (
 type Config struct {
 	zrpc.RpcServerConf
 	AppID                 string
+	Timeout               time.Duration
 	Pushers               map[string]Pusher
 	DealConsumerConfig    xkafka.ConsumerConfig
 	DealBatchConsumerConf xkafka.BatchConsumerConf

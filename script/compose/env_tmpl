@@ -124,13 +124,13 @@ VERSION_CONTAINER_NAME=txchat-version-node1
 # version配置卷
 VERSION_CONFIG_VOLUME=txchat-version-config
 
-## ANSWER
-# answer服务镜像
-ANSWER_IMAGE=v0.0.0
-# answer容器名称
-ANSWER_CONTAINER_NAME=txchat-answer-node1
-# answer配置卷
-ANSWER_CONFIG_VOLUME=txchat-answer-config
+## TRANSFER
+# transfer服务镜像
+TRANSFER_IMAGE=v0.0.0
+# transfer容器名称
+TRANSFER_CONTAINER_NAME=txchat-transfer-node1
+# transfer配置卷
+TRANSFER_CONFIG_VOLUME=txchat-transfer-config
 
 ## PUSHER
 # pusher服务镜像

@@ -30,7 +30,7 @@ func SendHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 		}
 
 		l := record.NewSendLogic(r.Context(), svcCtx)
-		resp, err := l.Send(&req)
+		resp, err := l.Send(&req, fh)
 		if err != nil {
 			xhttp.Error(w, r, err)
 		} else {

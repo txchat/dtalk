@@ -18,7 +18,7 @@ type iOSPusher struct {
 	environment     string
 }
 
-func (t *iOSPusher) SinglePush(deviceToken, title, text string, extra *pusher.Extra) error {
+func (t *iOSPusher) SinglePush(deviceToken string, notification pusher.Notification, extra *pusher.Extra) error {
 	var client push.PushClient
 	unicast := ios_push.NewIOSUnicast(t.AppKey, t.AppMasterSecret)
 
@@ -27,8 +27,9 @@ func (t *iOSPusher) SinglePush(deviceToken, title, text string, extra *pusher.Ex
 
 	//unicast.SetAlert("IOS 单播测试")
 	unicast.SetAlertJson(push.IOSAlert{
-		Title: title,
-		Body:  text,
+		Title:    notification.Title,
+		Subtitle: notification.Subtitle,
+		Body:     notification.Body,
 	})
 	//unicast.SetBadge(0)
 	unicast.SetSound("default")
@@ -45,12 +46,12 @@ func (t *iOSPusher) SinglePush(deviceToken, title, text string, extra *pusher.Ex
 		return errors.New("unknown environment")
 	}
 	// Set customized fields
-	unicast.SetCustomizedField("address", extra.Address)
+	unicast.SetCustomizedField("sessionKey", extra.SessionKey)
 	unicast.SetCustomizedField("channelType", strconv.FormatInt(int64(extra.ChannelType), 10))
 	return client.Send(unicast)
 }
 
-func (t *iOSPusher) SingleCustomPush(address, title, text string, extra *pusher.Extra) error {
+func (t *iOSPusher) SingleCustomPush(address string, notification pusher.Notification, extra *pusher.Extra) error {
 	var client push.PushClient
 	unicast := ios_push.NewIOSCustomizedcast(t.AppKey, t.AppMasterSecret)
 
@@ -59,8 +60,9 @@ func (t *iOSPusher) SingleCustomPush(address, title, text string, extra *pusher.
 
 	//unicast.SetAlert("IOS 单播测试")
 	unicast.SetAlertJson(push.IOSAlert{
-		Title: title,
-		Body:  text,
+		Title:    notification.Title,
+		Subtitle: notification.Subtitle,
+		Body:     notification.Body,
 	})
 	//unicast.SetBadge(0)
 	unicast.SetSound("default")
@@ -77,7 +79,7 @@ func (t *iOSPusher) SingleCustomPush(address, title, text string, extra *pusher.
 		return errors.New("unknown environment")
 	}
 	// Set customized fields
-	unicast.SetCustomizedField("address", extra.Address)
+	unicast.SetCustomizedField("sessionKey", extra.SessionKey)
 	unicast.SetCustomizedField("channelType", strconv.FormatInt(int64(extra.ChannelType), 10))
 	return client.Send(unicast)
 }
