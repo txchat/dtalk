@@ -5,11 +5,11 @@ import (
 	"fmt"
 
 	"github.com/golang/protobuf/proto"
+	xkafka "github.com/oofpgDLD/kafka-go"
 	"github.com/txchat/dtalk/app/services/offline/internal/config"
 	"github.com/txchat/dtalk/app/services/offline/internal/model"
 	"github.com/txchat/dtalk/app/services/offline/internal/svc"
 	"github.com/txchat/dtalk/internal/proto/offline"
-	xkafka "github.com/txchat/pkg/mq/kafka"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 

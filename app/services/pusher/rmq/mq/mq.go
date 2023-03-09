@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/golang/protobuf/proto"
+	xkafka "github.com/oofpgDLD/kafka-go"
 	"github.com/txchat/dtalk/api/proto/message"
 	"github.com/txchat/dtalk/app/services/pusher/internal/config"
 	innerLogic "github.com/txchat/dtalk/app/services/pusher/internal/logic"
@@ -12,7 +13,6 @@ import (
 	"github.com/txchat/dtalk/app/services/pusher/internal/svc"
 	"github.com/txchat/dtalk/app/services/pusher/pusher"
 	"github.com/txchat/dtalk/internal/proto/record"
-	xkafka "github.com/txchat/pkg/mq/kafka"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 

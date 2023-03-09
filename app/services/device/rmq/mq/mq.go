@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/proto"
+	xkafka "github.com/oofpgDLD/kafka-go"
 	"github.com/txchat/dtalk/api/proto/auth"
 	"github.com/txchat/dtalk/api/proto/signal"
 	"github.com/txchat/dtalk/app/services/device/internal/config"
@@ -15,7 +16,6 @@ import (
 	"github.com/txchat/dtalk/pkg/util"
 	"github.com/txchat/im/api/protocol"
 	"github.com/txchat/im/app/logic/logicclient"
-	xkafka "github.com/txchat/pkg/mq/kafka"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 

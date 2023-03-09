@@ -9,6 +9,7 @@ import (
 	"github.com/txchat/dtalk/internal/proto/record"
 
 	"github.com/golang/protobuf/proto"
+	xkafka "github.com/oofpgDLD/kafka-go"
 	"github.com/txchat/dtalk/api/proto/chat"
 	"github.com/txchat/dtalk/api/proto/message"
 	"github.com/txchat/dtalk/app/services/device/deviceclient"
@@ -18,7 +19,6 @@ import (
 	"github.com/txchat/dtalk/app/services/transfer/internal/config"
 	"github.com/txchat/dtalk/app/services/transfer/internal/dao"
 	"github.com/txchat/dtalk/pkg/util"
-	xkafka "github.com/txchat/pkg/mq/kafka"
 )
 
 type ServiceContext struct {
