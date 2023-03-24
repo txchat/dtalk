@@ -18,11 +18,11 @@ RedisDB:
   IdleTimeout: "120s"
   Expire: "30m"
 MySQL:
-  Host: "${MYSQL_HOST}"
-  Port: 3306
+  Net: "tcp"
+  Addr: "${MYSQL_HOST}:3306"
   User: "root"
-  Pwd: "${MYSQL_PASSWORD}"
-  DB: "dtalk_record"
+  Passwd: "${MYSQL_PASSWORD}"
+  DBName: "dtalk_record"
 DeviceRPC:
   Etcd:
     Hosts:

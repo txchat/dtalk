@@ -2,17 +2,12 @@ package dao
 
 import (
 	"github.com/txchat/dtalk/app/services/storage/internal/model"
-	xmysql "github.com/txchat/dtalk/pkg/mysql"
 )
 
 type Repository interface {
-	NewTx() (*xmysql.MysqlTx, error)
-
-	AppendPrivateMsgContent(tx *xmysql.MysqlTx, m *model.MsgContent) (int64, int64, error)
-	AppendPrivateMsgRelation(tx *xmysql.MysqlTx, m *model.MsgRelation) (int64, int64, error)
+	AppendPrivateMsg(m *model.MsgContent, sender *model.MsgRelation, receiver *model.MsgRelation) (int64, int64, error)
 	DelPrivateMsg(mid string) (int64, int64, error)
-	AppendGroupMsgContent(tx *xmysql.MysqlTx, m *model.MsgContent) (int64, int64, error)
-	AppendGroupMsgRelation(tx *xmysql.MysqlTx, m []*model.MsgRelation) (int64, int64, error)
+	AppendGroupMsg(m *model.MsgContent, relations []*model.MsgRelation) (int64, int64, error)
 	DelGroupMsg(mid string) (int64, int64, error)
 
 	GetPrivateMsgByMid(mid string) (*model.MsgContent, error)

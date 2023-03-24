@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/txchat/dtalk/pkg/mysql"
+	"github.com/go-sql-driver/mysql"
 	"github.com/txchat/dtalk/pkg/redis"
 )
 
@@ -22,11 +22,11 @@ func TestMain(m *testing.M) {
 		Active:  60000,
 		Idle:    1024,
 	}, mysql.Config{
-		Host: "127.0.0.1",
-		Port: 3306,
-		User: "root",
-		Pwd:  mysqlRootPassword,
-		DB:   "dtalk_record",
+		Net:    "tcp",
+		Addr:   "127.0.0.1:3306",
+		User:   "root",
+		Passwd: mysqlRootPassword,
+		DBName: "dtalk_record",
 	})
 	os.Exit(m.Run())
 }

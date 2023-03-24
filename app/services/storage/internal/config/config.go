@@ -1,8 +1,8 @@
 package config
 
 import (
+	"github.com/go-sql-driver/mysql"
 	xkafka "github.com/oofpgDLD/kafka-go"
-	xmysql "github.com/txchat/dtalk/pkg/mysql"
 	xredis "github.com/txchat/dtalk/pkg/redis"
 	"github.com/zeromicro/go-zero/zrpc"
 )
@@ -12,7 +12,7 @@ type Config struct {
 	RedisDB                    xredis.Config
 	AppID                      string
 	SyncCache                  bool
-	MySQL                      xmysql.Config
+	MySQL                      mysql.Config
 	DeviceRPC                  zrpc.RpcClientConf
 	PusherRPC                  zrpc.RpcClientConf
 	GroupRPC                   zrpc.RpcClientConf

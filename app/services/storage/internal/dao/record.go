@@ -5,8 +5,6 @@ import (
 	"strings"
 
 	"github.com/txchat/dtalk/app/services/storage/internal/model"
-	"github.com/txchat/dtalk/pkg/mysql"
-	"github.com/txchat/dtalk/pkg/util"
 )
 
 const (
@@ -26,136 +24,168 @@ const (
 	_GetGroupChatSessionMsg   = `SELECT co.mid as mid,co.cid as cid,co.sender_id as sender_id,co.receiver_id as receiver_id,co.msg_type as msg_type,co.content as content,co.create_time as create_time,co.source as source,co.reference as reference FROM dtalk_group_msg_relation AS re RIGHT JOIN dtalk_group_msg_content AS co ON re.mid=co.mid WHERE re.owner_uid=? AND re.other_uid=? AND co.mid>? ORDER BY re.mid DESC LIMIT ?,?`
 )
 
-func convertMsgContent(m map[string]string) *model.MsgContent {
-	return &model.MsgContent{
-		Mid:        m["mid"],
-		Cid:        m["cid"],
-		SenderId:   m["sender_id"],
-		ReceiverId: m["receiver_id"],
-		MsgType:    util.MustToInt32(m["msg_type"]),
-		Content:    m["content"],
-		CreateTime: util.MustToInt64(m["create_time"]),
-		Source:     m["source"],
-		Reference:  m["reference"],
-	}
-}
-
 func (repo *StorageRepository) GetPrivateMsgByMid(mid string) (*model.MsgContent, error) {
-	maps, err := repo.mysql.Query(_GetPrivateRecordByMid, mid)
-	if err != nil {
-		return nil, err
-	}
-	if len(maps) < 1 {
-		return nil, model.ErrRecordNotFind
-	}
-	return convertMsgContent(maps[0]), nil
+	var msg model.MsgContent
+	err := repo.db.Raw(_GetPrivateRecordByMid, mid).Take(&msg).Error
+	return &msg, err
 }
 
-func (repo *StorageRepository) AppendPrivateMsgContent(tx *mysql.MysqlTx, m *model.MsgContent) (int64, int64, error) {
-	num, lastId, err := tx.Exec(_InsertPrivateMsgContent,
-		m.Mid, m.Cid, m.SenderId, m.ReceiverId, m.MsgType, m.Content, m.CreateTime, m.Source, m.Reference)
-	return num, lastId, err
-}
+func (repo *StorageRepository) AppendPrivateMsg(m *model.MsgContent, sender *model.MsgRelation, receiver *model.MsgRelation) (int64, int64, error) {
+	tx := repo.db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
 
-func (repo *StorageRepository) AppendPrivateMsgRelation(tx *mysql.MysqlTx, m *model.MsgRelation) (int64, int64, error) {
-	num, lastId, err := tx.Exec(_InsertPrivateMsgRelation,
-		m.Mid, m.OwnerUid, m.OtherUid, m.Type, m.CreateTime)
-	return num, lastId, err
+	if err := tx.Error; err != nil {
+		return 0, 0, err
+	}
+
+	if err := tx.Exec(_InsertPrivateMsgContent,
+		m.Mid, m.Cid, m.SenderId, m.ReceiverId, m.MsgType, m.Content, m.CreateTime, m.Source, m.Reference).Error; err != nil {
+		tx.Rollback()
+		return 0, 0, err
+	}
+
+	if err := tx.Exec(_InsertPrivateMsgRelation,
+		sender.Mid, sender.OwnerUid, sender.OtherUid, sender.Type, sender.CreateTime).Error; err != nil {
+		tx.Rollback()
+		return 0, 0, err
+	}
+
+	if err := tx.Exec(_InsertPrivateMsgRelation,
+		receiver.Mid, receiver.OwnerUid, receiver.OtherUid, receiver.Type, receiver.CreateTime).Error; err != nil {
+		tx.Rollback()
+		return 0, 0, err
+	}
+
+	return tx.RowsAffected, 0, tx.Commit().Error
 }
 
 func (repo *StorageRepository) DelPrivateMsg(mid string) (int64, int64, error) {
-	tx, err := repo.mysql.NewTx()
-	if err != nil {
+	tx := repo.db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if err := tx.Error; err != nil {
 		return 0, 0, err
 	}
-	num, lastId, err := tx.Exec(_DelPrivateMsgContent, mid)
-	if err != nil {
-		tx.RollBack()
+
+	if err := tx.Exec(_DelPrivateMsgContent, mid).Error; err != nil {
+		tx.Rollback()
 		return 0, 0, err
 	}
-	num, lastId, err = tx.Exec(_DelPrivateMsgRelation, mid)
-	if err != nil {
-		tx.RollBack()
+
+	if err := tx.Exec(_DelPrivateMsgRelation, mid).Error; err != nil {
+		tx.Rollback()
 		return 0, 0, err
 	}
-	err = tx.Commit()
-	return num, lastId, err
+	return tx.RowsAffected, 0, tx.Commit().Error
 }
 
 func (repo *StorageRepository) GetGroupMsgByMid(mid string) (*model.MsgContent, error) {
-	maps, err := repo.mysql.Query(_GetGroupRecordByMid, mid)
-	if err != nil {
-		return nil, err
-	}
-	if len(maps) < 1 {
-		return nil, model.ErrRecordNotFind
-	}
-	return convertMsgContent(maps[0]), nil
+	var msg model.MsgContent
+	err := repo.db.Raw(_GetGroupRecordByMid, mid).Take(&msg).Error
+	return &msg, err
 }
 
-func (repo *StorageRepository) AppendGroupMsgContent(tx *mysql.MysqlTx, m *model.MsgContent) (int64, int64, error) {
-	num, lastId, err := tx.Exec(_InsertGroupMsgContent,
-		m.Mid, m.Cid, m.SenderId, m.ReceiverId, m.MsgType, m.Content, m.CreateTime, m.Source, m.Reference)
-	return num, lastId, err
-}
-
-func (repo *StorageRepository) AppendGroupMsgRelation(tx *mysql.MysqlTx, m []*model.MsgRelation) (int64, int64, error) {
+func (repo *StorageRepository) AppendGroupMsg(m *model.MsgContent, relations []*model.MsgRelation) (int64, int64, error) {
 	//element should not empty
-	if len(m) == 0 {
+	if len(relations) == 0 {
 		return 0, 0, nil
 	}
+
+	tx := repo.db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if err := tx.Error; err != nil {
+		return 0, 0, err
+	}
+
+	if err := tx.Exec(_InsertGroupMsgContent,
+		m.Mid, m.Cid, m.SenderId, m.ReceiverId, m.MsgType, m.Content, m.CreateTime, m.Source, m.Reference).Error; err != nil {
+		tx.Rollback()
+		return 0, 0, err
+	}
+
 	var values []interface{}
 	condition := ""
-	for _, row := range m {
+	for _, row := range relations {
 		condition += "(?,?,?,?,?),"
 		values = append(values, row.Mid, row.OwnerUid, row.OtherUid, row.Type, row.CreateTime)
 	}
 	//trim the last ,
 	condition = strings.TrimSuffix(condition, ",")
 	//prepare the statement and exec
-	num, lastId, err := tx.PrepareExec(fmt.Sprintf(_InsertGroupMsgRelationPrefix, condition), values...)
-	return num, lastId, err
+
+	if err := tx.Exec(fmt.Sprintf(_InsertGroupMsgRelationPrefix, condition), values...).Error; err != nil {
+		tx.Rollback()
+		return 0, 0, err
+	}
+	return tx.RowsAffected, 0, tx.Commit().Error
 }
 
 func (repo *StorageRepository) DelGroupMsg(mid string) (int64, int64, error) {
-	tx, err := repo.mysql.NewTx()
-	if err != nil {
+	tx := repo.db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if err := tx.Error; err != nil {
 		return 0, 0, err
 	}
-	num, lastId, err := tx.Exec(_DelGroupMsgContent, mid)
-	if err != nil {
-		tx.RollBack()
+
+	if err := tx.Exec(_DelGroupMsgContent, mid).Error; err != nil {
+		tx.Rollback()
 		return 0, 0, err
 	}
-	num, lastId, err = tx.Exec(_DelGroupMsgRelation, mid)
-	if err != nil {
-		tx.RollBack()
+	if err := tx.Exec(_DelGroupMsgRelation, mid).Error; err != nil {
+		tx.Rollback()
 		return 0, 0, err
 	}
-	err = tx.Commit()
-	return num, lastId, err
+	return tx.RowsAffected, 0, tx.Commit().Error
 }
 
 func (repo *StorageRepository) GetPrivateChatSessionMsg(uid, target, start string, num int32) ([]*model.MsgContent, error) {
-	maps, err := repo.mysql.Query(_GetPrivateChatSessionMsg, uid, target, start, 0, num)
+	ret := make([]*model.MsgContent, 0)
+	rows, err := repo.db.Raw(_GetPrivateChatSessionMsg, uid, target, start, 0, num).Rows()
 	if err != nil {
 		return nil, err
 	}
-	ret := make([]*model.MsgContent, len(maps))
-	for i, m := range maps {
-		ret[i] = convertMsgContent(m)
+	defer rows.Close()
+	for rows.Next() {
+		var msg model.MsgContent
+		if err = repo.db.ScanRows(rows, &msg); err != nil {
+			continue
+		}
+		ret = append(ret, &msg)
 	}
-	return ret, err
+	return ret, nil
 }
 
 func (repo *StorageRepository) GetGroupChatSessionMsg(uid, gid, start string, num int32) ([]*model.MsgContent, error) {
-	maps, err := repo.mysql.Query(_GetGroupChatSessionMsg, uid, gid, start, 0, num)
+	ret := make([]*model.MsgContent, 0)
+	rows, err := repo.db.Raw(_GetGroupChatSessionMsg, uid, gid, start, 0, num).Rows()
 	if err != nil {
 		return nil, err
 	}
-	ret := make([]*model.MsgContent, len(maps))
-	for i, m := range maps {
-		ret[i] = convertMsgContent(m)
+	defer rows.Close()
+	for rows.Next() {
+		var msg model.MsgContent
+		if err = repo.db.ScanRows(rows, &msg); err != nil {
+			continue
+		}
+		ret = append(ret, &msg)
 	}
-	return ret, err
+	return ret, nil
 }

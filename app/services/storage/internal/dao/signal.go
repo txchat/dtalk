@@ -13,9 +13,9 @@ const (
 )
 
 func (repo *StorageRepository) AppendSignal(m *model.SignalContent) (int64, int64, error) {
-	num, lastId, err := repo.mysql.Exec(_InsertSignalContent,
-		m.Uid, m.Seq, m.Type, m.Content, m.CreateTime, m.UpdateTime, m.UpdateTime)
-	return num, lastId, err
+	err := repo.db.Exec(_InsertSignalContent,
+		m.Uid, m.Seq, m.Type, m.Content, m.CreateTime, m.UpdateTime, m.UpdateTime).Error
+	return 0, 0, err
 }
 
 func (repo *StorageRepository) BatchAppendSignal(m []*model.SignalContent) (int64, int64, error) {
@@ -32,6 +32,6 @@ func (repo *StorageRepository) BatchAppendSignal(m []*model.SignalContent) (int6
 	//trim the last ,
 	condition = strings.TrimSuffix(condition, ",")
 	//prepare the statement and exec
-	num, lastId, err := repo.mysql.PrepareExec(fmt.Sprintf(_InsertSignalContentPrefix, condition), values...)
-	return num, lastId, err
+	err := repo.db.Exec(fmt.Sprintf(_InsertSignalContentPrefix, condition), values...).Error
+	return 0, 0, err
 }

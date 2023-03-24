@@ -71,15 +71,7 @@ var (
 )
 
 func TestStorageRepository_AppendPrivateMsg(t *testing.T) {
-	tx, err := repo.NewTx()
-	assert.Nil(t, err)
-	_, _, err = repo.AppendPrivateMsgContent(tx, privateRecord)
-	assert.Nil(t, err)
-	_, _, err = repo.AppendPrivateMsgRelation(tx, privateRelationA)
-	assert.Nil(t, err)
-	_, _, err = repo.AppendPrivateMsgRelation(tx, privateRelationB)
-	assert.Nil(t, err)
-	err = tx.Commit()
+	_, _, err := repo.AppendPrivateMsg(privateRecord, privateRelationA, privateRelationB)
 	assert.Nil(t, err)
 }
 
@@ -90,13 +82,7 @@ func TestStorageRepository_GetPrivateRecordByMid(t *testing.T) {
 }
 
 func TestStorageRepository_AppendGroupMsg(t *testing.T) {
-	tx, err := repo.NewTx()
-	assert.Nil(t, err)
-	_, _, err = repo.AppendGroupMsgContent(tx, groupRecord)
-	assert.Nil(t, err)
-	_, _, err = repo.AppendGroupMsgRelation(tx, groupRelation)
-	assert.Nil(t, err)
-	err = tx.Commit()
+	_, _, err := repo.AppendGroupMsg(groupRecord, groupRelation)
 	assert.Nil(t, err)
 }
 

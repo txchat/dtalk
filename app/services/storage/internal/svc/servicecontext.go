@@ -39,11 +39,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 }
 
 func (s *ServiceContext) StorePrivateMessage(msg *message.Message) error {
-	tx, err := s.Repo.NewTx()
-	if err != nil {
-		return err
-	}
-	_, _, err = s.Repo.AppendPrivateMsgContent(tx, &model.MsgContent{
+	_, _, err := s.Repo.AppendPrivateMsg(&model.MsgContent{
 		Mid:        msg.GetMid(),
 		Cid:        msg.GetCid(),
 		SenderId:   msg.GetFrom(),
@@ -53,39 +49,20 @@ func (s *ServiceContext) StorePrivateMessage(msg *message.Message) error {
 		CreateTime: msg.GetDatetime(),
 		Source:     string(recordutil.SourceJSONMarshal(msg)),
 		Reference:  string(recordutil.ReferenceJSONMarshal(msg)),
-	})
-	if err != nil {
-		tx.RollBack()
-		return err
-	}
-	_, _, err = s.Repo.AppendPrivateMsgRelation(tx, &model.MsgRelation{
+	}, &model.MsgRelation{
 		Mid:        msg.GetMid(),
 		OwnerUid:   msg.GetFrom(),
 		OtherUid:   msg.GetTarget(),
 		Type:       model.Send,
 		CreateTime: msg.GetDatetime(),
-	})
-	if err != nil {
-		tx.RollBack()
-		return err
-	}
-	_, _, err = s.Repo.AppendPrivateMsgRelation(tx, &model.MsgRelation{
+	}, &model.MsgRelation{
 		Mid:        msg.GetMid(),
 		OwnerUid:   msg.GetTarget(),
 		OtherUid:   msg.GetFrom(),
 		Type:       model.Rev,
 		CreateTime: msg.GetDatetime(),
 	})
-	if err != nil {
-		tx.RollBack()
-		return err
-	}
-	err = tx.Commit()
-	if err != nil {
-		tx.RollBack()
-		return err
-	}
-	return nil
+	return err
 }
 
 func (s *ServiceContext) StoreGroupMessage(members []string, msg *message.Message) error {
@@ -104,11 +81,7 @@ func (s *ServiceContext) StoreGroupMessage(members []string, msg *message.Messag
 			CreateTime: msg.GetDatetime(),
 		}
 	}
-	tx, err := s.Repo.NewTx()
-	if err != nil {
-		return err
-	}
-	_, _, err = s.Repo.AppendGroupMsgContent(tx, &model.MsgContent{
+	_, _, err := s.Repo.AppendGroupMsg(&model.MsgContent{
 		Mid:        msg.GetMid(),
 		Cid:        msg.GetCid(),
 		SenderId:   msg.GetFrom(),
@@ -118,22 +91,8 @@ func (s *ServiceContext) StoreGroupMessage(members []string, msg *message.Messag
 		CreateTime: msg.GetDatetime(),
 		Source:     string(recordutil.SourceJSONMarshal(msg)),
 		Reference:  string(recordutil.ReferenceJSONMarshal(msg)),
-	})
-	if err != nil {
-		tx.RollBack()
-		return err
-	}
-	_, _, err = s.Repo.AppendGroupMsgRelation(tx, msgRelate)
-	if err != nil {
-		tx.RollBack()
-		return err
-	}
-	err = tx.Commit()
-	if err != nil {
-		tx.RollBack()
-		return err
-	}
-	return nil
+	}, msgRelate)
+	return err
 }
 
 func (s *ServiceContext) StoreSignal(target string, seq int64, sig *signal.Signal) error {
