@@ -1,45 +1,45 @@
 package dao
 
 import (
-	"fmt"
 	"time"
 
-	xerror "github.com/txchat/dtalk/pkg/error"
-
-	"github.com/jinzhu/gorm"
+	"github.com/go-sql-driver/mysql"
 	"github.com/txchat/dtalk/app/services/backup/internal/model"
-	xmysql "github.com/txchat/dtalk/pkg/mysql"
+	xerror "github.com/txchat/dtalk/pkg/error"
 	"github.com/zeromicro/go-zero/core/service"
+	gorm_mysql "gorm.io/driver/mysql"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
-func NewDefaultConn(mode string, cfg xmysql.Config) *gorm.DB {
-	db, err := gorm.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		cfg.User,
-		cfg.Pwd,
-		cfg.Host,
-		cfg.Port,
-		cfg.DB))
+func NewDefaultConn(mode string, cfg mysql.Config) *gorm.DB {
+	if cfg.Params == nil {
+		cfg.Params = make(map[string]string)
+	}
+	cfg.Loc = time.Local
+	cfg.ParseTime = true
+	cfg.Params["charset"] = "UTF8MB4"
+	//cfg.Params["parseTime"] = "True"
+	//cfg.Params["loc"] = "Local"
+
+	defaultLogger := logger.Default
+	switch mode {
+	case service.TestMode, service.DevMode, service.RtMode:
+		defaultLogger.LogMode(logger.Info)
+	case service.ProMode, service.PreMode:
+		defaultLogger.LogMode(logger.Warn)
+	}
+
+	dsn := cfg.FormatDSN()
+	db, err := gorm.Open(gorm_mysql.Open(dsn), &gorm.Config{
+		PrepareStmt: true,
+		Logger:      defaultLogger,
+	})
 	if err != nil {
 		panic(err)
 	}
-	if mode != service.ProMode {
-		db.LogMode(true)
-	}
 
-	gorm.DefaultTableNameHandler = func(db *gorm.DB, defaultTableName string) string {
-		//return setting.DatabaseSetting.TablePrefix + defaultTableName
-		return defaultTableName
-	}
-
-	db.SingularTable(true)
-	//db.Callback().Create().Replace("gorm:update_time_stamp", updateTimeStampForCreateCallback)
-	//db.Callback().Update().Replace("gorm:update_time_stamp", updateTimeStampForUpdateCallback)
-	//db.Callback().Delete().Replace("gorm:delete", deleteCallback)
-	db.DB().SetMaxIdleConns(10)
-	db.DB().SetMaxOpenConns(100)
-
-	db.Set("gorm:table_options",
-		"ENGINE=InnoDB AUTO_INCREMENT=1 CHARACTER SET=utf8mb4 COLLATE=utf8mb4_general_ci").AutoMigrate(
+	db.Set("gorm:table_options", "ENGINE=InnoDB AUTO_INCREMENT=1 CHARACTER SET=utf8mb4 COLLATE=utf8mb4_general_ci").AutoMigrate(
 		&model.AddrBackup{}, &model.AddrRelate{},
 	)
 	return db
