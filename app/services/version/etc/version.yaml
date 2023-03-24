@@ -5,8 +5,8 @@ Etcd:
     - ${ETCD_HOST}:2379
   Key: version.rpc
 MySQL:
-  Host: "${MYSQL_HOST}"
-  Port: 3306
+  Net: "tcp"
+  Addr: "${MYSQL_HOST}:3306"
   User: "root"
-  Pwd: "${MYSQL_PASSWORD}"
-  DB: "dtalk"
+  Passwd: "${MYSQL_PASSWORD}"
+  DBName: "dtalk"
