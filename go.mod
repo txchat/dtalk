@@ -23,9 +23,10 @@ require (
 	github.com/huaweicloud/huaweicloud-sdk-go-obs v3.21.1+incompatible
 	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.0.35-rc
 	github.com/inconshreveable/log15 v2.16.0+incompatible
-	github.com/jinzhu/gorm v1.9.16
 	github.com/minio/minio-go/v7 v7.0.12
 	github.com/mitchellh/mapstructure v1.2.2
+	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826
+	github.com/montanaflynn/stats v0.6.6 // indirect
 	github.com/oofpgDLD/kafka-go v1.0.0
 	github.com/oofpgDLD/u-push v0.0.2
 	github.com/pkg/errors v0.9.1
@@ -37,9 +38,12 @@ require (
 	github.com/zeromicro/go-zero v1.4.3
 	go.etcd.io/etcd/api/v3 v3.5.5
 	go.etcd.io/etcd/client/v3 v3.5.5
-	golang.org/x/crypto v0.0.0-20220722155217-630584e8d5aa
+	go.mongodb.org/mongo-driver v1.11.1
+	golang.org/x/crypto v0.0.0-20221005025214-4161e89ecf1b
 	google.golang.org/grpc v1.50.1
 	google.golang.org/protobuf v1.28.1
+	gorm.io/driver/mysql v1.4.7
+	gorm.io/gorm v1.24.6
 )
 
 replace github.com/txchat/im => ../im

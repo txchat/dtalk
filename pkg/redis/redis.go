@@ -1,5 +1,3 @@
-// From https://gitlab.33.cn/proof/backend-micro/blob/dev/pkg/gredis/gredis.go
-
 package redis
 
 import (

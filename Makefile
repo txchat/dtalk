@@ -75,7 +75,7 @@ test-%:
     docker compose -f components.compose.yaml $*
 
 test:
-	./script/test/unitestenv/run.sh
+	./script/test/unitestenv/init.sh && ./script/test/unitestenv/run.sh
 
 clean:
 	rm -rf ${TARGETDIR}

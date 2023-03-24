@@ -4,12 +4,6 @@ work_dir=$(
     pwd
 )/../../../
 
-cp -R "${work_dir}/script/test/unitestenv/" "${work_dir}/test_uni/"
-cp -R "${work_dir}/script/mysql/." "${work_dir}/test_uni/"
-cp -R "${work_dir}/script/nginx/." "${work_dir}/test_uni/"
-
-chmod +x "${work_dir}/test_uni/wait-for-it.sh"
-
 if [ ! -d "${work_dir}/test_uni/" ]; then
     echo "runtime file not exists"
     exit 1
@@ -29,7 +23,7 @@ exportGOEnv() {
 }
 
 # shellcheck disable=SC1091
-source .env
+source "${work_dir}/test_uni/.env"
 
 exportComponentEnv() {
     export MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
