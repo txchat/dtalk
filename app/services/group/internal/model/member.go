@@ -10,18 +10,18 @@ const (
 )
 
 type GroupMemberMute struct {
-	GroupMemberMuteTime       int64 `json:"groupMemberMuteTime" form:"groupMemberMuteTime"`
-	GroupMemberMuteUpdateTime int64 `json:"groupMemberMuteUpdateTime" form:"groupMemberMuteUpdateTime"`
+	GroupMemberMuteTime       int64 `json:"groupMemberMuteTime" form:"groupMemberMuteTime" gorm:"group_member_mute_time;"`
+	GroupMemberMuteUpdateTime int64 `json:"groupMemberMuteUpdateTime" form:"groupMemberMuteUpdateTime" gorm:"group_member_mute_update_time;"`
 }
 
 type GroupMember struct {
-	GroupId         int64  `json:"groupId" form:"groupId"`
-	GroupMemberId   string `json:"groupMemberId" form:"groupMemberId"`
-	GroupMemberName string `json:"groupMemberName" form:"groupMemberName"`
+	GroupId         int64  `json:"groupId" form:"groupId" gorm:"group_id;"`
+	GroupMemberId   string `json:"groupMemberId" form:"groupMemberId"  gorm:"group_member_id;"`
+	GroupMemberName string `json:"groupMemberName" form:"groupMemberName"  gorm:"group_member_name;"`
 	// 用户角色，2=群主，1=管理员，0=群员，10=退群
-	GroupMemberType       int32 `json:"groupMemberType" form:"groupMemberType"`
-	GroupMemberJoinTime   int64 `json:"groupMemberJoinTime" form:"groupMemberJoinTime"`
-	GroupMemberUpdateTime int64 `json:"groupMemberUpdateTime" form:"groupMemberUpdateTime"`
+	GroupMemberType       int32 `json:"groupMemberType" form:"groupMemberType" gorm:"group_member_type;"`
+	GroupMemberJoinTime   int64 `json:"groupMemberJoinTime" form:"groupMemberJoinTime" gorm:"group_member_join_time;"`
+	GroupMemberUpdateTime int64 `json:"groupMemberUpdateTime" form:"groupMemberUpdateTime" gorm:"group_member_update_time;"`
 	GroupMemberMute
 }
 

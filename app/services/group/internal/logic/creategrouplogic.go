@@ -94,7 +94,7 @@ func (l *CreateGroupLogic) CreateGroup(in *group.CreateGroupReq) (*group.CreateG
 	if err != nil {
 		return nil, err
 	}
-	defer tx.RollBack()
+	defer tx.Rollback()
 
 	if _, _, err = l.svcCtx.Repo.InsertGroupInfo(tx, groupInfo); err != nil {
 		return nil, err

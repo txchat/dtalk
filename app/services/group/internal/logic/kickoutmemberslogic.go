@@ -37,7 +37,7 @@ func (l *KickOutMembersLogic) KickOutMembers(in *group.KickOutMembersReq) (*grou
 	if err != nil {
 		return nil, err
 	}
-	defer tx.RollBack()
+	defer tx.Rollback()
 
 	for _, mid := range in.GetMid() {
 		_, _, err = l.svcCtx.Repo.UpdateGroupMemberRole(tx, &model.GroupMember{

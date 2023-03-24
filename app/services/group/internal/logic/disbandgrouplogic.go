@@ -38,7 +38,7 @@ func (l *DisbandGroupLogic) DisbandGroup(in *group.DisbandGroupReq) (*group.Disb
 	if err != nil {
 		return nil, err
 	}
-	defer tx.RollBack()
+	defer tx.Rollback()
 
 	_, _, err = l.svcCtx.Repo.UpdateGroupStatus(tx, &model.GroupInfo{
 		GroupId:         gid,

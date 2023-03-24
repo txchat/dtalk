@@ -32,7 +32,7 @@ func (l *ChangeMemberRoleLogic) ChangeMemberRole(in *group.ChangeMemberRoleReq) 
 	if err != nil {
 		return nil, err
 	}
-	defer tx.RollBack()
+	defer tx.Rollback()
 
 	_, _, err = l.svcCtx.Repo.UpdateGroupMemberRole(tx, &model.GroupMember{
 		GroupId:               in.GetGid(),

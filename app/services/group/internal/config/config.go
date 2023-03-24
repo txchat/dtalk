@@ -1,13 +1,13 @@
 package config
 
 import (
-	xmysql "github.com/txchat/dtalk/pkg/mysql"
+	"github.com/go-sql-driver/mysql"
 	"github.com/zeromicro/go-zero/zrpc"
 )
 
 type Config struct {
 	zrpc.RpcServerConf
-	MySQL       xmysql.Config
+	MySQL       mysql.Config
 	IDGenRPC    zrpc.RpcClientConf
 	TransferRPC zrpc.RpcClientConf
 	LogicRPC    zrpc.RpcClientConf

@@ -16,7 +16,6 @@ import (
 	"github.com/txchat/dtalk/internal/signal"
 	txchatSignalApi "github.com/txchat/dtalk/internal/signal/txchat"
 	xerror "github.com/txchat/dtalk/pkg/error"
-	"github.com/txchat/dtalk/pkg/mysql"
 	"github.com/txchat/dtalk/pkg/util"
 	"github.com/txchat/im/app/logic/logicclient"
 	"github.com/zeromicro/go-zero/zrpc"
@@ -33,16 +32,11 @@ type ServiceContext struct {
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
-	conn, err := mysql.NewMysqlConn(c.MySQL.Host, fmt.Sprintf("%v", c.MySQL.Port),
-		c.MySQL.User, c.MySQL.Pwd, c.MySQL.DB, "UTF8MB4")
-	if err != nil {
-		panic(err)
-	}
 	transferClient := transferclient.NewTransfer(zrpc.MustNewClient(c.TransferRPC,
 		zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor), zrpc.WithNonBlock()))
 	return &ServiceContext{
 		Config:       c,
-		Repo:         dao.NewGroupRepositoryMysql(conn),
+		Repo:         dao.NewGroupRepositoryMysql(c.MySQL),
 		GroupManager: group.NewGroupManager(),
 		IDGenRPC: generatorclient.NewGenerator(zrpc.MustNewClient(c.IDGenRPC,
 			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor), zrpc.WithNonBlock())),

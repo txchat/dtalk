@@ -38,7 +38,7 @@ func (l *MemberExitLogic) MemberExit(in *group.MemberExitReq) (*group.MemberExit
 	if err != nil {
 		return nil, err
 	}
-	defer tx.RollBack()
+	defer tx.Rollback()
 
 	_, _, err = l.svcCtx.Repo.UpdateGroupMemberRole(tx, &model.GroupMember{
 		GroupId:               in.GetGid(),
