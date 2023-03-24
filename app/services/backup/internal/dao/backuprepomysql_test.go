@@ -20,7 +20,6 @@ var (
 
 func TestMain(m *testing.M) {
 	mysqlRootPassword = os.Getenv("MYSQL_ROOT_PASSWORD")
-	mysqlRootPassword = "123456"
 	conn := NewDefaultConn(service.TestMode, mysql.Config{
 		Net:    "tcp",
 		Addr:   "127.0.0.1:3306",
