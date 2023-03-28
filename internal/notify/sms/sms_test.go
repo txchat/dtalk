@@ -1,9 +1,10 @@
-package email
+package sms
 
 import (
 	"testing"
 
-	"github.com/txchat/dtalk/pkg/notify"
+	"github.com/txchat/dtalk/internal/notify"
+	"github.com/txchat/dtalk/internal/notify/phpserverclient"
 )
 
 /*
@@ -18,12 +19,12 @@ func Test_Send(t *testing.T) {
 	secretKey := "eQXXMphNFHQL4YeW"
 	msg := "FzmRandom5"
 
-	email := NewEmail(url, appkey, secretKey, msg)
+	sms := NewSMS(url, appkey, secretKey, msg)
 	params := map[string]string{
-		notify.ParamEmail:    "815904261@qq.com",
-		notify.ParamCodeType: "bind_policebook",
+		notify.Account:                "15763946517",
+		phpserverclient.ParamCodeType: "bind_policebook",
 	}
-	rlt, err := email.Send(params)
+	rlt, err := sms.Send(params)
 	if err != nil {
 		t.Error(err)
 		return
@@ -37,13 +38,13 @@ func Test_ValidateCode(t *testing.T) {
 	secretKey := "eQXXMphNFHQL4YeW"
 	msg := "FzmRandom5"
 
-	email := NewEmail(url, appkey, secretKey, msg)
+	sms := NewSMS(url, appkey, secretKey, msg)
 	params := map[string]string{
-		notify.ParamEmail:    "815904261@qq.com",
-		notify.ParamCode:     "17091",
-		notify.ParamCodeType: "bind_policebook",
+		notify.Account:                "15763946517",
+		notify.Code:                   "04037",
+		phpserverclient.ParamCodeType: "bind_policebook",
 	}
-	err := email.ValidateCode(params)
+	err := sms.ValidateCode(params)
 	if err != nil {
 		t.Error(err)
 		return

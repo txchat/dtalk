@@ -4,11 +4,12 @@ import (
 	"context"
 	"time"
 
-	xerror "github.com/txchat/dtalk/pkg/error"
-	"github.com/txchat/dtalk/pkg/notify"
+	"github.com/txchat/dtalk/internal/notify"
+	"github.com/txchat/dtalk/internal/notify/phpserverclient"
 
 	"github.com/txchat/dtalk/app/services/backup/backup"
 	"github.com/txchat/dtalk/app/services/backup/backupclient"
+	xerror "github.com/txchat/dtalk/pkg/error"
 	xhttp "github.com/txchat/dtalk/pkg/net/http"
 
 	"github.com/txchat/dtalk/app/gateway/center/internal/svc"
@@ -40,9 +41,9 @@ func NewPhoneBindingLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Phon
 func (l *PhoneBindingLogic) PhoneBinding(req *types.PhoneBindingReq) (resp *types.PhoneBindingResp, err error) {
 	// 通过短信服务验证
 	params := map[string]string{
-		notify.ParamMobile:   req.Phone,
-		notify.ParamCode:     req.Code,
-		notify.ParamCodeType: l.svcCtx.Config.SMS.CodeTypes[notify.Bind],
+		notify.Account:                req.Phone,
+		notify.Code:                   req.Code,
+		phpserverclient.ParamCodeType: l.svcCtx.Config.SMS.CodeTypes[phpserverclient.Bind],
 	}
 	err = l.svcCtx.SmsValidate.ValidateCode(params)
 	if err != nil {

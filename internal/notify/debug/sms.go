@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/txchat/dtalk/pkg/notify"
+	"github.com/txchat/dtalk/internal/notify"
 )
 
 type Validate struct {
@@ -46,7 +46,7 @@ func (v *Validate) Send(params map[string]string) (interface{}, error) {
 }
 
 func (v *Validate) ValidateCode(param map[string]string) error {
-	code := param[notify.ParamCode]
+	code := param[notify.Code]
 	if v.mockCode == code {
 		return nil
 	}

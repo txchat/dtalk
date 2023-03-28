@@ -4,8 +4,9 @@ import (
 	"bytes"
 	"testing"
 
+	"github.com/txchat/dtalk/internal/notify"
+
 	"github.com/stretchr/testify/assert"
-	"github.com/txchat/dtalk/pkg/notify"
 	"github.com/zeromicro/go-zero/core/conf"
 )
 

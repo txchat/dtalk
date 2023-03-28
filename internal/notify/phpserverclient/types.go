@@ -1,4 +1,4 @@
-package model
+package phpserverclient
 
 type SendResult struct {
 	IsShow     int

@@ -3,7 +3,8 @@ package backup
 import (
 	"context"
 
-	"github.com/txchat/dtalk/pkg/notify"
+	"github.com/txchat/dtalk/internal/notify"
+	"github.com/txchat/dtalk/internal/notify/phpserverclient"
 
 	xerror "github.com/txchat/dtalk/pkg/error"
 
@@ -33,9 +34,9 @@ func NewEmailRetrieveLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Ema
 func (l *EmailRetrieveLogic) EmailRetrieve(req *types.EmailRetrieveReq) (resp *types.EmailRetrieveResp, err error) {
 	// 通过邮箱验证
 	params := map[string]string{
-		notify.ParamEmail:    req.Email,
-		notify.ParamCode:     req.Code,
-		notify.ParamCodeType: l.svcCtx.Config.Email.CodeTypes[notify.Bind],
+		notify.Account:                req.Email,
+		notify.Code:                   req.Code,
+		phpserverclient.ParamCodeType: l.svcCtx.Config.Email.CodeTypes[phpserverclient.Bind],
 	}
 	err = l.svcCtx.EmailValidate.ValidateCode(params)
 	if err != nil {

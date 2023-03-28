@@ -4,11 +4,12 @@ import (
 	"context"
 	"time"
 
-	xerror "github.com/txchat/dtalk/pkg/error"
-	"github.com/txchat/dtalk/pkg/notify"
+	"github.com/txchat/dtalk/internal/notify"
+	"github.com/txchat/dtalk/internal/notify/phpserverclient"
 
 	"github.com/txchat/dtalk/app/services/backup/backup"
 	"github.com/txchat/dtalk/app/services/backup/backupclient"
+	xerror "github.com/txchat/dtalk/pkg/error"
 	xhttp "github.com/txchat/dtalk/pkg/net/http"
 
 	"github.com/txchat/dtalk/app/gateway/center/internal/svc"
@@ -40,9 +41,9 @@ func NewEmailBindingLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Emai
 func (l *EmailBindingLogic) EmailBinding(req *types.EmailBindingReq) (resp *types.EmailBindingResp, err error) {
 	// 通过邮箱验证
 	params := map[string]string{
-		notify.ParamEmail:    req.Email,
-		notify.ParamCode:     req.Code,
-		notify.ParamCodeType: l.svcCtx.Config.Email.CodeTypes[notify.Bind],
+		notify.Account:                req.Email,
+		notify.Code:                   req.Code,
+		phpserverclient.ParamCodeType: l.svcCtx.Config.Email.CodeTypes[phpserverclient.Bind],
 	}
 	err = l.svcCtx.EmailValidate.ValidateCode(params)
 	if err != nil {

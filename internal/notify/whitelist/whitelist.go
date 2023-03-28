@@ -3,7 +3,7 @@ package whitelist
 import (
 	"errors"
 
-	"github.com/txchat/dtalk/pkg/notify"
+	"github.com/txchat/dtalk/internal/notify"
 )
 
 type Validate struct {
@@ -32,13 +32,8 @@ func (v *Validate) Send(params map[string]string) (interface{}, error) {
 }
 
 func (v *Validate) ValidateCode(param map[string]string) error {
-	code := param[notify.ParamCode]
-	phone := param[notify.ParamMobile]
-	email := param[notify.ParamEmail]
-	acc := phone
-	if phone == "" {
-		acc = email
-	}
+	code := param[notify.Code]
+	acc := param[notify.Account]
 	if c, ok := v.whitelist[acc]; ok && c == code {
 		return nil
 	}
