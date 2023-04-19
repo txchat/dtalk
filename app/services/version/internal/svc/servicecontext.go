@@ -13,6 +13,6 @@ type ServiceContext struct {
 func NewServiceContext(c config.Config) *ServiceContext {
 	return &ServiceContext{
 		Config: c,
-		Repo:   dao.NewVersionRepositoryMysql(c.MySQL),
+		Repo:   dao.NewVersionRepositoryMysql(c.Mode, c.MySQL),
 	}
 }

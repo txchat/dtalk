@@ -26,8 +26,7 @@ require (
 	github.com/minio/minio-go/v7 v7.0.12
 	github.com/mitchellh/mapstructure v1.2.2
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826
-	github.com/montanaflynn/stats v0.6.6 // indirect
-	github.com/oofpgDLD/kafka-go v1.0.0
+	github.com/oofpgDLD/kafka-go v1.1.0
 	github.com/oofpgDLD/u-push v0.0.2
 	github.com/pkg/errors v0.9.1
 	github.com/rs/zerolog v1.28.0
@@ -38,7 +37,6 @@ require (
 	github.com/zeromicro/go-zero v1.4.3
 	go.etcd.io/etcd/api/v3 v3.5.5
 	go.etcd.io/etcd/client/v3 v3.5.5
-	go.mongodb.org/mongo-driver v1.11.1
 	golang.org/x/crypto v0.0.0-20221005025214-4161e89ecf1b
 	google.golang.org/grpc v1.50.1
 	google.golang.org/protobuf v1.28.1

@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/txchat/dtalk/app/services/pusher/internal/config"
 	"github.com/txchat/dtalk/app/services/pusher/internal/server"
@@ -48,7 +49,10 @@ func main() {
 
 	mqSvc := mq.NewService(c, ctx)
 	mqSvc.Serve()
-	defer mqSvc.Shutdown(context.Background())
+	defer func() {
+		ctx, _ := context.WithTimeout(context.Background(), time.Second*10)
+		mqSvc.Shutdown(ctx)
+	}()
 
 	s := zrpc.MustNewServer(c.RpcServerConf, func(grpcServer *grpc.Server) {
 		pusher.RegisterPusherServer(grpcServer, server.NewPusherServer(ctx))

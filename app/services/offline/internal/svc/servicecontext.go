@@ -2,6 +2,7 @@ package svc
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"github.com/txchat/dtalk/api/proto/auth"
@@ -44,16 +45,16 @@ func (s *ServiceContext) loadPushers() {
 		panic(err)
 	}
 	s.pushers[auth.Device_Android] = androidCreator(pusher.Config{
-		AppKey:          s.Config.Pushers[android.Name].AppKey,
-		AppMasterSecret: s.Config.Pushers[android.Name].AppMasterSecret,
-		MiActivity:      s.Config.Pushers[android.Name].MiActivity,
-		Environment:     s.Config.Pushers[android.Name].Env,
+		AppKey:          s.Config.Pushers[strings.ToLower(android.Name)].AppKey,
+		AppMasterSecret: s.Config.Pushers[strings.ToLower(android.Name)].AppMasterSecret,
+		MiActivity:      s.Config.Pushers[strings.ToLower(android.Name)].MiActivity,
+		Environment:     s.Config.Pushers[strings.ToLower(android.Name)].Env,
 	})
 	s.pushers[auth.Device_IOS] = iOSCreator(pusher.Config{
-		AppKey:          s.Config.Pushers[ios.Name].AppKey,
-		AppMasterSecret: s.Config.Pushers[ios.Name].AppMasterSecret,
-		MiActivity:      s.Config.Pushers[ios.Name].MiActivity,
-		Environment:     s.Config.Pushers[ios.Name].Env,
+		AppKey:          s.Config.Pushers[strings.ToLower(ios.Name)].AppKey,
+		AppMasterSecret: s.Config.Pushers[strings.ToLower(ios.Name)].AppMasterSecret,
+		MiActivity:      s.Config.Pushers[strings.ToLower(ios.Name)].MiActivity,
+		Environment:     s.Config.Pushers[strings.ToLower(ios.Name)].Env,
 	})
 }
 
@@ -129,7 +130,7 @@ func (s *ServiceContext) pushAllDevice(ctx context.Context, mid string, msg *off
 				log.Errorf("pusher exec %s not find", auth.Device(dev.DeviceType).String())
 				continue
 			}
-			deadline := util.UnixToTime(msg.GetDatetime()).Add(s.Config.Timeout)
+			deadline := util.UnixToTime(msg.GetDatetime()).Add(s.Config.HandleTimeout)
 			if time.Now().After(deadline) {
 				continue
 			}

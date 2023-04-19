@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/oofpgDLD/kafka-go/trace"
+
 	"github.com/golang/protobuf/proto"
 	xkafka "github.com/oofpgDLD/kafka-go"
 	"github.com/txchat/dtalk/api/proto/chat"
@@ -36,21 +38,21 @@ func NewServiceContext(c config.Config) *ServiceContext {
 			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor), zrpc.WithNonBlock())),
 		LogicRPC: logicclient.NewLogic(zrpc.MustNewClient(c.LogicRPC,
 			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor), zrpc.WithNonBlock())),
-		Producer: xkafka.NewProducer(c.Producer),
+		Producer: xkafka.NewProducer(c.Producer, xkafka.WithProducerInterceptors(trace.ProducerInterceptor)),
 	}
 }
 
 func (s *ServiceContext) PublishThirdPartyPushMQ(ctx context.Context, from string, targets []string, body []byte) error {
-	var chatProto *chat.Chat
-	err := proto.Unmarshal(body, chatProto)
+	var chatProto chat.Chat
+	err := proto.Unmarshal(body, &chatProto)
 	if err != nil {
 		return err
 	}
 	if chatProto.GetType() != chat.Chat_message {
 		return nil
 	}
-	var msg *message.Message
-	err = proto.Unmarshal(chatProto.GetBody(), msg)
+	var msg message.Message
+	err = proto.Unmarshal(chatProto.GetBody(), &msg)
 	if err != nil {
 		return err
 	}
@@ -60,12 +62,12 @@ func (s *ServiceContext) PublishThirdPartyPushMQ(ctx context.Context, from strin
 		Session:     msg.GetTarget(),
 		From:        from,
 		Target:      targets,
-		Content:     recordutil.MessageAlterContent(msg),
+		Content:     recordutil.MessageAlterContent(&msg),
 		Datetime:    util.TimeNowUnixMilli(),
 	})
 	if err != nil {
 		return err
 	}
-	_, _, err = s.Producer.Publish(fmt.Sprintf("biz-%s-offlinepush", s.Config.AppID), from, v)
+	_, _, err = s.Producer.Publish(ctx, fmt.Sprintf("biz-%s-offlinepush", s.Config.AppID), from, v)
 	return err
 }

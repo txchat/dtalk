@@ -1,7 +1,12 @@
 version: "2.4"
 services:
   redis:
-    image: redis:${REDIS_VERSION}
+    image: custom-redis:${REDIS_VERSION}
+    build:
+      context: .
+      dockerfile: redis.Dockerfile
+      args:
+        version: ${REDIS_VERSION}
     container_name: ${REDIS_CONTAINER_NAME}
     restart: unless-stopped
     networks:
@@ -12,7 +17,7 @@ services:
       - redis_log:/logs
     ports:
       - ${REDIS_PUB_PORT}:6379
-    command: [ "redis-server"]
+    command: [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
   etcd:
     image: quay.io/coreos/etcd:${ETCD_VERSION}
     container_name: ${ETCD_CONTAINER_NAME}
@@ -191,6 +196,16 @@ services:
       ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
     networks:
       - components
+  prometheus:
+    image: prom/prometheus:${PROMETHEUS_VERSION}
+    container_name: ${PROMETHEUS_CONTAINER_NAME}
+    restart: unless-stopped
+    networks:
+      - components
+    volumes:
+      - prometheus_conf:/etc/prometheus
+    ports:
+      - ${PROMETHEUS_PUB_PORT}:9090
 
 volumes:
   redis_data:
@@ -237,6 +252,9 @@ volumes:
     external: false
   mongo_conf:
     name: ${MONGO_CONFIG_VOLUME}
+    external: false
+  prometheus_conf:
+    name: ${PROMETHEUS_CONFIG_VOLUME}
     external: false
 networks:
   components:

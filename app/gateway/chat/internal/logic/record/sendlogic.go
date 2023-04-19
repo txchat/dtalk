@@ -2,8 +2,6 @@ package record
 
 import (
 	"context"
-	"io/ioutil"
-	"mime/multipart"
 
 	"github.com/golang/protobuf/proto"
 	"github.com/txchat/dtalk/api/proto/message"
@@ -43,21 +41,10 @@ func NewSendLogic(ctx context.Context, svcCtx *svc.ServiceContext) *SendLogic {
 	}
 }
 
-func (l *SendLogic) Send(req *types.SendReq, fh *multipart.FileHeader) (resp *types.SendResp, err error) {
+func (l *SendLogic) Send(req *types.SendReq, body []byte) (resp *types.SendResp, err error) {
 	// todo: add your logic here and delete this line
 	uid := l.custom.UID
-	f, err := fh.Open()
-	if err != nil {
-		l.Errorf("UploadFile fh.Open err, err: %v", err)
-		return nil, err
-	}
-	defer f.Close()
 
-	body, err := ioutil.ReadAll(f)
-	if err != nil {
-		err = xerror.ErrSendMsgFailed
-		return
-	}
 	if len(body) == 0 {
 		err = xerror.ErrSendMsgFailed
 		return
@@ -85,15 +72,15 @@ func (l *SendLogic) Send(req *types.SendReq, fh *multipart.FileHeader) (resp *ty
 		return
 	}
 
-	var msg *message.Message
-	err = proto.Unmarshal(body, msg)
+	var msg message.Message
+	err = proto.Unmarshal(body, &msg)
 	if err != nil {
 		return
 	}
 	msg.From = uid
 	msg.Mid = result.GetMid()
 	msg.Datetime = result.GetDatetime()
-	msgData, err := proto.Marshal(msg)
+	msgData, err := proto.Marshal(&msg)
 	if err != nil {
 		return
 	}

@@ -5,10 +5,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/go-sql-driver/mysql"
 	"github.com/mohae/deepcopy"
 	"github.com/stretchr/testify/assert"
 	"github.com/txchat/dtalk/app/services/backup/internal/model"
+	xmysql "github.com/txchat/dtalk/pkg/mysql"
 	"github.com/zeromicro/go-zero/core/service"
 	"gorm.io/gorm/utils"
 )
@@ -20,7 +20,7 @@ var (
 
 func TestMain(m *testing.M) {
 	mysqlRootPassword = os.Getenv("MYSQL_ROOT_PASSWORD")
-	conn := NewDefaultConn(service.TestMode, mysql.Config{
+	conn := NewDefaultConn(service.TestMode, xmysql.Config{
 		Net:    "tcp",
 		Addr:   "127.0.0.1:3306",
 		User:   "root",

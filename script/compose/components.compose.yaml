@@ -1,5 +1,105 @@
 version: "2.4"
 services:
+  zookeeper:
+    image: wurstmeister/zookeeper
+    container_name: ${ZOOKEEPER_CONTAINER_NAME}
+    restart: unless-stopped
+    volumes:
+      - zookeeper_data:/data
+    networks:
+      - components
+    ports:
+      - "2181:2181"
+    # kafka version: 1.1.0
+    # scala version: 2.12
+  kafka:
+    image: wurstmeister/kafka
+    container_name: ${KAFKA_CONTAINER_NAME}
+    restart: unless-stopped
+    ports:
+      - "9092:9092"
+      - "9094:9094"
+    # kafka connectivity: https://github.com/wurstmeister/kafka-docker/wiki/Connectivity#internal-versus-advertised
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: INSIDE://${KAFKA_CONTAINER_NAME}:9092,OUTSIDE://${HOST_ETH0_NAME}:9094
+      KAFKA_LISTENERS: INSIDE://:9092,OUTSIDE://:9094
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+      #KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      #KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://${HOST_ETH0_NAME}:9092
+      KAFKA_ZOOKEEPER_CONNECT: "${ZOOKEEPER_CONTAINER_NAME}:2181"
+      KAFKA_BROKER_ID: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CREATE_TOPICS: "stream-in:1:1,stream-out:1:1"
+    volumes:
+      - kafka_data:/kafka
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - components
+    depends_on:
+      - zookeeper
+    healthcheck:
+      test: [ "CMD", "kafka-topics.sh", "--list", "--zookeeper", "txchat-zookeeper:2181" ]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+  kafka-manager:
+    container_name: ${KAFKA_MANAGER_CONTAINER_NAME}
+    image: sheepkiller/kafka-manager
+    environment:
+      ZK_HOSTS: ${ZOOKEEPER_CONTAINER_NAME}:2181
+    networks:
+      - components
+    ports:
+      - "9020:9000"
+    depends_on:
+      zookeeper:
+        condition: service_started
+      kafka: # this feature is removed at compose version 3.x
+        condition: service_healthy
+  redis:
+    image: custom-redis:${REDIS_VERSION}
+    build:
+      context: .
+      dockerfile: redis.Dockerfile
+      args:
+        version: ${REDIS_VERSION}
+    container_name: ${REDIS_CONTAINER_NAME}
+    restart: unless-stopped
+    networks:
+      - components
+    volumes:
+      - redis_data:/data
+      - redis_config:/usr/local/etc/redis
+      - redis_log:/logs
+    ports:
+      - ${REDIS_PUB_PORT}:6379
+    command: [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
+  etcd:
+    image: quay.io/coreos/etcd:${ETCD_VERSION}
+    container_name: ${ETCD_CONTAINER_NAME}
+    restart: unless-stopped
+    networks:
+      - components
+    ports:
+      - ${ETCD_PUB_CLIENT_PORT}:2379
+      - ${ETCD_PUB_PEER_PORT}:2380
+    volumes:
+      - etcd_data:/etcd-data
+    command:
+      - /usr/local/bin/etcd
+      - --name=${ETCD_NAME}
+      - --data-dir=/etcd_data
+      - --listen-client-urls=http://0.0.0.0:2379
+      - --advertise-client-urls=http://${ETCD_CONTAINER_NAME}:${ETCD_PUB_CLIENT_PORT}
+      - --listen-peer-urls=http://0.0.0.0:2380
+      - --initial-advertise-peer-urls=http://${ETCD_CONTAINER_NAME}:${ETCD_PUB_PEER_PORT}
+      - --initial-cluster=${ETCD_NAME}=http://${ETCD_CONTAINER_NAME}:${ETCD_PUB_PEER_PORT}
+      - --initial-cluster-token=${ETCD_TOKEN}
+      - --initial-cluster-state=new
+      - --log-level=info
+      - --logger=zap
+      - --log-outputs=stderr
   mysql:
     image: mysql:${MYSQL_VERSION}
     container_name: ${MYSQL_CONTAINER_NAME}
@@ -7,12 +107,12 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - ${MYSQL_DATA_VOLUME}:/var/lib/mysql
-#      - ${MYSQL_CONFIG_VOLUME}:/etc/mysql/my.cnf
-      - ${MYSQL_LOG_VOLUME}:/logs
-      - ${MYSQL_INIT_VOLUME}:/docker-entrypoint-initdb.d
+      - mysql_data:/var/lib/mysql
+#      - mysql_config:/etc/mysql/my.cnf
+      - mysql_log:/logs
+      - mysql_init:/docker-entrypoint-initdb.d
     networks:
-      - txchat-components
+      - components
     environment:
       TZ: Asia/Shanghai
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
@@ -29,9 +129,9 @@ services:
       - "9000:9000"
       - "9001:9001"
     volumes:
-      - ${MINIO_DATA_VOLUME}:/data
+      - minio_data:/data
     networks:
-      - txchat-components
+      - components
     command: server --console-address ":9001" /data
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
@@ -51,10 +151,10 @@ services:
         version: ${NGINX_VERSION}
     container_name: ${NGINX_CONTAINER_NAME}
     volumes:
-      - ${NGINX_CONFIG_VOLUME}:/etc/nginx/conf.d:ro
-      - ${NGINX_LOG_VOLUME}:/var/log/nginx/
+      - nginx_config:/etc/nginx/conf.d:ro
+      - nginx_log:/var/log/nginx/
     networks:
-      - txchat-components
+      - components
     ports:
       - "80"
       - "8888:8888"
@@ -62,22 +162,130 @@ services:
     depends_on:
       - center
       - chat
+      - comet
+      - logic
+  prometheus:
+    image: custom-prom/prometheus:${PROMETHEUS_VERSION}
+    build:
+      context: .
+      dockerfile: prometheus.Dockerfile
+      args:
+        version: ${PROMETHEUS_VERSION}
+    container_name: ${PROMETHEUS_CONTAINER_NAME}
+    restart: unless-stopped
+    networks:
+      - components
+    volumes:
+      - prometheus_config:/etc/prometheus/
+    ports:
+      - ${PROMETHEUS_PUB_PORT}:9090
+  grafana:
+    image: custom-grafana/grafana:${GRAFANA_VERSION}
+    build:
+      context: .
+      dockerfile: grafana.Dockerfile
+      args:
+        version: ${GRAFANA_VERSION}
+    container_name: ${GRAFANA_CONTAINER_NAME}
+    restart: unless-stopped
+    networks:
+      - components
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - grafana_provisioning:/etc/grafana/provisioning/
+    ports:
+      - ${GRAFANA_PUB_PORT}:3000
+    depends_on:
+      - prometheus
+    env_file:
+      - ./grafana.env
+  jaeger-collector:
+    image: jaegertracing/jaeger-collector:${JAEGER_COLLECTOR_VERSION}
+    container_name: ${JAEGER_COLLECTOR_CONTAINER_NAME}
+    restart: unless-stopped
+    networks:
+      - components
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+      - SPAN_STORAGE_TYPE=grpc-plugin
+      - GRPC_STORAGE_SERVER=${JAEGER_STORAGE_CONTAINER_NAME}:17271
+    depends_on:
+      - jaeger-storage
+  jaeger-query:
+    image: jaegertracing/jaeger-query:${JAEGER_QUERY_VERSION}
+    container_name: ${JAEGER_QUERY_CONTAINER_NAME}
+    restart: unless-stopped
+    networks:
+      - components
+    ports:
+      - "16685:16685"
+      - "16686:16686"
+      - "16687:16687"
+    environment:
+      - SPAN_STORAGE_TYPE=grpc-plugin
+      - GRPC_STORAGE_SERVER=${JAEGER_STORAGE_CONTAINER_NAME}:17271
+    depends_on:
+      - jaeger-storage
+  jaeger-storage:
+    image: jaegertracing/jaeger-remote-storage:${JAEGER_STORAGE_VERSION}
+    container_name: ${JAEGER_STORAGE_CONTAINER_NAME}
+    restart: unless-stopped
+    networks:
+      - components
+    ports:
+      - "17271:17271"
+      - "17270:17270"
 
 volumes:
-  txchat-mysql-data:
+  zookeeper_data:
+    name: ${ZOOKEEPER_DATA_VOLUME}
     external: true
-  txchat-mysql-config:
+  kafka_data:
+    name: ${KAFKA_DATA_VOLUME}
     external: true
-  txchat-mysql-log:
+  redis_data:
+    name: ${REDIS_DATA_VOLUME}
     external: true
-  txchat-mysql-init:
+  redis_config:
+    name: ${REDIS_CONFIG_VOLUME}
     external: true
-  txchat-minio-data:
+  redis_log:
+    name: ${REDIS_LOG_VOLUME}
     external: true
-  txchat-nginx-config:
+  etcd_data:
+    name: ${ETCD_DATA_VOLUME}
     external: true
-  txchat-nginx-log:
+  mysql_data:
+    name: ${MYSQL_DATA_VOLUME}
+    external: true
+  mysql_config:
+    name: ${MYSQL_CONFIG_VOLUME}
+    external: true
+  mysql_log:
+    name: ${MYSQL_LOG_VOLUME}
+    external: true
+  mysql_init:
+    name: ${MYSQL_INIT_VOLUME}
+    external: true
+  minio_data:
+    name: ${MINIO_DATA_VOLUME}
+    external: true
+  nginx_config:
+    name: ${NGINX_CONFIG_VOLUME}
+    external: true
+  nginx_log:
+    name: ${NGINX_LOG_VOLUME}
+    external: true
+  prometheus_config:
+    name: ${PROMETHEUS_CONFIG_VOLUME}
+    external: true
+  grafana_data:
+    name: ${GRAFANA_DATA_VOLUME}
+    external: true
+  grafana_provisioning:
+    name: ${GRAFANA_PROVISIONING_VOLUME}
     external: true
 networks:
-  txchat-components:
+  components:
+    name: txchat-components
     external: true

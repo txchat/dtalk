@@ -6,6 +6,7 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	xkafka "github.com/oofpgDLD/kafka-go"
+	"github.com/oofpgDLD/kafka-go/trace"
 	"github.com/txchat/dtalk/api/proto/message"
 	"github.com/txchat/dtalk/app/services/pusher/internal/config"
 	innerLogic "github.com/txchat/dtalk/app/services/pusher/internal/logic"
@@ -35,7 +36,7 @@ func NewService(cfg config.Config, svcCtx *svc.ServiceContext) *Service {
 	//new batch consumer
 	consumer := xkafka.NewConsumer(cfg.PushDealConsumerConfig, nil)
 	logx.Info("dial kafka broker success")
-	bc := xkafka.NewBatchConsumer(cfg.PushDealBatchConsumerConf, xkafka.WithHandle(s.handleFunc), consumer)
+	bc := xkafka.NewBatchConsumer(cfg.PushDealBatchConsumerConf, consumer, xkafka.WithHandle(s.handleFunc), xkafka.WithBatchConsumerInterceptors(trace.ConsumeInterceptor))
 	s.batchConsumer = bc
 	return s
 }
@@ -48,17 +49,16 @@ func (s *Service) Shutdown(ctx context.Context) {
 	s.batchConsumer.GracefulStop(ctx)
 }
 
-func (s *Service) handleFunc(key string, data []byte) error {
-	ctx := context.Background()
-	msg := new(record.PushMsgMQ)
-	if err := proto.Unmarshal(data, msg); err != nil {
+func (s *Service) handleFunc(ctx context.Context, key string, data []byte) error {
+	var msg record.PushMsgMQ
+	if err := proto.Unmarshal(data, &msg); err != nil {
 		s.Error("logic.BizMsg proto.Unmarshal error", "err", err)
 		return err
 	}
 	if msg.AppId != s.Config.AppID {
 		return model.ErrAppID
 	}
-	if err := s.consumerOnePush(ctx, msg); err != nil {
+	if err := s.consumerOnePush(ctx, &msg); err != nil {
 		//TODO redo consume message
 		return err
 	}

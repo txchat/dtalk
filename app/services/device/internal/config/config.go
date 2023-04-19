@@ -8,11 +8,11 @@ import (
 
 type Config struct {
 	zrpc.RpcServerConf
-	RedisDB                   xredis.Config
-	AppID                     string
-	GroupRPC                  zrpc.RpcClientConf
-	LogicRPC                  zrpc.RpcClientConf
-	PusherRPC                 zrpc.RpcClientConf
-	ConnDealConsumerConfig    xkafka.ConsumerConfig
-	ConnDealBatchConsumerConf xkafka.BatchConsumerConf
+	RedisDB           xredis.Config
+	AppID             string
+	GroupRPC          zrpc.RpcClientConf
+	LogicRPC          zrpc.RpcClientConf
+	PusherRPC         zrpc.RpcClientConf
+	ConsumerConfig    xkafka.ConsumerConfig
+	BatchConsumerConf xkafka.BatchConsumerConf
 }

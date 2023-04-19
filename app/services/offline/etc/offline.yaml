@@ -1,6 +1,16 @@
 Name: offline.rpc
 ListenOn: 0.0.0.0:8080
 AppID: "dtalk"
+HandleTimeout: "10m"
+Prometheus:
+  Host: 0.0.0.0
+  Port: 9091
+  Path: /metrics
+Telemetry:
+  Name: ${SERVER_NAME}
+  Endpoint: http://${TELEMETRY_HOST}:14268/api/traces
+  Sampler: 1.0
+  Batcher: jaeger
 Etcd:
   Hosts:
   - ${ETCD_HOST}:2379
@@ -15,12 +25,12 @@ DealBatchConsumerConf:
   Consumers: 0
   Processors: 0
 Pushers: # 友盟离线推送物料
-  Android:
+  android:
     Env: "debug"
     AppKey: ""
     AppMasterSecret: ""
     MiActivity: ""
-  iOS:
+  ios:
     Env: "debug"
     AppKey: ""
     AppMasterSecret: ""

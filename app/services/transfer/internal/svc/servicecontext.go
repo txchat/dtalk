@@ -4,45 +4,53 @@ import (
 	"context"
 	"fmt"
 
-	checker "github.com/txchat/dtalk/internal/recordutil/dtalk"
-
-	"github.com/txchat/dtalk/internal/proto/record"
+	"github.com/oofpgDLD/kafka-go/trace"
 
 	"github.com/golang/protobuf/proto"
 	xkafka "github.com/oofpgDLD/kafka-go"
 	"github.com/txchat/dtalk/api/proto/chat"
 	"github.com/txchat/dtalk/api/proto/message"
-	"github.com/txchat/dtalk/app/services/device/deviceclient"
-	"github.com/txchat/dtalk/app/services/generator/generatorclient"
 	"github.com/txchat/dtalk/app/services/group/groupclient"
 	"github.com/txchat/dtalk/app/services/pusher/pusherclient"
 	"github.com/txchat/dtalk/app/services/transfer/internal/config"
 	"github.com/txchat/dtalk/app/services/transfer/internal/dao"
+	"github.com/txchat/dtalk/internal/proto/record"
+	checker "github.com/txchat/dtalk/internal/recordutil/dtalk"
+	xerror "github.com/txchat/dtalk/pkg/error"
 	"github.com/txchat/dtalk/pkg/util"
+	"github.com/zeromicro/go-zero/zrpc"
 )
 
 type ServiceContext struct {
 	Config config.Config
 
 	Repo         dao.Repository
-	DeviceClient deviceclient.Device
+	IDGenerator  *util.Snowflake
 	PusherClient pusherclient.Pusher
 	GroupClient  groupclient.Group
-	IDGenClient  generatorclient.Generator
 	Producer     *xkafka.Producer
 	Filters      map[message.Channel]checker.Filter
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
+	g, err := util.NewSnowflake(c.Node)
+	if err != nil {
+		panic(err)
+	}
+	groupRPCClient := groupclient.NewGroup(zrpc.MustNewClient(c.GroupRPC,
+		zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor), zrpc.WithNonBlock()))
 	return &ServiceContext{
-		Config:       c,
-		Repo:         nil,
-		DeviceClient: nil,
-		PusherClient: nil,
-		GroupClient:  nil,
-		IDGenClient:  nil,
-		Producer:     xkafka.NewProducer(c.Producer),
-		Filters:      nil,
+		Config:      c,
+		IDGenerator: g,
+		Repo:        dao.NewTransferRepository(c.RedisDB),
+		PusherClient: pusherclient.NewPusher(zrpc.MustNewClient(c.PusherRPC,
+			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor), zrpc.WithNonBlock())),
+		GroupClient: groupRPCClient,
+		Producer:    xkafka.NewProducer(c.Producer, xkafka.WithProducerInterceptors(trace.ProducerInterceptor)),
+		Filters: map[message.Channel]checker.Filter{
+			message.Channel_Private: checker.NewPrivateFilter(),
+			message.Channel_Group:   checker.NewGroupFilter(groupRPCClient),
+		},
 	}
 }
 
@@ -56,7 +64,7 @@ func (s *ServiceContext) saveMessageToStorage(ctx context.Context, from string, 
 	if err != nil {
 		return err
 	}
-	_, _, err = s.Producer.Publish(fmt.Sprintf("biz-%s-store", s.Config.AppID), from, v)
+	_, _, err = s.Producer.Publish(ctx, fmt.Sprintf("biz-%s-store", s.Config.AppID), from, v)
 	return err
 }
 
@@ -71,7 +79,7 @@ func (s *ServiceContext) asyncPushMessage(ctx context.Context, channel message.C
 	if err != nil {
 		return err
 	}
-	_, _, err = s.Producer.Publish(fmt.Sprintf("biz-%s-push", s.Config.AppID), from, v)
+	_, _, err = s.Producer.Publish(ctx, fmt.Sprintf("biz-%s-push", s.Config.AppID), from, v)
 	return err
 }
 

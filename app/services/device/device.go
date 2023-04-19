@@ -1,15 +1,17 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/txchat/dtalk/app/services/device/device"
 	"github.com/txchat/dtalk/app/services/device/internal/config"
 	"github.com/txchat/dtalk/app/services/device/internal/server"
 	"github.com/txchat/dtalk/app/services/device/internal/svc"
-
+	"github.com/txchat/dtalk/app/services/device/rmq/mq"
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/core/service"
 	"github.com/zeromicro/go-zero/zrpc"
@@ -43,6 +45,13 @@ func main() {
 	var c config.Config
 	conf.MustLoad(*configFile, &c, conf.UseEnv())
 	ctx := svc.NewServiceContext(c)
+
+	mqSvc := mq.NewService(c, ctx)
+	mqSvc.Serve()
+	defer func() {
+		ctx, _ := context.WithTimeout(context.Background(), time.Second*10)
+		mqSvc.Shutdown(ctx)
+	}()
 
 	s := zrpc.MustNewServer(c.RpcServerConf, func(grpcServer *grpc.Server) {
 		device.RegisterDeviceServer(grpcServer, server.NewDeviceServer(ctx))

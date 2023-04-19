@@ -128,7 +128,6 @@ type LastPrivateArrivalResp struct {
 }
 
 type SendReq struct {
-	File string `form:"file"`
 }
 
 type SendResp struct {

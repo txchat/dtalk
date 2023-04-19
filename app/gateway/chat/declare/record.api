@@ -79,8 +79,9 @@ type LastPrivateArrivalResp {
 	Mid string `json:"mid"`
 }
 
+// Content-Type is "application/octet-stream"
+// message payload fill up request body
 type SendReq {
-	File string `form:"file"`
 }
 
 type SendResp {

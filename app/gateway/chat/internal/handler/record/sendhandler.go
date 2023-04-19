@@ -1,6 +1,7 @@
 package record
 
 import (
+	"io/ioutil"
 	"net/http"
 
 	"github.com/txchat/dtalk/app/gateway/chat/internal/logic/record"
@@ -19,18 +20,13 @@ func SendHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 			return
 		}
 
-		fh, err := xhttp.FromFile(r, "message")
+		data, err := ioutil.ReadAll(r.Body)
 		if err != nil {
-			if err.Error() == "http: request body too large" {
-				xhttp.Error(w, r, xerror.ErrOssFileTooBig)
-			} else {
-				xhttp.Error(w, r, err)
-			}
-			return
+			xhttp.Error(w, r, err)
 		}
 
 		l := record.NewSendLogic(r.Context(), svcCtx)
-		resp, err := l.Send(&req, fh)
+		resp, err := l.Send(&req, data)
 		if err != nil {
 			xhttp.Error(w, r, err)
 		} else {

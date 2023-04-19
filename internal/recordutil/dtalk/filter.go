@@ -16,12 +16,20 @@ type Filter interface {
 type PrivateFilter struct {
 }
 
+func NewPrivateFilter() *PrivateFilter {
+	return &PrivateFilter{}
+}
+
 func (pf *PrivateFilter) Filter(msg *message.Message) chat.SendMessageReply_FailedType {
 	return chat.SendMessageReply_IsOK
 }
 
 type GroupFilter struct {
 	groupRPCClient groupclient.Group
+}
+
+func NewGroupFilter(groupRPCClient groupclient.Group) *GroupFilter {
+	return &GroupFilter{groupRPCClient: groupRPCClient}
 }
 
 func (gf *GroupFilter) Filter(msg *message.Message) chat.SendMessageReply_FailedType {

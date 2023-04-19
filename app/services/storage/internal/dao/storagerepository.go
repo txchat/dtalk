@@ -1,11 +1,13 @@
 package dao
 
 import (
-	"github.com/go-sql-driver/mysql"
 	"github.com/gomodule/redigo/redis"
+	xmysql "github.com/txchat/dtalk/pkg/mysql"
 	xredis "github.com/txchat/dtalk/pkg/redis"
+	"github.com/zeromicro/go-zero/core/service"
 	gorm_mysql "gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 type StorageRepository struct {
@@ -13,12 +15,19 @@ type StorageRepository struct {
 	db    *gorm.DB
 }
 
-func NewStorageRepository(redisConfig xredis.Config, mysqlConfig mysql.Config) *StorageRepository {
-	if mysqlConfig.Params == nil {
-		mysqlConfig.Params = make(map[string]string)
+func NewStorageRepository(mode string, redisConfig xredis.Config, mysqlConfig xmysql.Config) *StorageRepository {
+	mysqlConfig.ParseTime = true
+	mysqlConfig.SetParam("charset", "UTF8MB4")
+
+	defaultLogger := logger.Default
+	switch mode {
+	case service.TestMode, service.DevMode, service.RtMode:
+		defaultLogger.LogMode(logger.Info)
+	case service.ProMode, service.PreMode:
+		defaultLogger.LogMode(logger.Warn)
 	}
-	mysqlConfig.Params["charset"] = "UTF8MB4"
-	dsn := mysqlConfig.FormatDSN()
+
+	dsn := mysqlConfig.GetSQLDriverConfig().FormatDSN()
 	db, err := gorm.Open(gorm_mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic(err)

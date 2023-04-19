@@ -82,10 +82,16 @@ buildService() {
 }
 
 mkdir "${buildTargetDir}"
-for sName in ${serviceList}; do
-    buildService "${sName}" "${work_dir}/app/services/${sName}/etc" "${sName}.yaml" "${work_dir}/app/services/${sName}/${sName}.go"
+for service in ${serviceList}; do
+    sDir=$(dirname "${service}")
+    sName=$(basename "${service}")
+    buildService "${sName}" "${work_dir}/app/services/${sDir}/${sName}/etc" "${sName}.yaml" "${work_dir}/app/services/${sDir}/${sName}/${sName}.go"
+    #    echo "${sName}" "${work_dir}/app/services/${sDir}/${sName}/etc" "${sName}.yaml" "${work_dir}/app/services/${sDir}/${sName}/${sName}.go" "$(printf '\r')"
 done
 
-for sName in ${gatewayList}; do
-    buildService "${sName}" "${work_dir}/app/gateway/${sName}/etc" "${sName}-api.yaml" "${work_dir}/app/gateway/${sName}/${sName}.go"
+for gateway in ${gatewayList}; do
+    sDir=$(dirname "${gateway}")
+    sName=$(basename "${gateway}")
+    buildService "${sName}" "${work_dir}/app/gateway/${sDir}/${sName}/etc" "${sName}-api.yaml" "${work_dir}/app/gateway/${sDir}/${sName}/${sName}.go"
+    #    echo "${sName}" "${work_dir}/app/gateway/${sDir}/${sName}/etc" "${sName}-api.yaml" "${work_dir}/app/gateway/${sDir}/${sName}/${sName}.go" "$(printf '\r')"
 done

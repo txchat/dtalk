@@ -3,11 +3,13 @@ package dao
 import (
 	"context"
 
-	"github.com/go-sql-driver/mysql"
 	"github.com/txchat/dtalk/app/services/version/internal/model"
+	xmysql "github.com/txchat/dtalk/pkg/mysql"
 	"github.com/txchat/dtalk/pkg/util"
+	"github.com/zeromicro/go-zero/core/service"
 	gorm_mysql "gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 const (
@@ -28,12 +30,19 @@ type VersionRepositoryMysql struct {
 	db *gorm.DB
 }
 
-func NewVersionRepositoryMysql(mysqlConfig mysql.Config) *VersionRepositoryMysql {
-	if mysqlConfig.Params == nil {
-		mysqlConfig.Params = make(map[string]string)
+func NewVersionRepositoryMysql(mode string, mysqlConfig xmysql.Config) *VersionRepositoryMysql {
+	mysqlConfig.ParseTime = true
+	mysqlConfig.SetParam("charset", "UTF8MB4")
+
+	defaultLogger := logger.Default
+	switch mode {
+	case service.TestMode, service.DevMode, service.RtMode:
+		defaultLogger.LogMode(logger.Info)
+	case service.ProMode, service.PreMode:
+		defaultLogger.LogMode(logger.Warn)
 	}
-	mysqlConfig.Params["charset"] = "UTF8MB4"
-	dsn := mysqlConfig.FormatDSN()
+
+	dsn := mysqlConfig.GetSQLDriverConfig().FormatDSN()
 	db, err := gorm.Open(gorm_mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic(err)

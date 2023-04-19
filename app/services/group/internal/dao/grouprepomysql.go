@@ -4,11 +4,13 @@ import (
 	"database/sql/driver"
 	"errors"
 
-	"github.com/go-sql-driver/mysql"
 	"github.com/txchat/dtalk/app/services/group/internal/model"
 	xerror "github.com/txchat/dtalk/pkg/error"
+	xmysql "github.com/txchat/dtalk/pkg/mysql"
+	"github.com/zeromicro/go-zero/core/service"
 	gorm_mysql "gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 //nolint:deadcode,varcheck
@@ -133,12 +135,19 @@ type GroupRepositoryMysql struct {
 	conn *gorm.DB
 }
 
-func NewGroupRepositoryMysql(mysqlConfig mysql.Config) *GroupRepositoryMysql {
-	if mysqlConfig.Params == nil {
-		mysqlConfig.Params = make(map[string]string)
+func NewGroupRepositoryMysql(mode string, mysqlConfig xmysql.Config) *GroupRepositoryMysql {
+	mysqlConfig.ParseTime = true
+	mysqlConfig.SetParam("charset", "UTF8MB4")
+
+	defaultLogger := logger.Default
+	switch mode {
+	case service.TestMode, service.DevMode, service.RtMode:
+		defaultLogger.LogMode(logger.Info)
+	case service.ProMode, service.PreMode:
+		defaultLogger.LogMode(logger.Warn)
 	}
-	mysqlConfig.Params["charset"] = "UTF8MB4"
-	dsn := mysqlConfig.FormatDSN()
+
+	dsn := mysqlConfig.GetSQLDriverConfig().FormatDSN()
 	db, err := gorm.Open(gorm_mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic(err)

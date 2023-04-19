@@ -27,7 +27,7 @@ type ServiceContext struct {
 func NewServiceContext(c config.Config) *ServiceContext {
 	s := &ServiceContext{
 		Config: c,
-		Repo:   dao.NewStorageRepository(c.RedisDB, c.MySQL),
+		Repo:   dao.NewStorageRepository(c.Mode, c.RedisDB, c.MySQL),
 		DeviceRPC: deviceclient.NewDevice(zrpc.MustNewClient(c.DeviceRPC,
 			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor), zrpc.WithNonBlock())),
 		PusherRPC: pusherclient.NewPusher(zrpc.MustNewClient(c.PusherRPC,

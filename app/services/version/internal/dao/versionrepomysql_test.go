@@ -6,10 +6,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/go-sql-driver/mysql"
 	"github.com/mohae/deepcopy"
 	"github.com/stretchr/testify/assert"
 	"github.com/txchat/dtalk/app/services/version/internal/model"
+	xmysql "github.com/txchat/dtalk/pkg/mysql"
+	"github.com/zeromicro/go-zero/core/service"
 )
 
 var (
@@ -19,7 +20,7 @@ var (
 
 func TestMain(m *testing.M) {
 	mysqlRootPassword = os.Getenv("MYSQL_ROOT_PASSWORD")
-	repo = NewVersionRepositoryMysql(mysql.Config{
+	repo = NewVersionRepositoryMysql(service.TestMode, xmysql.Config{
 		Net:    "tcp",
 		Addr:   "127.0.0.1:3306",
 		User:   "root",

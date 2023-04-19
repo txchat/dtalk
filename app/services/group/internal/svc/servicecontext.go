@@ -36,7 +36,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor), zrpc.WithNonBlock()))
 	return &ServiceContext{
 		Config:       c,
-		Repo:         dao.NewGroupRepositoryMysql(c.MySQL),
+		Repo:         dao.NewGroupRepositoryMysql(c.Mode, c.MySQL),
 		GroupManager: group.NewGroupManager(),
 		IDGenRPC: generatorclient.NewGenerator(zrpc.MustNewClient(c.IDGenRPC,
 			zrpc.WithUnaryClientInterceptor(xerror.ErrClientInterceptor), zrpc.WithNonBlock())),

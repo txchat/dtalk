@@ -8,6 +8,7 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	xkafka "github.com/oofpgDLD/kafka-go"
+	"github.com/oofpgDLD/kafka-go/trace"
 	"github.com/txchat/dtalk/api/proto/auth"
 	"github.com/txchat/dtalk/api/proto/signal"
 	"github.com/txchat/dtalk/app/services/device/internal/config"
@@ -33,12 +34,12 @@ func NewService(cfg config.Config, svcCtx *svc.ServiceContext) *Service {
 		svcCtx: svcCtx,
 	}
 	//topic config
-	cfg.ConnDealConsumerConfig.Topic = fmt.Sprintf("goim-%s-connection", cfg.AppID)
-	cfg.ConnDealConsumerConfig.Group = fmt.Sprintf("goim-%s-connection-device", cfg.AppID)
+	cfg.ConsumerConfig.Topic = fmt.Sprintf("goim-%s-connection", cfg.AppID)
+	cfg.ConsumerConfig.Group = fmt.Sprintf("goim-%s-connection-device", cfg.AppID)
 	//new batch consumer
-	consumer := xkafka.NewConsumer(cfg.ConnDealConsumerConfig, nil)
+	consumer := xkafka.NewConsumer(cfg.ConsumerConfig, nil)
 	logx.Info("dial kafka broker success")
-	bc := xkafka.NewBatchConsumer(cfg.ConnDealBatchConsumerConf, xkafka.WithHandle(s.handleFunc), consumer)
+	bc := xkafka.NewBatchConsumer(cfg.BatchConsumerConf, consumer, xkafka.WithHandle(s.handleFunc), xkafka.WithBatchConsumerInterceptors(trace.ConsumeInterceptor))
 	s.batchConsumer = bc
 	return s
 }
@@ -51,8 +52,7 @@ func (s *Service) Shutdown(ctx context.Context) {
 	s.batchConsumer.GracefulStop(ctx)
 }
 
-func (s *Service) handleFunc(key string, data []byte) error {
-	ctx := context.Background()
+func (s *Service) handleFunc(ctx context.Context, key string, data []byte) error {
 	receivedMsg := new(logicclient.ReceivedMessage)
 	if err := proto.Unmarshal(data, receivedMsg); err != nil {
 		s.Error("logic.BizMsg proto.Unmarshal error", "err", err)

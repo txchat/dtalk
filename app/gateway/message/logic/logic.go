@@ -7,6 +7,8 @@ import (
 
 	"github.com/txchat/im/app/logic"
 
+	_ "net/http/pprof"
+
 	_ "github.com/txchat/dtalk/internal/auth"
 )
 

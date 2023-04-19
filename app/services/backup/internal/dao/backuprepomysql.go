@@ -3,24 +3,18 @@ package dao
 import (
 	"time"
 
-	"github.com/go-sql-driver/mysql"
 	"github.com/txchat/dtalk/app/services/backup/internal/model"
 	xerror "github.com/txchat/dtalk/pkg/error"
+	xmysql "github.com/txchat/dtalk/pkg/mysql"
 	"github.com/zeromicro/go-zero/core/service"
 	gorm_mysql "gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
 
-func NewDefaultConn(mode string, cfg mysql.Config) *gorm.DB {
-	if cfg.Params == nil {
-		cfg.Params = make(map[string]string)
-	}
-	cfg.Loc = time.Local
-	cfg.ParseTime = true
-	cfg.Params["charset"] = "UTF8MB4"
-	//cfg.Params["parseTime"] = "True"
-	//cfg.Params["loc"] = "Local"
+func NewDefaultConn(mode string, mysqlConfig xmysql.Config) *gorm.DB {
+	mysqlConfig.ParseTime = true
+	mysqlConfig.SetParam("charset", "UTF8MB4")
 
 	defaultLogger := logger.Default
 	switch mode {
@@ -30,7 +24,7 @@ func NewDefaultConn(mode string, cfg mysql.Config) *gorm.DB {
 		defaultLogger.LogMode(logger.Warn)
 	}
 
-	dsn := cfg.FormatDSN()
+	dsn := mysqlConfig.GetSQLDriverConfig().FormatDSN()
 	db, err := gorm.Open(gorm_mysql.Open(dsn), &gorm.Config{
 		PrepareStmt: true,
 		Logger:      defaultLogger,

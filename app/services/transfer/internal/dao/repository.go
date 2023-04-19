@@ -11,6 +11,6 @@ type Repository interface {
 	SaveUserChatRecord(ctx context.Context, chatProto *chat.Chat) error
 	MarkUserChatRecordReceived(ctx context.Context, uid string, seq int64) error
 
-	AddIndexCidMid(ctx context.Context, cid, mid string) error
-	GetMidByCid(ctx context.Context, cid string) (string, error)
+	AddIndexCidMid(ctx context.Context, cid, mid string, state chat.SendMessageReply_FailedType) error
+	GetMidByCid(ctx context.Context, cid string) (string, chat.SendMessageReply_FailedType, error)
 }

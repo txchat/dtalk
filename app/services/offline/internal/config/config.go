@@ -9,11 +9,11 @@ import (
 
 type Config struct {
 	zrpc.RpcServerConf
-	AppID                 string
-	Timeout               time.Duration
-	Pushers               map[string]Pusher
-	DealConsumerConfig    xkafka.ConsumerConfig
-	DealBatchConsumerConf xkafka.BatchConsumerConf
+	AppID                 string                   `json:","`
+	HandleTimeout         time.Duration            `json:",default=10m"`
+	Pushers               map[string]Pusher        `json:","`
+	DealConsumerConfig    xkafka.ConsumerConfig    `json:","`
+	DealBatchConsumerConf xkafka.BatchConsumerConf `json:","`
 }
 
 type Pusher struct {
