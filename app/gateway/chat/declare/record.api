@@ -9,61 +9,86 @@ info(
 )
 // goctl api format -dir .
 
+type Record {
+	Mid        string      `json:"mid"`        // 服务端消息序列号
+	Cid        string      `json:"cid"`        // 客户端消息序列号
+	FromId     string      `json:"fromId"`     // 发送者 id
+	TargetId   string      `json:"targetId"`   // 接收者 id
+	MsgType    int32       `json:"msgType"`    // 消息类型
+	Content    interface{} `json:"content"`    // 消息内容
+	CreateTime int64       `json:"createTime"` // 消息发送时间
+}
+
 type RevokeReq {
-	Type int   `json:"type,optional,options=0|1"` //撤回类型: 0->私聊, 1->群聊
-	Mid  int64 `json:"logId"`
+	Type int    `json:"type,optional,options=0|1"` //撤回类型: 0->私聊, 1->群聊
+	Mid  string `json:"mid"`
 }
 
 type RevokeResp {
 }
 
 type FocusReq {
-	Type int   `json:"type,optional,options=0|1"` //关注类型: 0->私聊, 1->群聊
-	Mid  int64 `json:"logId"`
+	Type int    `json:"type,optional,options=0|1"` //关注类型: 0->私聊, 1->群聊
+	Mid  string `json:"mid"`
 }
 
 type FocusResp {
 }
 
-type SyncReq {
-	MaxCount int64 `json:"count,range=[1:1000]"` // 消息数量
-	StartMid int64 `json:"start,optional"`       // 消息 ID
+type GetSeqRangeReq {
 }
 
-type SyncResp {
-	RecordCount int      `json:"record_count"` // 聊天记录数量
-	Records     []string `json:"records"`      // 聊天记录 base64 encoding
+type GetSeqRangeResp {
+	MaxSeq int64 `json:"maxSeq"`
+	MinSeq int64 `json:"minSeq"`
 }
 
-type PrivateRecordReq {
-	FromId      string `json:"-"`
-	TargetId    string `json:"targetId"`
-	RecordCount int64  `json:"count,range=[1:100]"`
-	Mid         string `json:"logId"`
+type PullReq {
+	SeqList []int64 `json:"seqList"`
 }
 
-type PrivateRecordResp {
-	RecordCount int       `json:"record_count"` // 聊天记录数量
-	Records     []*Record `json:"records"`      // 聊天记录
+type PullResp {
+	Records [][]byte `json:"records"`
 }
 
-type Record {
-	Mid        string      `json:"logId"`      // log id
-	Seq        string      `json:"msgId"`      // msg id (uuid)
-	FromId     string      `json:"fromId"`     // 发送者 id
-	TargetId   string      `json:"targetId"`   // 接收者 id
-	MsgType    int32       `json:"msgType"`    // 消息类型
-	Content    interface{} `json:"content"`    // 消息内容
-	CreateTime uint64      `json:"createTime"` // 消息发送时间
+type PullPrivateRoamingReq {
+	Session string `json:"session"`
+	Size    int32  `json:"size,range=[1:1000]"`
+	Cursor  string `json:"cursor"`
 }
 
-type PushReq {
-	File string `form:"file"`
+type PullPrivateRoamingResp {
+	Records []*Record `json:"records"`
 }
 
-type PushResp {
-	Mid      int64  `json:"logId"`
-	Datetime uint64 `json:"datetime"`
+type PullGroupRoamingReq {
+	Session string `json:"session"`
+	Size    int32  `json:"size,range=[1:1000]"`
+	Cursor  string `json:"cursor"`
+}
+
+type PullGroupRoamingResp {
+	Records []*Record `json:"records"`
+}
+
+type LastPrivateArrivalReq {
+	Session string `json:"session"`
+}
+
+type LastPrivateArrivalResp {
+	Mid string `json:"mid"`
+}
+
+// Content-Type is "application/octet-stream"
+// message payload fill up request body
+type SendReq {
+}
+
+type SendResp {
+	Code     int32  `json:"code"`
+	Mid      string `json:"mid"`
+	Datetime int64  `json:"datetime"`
+	Repeat   bool   `json:"repeat"`
 }
 
 @server(
@@ -79,19 +104,27 @@ service chat-api {
 	@handler Focus
 	post /app/record/focus (FocusReq) returns (FocusResp)
 	
-	@doc "同步聊天记录"
-	@handler Sync
-	post /app/record/sync-record (SyncReq) returns (SyncResp)
+	@doc "获取消息序列范围"
+	@handler GetSeqRange
+	post /app/record/seq-range (GetSeqRangeReq) returns (GetSeqRangeResp)
 	
-	@doc "获取私聊消息"
-	@handler PrivateRecord
-	post /app/record/pri-chat-record (PrivateRecordReq) returns (PrivateRecordResp)
+	@doc "拉取同步消息"
+	@handler Pull
+	post /app/record/pull (PullReq) returns (PullResp)
+	
+	@doc "拉取私聊漫游消息"
+	@handler PullPrivateRoaming
+	post /app/record/private-roaming (PullPrivateRoamingReq) returns (PullPrivateRoamingResp)
+	
+	@doc "拉取群聊漫游消息"
+	@handler PullGroupRoaming
+	post /app/record/group-roaming (PullGroupRoamingReq) returns (PullGroupRoamingResp)
+	
+	@doc "最后抵达对方的消息"
+	@handler LastPrivateArrival
+	post /app/record/last-private-arrival (LastPrivateArrivalReq) returns (LastPrivateArrivalResp)
 	
 	@doc "发送消息"
-	@handler Push
-	post /record/push (PushReq) returns (PushResp)
-	
-	@doc "发送消息"
-	@handler Push2
-	post /record/push2 (PushReq) returns (PushResp)
+	@handler Send
+	post /app/record/send (SendReq) returns (SendResp)
 }

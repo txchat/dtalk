@@ -4,18 +4,17 @@ import (
 	"context"
 	"time"
 
-	"github.com/txchat/dtalk/app/services/group/group"
-	"github.com/txchat/dtalk/app/services/group/groupclient"
-
+	"github.com/txchat/dtalk/api/proto/message"
+	"github.com/txchat/dtalk/api/proto/signal"
 	"github.com/txchat/dtalk/app/gateway/chat/internal/model"
 	"github.com/txchat/dtalk/app/gateway/chat/internal/svc"
 	"github.com/txchat/dtalk/app/gateway/chat/internal/types"
+	"github.com/txchat/dtalk/app/services/group/group"
+	"github.com/txchat/dtalk/app/services/group/groupclient"
 	"github.com/txchat/dtalk/app/services/storage/storageclient"
 	xerror "github.com/txchat/dtalk/pkg/error"
 	xhttp "github.com/txchat/dtalk/pkg/net/http"
 	"github.com/txchat/dtalk/pkg/util"
-	"github.com/txchat/imparse/proto/common"
-	"github.com/txchat/imparse/proto/signal"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -53,21 +52,22 @@ func (l *FocusLogic) Focus(req *types.FocusReq) (resp *types.FocusResp, err erro
 	return
 }
 
-func (l *FocusLogic) focusPersonal(operator string, mid int64) error {
+func (l *FocusLogic) focusPersonal(operator, mid string) error {
 	//查找消息
-	rd, err := l.svcCtx.StorageRPC.GetRecord(l.ctx, &storageclient.GetRecordReq{
-		Tp:  common.Channel_ToUser,
+	rpcGetRecordResp, err := l.svcCtx.StorageRPC.GetRecord(l.ctx, &storageclient.GetRecordReq{
+		Tp:  message.Channel_Private,
 		Mid: mid,
 	})
 	if err != nil {
 		return err
 	}
-	target := rd.ReceiverId
-	sender := rd.SenderId
+	record := rpcGetRecordResp.GetRecord()
+	target := record.GetReceiverId()
+	sender := record.GetSenderId()
 	if operator == sender || operator != target {
 		return model.ErrPermission
 	}
-	now := uint64(util.TimeNowUnixNano() / int64(time.Millisecond))
+	now := util.TimeNowUnixNano() / int64(time.Millisecond)
 	addFocusResp, err := l.svcCtx.StorageRPC.AddRecordFocus(l.ctx, &storageclient.AddRecordFocusReq{
 		Uid:  operator,
 		Mid:  mid,
@@ -86,17 +86,19 @@ func (l *FocusLogic) focusPersonal(operator string, mid int64) error {
 	return err
 }
 
-func (l *FocusLogic) focusGroup(operator string, mid int64) error {
+func (l *FocusLogic) focusGroup(operator, mid string) error {
 	//查找消息
-	rd, err := l.svcCtx.StorageRPC.GetRecord(l.ctx, &storageclient.GetRecordReq{
-		Tp:  common.Channel_ToGroup,
+	rpcGetRecordResp, err := l.svcCtx.StorageRPC.GetRecord(l.ctx, &storageclient.GetRecordReq{
+		Tp:  message.Channel_Group,
 		Mid: mid,
 	})
 	if err != nil {
 		return err
 	}
-	target := rd.ReceiverId
-	sender := rd.SenderId
+
+	record := rpcGetRecordResp.GetRecord()
+	target := record.GetReceiverId()
+	sender := record.GetSenderId()
 	if operator == sender {
 		return model.ErrPermission
 	}
@@ -116,7 +118,7 @@ func (l *FocusLogic) focusGroup(operator string, mid int64) error {
 		return model.ErrPermission
 	}
 
-	now := uint64(util.TimeNowUnixNano() / int64(time.Millisecond))
+	now := util.TimeNowUnixNano() / int64(time.Millisecond)
 	addFocusResp, err := l.svcCtx.StorageRPC.AddRecordFocus(l.ctx, &storageclient.AddRecordFocusReq{
 		Uid:  operator,
 		Mid:  mid,

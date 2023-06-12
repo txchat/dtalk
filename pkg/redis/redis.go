@@ -1,5 +1,3 @@
-// From https://gitlab.33.cn/proof/backend-micro/blob/dev/pkg/gredis/gredis.go
-
 package redis
 
 import (
@@ -15,11 +13,11 @@ type Config struct {
 	Auth         string
 	Active       int
 	Idle         int
-	DialTimeout  time.Duration
-	ReadTimeout  time.Duration
-	WriteTimeout time.Duration
-	IdleTimeout  time.Duration
-	Expire       time.Duration
+	DialTimeout  time.Duration `json:",default=200ms"`
+	ReadTimeout  time.Duration `json:",default=500ms"`
+	WriteTimeout time.Duration `json:",default=500ms"`
+	IdleTimeout  time.Duration `json:",default=120s"`
+	Expire       time.Duration `json:",default=30m"`
 }
 
 func NewPool(c Config) *redis.Pool {

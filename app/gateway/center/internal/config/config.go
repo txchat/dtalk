@@ -2,7 +2,7 @@ package config
 
 import (
 	"github.com/txchat/dtalk/app/gateway/center/internal/types"
-	"github.com/txchat/dtalk/pkg/notify"
+	"github.com/txchat/dtalk/internal/notify"
 	"github.com/zeromicro/go-zero/rest"
 	"github.com/zeromicro/go-zero/zrpc"
 )

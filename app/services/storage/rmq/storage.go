@@ -10,8 +10,7 @@ import (
 
 	"github.com/txchat/dtalk/app/services/storage/internal/config"
 	"github.com/txchat/dtalk/app/services/storage/internal/svc"
-	"github.com/txchat/dtalk/app/services/storage/rmq/rdmq"
-	"github.com/txchat/dtalk/app/services/storage/rmq/syncmq"
+	"github.com/txchat/dtalk/app/services/storage/rmq/mq"
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -43,11 +42,8 @@ func main() {
 	conf.MustLoad(*configFile, &c, conf.UseEnv())
 	ctx := svc.NewServiceContext(c)
 
-	syncMQSvc := syncmq.NewService(c, ctx)
-	syncMQSvc.Serve()
-
-	rdMQSvc := rdmq.NewService(c, ctx)
-	rdMQSvc.Serve()
+	mqSvc := mq.NewService(c, ctx)
+	mqSvc.Serve()
 
 	// init signal
 	sc := make(chan os.Signal, 1)
@@ -57,8 +53,7 @@ func main() {
 		logx.Info("service get a signal", "signal", s.String())
 		switch s {
 		case syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT:
-			syncMQSvc.Shutdown(context.Background())
-			rdMQSvc.Shutdown(context.Background())
+			mqSvc.Shutdown(context.Background())
 			logx.Info("server exit")
 			return
 		case syscall.SIGHUP:

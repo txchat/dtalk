@@ -3,11 +3,12 @@ package backup
 import (
 	"context"
 
-	xerror "github.com/txchat/dtalk/pkg/error"
-	"github.com/txchat/dtalk/pkg/notify"
+	"github.com/txchat/dtalk/internal/notify"
+	"github.com/txchat/dtalk/internal/notify/phpserverclient"
 
 	"github.com/txchat/dtalk/app/gateway/center/internal/svc"
 	"github.com/txchat/dtalk/app/gateway/center/internal/types"
+	xerror "github.com/txchat/dtalk/pkg/error"
 
 	"github.com/zeromicro/go-zero/core/logx"
 	//xhttp "github.com/txchat/dtalk/pkg/net/http"
@@ -36,8 +37,8 @@ func NewSendPhoneCodeLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Sen
 func (l *SendPhoneCodeLogic) SendPhoneCode(req *types.SendPhoneCodeReq) (resp *types.SendPhoneCodeResp, err error) {
 	// 发送短信验证码
 	params := map[string]string{
-		notify.ParamMobile:   req.Phone,
-		notify.ParamCodeType: l.svcCtx.Config.SMS.CodeTypes[req.CodeType],
+		notify.Account:                req.Phone,
+		phpserverclient.ParamCodeType: l.svcCtx.Config.SMS.CodeTypes[req.CodeType],
 	}
 	_, err = l.svcCtx.SmsValidate.Send(params)
 	if err != nil {

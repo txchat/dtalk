@@ -1,48 +1,47 @@
 package recordutil
 
 import (
-	"encoding/base64"
 	"encoding/json"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/txchat/imparse/proto/common"
-	"github.com/txchat/imparse/proto/msg"
-	"github.com/txchat/imparse/proto/signal"
+	"github.com/txchat/dtalk/api/proto/content"
+	"github.com/txchat/dtalk/api/proto/message"
+	"github.com/txchat/dtalk/api/proto/signal"
 )
 
-var msgFactory = map[common.MsgType]func() proto.Message{
-	common.MsgType_Text: func() proto.Message {
-		return &msg.TextMsg{}
+var msgFactory = map[message.MsgType]func() proto.Message{
+	message.MsgType_Text: func() proto.Message {
+		return &content.TextMsg{}
 	},
-	common.MsgType_Audio: func() proto.Message {
-		return &msg.AudioMsg{}
+	message.MsgType_Audio: func() proto.Message {
+		return &content.AudioMsg{}
 	},
-	common.MsgType_Image: func() proto.Message {
-		return &msg.ImageMsg{}
+	message.MsgType_Image: func() proto.Message {
+		return &content.ImageMsg{}
 	},
-	common.MsgType_Video: func() proto.Message {
-		return &msg.VideoMsg{}
+	message.MsgType_Video: func() proto.Message {
+		return &content.VideoMsg{}
 	},
-	common.MsgType_File: func() proto.Message {
-		return &msg.FileMsg{}
+	message.MsgType_File: func() proto.Message {
+		return &content.FileMsg{}
 	},
-	common.MsgType_Card: func() proto.Message {
-		return &msg.CardMsg{}
+	message.MsgType_Card: func() proto.Message {
+		return &content.CardMsg{}
 	},
-	common.MsgType_Notice: func() proto.Message {
-		return &msg.NoticeMsg{}
+	message.MsgType_Notice: func() proto.Message {
+		return &content.NoticeMsg{}
 	},
-	common.MsgType_Forward: func() proto.Message {
-		return &msg.ForwardMsg{}
+	message.MsgType_Forward: func() proto.Message {
+		return &content.ForwardMsg{}
 	},
-	common.MsgType_Transfer: func() proto.Message {
-		return &msg.TransferMsg{}
+	message.MsgType_Transfer: func() proto.Message {
+		return &content.TransferMsg{}
 	},
-	common.MsgType_RedPacket: func() proto.Message {
-		return &msg.RedPacketMsg{}
+	message.MsgType_RedPacket: func() proto.Message {
+		return &content.RedPacketMsg{}
 	},
-	common.MsgType_ContactCard: func() proto.Message {
-		return &msg.ContactCardMsg{}
+	message.MsgType_ContactCard: func() proto.Message {
+		return &content.ContactCardMsg{}
 	},
 }
 
@@ -97,54 +96,55 @@ var signalFactory = map[signal.SignalType]func() proto.Message{
 	},
 }
 
-func protobufDataToJSONData(m proto.Message, data []byte) []byte {
+func IsMsgSupport(msgType message.MsgType) bool {
+	creator, ok := msgFactory[msgType]
+	return ok && creator != nil
+}
+
+func protobufDataToJSONData(m proto.Message, data []byte) ([]byte, error) {
 	err := proto.Unmarshal(data, m)
 	if err != nil {
-		return []byte(base64.StdEncoding.EncodeToString(data))
+		return nil, err
 	}
-	b, err := json.Marshal(m)
-	if err != nil {
-		return data
-	}
-	return b
+	return json.Marshal(m)
 }
 
-func jsonDataToProtobufData(m proto.Message, data []byte) []byte {
-	err := json.Unmarshal(data, m)
-	if err != nil {
-		v, err := base64.StdEncoding.DecodeString(string(data))
-		if err != nil {
-			return data
-		}
-		return v
-	}
-	b, err := proto.Marshal(m)
-	if err != nil {
-		return data
-	}
-	return b
-}
+//
+//func jsonDataToProtobufData(m proto.Message, data []byte) ([]byte, error) {
+//	err := json.Unmarshal(data, m)
+//	if err != nil {
+//		return nil, err
+//	}
+//	return proto.Marshal(m)
+//}
 
-func jsonDataToProtobufMessage(m proto.Message, data []byte) {
-	err := json.Unmarshal(data, m)
-	if err != nil {
-		m = &msg.EncryptMsg{
-			Content: string(data),
-		}
-		return
-	}
-}
-
-func CommonMsgProtobufDataToJSONData(m *common.Common) []byte {
+func MessageContentProtobufDataToJSONData(m *message.Message) []byte {
 	creator, ok := msgFactory[m.MsgType]
 	if !ok || creator == nil {
-		return m.Msg
+		return m.Content
 	}
 	protoMsg := creator()
-	return protobufDataToJSONData(protoMsg, m.Msg)
+	data, err := protobufDataToJSONData(protoMsg, m.Content)
+	if err != nil {
+		return m.Content
+	}
+	return data
 }
 
-func SourceJSONMarshal(m *common.Common) []byte {
+func MessageContentJSONDataToProtobuf(msgType message.MsgType, data []byte) proto.Message {
+	creator, ok := msgFactory[msgType]
+	if !ok || creator == nil {
+		return nil
+	}
+	protoMsg := creator()
+	err := json.Unmarshal(data, protoMsg)
+	if err != nil {
+		return nil
+	}
+	return protoMsg
+}
+
+func SourceJSONMarshal(m *message.Message) []byte {
 	if m.Source == nil {
 		return nil
 	}
@@ -155,7 +155,19 @@ func SourceJSONMarshal(m *common.Common) []byte {
 	return b
 }
 
-func ReferenceJSONMarshal(m *common.Common) []byte {
+func SourceJSONUnmarshal(data []byte) *message.Source {
+	if len(data) == 0 {
+		return nil
+	}
+	var src message.Source
+	err := json.Unmarshal(data, &src)
+	if err != nil {
+		return &src
+	}
+	return &src
+}
+
+func ReferenceJSONMarshal(m *message.Message) []byte {
 	if m.Reference == nil {
 		return nil
 	}
@@ -166,63 +178,27 @@ func ReferenceJSONMarshal(m *common.Common) []byte {
 	return b
 }
 
-func SignalContentToJSONData(m *signal.Signal) []byte {
+func ReferenceJSONUnmarshal(data []byte) *message.Reference {
+	if len(data) == 0 {
+		return nil
+	}
+	var src message.Reference
+	err := json.Unmarshal(data, &src)
+	if err != nil {
+		return &src
+	}
+	return &src
+}
+
+func SignalContentProtobufDataToJSONData(m *signal.Signal) []byte {
 	creator, ok := signalFactory[m.Type]
 	if !ok || creator == nil {
 		return m.Body
 	}
 	protoMsg := creator()
-	return protobufDataToJSONData(protoMsg, m.Body)
-}
-
-func CommonMsgJSONDataToProtobuf(msgType uint32, data []byte) proto.Message {
-	creator, ok := msgFactory[common.MsgType(msgType)]
-	if !ok || creator == nil {
-		return nil
-	}
-	protoMsg := creator()
-	jsonDataToProtobufMessage(protoMsg, data)
-	return protoMsg
-}
-
-func CommonMsgJSONDataToProtobufData(msgType uint32, data []byte) []byte {
-	creator, ok := msgFactory[common.MsgType(msgType)]
-	if !ok || creator == nil {
-		return data
-	}
-	protoMsg := creator()
-	return jsonDataToProtobufData(protoMsg, data)
-}
-
-func SourceJSONUnmarshal(data []byte) *common.Source {
-	if len(data) == 0 {
-		return nil
-	}
-	var src common.Source
-	err := json.Unmarshal(data, &src)
+	data, err := protobufDataToJSONData(protoMsg, m.Body)
 	if err != nil {
-		return &src
+		return m.Body
 	}
-	return &src
-}
-
-func ReferenceJSONUnmarshal(data []byte) *common.Reference {
-	if len(data) == 0 {
-		return nil
-	}
-	var src common.Reference
-	err := json.Unmarshal(data, &src)
-	if err != nil {
-		return &src
-	}
-	return &src
-}
-
-func SignalContentJSONDataToProtobufData(actionType uint32, data []byte) []byte {
-	creator, ok := signalFactory[signal.SignalType(actionType)]
-	if !ok || creator == nil {
-		return data
-	}
-	protoMsg := creator()
-	return jsonDataToProtobufData(protoMsg, data)
+	return data
 }

@@ -10,7 +10,7 @@ import (
 	xerror "github.com/txchat/dtalk/pkg/error"
 	xhttp "github.com/txchat/dtalk/pkg/net/http"
 
-	"github.com/txchat/imparse/proto/auth"
+	"github.com/txchat/dtalk/api/proto/auth"
 	"github.com/zeromicro/go-zero/core/logx"
 	//xhttp "github.com/txchat/dtalk/pkg/net/http"
 )
@@ -49,7 +49,7 @@ func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginResp, err erro
 			return nil, xerror.NewCustomError(xerror.ErrReconnectRejected, model.LoginNotAllowedErr{
 				Code: xerror.ErrReconnectRejected.Code(),
 				Message: struct {
-					Datetime   uint64 `json:"datetime"`
+					Datetime   int64  `json:"datetime"`
 					Device     int32  `json:"device"`
 					DeviceName string `json:"deviceName"`
 					UUID       string `json:"uuid"`

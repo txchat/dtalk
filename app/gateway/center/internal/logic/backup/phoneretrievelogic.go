@@ -3,7 +3,8 @@ package backup
 import (
 	"context"
 
-	"github.com/txchat/dtalk/pkg/notify"
+	"github.com/txchat/dtalk/internal/notify"
+	"github.com/txchat/dtalk/internal/notify/phpserverclient"
 
 	"github.com/txchat/dtalk/app/services/backup/backup"
 	"github.com/txchat/dtalk/app/services/backup/backupclient"
@@ -32,9 +33,9 @@ func NewPhoneRetrieveLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Pho
 func (l *PhoneRetrieveLogic) PhoneRetrieve(req *types.PhoneRetrieveReq) (resp *types.PhoneRetrieveResp, err error) {
 	// 通过短信服务验证
 	params := map[string]string{
-		notify.ParamMobile:   req.Phone,
-		notify.ParamCode:     req.Code,
-		notify.ParamCodeType: l.svcCtx.Config.SMS.CodeTypes[notify.Bind],
+		notify.Account:                req.Phone,
+		notify.Code:                   req.Code,
+		phpserverclient.ParamCodeType: l.svcCtx.Config.SMS.CodeTypes[phpserverclient.Bind],
 	}
 	err = l.svcCtx.SmsValidate.ValidateCode(params)
 	if err != nil {

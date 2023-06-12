@@ -5,8 +5,8 @@ projectVersion=$(shell git describe --abbrev=8 --tags)
 gitCommit=$(shell git rev-parse --short=8 HEAD)
 
 pkgCommitName=${projectVersion}_${gitCommit}
-servers=answer backup call device generator group offline oss pusher storage version
-gateways=center chat
+servers=backup call device generator group offline oss pusher storage transfer version
+gateways=center chat message/comet message/logic
 
 help: ## Display this help screen
 	@printf "Help doc:\nUsage: make [command]\n"
@@ -28,15 +28,18 @@ pkg_%: build_% ## 编译并打包目标机器的可执行文件（例如: make p
 images: build_linux_amd64 ## 打包docker镜像
 	cp script/docker/*Dockerfile ${TARGETDIR}
 	cd ${TARGETDIR} && for i in $(servers) ; do \
-		docker build --build-arg server_name=$$i . -f server.Dockerfile -t txchat-$$i:${projectVersion}; \
+		docker build --build-arg server_name=$$(basename $$i) . -f server.Dockerfile -t txchat-$$(basename $$i):${projectVersion}; \
 	done && for i in $(gateways) ; do \
-		docker build --build-arg server_name=$$i . -f gateway.Dockerfile -t txchat-$$i:${projectVersion}; \
+		docker build --build-arg server_name=$$(basename $$i) . -f gateway.Dockerfile -t txchat-$$(basename $$i):${projectVersion}; \
 	done
 
 init-compose: images ## 使用docker compose启动
 	cp -R script/compose/. run_compose/
 	cp -R script/mysql/. run_compose/
 	cp -R script/nginx/. run_compose/
+	cp -R script/redis/. run_compose/
+	cp -R script/prometheus/. run_compose/
+	cp -R script/grafana/. run_compose/
 	cd run_compose && \
 	./envfill.sh;\
 	./initwork.sh "${servers} ${gateways}" "${projectVersion}"
@@ -75,7 +78,7 @@ test-%:
     docker compose -f components.compose.yaml $*
 
 test:
-	$(GOENV) go test -v ./...
+	./script/test/unitestenv/init.sh && ./script/test/unitestenv/run.sh
 
 clean:
 	rm -rf ${TARGETDIR}

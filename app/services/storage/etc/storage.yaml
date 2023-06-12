@@ -2,6 +2,15 @@ Name: storage.rpc
 ListenOn: 0.0.0.0:8080
 AppID: "dtalk"
 SyncCache: false
+Prometheus:
+  Host: 0.0.0.0
+  Port: 9091
+  Path: /metrics
+Telemetry:
+  Name: ${SERVER_NAME}
+  Endpoint: http://${TELEMETRY_HOST}:14268/api/traces
+  Sampler: 1.0
+  Batcher: jaeger
 Etcd:
   Hosts:
   - ${ETCD_HOST}:2379
@@ -18,11 +27,11 @@ RedisDB:
   IdleTimeout: "120s"
   Expire: "30m"
 MySQL:
-  Host: "${MYSQL_HOST}"
-  Port: 3306
+  Net: "tcp"
+  Addr: "${MYSQL_HOST}:3306"
   User: "root"
-  Pwd: "${MYSQL_PASSWORD}"
-  DB: "dtalk_record"
+  Passwd: "${MYSQL_PASSWORD}"
+  DBName: "dtalk_record"
 DeviceRPC:
   Etcd:
     Hosts:

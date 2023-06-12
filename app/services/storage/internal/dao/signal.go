@@ -5,25 +5,20 @@ import (
 	"strings"
 
 	"github.com/txchat/dtalk/app/services/storage/internal/model"
-	"github.com/txchat/dtalk/pkg/util"
 )
 
 const (
-	_InsertSignalContent       = `INSERT INTO dtalk_signal_content(id,uid,type,state,content,create_time,update_time) VALUES(?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE update_time=?`
-	_InsertSignalContentPrefix = `INSERT INTO dtalk_signal_content(id,uid,type,state,content,create_time,update_time) VALUES%s ON DUPLICATE KEY UPDATE update_time=VALUES(update_time)`
-	_SetSignalContentState     = `UPDATE dtalk_signal_content SET state = ? WHERE uid = ? AND id = ?`
-
-	_GetUnReceiveSignal = `SELECT * FROM dtalk_signal_content WHERE uid=? AND state=? ORDER BY id`
-	_GetSyncSignal      = `SELECT * FROM dtalk_signal_content WHERE uid=? AND id>? ORDER BY id LIMIT ?,?`
+	_InsertSignalContent       = `INSERT INTO dtalk_signal_content(uid,seq,type,content,create_time,update_time) VALUES(?,?,?,?,?,?) ON DUPLICATE KEY UPDATE update_time=?`
+	_InsertSignalContentPrefix = `INSERT INTO dtalk_signal_content(uid,seq,type,content,create_time,update_time) VALUES%s ON DUPLICATE KEY UPDATE update_time=VALUES(update_time)`
 )
 
-func (repo *UniRepository) AppendSignalContent(m *model.SignalContent) (int64, int64, error) {
-	num, lastId, err := repo.mysql.Exec(_InsertSignalContent,
-		m.Id, m.Uid, m.Type, m.State, m.Content, m.CreateTime, m.UpdateTime, m.UpdateTime)
-	return num, lastId, err
+func (repo *StorageRepository) AppendSignal(m *model.SignalContent) (int64, int64, error) {
+	err := repo.db.Exec(_InsertSignalContent,
+		m.Uid, m.Seq, m.Type, m.Content, m.CreateTime, m.UpdateTime, m.UpdateTime).Error
+	return 0, 0, err
 }
 
-func (repo *UniRepository) BatchAppendSignalContent(m []*model.SignalContent) (int64, int64, error) {
+func (repo *StorageRepository) BatchAppendSignal(m []*model.SignalContent) (int64, int64, error) {
 	//element should not empty
 	if len(m) == 0 {
 		return 0, 0, nil
@@ -31,57 +26,12 @@ func (repo *UniRepository) BatchAppendSignalContent(m []*model.SignalContent) (i
 	var values []interface{}
 	condition := ""
 	for _, row := range m {
-		condition += "(?,?,?,?,?,?,?),"
-		values = append(values, row.Id, row.Uid, row.Type, row.State, row.Content, row.CreateTime, row.UpdateTime)
+		condition += "(?,?,?,?,?,?),"
+		values = append(values, row.Uid, row.Seq, row.Type, row.Content, row.CreateTime, row.UpdateTime)
 	}
 	//trim the last ,
 	condition = strings.TrimSuffix(condition, ",")
 	//prepare the statement and exec
-	num, lastId, err := repo.mysql.PrepareExec(fmt.Sprintf(_InsertSignalContentPrefix, condition), values...)
-	return num, lastId, err
-}
-
-func (repo *UniRepository) MarkSignalReceived(uid string, mid int64) (int64, int64, error) {
-	num, lastId, err := repo.mysql.Exec(_SetSignalContentState, model.Received, uid, mid)
-	return num, lastId, err
-}
-
-func (repo *UniRepository) UnReceiveSignalMsg(uid string) ([]*model.SignalContent, error) {
-	maps, err := repo.mysql.Query(_GetUnReceiveSignal, uid, model.UnReceive)
-	if err != nil {
-		return nil, err
-	}
-	ret := make([]*model.SignalContent, len(maps))
-	for i, m := range maps {
-		ret[i] = &model.SignalContent{
-			Id:         m["id"],
-			Uid:        m["uid"],
-			Type:       uint8(util.MustToUint32(m["type"])),
-			State:      uint8(util.MustToUint32(m["state"])),
-			Content:    m["content"],
-			CreateTime: uint64(util.MustToInt64(m["create_time"])),
-			UpdateTime: uint64(util.MustToInt64(m["update_time"])),
-		}
-	}
-	return ret, err
-}
-
-func (repo *UniRepository) SyncSignalMsg(uid string, startId, count int64) ([]*model.SignalContent, error) {
-	maps, err := repo.mysql.Query(_GetSyncSignal, uid, startId, 0, count)
-	if err != nil {
-		return nil, err
-	}
-	ret := make([]*model.SignalContent, len(maps))
-	for i, m := range maps {
-		ret[i] = &model.SignalContent{
-			Id:         m["id"],
-			Uid:        m["uid"],
-			Type:       uint8(util.MustToUint32(m["type"])),
-			State:      uint8(util.MustToUint32(m["state"])),
-			Content:    m["content"],
-			CreateTime: uint64(util.MustToInt64(m["create_time"])),
-			UpdateTime: uint64(util.MustToInt64(m["update_time"])),
-		}
-	}
-	return ret, err
+	err := repo.db.Exec(fmt.Sprintf(_InsertSignalContentPrefix, condition), values...).Error
+	return 0, 0, err
 }

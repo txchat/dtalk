@@ -46,7 +46,7 @@ func (l *UnMuteMembersLogic) UnMuteMembers(in *group.UnMuteMembersReq) (*group.U
 	if err != nil {
 		return nil, err
 	}
-	defer tx.RollBack()
+	defer tx.Rollback()
 	_, _, err = l.svcCtx.Repo.UpdateGroupMembersMuteTime(tx, members)
 	if err != nil {
 		return nil, err

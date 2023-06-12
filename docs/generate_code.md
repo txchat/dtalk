@@ -26,4 +26,6 @@ goctl rpc protoc group.proto --go_out=. --go-grpc_out=. --zrpc_out=. --home ../.
 
 # 引用了imparse的proto
 goctl rpc protoc "$GOPATH"/src/github.com/txchat/dtalk/app/services/answer/answer.proto --proto_path="$GOPATH"/src/ --go_out=. --go-grpc_out=. --zrpc_out=.
+
+goctl rpc protoc transfer.proto --proto_path=.:"$GOPATH"/src --go_out=. --go-grpc_out=. --zrpc_out=.
 ```

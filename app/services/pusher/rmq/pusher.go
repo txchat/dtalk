@@ -6,14 +6,11 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
-	"sync"
 	"syscall"
-
-	"github.com/txchat/dtalk/app/services/pusher/rmq/rdmq"
 
 	"github.com/txchat/dtalk/app/services/pusher/internal/config"
 	"github.com/txchat/dtalk/app/services/pusher/internal/svc"
-	"github.com/txchat/dtalk/app/services/pusher/rmq/connmq"
+	"github.com/txchat/dtalk/app/services/pusher/rmq/mq"
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -45,11 +42,8 @@ func main() {
 	conf.MustLoad(*configFile, &c, conf.UseEnv())
 	ctx := svc.NewServiceContext(c)
 
-	connMQSvc := connmq.NewService(c, ctx)
-	connMQSvc.Serve()
-
-	rdMQSvc := rdmq.NewService(c, ctx)
-	rdMQSvc.Serve()
+	mqSvc := mq.NewService(c, ctx)
+	mqSvc.Serve()
 
 	// init signal
 	sc := make(chan os.Signal, 1)
@@ -59,14 +53,7 @@ func main() {
 		logx.Info("service get a signal", "signal", s.String())
 		switch s {
 		case syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT:
-			wg := sync.WaitGroup{}
-			go func() {
-				defer wg.Done()
-				wg.Add(1)
-				connMQSvc.Shutdown(context.Background())
-			}()
-			rdMQSvc.Shutdown(context.Background())
-			wg.Wait()
+			mqSvc.Shutdown(context.Background())
 			logx.Info("server exit")
 			return
 		case syscall.SIGHUP:

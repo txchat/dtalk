@@ -1,6 +1,15 @@
 AppID: dtalk
 Name: pusher.rpc
 ListenOn: 0.0.0.0:8080
+Prometheus:
+  Host: 0.0.0.0
+  Port: 9091
+  Path: /metrics
+Telemetry:
+  Name: ${SERVER_NAME}
+  Endpoint: http://${TELEMETRY_HOST}:14268/api/traces
+  Sampler: 1.0
+  Batcher: jaeger
 Etcd:
   Hosts:
   - ${ETCD_HOST}:2379
@@ -22,40 +31,16 @@ DeviceRPC:
       - "${ETCD_HOST}:2379"
     Key: "device.rpc"
     Timeout: 60000 # 60s
-AnswerRPC:
-  Etcd:
-    Hosts:
-      - "${ETCD_HOST}:2379"
-    Key: "answer.rpc"
-    Timeout: 60000 # 60s
 LogicRPC:
   Etcd:
     Hosts:
       - "${ETCD_HOST}:2379"
     Key: "logic.rpc"
     Timeout: 60000 # 60s
-GroupRPC:
-  Etcd:
-    Hosts:
-      - "${ETCD_HOST}:2379"
-    Key: "group.rpc"
-    Timeout: 60000 # 60s
 OffPushEnabled: true
-ProducerStorage:
+Producer:
   Version: ""
   Brokers: ["${KAFKA_HOST}:9092"]
-ProducerOffPush:
-  Version: ""
-  Brokers: ["${KAFKA_HOST}:9092"]
-ConnDealConsumerConfig:
-  Version: ""
-  Brokers: ["${KAFKA_HOST}:9092"]
-  CacheCapacity: 0
-  ConnectTimeout: "30s"
-ConnDealBatchConsumerConf:
-  CacheCapacity: 0
-  Consumers: 0
-  Processors: 0
 PushDealConsumerConfig:
   Version: ""
   Brokers: ["${KAFKA_HOST}:9092"]

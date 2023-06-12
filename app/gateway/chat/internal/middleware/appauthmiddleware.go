@@ -4,9 +4,9 @@ import (
 	"net/http"
 
 	"github.com/txchat/dtalk/app/gateway/chat/internal/middleware/authmock"
+	"github.com/txchat/dtalk/pkg/auth"
 	xerror "github.com/txchat/dtalk/pkg/error"
 	xhttp "github.com/txchat/dtalk/pkg/net/http"
-	"github.com/txchat/pkg/auth"
 )
 
 type AppAuthMiddleware struct {

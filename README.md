@@ -1,7 +1,9 @@
 
-# 即时通讯系统业务层
+# 即时通讯系统
 
-dtalk是即时通讯系统的业务处理服务，主要负责消息的过滤、存储、同步等
+**注意：** `main`分支在开发过程中可能处于不稳定甚至损坏的状态。
+
+本仓库是即时通讯的服务端，使用[im消息网关](https://github.com/txchat/im)提供的特性，针对即时通讯场景实现消息可靠送达，离线推送，群用户管理等相关功能；网关服务的启动入口已经在仓库内打包。
 
 ![dtalk-arch](docs/dtalk-arch.png)
 
@@ -44,7 +46,7 @@ $ make docker-compose-up
 $ make docker-compose-ps
 ```
 
-## 使用工具验证
+### 使用工具验证
 
 使用im-util仓库下的[pressure](https://github.com/txchat/im-util/tree/master/pressure )工具测试服务是否成功部署。
 
@@ -66,6 +68,10 @@ $ ./pressure ana
 # 控制台打印出如下内容表示发送的消息全都成功 failed count: 0
 {"level":"info","time":"2022-07-26T11:10:27.879292+08:00","message":"message tranport success count: 10 -- failed count: 0"}
 ```
+
+## 贡献
+
+克隆代码到本地，在修改代码时请结合`make fmt`格式化，`make linter`做代码检查。
 
 ### License
 

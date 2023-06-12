@@ -1,0 +1,57 @@
+// protoc -I=. -I=$GOPATH/src --go_out=plugins=grpc:. *.proto
+syntax = "proto3";
+
+package dtalk.api.proto;
+option go_package = "github.com/txchat/dtalk/api/proto/message;message";
+
+enum Channel {
+  Private = 0;
+  Group = 1;
+}
+
+// common msg define
+enum MsgType {
+  System = 0;
+  Text = 1;
+  Audio = 2;
+  Image = 3;
+  Video = 4;
+  File = 5;
+  Card = 6;
+  Notice = 7;
+  Forward = 8;
+  RTCCall = 9;
+  Transfer = 10;
+  Collect = 11;
+  RedPacket = 12;
+  ContactCard = 13;
+}
+
+message Message {
+  Channel channelType = 1;
+  string mid = 2;
+  string cid = 3;
+  string from = 4;
+  string target = 5;
+  MsgType msgType = 6;
+  bytes content = 7;
+  int64 datetime = 8;
+  Source source = 9;
+  Reference reference = 10;
+}
+
+message Source {
+  Channel channelType = 1;
+  SourceUser from = 2;
+  SourceUser target = 3;
+}
+
+message SourceUser {
+  string id = 1;
+  string name = 2;
+}
+
+message Reference {
+  int64 topic = 1;
+  int64 ref = 2;
+}

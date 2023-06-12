@@ -10,7 +10,6 @@ created_network=()
 
 serviceList=$1
 projectVersion=$2
-networks="txchat-components txchat-service"
 
 # platform adaptation
 HOST_OS=$(uname -s | tr '[:upper:]' '[:lower:]')
@@ -49,6 +48,17 @@ function volume_create() {
     fi
 }
 
+function initRedis() {
+    # shellcheck disable=SC2048
+    for vname in ${created_volume[*]}; do
+        if [ "${vname}" = "txchat-redis-config" ]; then
+            docker container create --name dummy -v "txchat-redis-config":/root hello-world
+            docker cp redis.conf dummy:/root/redis.conf
+            docker rm dummy
+        fi
+    done
+}
+
 function initMySQL() {
     # shellcheck disable=SC2048
     for vname in ${created_volume[*]}; do
@@ -76,9 +86,12 @@ function initNginx() {
     done
 }
 
-volumes=("txchat-mysql-data" "txchat-mysql-config" "txchat-mysql-log" "txchat-mysql-init" "txchat-minio-data" "txchat-nginx-config" "txchat-nginx-log")
+volumes=("txchat-zookeeper-data" "txchat-kafka-data" "txchat-redis-data" "txchat-redis-config" "txchat-redis-log" "txchat-etcd-data" "txchat-mysql-data" "txchat-mysql-config" "txchat-mysql-log" "txchat-mysql-init" "txchat-minio-data" "txchat-nginx-config" "txchat-nginx-log" "txchat-prometheus-config" "txchat-grafana-data" "txchat-grafana-provisioning")
+networks=("txchat-components" "txchat-service")
 
-for sName in ${serviceList}; do
+for service in ${serviceList}; do
+    sDir=$(dirname "${service}")
+    sName=$(basename "${service}")
     volumes+=("txchat-${sName}-config")
     # 将「-」转为「_」并将小写转大写
     upperSName=$(echo "${sName//[-]/_}" | tr '[:lower:]' '[:upper:]')
@@ -96,5 +109,6 @@ for name in ${networks[*]}; do
     network_create "${name}"
 done
 
+initRedis
 initMySQL
 initNginx

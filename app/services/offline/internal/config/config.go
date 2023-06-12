@@ -1,16 +1,19 @@
 package config
 
 import (
-	xkafka "github.com/txchat/pkg/mq/kafka"
+	"time"
+
+	xkafka "github.com/oofpgDLD/kafka-go"
 	"github.com/zeromicro/go-zero/zrpc"
 )
 
 type Config struct {
 	zrpc.RpcServerConf
-	AppID                 string
-	Pushers               map[string]Pusher
-	DealConsumerConfig    xkafka.ConsumerConfig
-	DealBatchConsumerConf xkafka.BatchConsumerConf
+	AppID                 string                   `json:","`
+	HandleTimeout         time.Duration            `json:",default=10m"`
+	Pushers               map[string]Pusher        `json:","`
+	DealConsumerConfig    xkafka.ConsumerConfig    `json:","`
+	DealBatchConsumerConf xkafka.BatchConsumerConf `json:","`
 }
 
 type Pusher struct {

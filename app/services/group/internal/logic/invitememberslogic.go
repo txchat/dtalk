@@ -58,7 +58,7 @@ func (l *InviteMembersLogic) InviteMembers(in *group.InviteMembersReq) (*group.I
 	if err != nil {
 		return nil, err
 	}
-	defer tx.RollBack()
+	defer tx.Rollback()
 
 	if _, _, err = l.svcCtx.Repo.InsertGroupMembers(tx, members, timeTs); err != nil {
 		return nil, err

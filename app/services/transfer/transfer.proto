@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package transfer;
+option go_package = "./transfer";
+
+import "github.com/txchat/dtalk/api/proto/message.proto";
+import "github.com/txchat/dtalk/api/proto/chat.proto";
+
+message TransferMessageReq {
+  string from = 1;
+  string target = 2;
+  dtalk.api.proto.Channel channelType = 3;
+  dtalk.api.proto.Chat body = 4;
+}
+
+message TransferMessageResp {}
+
+message PreSendMessageCheckReq { dtalk.api.proto.Chat msg = 1; }
+
+message PreSendMessageCheckResp { dtalk.api.proto.SendMessageReply result = 1; }
+
+service Transfer {
+  rpc TransferMessage(TransferMessageReq) returns (TransferMessageResp);
+  rpc PreSendMessageCheck(PreSendMessageCheckReq)
+      returns (PreSendMessageCheckResp);
+}

@@ -1,10 +1,60 @@
 version: "2.4"
 services:
+  comet:
+    image: txchat-comet:${COMET_IMAGE}
+    container_name: ${COMET_CONTAINER_NAME}
+    environment:
+      SERVER_NAME: comet
+      ETCD_HOST: txchat-etcd
+      PROMETHEUS_HOST: txchat-prometheus
+      TELEMETRY_HOST: ${JAEGER_COLLECTOR_CONTAINER_NAME}
+    networks:
+      - txchat-components
+      - txchat-service
+    volumes:
+      - ${COMET_CONFIG_VOLUME}:/etc/comet/config
+    ports:
+      - "3101:3101"
+      - "3102:3102"
+      - "8000:8000"
+    depends_on:
+      etcd:
+        condition: service_started
+  logic:
+    image: txchat-logic:${LOGIC_IMAGE}
+    container_name: ${LOGIC_CONTAINER_NAME}
+    environment:
+      SERVER_NAME: logic
+      ETCD_HOST: txchat-etcd
+      PROMETHEUS_HOST: txchat-prometheus
+      TELEMETRY_HOST: ${JAEGER_COLLECTOR_CONTAINER_NAME}
+      REDIS_HOST: txchat-redis
+      KAFKA_HOST: txchat-kafka
+      CHAT_API_HOST: txchat-chat-node1
+    networks:
+      - txchat-components
+      - txchat-service
+    volumes:
+      - ${LOGIC_CONFIG_VOLUME}:/etc/logic/config
+    ports:
+      - "8001:8001"
+    depends_on:
+      kafka:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      comet:
+        condition: service_started
+      etcd:
+        condition: service_started
   center:
     image: txchat-center:${CENTER_IMAGE}
     container_name: ${CENTER_CONTAINER_NAME}
     environment:
+      SERVER_NAME: center-api
       ETCD_HOST: txchat-etcd
+      PROMETHEUS_HOST: txchat-prometheus
+      TELEMETRY_HOST: ${JAEGER_COLLECTOR_CONTAINER_NAME}
     networks:
       - txchat-components
       - txchat-service
@@ -14,7 +64,10 @@ services:
     image: txchat-chat:${CHAT_IMAGE}
     container_name: ${CHAT_CONTAINER_NAME}
     environment:
+      SERVER_NAME: chat-api
       ETCD_HOST: txchat-etcd
+      PROMETHEUS_HOST: txchat-prometheus
+      TELEMETRY_HOST: ${JAEGER_COLLECTOR_CONTAINER_NAME}
     networks:
       - txchat-components
       - txchat-service
@@ -24,118 +77,179 @@ services:
     image: txchat-backup:${BACKUP_IMAGE}
     container_name: ${BACKUP_CONTAINER_NAME}
     environment:
+      SERVER_NAME: backup
+      ETCD_HOST: txchat-etcd
       MYSQL_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_HOST: txchat-mysql
-      ETCD_HOST: txchat-etcd
+      PROMETHEUS_HOST: txchat-prometheus
+      TELEMETRY_HOST: ${JAEGER_COLLECTOR_CONTAINER_NAME}
     networks:
       - txchat-components
       - txchat-service
     volumes:
       - ${BACKUP_CONFIG_VOLUME}:/etc/txchat-backup/config
     depends_on:
+      etcd:
+        condition: service_started
       mysql:
         condition: service_healthy
   call:
     image: txchat-call:${CALL_IMAGE}
     container_name: ${CALL_CONTAINER_NAME}
     environment:
+      SERVER_NAME: call
       ETCD_HOST: txchat-etcd
+      PROMETHEUS_HOST: txchat-prometheus
+      TELEMETRY_HOST: ${JAEGER_COLLECTOR_CONTAINER_NAME}
       REDIS_HOST: txchat-redis
     networks:
       - txchat-components
       - txchat-service
     volumes:
       - ${CALL_CONFIG_VOLUME}:/etc/txchat-call/config
+    depends_on:
+      etcd:
+        condition: service_started
   device:
     image: txchat-device:${DEVICE_IMAGE}
     container_name: ${DEVICE_CONTAINER_NAME}
     environment:
+      SERVER_NAME: device
       ETCD_HOST: txchat-etcd
+      PROMETHEUS_HOST: txchat-prometheus
+      TELEMETRY_HOST: ${JAEGER_COLLECTOR_CONTAINER_NAME}
       REDIS_HOST: txchat-redis
+      KAFKA_HOST: txchat-kafka
     networks:
       - txchat-components
       - txchat-service
     volumes:
       - ${DEVICE_CONFIG_VOLUME}:/etc/txchat-device/config
+    depends_on:
+      etcd:
+        condition: service_started
+      kafka:
+        condition: service_healthy
   generator:
     image: txchat-generator:${GENERATOR_IMAGE}
     container_name: ${GENERATOR_CONTAINER_NAME}
     environment:
+      SERVER_NAME: generator
       ETCD_HOST: txchat-etcd
+      PROMETHEUS_HOST: txchat-prometheus
+      TELEMETRY_HOST: ${JAEGER_COLLECTOR_CONTAINER_NAME}
     networks:
       - txchat-components
       - txchat-service
     volumes:
       - ${GENERATOR_CONFIG_VOLUME}:/etc/txchat-generator/config
+    depends_on:
+      etcd:
+        condition: service_started
   group:
     image: txchat-group:${GROUP_IMAGE}
     container_name: ${GROUP_CONTAINER_NAME}
     environment:
+      SERVER_NAME: group
+      ETCD_HOST: txchat-etcd
       MYSQL_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_HOST: txchat-mysql
-      ETCD_HOST: txchat-etcd
+      PROMETHEUS_HOST: txchat-prometheus
+      TELEMETRY_HOST: ${JAEGER_COLLECTOR_CONTAINER_NAME}
     networks:
       - txchat-components
       - txchat-service
     volumes:
       - ${GROUP_CONFIG_VOLUME}:/etc/txchat-group/config
     depends_on:
+      etcd:
+        condition: service_started
       mysql:
         condition: service_healthy
   offline:
     image: txchat-offline:${OFFLINE_IMAGE}
     container_name: ${OFFLINE_CONTAINER_NAME}
     environment:
+      SERVER_NAME: offline
       ETCD_HOST: txchat-etcd
+      PROMETHEUS_HOST: txchat-prometheus
+      TELEMETRY_HOST: ${JAEGER_COLLECTOR_CONTAINER_NAME}
       KAFKA_HOST: txchat-kafka
     networks:
       - txchat-components
       - txchat-service
     volumes:
       - ${OFFLINE_CONFIG_VOLUME}:/etc/txchat-offline/config
+    depends_on:
+      etcd:
+        condition: service_started
+      kafka:
+        condition: service_healthy
   oss:
     image: txchat-oss:${OSS_IMAGE}
     container_name: ${OSS_CONTAINER_NAME}
     environment:
+      SERVER_NAME: oss
       ETCD_HOST: txchat-etcd
+      PROMETHEUS_HOST: txchat-prometheus
+      TELEMETRY_HOST: ${JAEGER_COLLECTOR_CONTAINER_NAME}
       REDIS_HOST: txchat-redis
     networks:
       - txchat-components
       - txchat-service
     volumes:
       - ${OSS_CONFIG_VOLUME}:/etc/txchat-oss/config
+    depends_on:
+      etcd:
+        condition: service_started
   version:
     image: txchat-version:${VERSION_IMAGE}
     container_name: ${VERSION_CONTAINER_NAME}
     environment:
+      SERVER_NAME: version
+      ETCD_HOST: txchat-etcd
       MYSQL_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_HOST: txchat-mysql
-      ETCD_HOST: txchat-etcd
+      PROMETHEUS_HOST: txchat-prometheus
+      TELEMETRY_HOST: ${JAEGER_COLLECTOR_CONTAINER_NAME}
     networks:
       - txchat-components
       - txchat-service
     volumes:
       - ${VERSION_CONFIG_VOLUME}:/etc/txchat-version/config
     depends_on:
+      etcd:
+        condition: service_started
       mysql:
         condition: service_healthy
-  answer:
-    image: txchat-answer:${ANSWER_IMAGE}
-    container_name: ${ANSWER_CONTAINER_NAME}
+  transfer:
+    image: txchat-transfer:${TRANSFER_IMAGE}
+    container_name: ${TRANSFER_CONTAINER_NAME}
     environment:
+      SERVER_NAME: transfer
       ETCD_HOST: txchat-etcd
+      PROMETHEUS_HOST: txchat-prometheus
+      TELEMETRY_HOST: ${JAEGER_COLLECTOR_CONTAINER_NAME}
       KAFKA_HOST: txchat-kafka
       REDIS_HOST: txchat-redis
     networks:
       - txchat-components
       - txchat-service
     volumes:
-      - ${ANSWER_CONFIG_VOLUME}:/etc/txchat-answer/config
+      - ${TRANSFER_CONFIG_VOLUME}:/etc/txchat-transfer/config
+    depends_on:
+      etcd:
+        condition: service_started
+      kafka:
+        condition: service_healthy
   pusher:
     image: txchat-pusher:${PUSHER_IMAGE}
     container_name: ${PUSHER_CONTAINER_NAME}
     environment:
+      SERVER_NAME: pusher
       ETCD_HOST: txchat-etcd
+      PROMETHEUS_HOST: txchat-prometheus
+      TELEMETRY_HOST: ${JAEGER_COLLECTOR_CONTAINER_NAME}
       KAFKA_HOST: txchat-kafka
       REDIS_HOST: txchat-redis
     networks:
@@ -144,15 +258,22 @@ services:
     volumes:
       - ${PUSHER_CONFIG_VOLUME}:/etc/txchat-pusher/config
     depends_on:
-      answer:
+      etcd:
+        condition: service_started
+      kafka:
+        condition: service_healthy
+      transfer:
         condition: service_started
   storage:
     image: txchat-storage:${STORAGE_IMAGE}
     container_name: ${STORAGE_CONTAINER_NAME}
     environment:
+      SERVER_NAME: storage
+      ETCD_HOST: txchat-etcd
       MYSQL_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_HOST: txchat-mysql
-      ETCD_HOST: txchat-etcd
+      PROMETHEUS_HOST: txchat-prometheus
+      TELEMETRY_HOST: ${JAEGER_COLLECTOR_CONTAINER_NAME}
       KAFKA_HOST: txchat-kafka
       REDIS_HOST: txchat-redis
     networks:
@@ -165,7 +286,7 @@ services:
         condition: service_healthy
       device:
         condition: service_started
-      pusher:
+      transfer:
         condition: service_started
       group:
         condition: service_started
@@ -175,6 +296,10 @@ networks:
   txchat-service:
     external: true
 volumes:
+  txchat-comet-config:
+    external: true
+  txchat-logic-config:
+    external: true
   txchat-center-config:
     external: true
   txchat-chat-config:
@@ -195,7 +320,7 @@ volumes:
     external: true
   txchat-version-config:
     external: true
-  txchat-answer-config:
+  txchat-transfer-config:
     external: true
   txchat-pusher-config:
     external: true

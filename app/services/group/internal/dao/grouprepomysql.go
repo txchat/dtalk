@@ -1,10 +1,16 @@
 package dao
 
 import (
+	"database/sql/driver"
+	"errors"
+
 	"github.com/txchat/dtalk/app/services/group/internal/model"
 	xerror "github.com/txchat/dtalk/pkg/error"
-	"github.com/txchat/dtalk/pkg/mysql"
-	"github.com/txchat/dtalk/pkg/util"
+	xmysql "github.com/txchat/dtalk/pkg/mysql"
+	"github.com/zeromicro/go-zero/core/service"
+	gorm_mysql "gorm.io/driver/mysql"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 //nolint:deadcode,varcheck
@@ -82,13 +88,13 @@ WHERE mem.group_id=? AND mem.group_member_type<? ORDER BY group_member_type desc
 `
 
 	_GetMemberTypeByMemberIdAndGroupId = `SELECT group_member_type FROM dtalk_group_member WHERE group_id=? AND group_member_id=?`
-	_GetAdminNumByGroupId              = `SELECT count(*) FROM dtalk_group_member WHERE group_id=? AND group_member_type=?`
+	_GetAdminNumByGroupId              = `SELECT count(*) AS group_admin_num FROM dtalk_group_member WHERE group_id=? AND group_member_type=?`
 	_GetMemberNumByGroupId             = `SELECT count(*) FROM dtalk_group_member WHERE group_id=? AND group_member_type<?`
 
 	// dtalk_group_member_mute
 	_UpdateGroupMemberMuteTime = `REPLACE INTO dtalk_group_member_mute (group_id, group_member_id, group_member_mute_time, group_member_mute_update_time) VALUES`
 	_GetGroupMemberMuteTime    = `SELECT group_member_mute_time FROM dtalk_group_member_mute WHERE group_id=? AND group_member_id=?`
-	_GetGroupMuteNum           = `SELECT count(*) From dtalk_group_member AS mem LEFT JOIN dtalk_group_member_mute AS mute 
+	_GetGroupMuteNum           = `SELECT count(*) AS group_mute_count From dtalk_group_member AS mem LEFT JOIN dtalk_group_member_mute AS mute 
 ON mem.group_id=mute.group_id AND mem.group_member_id=mute.group_member_id 
 WHERE mem.group_id=? AND mem.group_member_type<? AND mute.group_member_mute_time>?`
 	_GetGroupMembersMuted = `SELECT 
@@ -106,35 +112,77 @@ mem.group_member_id as group_member_id,
 mem.group_member_type as group_member_type, 
 mem.group_member_name as group_member_name, 
 mem.group_member_join_time as group_member_join_time,
+mem.group_member_update_time as group_member_update_time,
 mute.group_member_mute_time as group_member_mute_time
 From dtalk_group_member AS mem LEFT JOIN dtalk_group_member_mute AS mute 
 ON mem.group_id=mute.group_id AND mem.group_member_id=mute.group_member_id 
 WHERE mem.group_id=? AND mem.group_member_id=? AND mem.group_member_type<?`
 )
 
-type GroupRepositoryMysql struct {
-	conn *mysql.MysqlConn
+type GormTx struct {
+	*gorm.DB
 }
 
-func NewGroupRepositoryMysql(conn *mysql.MysqlConn) *GroupRepositoryMysql {
+func (tx *GormTx) Commit() error {
+	return tx.DB.Commit().Error
+}
+
+func (tx *GormTx) Rollback() error {
+	return tx.DB.Rollback().Error
+}
+
+type GroupRepositoryMysql struct {
+	conn *gorm.DB
+}
+
+func NewGroupRepositoryMysql(mode string, mysqlConfig xmysql.Config) *GroupRepositoryMysql {
+	mysqlConfig.ParseTime = true
+	mysqlConfig.SetParam("charset", "UTF8MB4")
+
+	defaultLogger := logger.Default
+	switch mode {
+	case service.TestMode, service.DevMode, service.RtMode:
+		defaultLogger.LogMode(logger.Info)
+	case service.ProMode, service.PreMode:
+		defaultLogger.LogMode(logger.Warn)
+	}
+
+	dsn := mysqlConfig.GetSQLDriverConfig().FormatDSN()
+	db, err := gorm.Open(gorm_mysql.Open(dsn), &gorm.Config{})
+	if err != nil {
+		panic(err)
+	}
 	return &GroupRepositoryMysql{
-		conn: conn,
+		conn: db,
 	}
 }
 
-func (repo *GroupRepositoryMysql) NewTx() (*mysql.MysqlTx, error) {
-	return repo.conn.NewTx()
+func (repo *GroupRepositoryMysql) NewTx() (driver.Tx, error) {
+	tx := repo.conn.Begin()
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+	return &GormTx{DB: tx}, nil
 }
 
-func (repo *GroupRepositoryMysql) InsertGroupInfo(tx *mysql.MysqlTx, g *model.GroupInfo) (int64, int64, error) {
-	num, lastId, err := tx.Exec(_InsertGroupInfo, g.GroupId, g.GroupMarkId, g.GroupName, g.GroupAvatar, g.GroupMemberNum, g.GroupMaximum,
+func (repo *GroupRepositoryMysql) InsertGroupInfo(tx driver.Tx, g *model.GroupInfo) (int64, int64, error) {
+	txx, ok := tx.(*GormTx)
+	if !ok {
+		return 0, 0, model.ErrMysqlTxType
+	}
+	err := txx.Exec(_InsertGroupInfo, g.GroupId, g.GroupMarkId, g.GroupName, g.GroupAvatar, g.GroupMemberNum, g.GroupMaximum,
 		g.GroupIntroduce, g.GroupStatus, g.GroupOwnerId, g.GroupCreateTime, g.GroupUpdateTime,
-		g.GroupJoinType, g.GroupMuteType, g.GroupFriendType, g.GroupAESKey, g.GroupPubName, g.GroupType)
-	return num, lastId, err
+		g.GroupJoinType, g.GroupMuteType, g.GroupFriendType, g.GroupAESKey, g.GroupPubName, g.GroupType).Error
+	return txx.RowsAffected, 0, err
 }
 
 // InsertGroupMembers 批量插入群成员
-func (repo *GroupRepositoryMysql) InsertGroupMembers(tx *mysql.MysqlTx, members []*model.GroupMember, updateTime int64) (int64, int64, error) {
+func (repo *GroupRepositoryMysql) InsertGroupMembers(tx driver.Tx, members []*model.GroupMember, updateTime int64) (int64, int64, error) {
+	txx, ok := tx.(*GormTx)
+	if !ok {
+		return 0, 0, model.ErrMysqlTxType
+	}
+
 	var params []interface{}
 	cases := ""
 	if len(members) < 1 {
@@ -151,120 +199,122 @@ func (repo *GroupRepositoryMysql) InsertGroupMembers(tx *mysql.MysqlTx, members 
 	SQL := _InsertGroupMembersPrefix + cases + _InsertGroupMembersSuffix
 	params = append(params, model.GroupMemberTypeNormal, updateTime, updateTime)
 
-	num, lastId, err := tx.Exec(SQL, params...)
-	return num, lastId, err
+	err := txx.Exec(SQL, params...).Error
+	return txx.RowsAffected, 0, err
 }
 
 func (repo *GroupRepositoryMysql) GetGroupById(gid int64) (*model.GroupInfo, error) {
-	records, err := repo.conn.Query(_GetGroupInfoByGroupId, gid)
+	var group model.GroupInfo
+	err := repo.conn.Raw(_GetGroupInfoByGroupId, gid).Take(&group).Error
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, xerror.ErrGroupNotExist
+		}
 		return nil, err
 	}
-	if len(records) < 1 {
-		return nil, xerror.ErrGroupNotExist
-	}
-	record := records[0]
-	return model.ConvertGroupInfo(record), nil
+	return &group, nil
 }
 
 func (repo *GroupRepositoryMysql) GetGroupByMarkId(markId string) (*model.GroupInfo, error) {
-	records, err := repo.conn.Query(_GetGroupInfoByGroupMarkId, markId)
+	var group model.GroupInfo
+	err := repo.conn.Raw(_GetGroupInfoByGroupMarkId, markId).Take(&group).Error
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, xerror.ErrGroupNotExist
+		}
 		return nil, err
 	}
-	if len(records) < 1 {
-		return nil, xerror.ErrGroupNotExist
-	}
-	record := records[0]
-	return model.ConvertGroupInfo(record), nil
+	return &group, nil
 }
 
 func (repo *GroupRepositoryMysql) GetGroupMutedNumbers(gid int64, now int64) (int32, error) {
-	records, err := repo.conn.Query(_GetGroupMuteNum, gid, model.GroupMemberTypeOther, now)
+	var groupMuteCount int32
+	err := repo.conn.Raw(_GetGroupMuteNum, gid, model.GroupMemberTypeOther, now).Scan(&groupMuteCount).Error
 	if err != nil {
 		return 0, err
 	}
-	return util.MustToInt32(records[0]["count(*)"]), nil
+	return groupMuteCount, nil
 }
 
 func (repo *GroupRepositoryMysql) GetGroupManagerNumbers(gid int64) (int32, error) {
-	records, err := repo.conn.Query(_GetAdminNumByGroupId, gid, model.GroupMemberTypeManager)
+	var groupAdminNum int32
+	err := repo.conn.Raw(_GetAdminNumByGroupId, gid, model.GroupMemberTypeManager).Scan(&groupAdminNum).Error
 	if err != nil {
 		return 0, err
 	}
-	return util.MustToInt32(records[0]["count(*)"]), nil
+	return groupAdminNum, nil
 }
 
 func (repo *GroupRepositoryMysql) GetMemberById(gid int64, mid string) (*model.GroupMember, error) {
-	maps, err := repo.conn.Query(_GetGroupMemberWithMuteTime, gid, mid, model.GroupMemberTypeOther)
+	var member model.GroupMember
+	err := repo.conn.Raw(_GetGroupMemberWithMuteTime, gid, mid, model.GroupMemberTypeOther).Take(&member).Error
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, xerror.ErrGroupMemberNotExist
+		}
 		return nil, err
 	}
-	if len(maps) == 0 {
-		return nil, xerror.ErrGroupMemberNotExist
-	}
-	return model.ConvertGroupMember(maps[0]), nil
+	return &member, nil
 }
 
 func (repo *GroupRepositoryMysql) GetUnLimitedMembers(gid int64) ([]*model.GroupMember, error) {
-	maps, err := repo.conn.Query(_GetMembersByGroupId, gid, model.GroupMemberTypeOther)
+	var members []*model.GroupMember
+	err := repo.conn.Raw(_GetMembersByGroupId, gid, model.GroupMemberTypeOther).Scan(&members).Error
 	if err != nil {
 		return nil, err
-	}
-
-	members := make([]*model.GroupMember, 0, len(maps))
-	for _, m := range maps {
-		members = append(members, model.ConvertGroupMember(m))
 	}
 	return members, nil
 }
 
 func (repo *GroupRepositoryMysql) GetLimitedMembers(gid, start, num int64) ([]*model.GroupMember, error) {
-	maps, err := repo.conn.Query(_GetMembersByGroupIdWithLimit, gid, model.GroupMemberTypeOther, start, num)
+	var members []*model.GroupMember
+	err := repo.conn.Raw(_GetMembersByGroupIdWithLimit, gid, model.GroupMemberTypeOther, start, num).Scan(&members).Error
 	if err != nil {
 		return nil, err
-	}
-
-	members := make([]*model.GroupMember, 0, len(maps))
-	for _, m := range maps {
-		members = append(members, model.ConvertGroupMember(m))
 	}
 	return members, nil
 }
 
 func (repo *GroupRepositoryMysql) GetMutedMembers(gid, time int64) ([]*model.GroupMember, error) {
-	maps, err := repo.conn.Query(_GetGroupMembersMuted, gid, model.GroupMemberTypeOther, time)
+	var members []*model.GroupMember
+	err := repo.conn.Raw(_GetGroupMembersMuted, gid, model.GroupMemberTypeOther, time).Scan(&members).Error
 	if err != nil {
 		return nil, err
 	}
-	res := make([]*model.GroupMember, 0, len(maps))
-	for _, m := range maps {
-		res = append(res, model.ConvertGroupMember(m))
-	}
-	return res, nil
+	return members, nil
 }
 
 func (repo *GroupRepositoryMysql) JoinedGroups(uid string) ([]int64, error) {
-	maps, err := repo.conn.Query(_GetGroupIdsByMemberId, uid, model.GroupMemberTypeOther)
+	var groupId []int64
+	err := repo.conn.Raw(_GetGroupIdsByMemberId, uid, model.GroupMemberTypeOther).Scan(&groupId).Error
 	if err != nil {
 		return nil, err
 	}
-	ret := make([]int64, len(maps))
-	for i, m := range maps {
-		ret[i] = util.MustToInt64(m["group_id"])
+	return groupId, nil
+}
+
+func (repo *GroupRepositoryMysql) UpdateGroupStatus(tx driver.Tx, group *model.GroupInfo) (int64, int64, error) {
+	txx, ok := tx.(*GormTx)
+	if !ok {
+		return 0, 0, model.ErrMysqlTxType
 	}
-	return ret, nil
+	return 0, 0, txx.Exec(_UpdateGroupInfoStatus, group.GroupStatus, group.GroupUpdateTime, group.GroupId).Error
 }
 
-func (repo *GroupRepositoryMysql) UpdateGroupStatus(tx *mysql.MysqlTx, group *model.GroupInfo) (int64, int64, error) {
-	return tx.Exec(_UpdateGroupInfoStatus, group.GroupStatus, group.GroupUpdateTime, group.GroupId)
+func (repo *GroupRepositoryMysql) UpdateGroupMemberRole(tx driver.Tx, member *model.GroupMember) (int64, int64, error) {
+	txx, ok := tx.(*GormTx)
+	if !ok {
+		return 0, 0, model.ErrMysqlTxType
+	}
+	return 0, 0, txx.Exec(_UpdateGroupMemberType, member.GroupMemberType, member.GroupMemberUpdateTime, member.GroupId, member.GroupMemberId).Error
 }
 
-func (repo *GroupRepositoryMysql) UpdateGroupMemberRole(tx *mysql.MysqlTx, member *model.GroupMember) (int64, int64, error) {
-	return tx.Exec(_UpdateGroupMemberType, member.GroupMemberType, member.GroupMemberUpdateTime, member.GroupId, member.GroupMemberId)
-}
+func (repo *GroupRepositoryMysql) UpdateGroupMembersMuteTime(tx driver.Tx, members []*model.GroupMember) (int64, int64, error) {
+	txx, ok := tx.(*GormTx)
+	if !ok {
+		return 0, 0, model.ErrMysqlTxType
+	}
 
-func (repo *GroupRepositoryMysql) UpdateGroupMembersMuteTime(tx *mysql.MysqlTx, members []*model.GroupMember) (int64, int64, error) {
 	var params []interface{}
 	cases := ""
 	if len(members) < 1 {
@@ -279,39 +329,45 @@ func (repo *GroupRepositoryMysql) UpdateGroupMembersMuteTime(tx *mysql.MysqlTx, 
 		params = append(params, m.GroupId, m.GroupMemberId, m.GroupMemberMuteTime, m.GroupMemberMuteUpdateTime)
 	}
 	SQL := _UpdateGroupMemberMuteTime + cases
-
-	num, lastId, err := tx.Exec(SQL, params...)
-	return num, lastId, err
+	return 0, 0, txx.Exec(SQL, params...).Error
 }
 
-func (repo *GroupRepositoryMysql) UpdateGroupOwner(tx *mysql.MysqlTx, group *model.GroupInfo) (int64, int64, error) {
-	return tx.Exec(_UpdateGroupInfoOwnerId, group.GroupOwnerId, group.GroupUpdateTime, group.GroupId)
+func (repo *GroupRepositoryMysql) UpdateGroupOwner(tx driver.Tx, group *model.GroupInfo) (int64, int64, error) {
+	txx, ok := tx.(*GormTx)
+	if !ok {
+		return 0, 0, model.ErrMysqlTxType
+	}
+	return 0, 0, txx.Exec(_UpdateGroupInfoOwnerId, group.GroupOwnerId, group.GroupUpdateTime, group.GroupId).Error
 }
 
 func (repo *GroupRepositoryMysql) UpdateGroupAvatar(group *model.GroupInfo) (int64, int64, error) {
-	return repo.conn.Exec(_UpdateGroupInfoAvatar, group.GroupAvatar, group.GroupUpdateTime, group.GroupId)
+	return 0, 0, repo.conn.Exec(_UpdateGroupInfoAvatar, group.GroupAvatar, group.GroupUpdateTime, group.GroupId).Error
 }
 
 func (repo *GroupRepositoryMysql) UpdateGroupFriendlyType(group *model.GroupInfo) (int64, int64, error) {
-	return repo.conn.Exec(_UpdateGroupInfoFriendType, group.GroupFriendType, group.GroupUpdateTime, group.GroupId)
+	return 0, 0, repo.conn.Exec(_UpdateGroupInfoFriendType, group.GroupFriendType, group.GroupUpdateTime, group.GroupId).Error
 }
 
 func (repo *GroupRepositoryMysql) UpdateGroupJoinType(group *model.GroupInfo) (int64, int64, error) {
-	return repo.conn.Exec(_UpdateGroupInfoJoinType, group.GroupJoinType, group.GroupUpdateTime, group.GroupId)
+	return 0, 0, repo.conn.Exec(_UpdateGroupInfoJoinType, group.GroupJoinType, group.GroupUpdateTime, group.GroupId).Error
 }
 
 func (repo *GroupRepositoryMysql) UpdateGroupMuteType(group *model.GroupInfo) (int64, int64, error) {
-	return repo.conn.Exec(_UpdateGroupInfoMuteType, group.GroupMuteType, group.GroupUpdateTime, group.GroupId)
+	return 0, 0, repo.conn.Exec(_UpdateGroupInfoMuteType, group.GroupMuteType, group.GroupUpdateTime, group.GroupId).Error
 }
 
 func (repo *GroupRepositoryMysql) UpdateGroupName(group *model.GroupInfo) (int64, int64, error) {
-	return repo.conn.Exec(_UpdateGroupInfoName, group.GroupName, group.GroupPubName, group.GroupUpdateTime, group.GroupId)
+	return 0, 0, repo.conn.Exec(_UpdateGroupInfoName, group.GroupName, group.GroupPubName, group.GroupUpdateTime, group.GroupId).Error
 }
 
-func (repo *GroupRepositoryMysql) UpdateGroupMembersNumber(tx *mysql.MysqlTx, group *model.GroupInfo) (int64, int64, error) {
-	return tx.Exec(_UpdateGroupInfoGroupNum, group.GroupMemberNum, group.GroupUpdateTime, group.GroupId)
+func (repo *GroupRepositoryMysql) UpdateGroupMembersNumber(tx driver.Tx, group *model.GroupInfo) (int64, int64, error) {
+	txx, ok := tx.(*GormTx)
+	if !ok {
+		return 0, 0, model.ErrMysqlTxType
+	}
+	return 0, 0, txx.Exec(_UpdateGroupInfoGroupNum, group.GroupMemberNum, group.GroupUpdateTime, group.GroupId).Error
 }
 
 func (repo *GroupRepositoryMysql) UpdateGroupMemberName(member *model.GroupMember) (int64, int64, error) {
-	return repo.conn.Exec(_UpdateGroupMemberName, member.GroupMemberName, member.GroupMemberUpdateTime, member.GroupId, member.GroupMemberId)
+	return 0, 0, repo.conn.Exec(_UpdateGroupMemberName, member.GroupMemberName, member.GroupMemberUpdateTime, member.GroupId, member.GroupMemberId).Error
 }

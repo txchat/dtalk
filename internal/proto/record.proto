@@ -1,0 +1,25 @@
+// protoc -I=. -I=$GOPATH/src --go_out=plugins=grpc:. *.proto
+syntax = "proto3";
+
+package dtalk.record;
+option go_package = "github.com/txchat/dtalk/internal/proto/record";
+
+import "github.com/txchat/dtalk/api/proto/chat.proto";
+import "github.com/txchat/dtalk/api/proto/message.proto";
+
+// record --> mq
+message PushMsgMQ {
+  string appId = 1;
+  string from = 2;
+  string target = 3;
+  dtalk.api.proto.Channel channel = 4;
+  bytes msg = 5;
+}
+
+// record --> mq
+message StoreMsgMQ {
+  string appId = 1;
+  string from = 2;
+  repeated string target = 3;
+  dtalk.api.proto.Chat chat = 4;
+}

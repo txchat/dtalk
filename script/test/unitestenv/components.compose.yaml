@@ -1,0 +1,97 @@
+version: "2.4"
+services:
+  redis:
+    image: redis:${REDIS_VERSION}
+    container_name: ${REDIS_CONTAINER_NAME}
+    restart: unless-stopped
+    networks:
+      - components
+    volumes:
+      - redis_data:/data
+      - redis_config:/usr/local/etc/redis
+      - redis_log:/logs
+    ports:
+      - ${REDIS_PUB_PORT}:6379
+    command: [ "redis-server"]
+  mysql:
+    image: custom-mysql:${MYSQL_VERSION}
+    build:
+      context: .
+      dockerfile: mysql.Dockerfile
+      args:
+        version: ${MYSQL_VERSION}
+    container_name: ${MYSQL_CONTAINER_NAME}
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - mysql_log:/logs
+      - mysql_init:/docker-entrypoint-initdb.d
+    environment:
+      TZ: Asia/Shanghai
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_ROOT_HOST: ${MYSQL_ROOT_HOST}
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 10s
+      retries: 10
+  mongo:
+    image: mongo
+    container_name: ${MONGO_CONTAINER_NAME}
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - mongo_data:/data/
+      - mongo_conf:/etc/mongo
+    networks:
+      - components
+  mongo-express:
+    image: mongo-express
+    container_name: ${MONGO_EXPRESS_CONTAINER_NAME}
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
+    networks:
+      - components
+
+volumes:
+  redis_data:
+    name: ${REDIS_DATA_VOLUME}
+    external: false
+  redis_config:
+    name: ${REDIS_CONFIG_VOLUME}
+    external: false
+  redis_log:
+    name: ${REDIS_LOG_VOLUME}
+    external: false
+  mysql_data:
+    name: ${MYSQL_DATA_VOLUME}
+    external: false
+  mysql_log:
+    name: ${MYSQL_LOG_VOLUME}
+    external: false
+  mysql_init:
+    name: ${MYSQL_INIT_VOLUME}
+    external: false
+  mysql_config:
+    name: ${MYSQL_CONFIG_VOLUME}
+    external: false
+  mongo_data:
+    name: ${MONGO_DATA_VOLUME}
+    external: false
+  mongo_conf:
+    name: ${MONGO_CONFIG_VOLUME}
+    external: false
+networks:
+  components:
+    external: false

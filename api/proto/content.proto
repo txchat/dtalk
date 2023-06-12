@@ -1,0 +1,168 @@
+// protoc -I=. -I=$GOPATH/src --go_out=plugins=grpc:. *.proto
+syntax = "proto3";
+
+package dtalk.api.proto;
+
+import "github.com/txchat/dtalk/api/proto/signal.proto";
+import "github.com/txchat/dtalk/api/proto/message.proto";
+
+option go_package = "github.com/txchat/dtalk/api/proto/content;content";
+
+message EncryptMsg {
+  MsgType type = 1;
+  string crypto = 2;
+  bytes data = 3;
+}
+
+message TextMsg {
+  string content = 1;
+  repeated string ait = 2;
+}
+
+message AudioMsg {
+  string mediaUrl = 1;
+  int32 time = 2;
+}
+
+message ImageMsg {
+  string mediaUrl = 1;
+  int32 height = 2;
+  int32 width = 3;
+}
+
+message VideoMsg {
+  string mediaUrl = 1;
+  int32 time = 2;
+  int32 height = 3;
+  int32 width = 4;
+}
+
+message FileMsg {
+  string mediaUrl = 1;
+  string name = 2;
+  string md5 = 3;
+  int64 size = 4;
+}
+
+message CardMsg {
+  string bank = 1;
+  string name = 2;
+  string account = 3;
+}
+
+message NoticeMsg {
+  NoticeMsgType type = 1;
+  bytes body = 2;
+}
+
+message ForwardItem {
+  string avatar = 1;
+  string name = 2;
+  int32 msgType = 3;
+  bytes msg = 4;
+  int64 datetime = 5;
+}
+
+message ForwardMsg { repeated ForwardItem items = 1; }
+
+message TransferMsg {
+  string txHash = 1;
+  string coinName = 2;
+  string chain = 3;
+  string platform = 4;
+  enum CoinType {
+    Coins = 0;
+    Token = 1;
+  }
+  CoinType coinType = 5;
+}
+
+message RedPacketMsg {
+  string txHash = 1;
+  string coinName = 2;
+  string exec = 3; //执行器名称 user.p.
+  enum RPType {
+    RandomAmount = 0;
+    IdenticalAmount = 1;
+  }
+  RPType packetType = 4;
+  string privateKey = 5; //客户端创建的私钥（选填）
+  string remark = 6;
+  uint64 expire = 7; //到期时间 单位：ms时间戳
+  enum CoinType {
+    Coins = 0;
+    Token = 1;
+  }
+  CoinType coinType = 8;
+}
+
+message ContactCardMsg {
+  enum CardType {
+    Undefined = 0;
+    Personal = 1;
+  }
+  CardType type = 1;
+  string id = 2;
+  string name = 3;
+  string avatar = 4;
+  string server = 5;
+  string inviter = 6;
+}
+
+// notice msg define
+enum NoticeMsgType {
+  UpdateGroupNameNoticeMsg = 0;
+  SignInGroupNoticeMsg = 1;
+  SignOutGroupNoticeMsg = 2;
+  KickOutGroupNoticeMsg = 3;
+  DeleteGroupNoticeMsg = 4;
+  UpdateGroupMutedNoticeMsg = 5;
+  UpdateGroupMemberMutedNoticeMsg = 6;
+  UpdateGroupOwnerNoticeMsg = 7;
+  MsgRevoked = 8; //撤回消息通知，客户端占用
+}
+
+message NoticeMsgUpdateGroupName {
+  int64 group = 1;
+  string operator = 2;
+  string name = 3;
+}
+
+message NoticeMsgSignInGroup {
+  int64 group = 1;
+  string inviter = 2;
+  repeated string members = 3;
+}
+
+message NoticeMsgSignOutGroup {
+  int64 group = 1;
+  string operator = 2;
+}
+
+message NoticeMsgKickOutGroup {
+  int64 group = 1;
+  string operator = 2;
+  repeated string members = 3;
+}
+
+message NoticeMsgDeleteGroup {
+  int64 group = 1;
+  string operator = 2;
+}
+
+message NoticeMsgUpdateGroupMuted {
+  int64 group = 1;
+  string operator = 2;
+  MuteType type = 3;
+}
+
+message NoticeMsgUpdateGroupMemberMutedTime {
+  int64 group = 1;
+  string operator = 2;
+  repeated string members = 3;
+}
+
+message NoticeMsgUpdateGroupOwner {
+  int64 group = 1;
+  string newOwner = 2;
+}

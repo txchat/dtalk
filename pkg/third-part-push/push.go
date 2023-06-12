@@ -29,12 +29,18 @@ type Config struct {
 }
 
 type IPusher interface {
-	SinglePush(deviceToken, title, text string, extra *Extra) error
-	SingleCustomPush(address, title, text string, extra *Extra) error
+	SinglePush(deviceToken string, notification Notification, extra *Extra) error
+	SingleCustomPush(address string, notification Notification, extra *Extra) error
+}
+
+type Notification struct {
+	Title    string
+	Subtitle string
+	Body     string
 }
 
 type Extra struct {
-	Address     string `json:"address"`
+	SessionKey  string `json:"sessionKey"`
 	ChannelType int32  `json:"channelType"`
 	TimeOutTime int64  `json:"-"`
 }

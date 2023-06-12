@@ -1,0 +1,26 @@
+[
+  {
+    "targets": ["txchat-comet-node1:9091"],
+    "labels": {
+      "job": "txchat-comet"
+    }
+  },
+  {
+    "targets": ["txchat-logic-node1:9091"],
+    "labels": {
+      "job": "txchat-logic"
+    }
+  },
+  {
+    "targets": ["txchat-center-node1:9091"],
+    "labels": {
+      "job": "txchat-center"
+    }
+  },
+  {
+    "targets": ["txchat-chat-node1:9091"],
+    "labels": {
+      "job": "txchat-chat"
+    }
+  }
+]

@@ -1,0 +1,32 @@
+// protoc -I=. -I=$GOPATH/src --go_out=plugins=grpc:. *.proto
+syntax = "proto3";
+
+package dtalk.offline;
+
+import "github.com/txchat/dtalk/api/proto/auth.proto";
+import "github.com/txchat/dtalk/api/proto/message.proto";
+
+option go_package = "github.com/txchat/dtalk/internal/proto/offline;offline";
+
+// record --> mq
+message OffPushMsg {
+  string appId = 1;
+  dtalk.api.proto.Device device = 2;
+  string title = 3;
+  string content = 4;
+  string token = 5;
+  int32 channelType = 6;
+  string target = 7;
+  int64 timeout = 8;
+}
+
+// record --> mq
+message ThirdPartyPushMQ {
+  string appId = 1;
+  dtalk.api.proto.Channel channelType = 2;
+  string session = 3;
+  string from = 4;
+  repeated string target = 5;
+  string content = 6;
+  int64 datetime = 7;
+}

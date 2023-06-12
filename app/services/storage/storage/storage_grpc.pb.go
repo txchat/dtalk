@@ -22,8 +22,7 @@ type StorageClient interface {
 	DelRecord(ctx context.Context, in *DelRecordReq, opts ...grpc.CallOption) (*DelRecordReply, error)
 	GetRecord(ctx context.Context, in *GetRecordReq, opts ...grpc.CallOption) (*GetRecordReply, error)
 	AddRecordFocus(ctx context.Context, in *AddRecordFocusReq, opts ...grpc.CallOption) (*AddRecordFocusReply, error)
-	GetRecordsAfterMid(ctx context.Context, in *GetRecordsAfterMidReq, opts ...grpc.CallOption) (*GetRecordsAfterMidReply, error)
-	GetSyncRecordsAfterMid(ctx context.Context, in *GetSyncRecordsAfterMidReq, opts ...grpc.CallOption) (*GetSyncRecordsAfterMidReply, error)
+	GetChatSessionMsg(ctx context.Context, in *GetChatSessionMsgReq, opts ...grpc.CallOption) (*GetChatSessionMsgReply, error)
 }
 
 type storageClient struct {
@@ -61,18 +60,9 @@ func (c *storageClient) AddRecordFocus(ctx context.Context, in *AddRecordFocusRe
 	return out, nil
 }
 
-func (c *storageClient) GetRecordsAfterMid(ctx context.Context, in *GetRecordsAfterMidReq, opts ...grpc.CallOption) (*GetRecordsAfterMidReply, error) {
-	out := new(GetRecordsAfterMidReply)
-	err := c.cc.Invoke(ctx, "/storage.Storage/GetRecordsAfterMid", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *storageClient) GetSyncRecordsAfterMid(ctx context.Context, in *GetSyncRecordsAfterMidReq, opts ...grpc.CallOption) (*GetSyncRecordsAfterMidReply, error) {
-	out := new(GetSyncRecordsAfterMidReply)
-	err := c.cc.Invoke(ctx, "/storage.Storage/GetSyncRecordsAfterMid", in, out, opts...)
+func (c *storageClient) GetChatSessionMsg(ctx context.Context, in *GetChatSessionMsgReq, opts ...grpc.CallOption) (*GetChatSessionMsgReply, error) {
+	out := new(GetChatSessionMsgReply)
+	err := c.cc.Invoke(ctx, "/storage.Storage/GetChatSessionMsg", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -86,8 +76,7 @@ type StorageServer interface {
 	DelRecord(context.Context, *DelRecordReq) (*DelRecordReply, error)
 	GetRecord(context.Context, *GetRecordReq) (*GetRecordReply, error)
 	AddRecordFocus(context.Context, *AddRecordFocusReq) (*AddRecordFocusReply, error)
-	GetRecordsAfterMid(context.Context, *GetRecordsAfterMidReq) (*GetRecordsAfterMidReply, error)
-	GetSyncRecordsAfterMid(context.Context, *GetSyncRecordsAfterMidReq) (*GetSyncRecordsAfterMidReply, error)
+	GetChatSessionMsg(context.Context, *GetChatSessionMsgReq) (*GetChatSessionMsgReply, error)
 	mustEmbedUnimplementedStorageServer()
 }
 
@@ -104,11 +93,8 @@ func (UnimplementedStorageServer) GetRecord(context.Context, *GetRecordReq) (*Ge
 func (UnimplementedStorageServer) AddRecordFocus(context.Context, *AddRecordFocusReq) (*AddRecordFocusReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddRecordFocus not implemented")
 }
-func (UnimplementedStorageServer) GetRecordsAfterMid(context.Context, *GetRecordsAfterMidReq) (*GetRecordsAfterMidReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetRecordsAfterMid not implemented")
-}
-func (UnimplementedStorageServer) GetSyncRecordsAfterMid(context.Context, *GetSyncRecordsAfterMidReq) (*GetSyncRecordsAfterMidReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetSyncRecordsAfterMid not implemented")
+func (UnimplementedStorageServer) GetChatSessionMsg(context.Context, *GetChatSessionMsgReq) (*GetChatSessionMsgReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetChatSessionMsg not implemented")
 }
 func (UnimplementedStorageServer) mustEmbedUnimplementedStorageServer() {}
 
@@ -177,38 +163,20 @@ func _Storage_AddRecordFocus_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Storage_GetRecordsAfterMid_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetRecordsAfterMidReq)
+func _Storage_GetChatSessionMsg_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetChatSessionMsgReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(StorageServer).GetRecordsAfterMid(ctx, in)
+		return srv.(StorageServer).GetChatSessionMsg(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/storage.Storage/GetRecordsAfterMid",
+		FullMethod: "/storage.Storage/GetChatSessionMsg",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(StorageServer).GetRecordsAfterMid(ctx, req.(*GetRecordsAfterMidReq))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Storage_GetSyncRecordsAfterMid_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetSyncRecordsAfterMidReq)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(StorageServer).GetSyncRecordsAfterMid(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/storage.Storage/GetSyncRecordsAfterMid",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(StorageServer).GetSyncRecordsAfterMid(ctx, req.(*GetSyncRecordsAfterMidReq))
+		return srv.(StorageServer).GetChatSessionMsg(ctx, req.(*GetChatSessionMsgReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -233,12 +201,8 @@ var Storage_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Storage_AddRecordFocus_Handler,
 		},
 		{
-			MethodName: "GetRecordsAfterMid",
-			Handler:    _Storage_GetRecordsAfterMid_Handler,
-		},
-		{
-			MethodName: "GetSyncRecordsAfterMid",
-			Handler:    _Storage_GetSyncRecordsAfterMid_Handler,
+			MethodName: "GetChatSessionMsg",
+			Handler:    _Storage_GetChatSessionMsg_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

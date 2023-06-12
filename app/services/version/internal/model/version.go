@@ -1,66 +1,58 @@
 package model
 
 import (
-	"encoding/json"
-
-	"github.com/txchat/dtalk/pkg/util"
+	"database/sql/driver"
+	"fmt"
+	"strings"
 )
 
 type Description []string
 
-func (desc *Description) ToString() string {
-	b, err := json.Marshal(desc)
-	if err != nil {
-		return ""
+// Scan 实现 sql.Scanner 接口，Scan 将 value 扫描至 Description
+func (d *Description) Scan(value interface{}) error {
+	if value == nil {
+		return nil
 	}
-	return string(b)
+	switch v := value.(type) {
+	case []byte:
+		if len(v) == 0 {
+			return nil
+		}
+		*d = strings.Split(string(v), ";")
+		return nil
+	case string:
+		if len(v) == 0 {
+			return nil
+		}
+		*d = strings.Split(v, ";")
+		return nil
+	default:
+		return fmt.Errorf("unexpected type %T for Description", value)
+	}
 }
 
-func ConvertDescription(str string) (Description, error) {
-	var desc Description
-	err := json.Unmarshal([]byte(str), &desc)
-	if err != nil {
-		return nil, err
-	}
-	return desc, nil
+// Value 实现 driver.Valuer 接口，Value 返回 序列化后的Description
+func (d Description) Value() (driver.Value, error) {
+	return strings.Join(d, ";"), nil
+}
+
+func (d Description) ToString() string {
+	return strings.Join(d, ";")
 }
 
 type VersionForm struct {
-	Id          int64       `json:"id"`
-	Platform    string      `json:"platform"`
-	Status      int32       `json:"status"`
-	DeviceType  string      `json:"deviceType"`
-	VersionName string      `json:"versionName"`
-	VersionCode int64       `json:"versionCode"`
-	URL         string      `json:"url"`
-	Force       bool        `json:"force"`
-	Description Description `json:"description"`
-	OpeUser     string      `json:"opeUser"`
-	Md5         string      `json:"md5"`
-	Size        int64       `json:"size"`
-	UpdateTime  int64       `json:"updateTime"`
-	CreateTime  int64       `json:"createTime"`
-}
-
-func ConvertVersionForm(record map[string]string) (*VersionForm, error) {
-	description, err := ConvertDescription(record["description"])
-	if err != nil {
-		return nil, err
-	}
-	return &VersionForm{
-		Id:          util.MustToInt64(record["id"]),
-		Platform:    record["platform"],
-		Status:      util.MustToInt32(record["state"]),
-		DeviceType:  record["device_type"],
-		VersionName: record["version_name"],
-		VersionCode: util.MustToInt64(record["version_code"]),
-		URL:         record["download_url"],
-		Force:       util.MustToBool(record["force_update"]),
-		Description: description,
-		OpeUser:     record["ope_user"],
-		Md5:         record["md5"],
-		Size:        util.MustToInt64(record["size"]),
-		UpdateTime:  util.MustToInt64(record["update_time"]),
-		CreateTime:  util.MustToInt64(record["create_time"]),
-	}, nil
+	Id          int64       `json:"id" gorm:"column:id;"`
+	Platform    string      `json:"platform" gorm:"column:platform;"`
+	Status      int32       `json:"status" gorm:"column:state;"`
+	DeviceType  string      `json:"deviceType" gorm:"column:device_type;"`
+	VersionName string      `json:"versionName" gorm:"column:version_name;"`
+	VersionCode int64       `json:"versionCode" gorm:"column:version_code;"`
+	URL         string      `json:"url" gorm:"column:download_url;"`
+	Force       bool        `json:"force" gorm:"column:force_update;"`
+	Description Description `json:"description" gorm:"column:description;"`
+	OpeUser     string      `json:"opeUser" gorm:"column:ope_user;"`
+	Md5         string      `json:"md5" gorm:"column:md5;"`
+	Size        int64       `json:"size" gorm:"column:size;"`
+	UpdateTime  int64       `json:"updateTime" gorm:"column:update_time;"`
+	CreateTime  int64       `json:"createTime" gorm:"column:create_time;"`
 }

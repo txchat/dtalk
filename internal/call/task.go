@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 
+	"github.com/txchat/dtalk/api/proto/signal"
 	xsignal "github.com/txchat/dtalk/internal/signal"
-	"github.com/txchat/imparse/proto/signal"
 )
 
 type StopType int32

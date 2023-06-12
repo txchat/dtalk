@@ -1,13 +1,15 @@
 package model
 
+import "github.com/txchat/dtalk/app/services/storage/storage"
+
 type MsgContent struct {
 	Mid        string
-	Seq        string
+	Cid        string
 	SenderId   string
 	ReceiverId string
-	MsgType    uint32
+	MsgType    int32
 	Content    string
-	CreateTime uint64
+	CreateTime int64
 	Source     string
 	Reference  string
 }
@@ -16,31 +18,37 @@ type MsgRelation struct {
 	Mid        string
 	OwnerUid   string
 	OtherUid   string
-	Type       uint8
-	State      uint8
-	CreateTime uint64
-}
-
-type MsgCache struct {
-	Mid        string
-	Seq        string
-	SenderId   string
-	ReceiverId string
-	MsgType    uint32
-	Content    string
-	CreateTime uint64
-	Source     string
-	Reference  string
-	Prev       uint64
-	Version    uint64
+	Type       int8
+	CreateTime int64
 }
 
 type SignalContent struct {
-	Id         string
 	Uid        string
-	Type       uint8
-	State      uint8
+	Seq        int64
+	Type       int8
 	Content    string
-	CreateTime uint64
-	UpdateTime uint64
+	CreateTime int64
+	UpdateTime int64
+}
+
+func ChatMsgRepoToRPC(record *MsgContent) *storage.Record {
+	return &storage.Record{
+		Mid:        record.Mid,
+		Cid:        record.Cid,
+		SenderId:   record.SenderId,
+		ReceiverId: record.ReceiverId,
+		MsgType:    record.MsgType,
+		Content:    record.Content,
+		CreateTime: record.CreateTime,
+		Source:     record.Source,
+		Reference:  record.Reference,
+	}
+}
+
+func ChatMessagesRepoToRPC(records []*MsgContent) []*storage.Record {
+	rlt := make([]*storage.Record, len(records))
+	for i, record := range records {
+		rlt[i] = ChatMsgRepoToRPC(record)
+	}
+	return rlt
 }

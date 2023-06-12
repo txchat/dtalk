@@ -1,25 +1,19 @@
 package config
 
 import (
+	xkafka "github.com/oofpgDLD/kafka-go"
 	xredis "github.com/txchat/dtalk/pkg/redis"
-	xkafka "github.com/txchat/pkg/mq/kafka"
 	"github.com/zeromicro/go-zero/zrpc"
 )
 
 type Config struct {
 	zrpc.RpcServerConf
-	AppID     string
-	RedisDB   xredis.Config
-	DeviceRPC zrpc.RpcClientConf
-	AnswerRPC zrpc.RpcClientConf
-	GroupRPC  zrpc.RpcClientConf
-	LogicRPC  zrpc.RpcClientConf
-
-	ProducerStorage           xkafka.ProducerConfig
+	AppID                     string
+	RedisDB                   xredis.Config
+	DeviceRPC                 zrpc.RpcClientConf
+	LogicRPC                  zrpc.RpcClientConf
 	OffPushEnabled            bool
-	ProducerOffPush           xkafka.ProducerConfig
-	ConnDealConsumerConfig    xkafka.ConsumerConfig
-	ConnDealBatchConsumerConf xkafka.BatchConsumerConf
+	Producer                  xkafka.ProducerConfig
 	PushDealConsumerConfig    xkafka.ConsumerConfig
 	PushDealBatchConsumerConf xkafka.BatchConsumerConf
 }

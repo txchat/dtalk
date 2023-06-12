@@ -3,16 +3,24 @@ syntax = "proto3";
 package pusher;
 option go_package = "./pusher";
 
-message PushReq {
-  string key = 1;
-  string from = 2;
-  string mid = 3;
-  string target = 4;
-  bytes data = 5;
-  int32 type = 6;
-  string frameType = 7;
+message PushGroupReq {
+  string app = 1;
+  string gid = 2;
+  bytes body = 5;
 }
 
-message PushReply {}
+message PushGroupResp {}
 
-service Pusher { rpc PushClient(PushReq) returns (PushReply); }
+message PushListReq {
+  string app = 1;
+  string from = 2;
+  repeated string uid = 3;
+  bytes body = 4;
+}
+
+message PushListResp {}
+
+service Pusher {
+  rpc PushGroup(PushGroupReq) returns (PushGroupResp);
+  rpc PushList(PushListReq) returns (PushListResp);
+}

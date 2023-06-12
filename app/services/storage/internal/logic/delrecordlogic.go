@@ -3,10 +3,10 @@ package logic
 import (
 	"context"
 
+	"github.com/txchat/dtalk/api/proto/message"
 	"github.com/txchat/dtalk/app/services/storage/internal/model"
 	"github.com/txchat/dtalk/app/services/storage/internal/svc"
 	"github.com/txchat/dtalk/app/services/storage/storage"
-	"github.com/txchat/imparse/proto/common"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -27,10 +27,10 @@ func NewDelRecordLogic(ctx context.Context, svcCtx *svc.ServiceContext) *DelReco
 func (l *DelRecordLogic) DelRecord(in *storage.DelRecordReq) (*storage.DelRecordReply, error) {
 	var err error
 	switch in.GetTp() {
-	case common.Channel_ToUser:
-		_, _, err = l.svcCtx.Repo.DelMsgContent(in.GetMid())
-	case common.Channel_ToGroup:
-		_, _, err = l.svcCtx.Repo.DelGroupMsgContent(in.GetMid())
+	case message.Channel_Private:
+		_, _, err = l.svcCtx.Repo.DelPrivateMsg(in.GetMid())
+	case message.Channel_Group:
+		_, _, err = l.svcCtx.Repo.DelGroupMsg(in.GetMid())
 	default:
 		err = model.ErrRecordNotFind
 	}
