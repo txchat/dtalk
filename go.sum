@@ -2080,6 +2080,8 @@ github.com/tklauser/numcpus v0.4.0/go.mod h1:1+UI3pD8NW14VMwdgJNJ1ESk2UnwhAnz5hM
 github.com/tmc/grpc-websocket-proxy v0.0.0-20170815181823-89b8d40f7ca8/go.mod h1:ncp9v5uamzpCO7NfCPTXjqaC+bZgJeR0sMTm6dMHP7U=
 github.com/tmc/grpc-websocket-proxy v0.0.0-20190109142713-0ad062ec5ee5/go.mod h1:ncp9v5uamzpCO7NfCPTXjqaC+bZgJeR0sMTm6dMHP7U=
 github.com/tv42/httpunix v0.0.0-20150427012821-b75d8614f926/go.mod h1:9ESjWnEqriFuLhtthL60Sar/7RFoluCcXsuvEwTV5KM=
+github.com/txchat/im v0.2.0-alpha.0 h1:qItB+8TbcFjv8qGTQ/tQSN9U4sN7CRsEQ2z9ID2EUUo=
+github.com/txchat/im v0.2.0-alpha.0/go.mod h1:F2IyjiUMTgQs9VbmheB7hm4Adtb6KpBMhy9rbXvnrWY=
 github.com/txchat/task v0.0.1 h1:awkgmNgVlI2CjW+UpeIGzbmo0GdRvRs3fnV7n6LcSqw=
 github.com/txchat/task v0.0.1/go.mod h1:cm8o9EDxCiGSF11wtnI4Lp2WAsA0QreiqWzddDQ/UUw=
 github.com/tyler-smith/go-bip39 v1.0.1-0.20181017060643-dbb3b84ba2ef/go.mod h1:sJ5fKU0s6JVwZjjcUEX2zFOnvq0ASQ2K9Zr6cf67kNs=

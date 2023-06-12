@@ -33,7 +33,7 @@ require (
 	github.com/spf13/cobra v1.0.0 // indirect
 	github.com/stretchr/testify v1.8.2
 	github.com/tencentyun/tls-sig-api-v2-golang v1.2.0
-	github.com/txchat/im v0.0.1
+	github.com/txchat/im v0.2.0-alpha.0
 	github.com/zeromicro/go-zero v1.4.3
 	go.etcd.io/etcd/api/v3 v3.5.5
 	go.etcd.io/etcd/client/v3 v3.5.5
@@ -43,5 +43,3 @@ require (
 	gorm.io/driver/mysql v1.4.7
 	gorm.io/gorm v1.24.6
 )
-
-replace github.com/txchat/im => ../im
