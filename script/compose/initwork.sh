@@ -49,6 +49,7 @@ function volume_create() {
 }
 
 function initRedis() {
+    # shellcheck disable=SC2048
     for vname in ${created_volume[*]}; do
         if [ "${vname}" = "txchat-redis-config" ]; then
             docker container create --name dummy -v "txchat-redis-config":/root hello-world

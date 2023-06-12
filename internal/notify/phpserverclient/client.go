@@ -88,10 +88,10 @@ func (c *Client) ValidateEmail(cfg *Config) error {
 	return c.validate(reqURL, values)
 }
 
-func (c *Client) send(reqUrl string, param map[string]string) (*SendResult, error) {
+func (c *Client) send(reqURL string, param map[string]string) (*SendResult, error) {
 	timestamp := strconv.FormatInt(time.Now().Unix(), 10)
 	reqMethod := "POST"
-	strParams := MapToSortUrlEncode(param)
+	strParams := MapToSortURLEncode(param)
 
 	sign := sginature(c.appKey, param, c.secretKey, timestamp)
 
@@ -102,7 +102,7 @@ func (c *Client) send(reqUrl string, param map[string]string) (*SendResult, erro
 		"FZM-Ca-Signature": sign,
 	}
 
-	req, err := http.NewRequest(reqMethod, reqUrl, strings.NewReader(strParams))
+	req, err := http.NewRequest(reqMethod, reqURL, strings.NewReader(strParams))
 	if err != nil {
 		return nil, err
 	}
@@ -112,7 +112,7 @@ func (c *Client) send(reqUrl string, param map[string]string) (*SendResult, erro
 	}
 
 	cli := http.Client{
-		Timeout: HttpReqTimeout,
+		Timeout: HTTPReqTimeout,
 	}
 
 	resp, err := cli.Do(req)
@@ -184,10 +184,10 @@ func (c *Client) send(reqUrl string, param map[string]string) (*SendResult, erro
 	}, nil
 }
 
-func (c *Client) validate(reqUrl string, param map[string]string) error {
+func (c *Client) validate(reqURL string, param map[string]string) error {
 	timestamp := strconv.FormatInt(time.Now().Unix(), 10)
 	reqMethod := "POST"
-	strParams := MapToSortUrlEncode(param)
+	strParams := MapToSortURLEncode(param)
 
 	sign := sginature(c.appKey, param, c.secretKey, timestamp)
 
@@ -198,7 +198,7 @@ func (c *Client) validate(reqUrl string, param map[string]string) error {
 		"FZM-Ca-Signature": sign,
 	}
 
-	req, err := http.NewRequest(reqMethod, reqUrl, strings.NewReader(strParams))
+	req, err := http.NewRequest(reqMethod, reqURL, strings.NewReader(strParams))
 	if err != nil {
 		return err
 	}
@@ -208,7 +208,7 @@ func (c *Client) validate(reqUrl string, param map[string]string) error {
 	}
 
 	cli := http.Client{
-		Timeout: HttpReqTimeout,
+		Timeout: HTTPReqTimeout,
 	}
 
 	resp, err := cli.Do(req)
@@ -263,7 +263,7 @@ func (c *Client) validate(reqUrl string, param map[string]string) error {
 }
 
 func sginature(appKey string, req map[string]string, secretKey string, time string) string {
-	signParams := MapToSortUrlEncode(req)
+	signParams := MapToSortURLEncode(req)
 	signParams = appKey + signParams + secretKey + time
 	h := md5.New()
 	h.Write([]byte(signParams))
@@ -273,7 +273,7 @@ func sginature(appKey string, req map[string]string, secretKey string, time stri
 	return sign
 }
 
-func MapToSortUrlEncode(paramsMap map[string]string) string {
+func MapToSortURLEncode(paramsMap map[string]string) string {
 	v := url.Values{}
 
 	mapKeys := []string{}
@@ -300,7 +300,7 @@ func ParseInterface(orign interface{}, ty string) (interface{}, error) {
 		case nil:
 			return nil, fmt.Errorf("tOrign is nil")
 		case int:
-			result = int(tOrign)
+			result = tOrign
 		case uint:
 			result = int(tOrign)
 		case int32:
@@ -331,7 +331,7 @@ func ParseInterface(orign interface{}, ty string) (interface{}, error) {
 		case int:
 			result = uint(tOrign)
 		case uint:
-			result = uint(tOrign)
+			result = tOrign
 		case int32:
 			result = uint(tOrign)
 		case uint32:
@@ -362,7 +362,7 @@ func ParseInterface(orign interface{}, ty string) (interface{}, error) {
 		case uint:
 			result = int32(tOrign)
 		case int32:
-			result = int32(tOrign)
+			result = tOrign
 		case uint32:
 			result = int32(tOrign)
 		case int64:
@@ -393,7 +393,7 @@ func ParseInterface(orign interface{}, ty string) (interface{}, error) {
 		case int32:
 			result = uint32(tOrign)
 		case uint32:
-			result = uint32(tOrign)
+			result = tOrign
 		case int64:
 			result = uint32(tOrign)
 		case uint64:
@@ -424,7 +424,7 @@ func ParseInterface(orign interface{}, ty string) (interface{}, error) {
 		case uint32:
 			result = int64(tOrign)
 		case int64:
-			result = int64(tOrign)
+			result = tOrign
 		case uint64:
 			result = int64(tOrign)
 		case float32:
@@ -436,7 +436,7 @@ func ParseInterface(orign interface{}, ty string) (interface{}, error) {
 			if nil != err {
 				return nil, err
 			}
-			result = int64(tm)
+			result = tm
 		default:
 			return nil, fmt.Errorf("unknow tOrign type, " + reflect.TypeOf(tOrign).String())
 		}
@@ -455,7 +455,7 @@ func ParseInterface(orign interface{}, ty string) (interface{}, error) {
 		case int64:
 			result = uint64(tOrign)
 		case uint64:
-			result = uint64(tOrign)
+			result = tOrign
 		case float32:
 			result = uint64(tOrign)
 		case float64:
@@ -465,7 +465,7 @@ func ParseInterface(orign interface{}, ty string) (interface{}, error) {
 			if nil != err {
 				return nil, err
 			}
-			result = uint64(tm)
+			result = tm
 		default:
 			return nil, fmt.Errorf("unknow tOrign type, " + reflect.TypeOf(tOrign).String())
 		}
@@ -486,7 +486,7 @@ func ParseInterface(orign interface{}, ty string) (interface{}, error) {
 		case uint64:
 			result = float32(tOrign)
 		case float32:
-			result = float32(tOrign)
+			result = tOrign
 		case float64:
 			result = float32(tOrign)
 		case string:
@@ -517,13 +517,13 @@ func ParseInterface(orign interface{}, ty string) (interface{}, error) {
 		case float32:
 			result = float64(tOrign)
 		case float64:
-			result = float64(tOrign)
+			result = tOrign
 		case string:
 			tm, err := strconv.ParseFloat(tOrign, 64)
 			if nil != err {
 				return nil, err
 			}
-			result = float64(tm)
+			result = tm
 		default:
 			return nil, fmt.Errorf("unknow tOrign type, " + reflect.TypeOf(tOrign).String())
 		}
@@ -542,7 +542,7 @@ func ParseInterface(orign interface{}, ty string) (interface{}, error) {
 		case int64:
 			result = fmt.Sprint(uint64(tOrign))
 		case uint64:
-			result = fmt.Sprint(uint64(tOrign))
+			result = fmt.Sprint(tOrign)
 		case float32:
 			// 这种只适合整数转字符串的情形, 也就是id那种情况, 带小数的转换不支持
 			if float64(tOrign) > float64(uint64(tOrign)) {

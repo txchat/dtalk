@@ -2,7 +2,7 @@ package phpserverclient
 
 import "time"
 
-const HttpReqTimeout = 20 * time.Second
+const HTTPReqTimeout = 20 * time.Second
 
 const (
 	Phone   = 0
